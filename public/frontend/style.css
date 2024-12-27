@@ -1,0 +1,559 @@
+*,
+body {
+    padding: 0;
+    margin: 0;
+    
+}
+
+img {
+    max-width: 100%;
+}
+
+.custom-bullet {
+    list-style: none;
+    /* Remove default bullets */
+    padding-left: 0px;
+    /* Add some padding to the left to make space for the image */
+}
+
+.custom-bullet li {
+    padding: 0;
+    position: relative;
+    /* Position relative to adjust the bullet */
+    padding-left: 15px;
+    /* Space between bullet and text */
+}
+
+.custom-bullet li:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 12px;
+    /* Adjust based on your image size */
+    height: 12px;
+    /* Adjust based on your image size */
+    background-image: url('./img/caret-right-fill.svg');
+    background-size: contain;
+    /* Adjust based on your image size */
+    background-repeat: no-repeat;
+}
+
+/* header css */
+.navbar-brand img {
+    max-height: 50px;
+}
+
+.border-left {
+    border-left: 1px solid rgb(0, 0, 0);
+}
+
+/* hero section css */
+.hero-section {
+    min-height: 500px;
+    background: url(./img/3d-view-planet-earth.jpg);
+    background-position: top;
+    background-size: 100% 400px;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.hero-bot {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    width: -webkit-fill-available;
+}
+
+.hero-section .hero-inner {
+    background: white;
+    padding: 10px;
+    width: 100%;
+}
+
+.hero-section .hero-inner .card {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.hero-section .hero-inner .card .card-top-section {
+    background-image: linear-gradient(90deg, #6f95f6 10%, #9880e0 100%);
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+}
+
+.hero-section .hero-inner .search-area {
+    display: flex;
+    padding: 5px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+    background: white;
+}
+
+.hero-section .hero-inner .search-area input {
+    width: 100%;
+    border: none;
+}
+
+.hero-section .hero-inner .search-area input:focus-visible {
+    outline: none;
+}
+
+.hero-section .hero-inner .search-area button {
+    background-image: linear-gradient(90deg, rgb(236, 170, 4) 10%, rgb(201, 190, 43) 100%);
+    border-radius: 20px;
+    width: 100px;
+    border: none;
+    padding-block: 5px;
+}
+
+.hero-section .hero-inner .search-area button:hover {
+    background: yellow;
+    color: rgb(29, 29, 190);
+}
+
+.hero-section .hero-inner .card .card-top-section .small-btns {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hero-section .hero-inner .card .card-top-section .small-btns button {
+    border: none;
+    font-size: 12px;
+    background: #4646c4;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-wrap: nowrap;
+}
+
+.hero-section .hero-inner .card .card-top-section .small-btns button.active {
+    background: transparent;
+    font-weight: bold;
+}
+
+.hero-section .hero-inner .card .card-bottom-section {
+    padding: 5px;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .left-over {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+
+}
+
+.hero-section .hero-inner .card .card-bottom-section .left-over h4 {
+    color: #3334ca;
+    font-family: 'Times New Roman', Times, serif;
+    align-self: last baseline;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .left-over img {
+    max-height: 100px;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .right-over {
+    border-left: 2px solid #3f548e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: safe;
+    row-gap: 20px;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .right-over .single-detail {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    row-gap: 0px;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .right-over .single-detail h5 {
+    margin-bottom: 0;
+    color: #1d4080;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .right-over .single-detail a {
+    color: #1c589f;
+    text-transform: uppercase;
+    font-size: .8rem;
+    font-weight: 400;
+    text-wrap: nowrap;
+}
+
+.hero-section .hero-inner .card .card-bottom-section .right-over .single-detail a:hover {
+    color: #202052;
+}
+
+/* datasets section css */
+.dataset-section {
+    background: #e9e9e9;
+    padding-block: 30px;
+}
+
+.dataset-section .header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dataset-section .header h4 {
+    color: #1c4e98;
+}
+
+.dataset-section .container .card {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.dataset-section .card .discover-single-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid lightgray;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    background: white;
+    transform-origin: 50% 65%;
+    transition: transform 3s, filter 3s ease-in-out;
+
+}
+
+.dataset-section .card .discover-single-card:hover {
+    filter: brightness(100%);
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.dataset-section .card .discover-single-card img {
+    height: 100px;
+}
+
+.dataset-section .card .discover-single-card h6 {
+    font: 600;
+}
+
+/* engagement section css */
+.engagement-section {
+    background: white;
+    padding-block: 30px;
+}
+
+.engagement-section .header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.engagement-section .header h4 {
+    color: #21357a;
+}
+
+.engagement-section .right-engage .row {
+    row-gap: 20px;
+}
+
+.engagement-section .right-engage .card {
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    position: relative;
+    transition: all 0.7s ease-in-out;
+    cursor: pointer;
+
+}
+.engagement-section .right-engage .card:hover {
+box-shadow: none;
+scale: 1.05;
+
+}
+
+.engagement-section .right-engage .card img {
+    height: 60px;
+    max-width: 60px;
+}
+
+.engagement-section .right-engage .card h5 {
+    text-transform: uppercase;
+    font-size: .9rem;
+    margin-top: 10px;
+}
+
+.engagement-section .right-engage .card ul li {
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.engagement-section .right-engage .card .share-btn {
+    background: white;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 10px;
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    transition: all 0.7s ease-in-out;
+    cursor: pointer;
+}
+.engagement-section .right-engage .card .share-btn:hover {
+
+border:1px solid lightgray;
+}
+
+.engagement-section .left-engage {
+    display: flex;
+    flex-direction: column;
+}
+
+.engagement-section .left-engage p {
+    color: rgb(117, 108, 108);
+    line-height: 120%;
+    font-size: 1rem;
+}
+
+.engagement-section .left-engage img {
+    max-height: 300px;
+}
+
+/* four-card-section css */
+.four-card-section {
+    padding-block: 30px;
+    background: #ccccfe;
+}
+
+.four-card-section .card {
+    display: flex;
+    padding: 10px;
+    padding-block: 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.four-card-section .card img {
+    height: 30px;
+    width: 30px;
+}
+
+.four-card-section .card h5 {
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.four-card-section .card.gray {
+    border-bottom: 5px solid lightgray;
+}
+
+.four-card-section .card.orange {
+    border-bottom: 5px solid orangered;
+}
+
+.four-card-section .card.green {
+    border-bottom: 5px solid green;
+}
+
+.four-card-section .card.blue {
+    border-bottom: 5px solid blue;
+}
+
+/* SLIDER SECTION CSS */
+.slider-section {
+    padding-block: 30px;
+}
+
+.slider-section .header {
+
+    text-align: center;
+}
+
+.slider-section .header h5 {
+    color: #0b3c9e;
+}
+
+
+.slider {
+    width: 80%;
+    max-width: 1000px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    flex: 0 0 20%;
+    max-width: 20%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.slide:last-child {
+    border-right: none;
+}
+
+.slide a {
+    padding: 10px 20px;
+    background-color: #ffffff;
+    color: #0b3c9e;
+    text-decoration: none;
+    border-radius: 5px;
+    border: 1px solid lightgray;
+}
+
+.controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.control {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid lightgray;
+}
+
+@media (max-width: 768px) {
+    .slide {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+/* footer css */
+footer {
+    flex-shrink: 0; /* Prevents the footer from shrinking */
+    background: #2d2d2d;
+    padding-block: 30px;
+    width: 100%;
+  
+}
+
+footer .foot-inner ul {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    text-decoration: none;
+    margin-bottom: 0;
+    justify-content: center;
+}
+
+footer .foot-inner ul li a {
+    text-decoration: none;
+}
+
+footer .copy-right-line {
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+footer .border-left {
+    border-left: 2px solid lightgray;
+    padding-left: 10px;
+}
+
+@media screen and (max-width:1080px) {
+    .hero-section .hero-inner .card .card-bottom-section .left-over{
+        flex-direction: column;
+        justify-content: center;
+    }
+    .hero-section .hero-inner .card .card-bottom-section .left-over h4{
+        align-self: center;
+    }
+    .hero-section .hero-inner .card .card-bottom-section .right-over .single-detail a{
+        text-wrap: pretty;
+    }
+}
+@media screen and (max-width:766px) {
+    .dataset-section .card .discover-single-card{
+        border-radius: 10px;
+    }
+    .dataset-section .container .card {
+        box-shadow: none;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        overflow-x: scroll;
+        max-width: 100%;
+        column-gap: 20px;
+        background: transparent;
+        border:none;
+    }
+    .dataset-section .container .card .sicover-card{
+  min-width: 280px;
+    }
+    
+    .engagement-section .right-engage .row{
+        margin-top: 20px;
+    }
+    .four-card-section .row{
+        row-gap: 10px;
+    }
+    .border-left{
+        border: transparent;
+    }
+    .hero-section{
+        min-height: 780px;
+
+    }
+    .hero-section .hero-inner .card .card-bottom-section .left-over{
+        flex-direction: column;
+    }
+    .hero-section .hero-inner .card .card-bottom-section .left-over h4 {
+        align-self: center;
+    }
+    .hero-section .hero-inner .card .card-bottom-section .right-over{
+        border: none;
+    }
+    .hero-section .hero-inner .card .card-bottom-section .right-over .row{
+        row-gap: 20px;
+    }
+}
+@media screen and (max-width:575px) {
+    
+    .hero-section{
+        min-height: 1080px;
+    }
+    footer .foot-inner ul{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 0;
+    }
+    footer .border-left{
+        border: none;
+        padding-left: 0;
+     
+    }
+}
