@@ -118,7 +118,7 @@ class DsrController extends Controller
             Log::info($item->total_billing_amount);
             $check_sponsor = Sponsor::with('user')->where('sponsor_id', $item->user_id)->get();
             if (!$check_sponsor->isEmpty()) {
-                $check_sponsor->each(function ($sponsor) use (&$billing_amount,&$item, $request) {
+                $check_sponsor->each(function ($sponsor) use (&$billing_amount, &$item, $request) {
                     $month = $request->input('month', Carbon::now()->subMonth()->format('Y-m'));
                     $monthlyBilling = Wallet::select(
                         DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
@@ -131,6 +131,23 @@ class DsrController extends Controller
                     // dd($monthlyBilling );
                     foreach ($monthlyBilling as $monthData) {
                         $billing_amount += $monthData->total_billing_amount;
+                    }
+                    $check_level_sponsor = Sponsor::with('user')->where('sponsor_id', $sponsor->user_id)->get();
+                    if (!$check_level_sponsor->isEmpty()) {
+                        $check_level_sponsor->each(function ($level_sponsor) use (&$billing_amount, &$month, &$item, $request) {
+                            $monthly_level_Billing = Wallet::select(
+                                DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
+                                DB::raw('SUM(billing_amount) as total_billing_amount')
+                            )
+                                ->where('user_id', $level_sponsor->user_id)
+                                ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
+                                ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
+                                ->get();
+                            // dd($monthlyBilling );
+                            foreach ($monthly_level_Billing as $monthData) {
+                                $billing_amount += $monthData->total_billing_amount;
+                            }
+                        });
                     }
                 });
                 $billing_amount += $item->total_billing_amount;
