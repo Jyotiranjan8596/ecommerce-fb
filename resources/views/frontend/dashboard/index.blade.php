@@ -355,7 +355,7 @@
                         <div class="card-body py-4">
                             <div class="d-flex align-items-start">
                                 <div class="flex-grow-1">
-                                    <h3 class="mb-2"><b style="color: red"><i class="fa fa-inr"
+                                    <h3 class="mb-2"><b style="color: rgb(10, 237, 169)"><i class="fa fa-inr"
                                                 aria-hidden="true"></i> {{ $walletBalance }}/-</b></h3>
                                     <p class="mb-2">Wallet Balance</p>
                                 </div>
@@ -664,13 +664,14 @@
 
                 // Cash or UPI payment logic
                 // Calculate 5% deduction
-                if (sponsors_count >= 11) {
-                    console.log("comming sponsor");
+                if (sponsors_count >= 10) {
                     payingAmountField.value = billingAmount.toFixed(2);
                     if (payBySelect.value === "wallet") {
                         if (walletBalance >= billingAmount) {
                             walletBalance -= billingAmount;
                             payingAmountField.value = "0.00"; // Fully paid by wallet
+                            walletBalanceElement.textContent = walletBalance.toFixed(2);
+                            
                         } else {
                             const remainingAmount = billingAmount - walletBalance;
                             walletBalance = 0;
@@ -680,6 +681,7 @@
                             insufficientBalanceDiv.style.display = 'block';
                             alternativePayBySelect.style.display = 'block';
                             alternativePayBySelect.required = true;
+                            walletBalanceElement.textContent = walletBalance.toFixed(2);
                         }
                     } else if (payBySelect.value === "cash" || payBySelect.value === "upi") {
                         // Cash or UPI payment logic
@@ -692,7 +694,7 @@
                         }
 
                         const remainingAmount = billingAmount - walletDeduction;
-
+                        walletBalanceElement.textContent = walletBalance.toFixed(2);
                         payingAmountField.value = remainingAmount.toFixed(2); // Amount to be paid
                     }
                     // if (walletBalance >= billingAmount) {
