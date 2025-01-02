@@ -197,24 +197,25 @@
                                                         name="billing_amount" required min="0" step="any"
                                                         placeholder="Enter Billing Amount" oninput="checkWalletBalance()">
                                                 </div>
-
+                                                <input id="sponsors_count" type="hidden" name="wallet_balance"
+                                                    value="{{ $sponsors_count }}">
+                                                <!-- Paying Amount -->
+                                                <div class="form-group mb-3">
+                                                    <label for="paying_amount"
+                                                        style="color: black;margin-right: 367px;">Paying Amount</label>
+                                                    <input type="number" class="form-control" name="paying_amount"
+                                                        id="paying_amount" required min="0" readonly>
+                                                </div>
                                                 <!-- Pay By -->
                                                 <div class="form-group mb-3">
                                                     <label for="pay_by" style="color: black;" class="modal-label">Pay
                                                         By</label>
                                                     <select class="form-control" id="pay_by" name="pay_by" required>
                                                         <option value="">Select Payment Method</option>
-                                                        <option value="wallet">Wallet</option>
+                                                        <option id="select-wallet" value="wallet">Wallet</option>
                                                         <option value="cash">Cash</option>
                                                         <option value="upi">UPI</option>
                                                     </select>
-                                                </div>
-
-                                                <!-- Paying Amount -->
-                                                <div class="form-group mb-3">
-                                                    <label for="paying_amount" style="color: black;margin-right: 367px;">Paying Amount</label>
-                                                    <input type="number" class="form-control" name="paying_amount"
-                                                        id="paying_amount" required min="0" readonly>
                                                 </div>
 
                                                 <!-- Wallet Balance -->
@@ -228,7 +229,7 @@
                                                 <!-- Insufficient Balance -->
                                                 <div class="insufficient-balance mb-3" style="display: none;">
                                                     <label class="modal-label" style="color: black;">Alternative Payment
-                                                        Method for Remaining Amount:</label>
+                                                        Method for Remaining Paying Amount:</label>
                                                     <select name="alternative_pay_by" id="alternative_pay_by"
                                                         class="form-control" required style="display: none;">
                                                         <option value="">Select Payment Method</option>
@@ -644,11 +645,13 @@
                 const billingAmount = parseFloat(document.getElementById('billing_amount').value) || 0;
                 const walletBalanceElement = document.getElementById('wallet_balance');
                 const payBySelect = document.getElementById('pay_by');
+                const select_wallet = document.getElementById('select-wallet');
                 const payingAmountField = document.getElementById('paying_amount');
                 const insufficientBalanceDiv = document.querySelector('.insufficient-balance');
                 const alternativePayBySelect = document.getElementById('alternative_pay_by');
                 const remainingAmountField = document.getElementById('remaining_amount');
-
+                const sponsors_count = document.getElementById('sponsors_count').value;
+                let walletDeduction = 0;
                 // Reset wallet balance and fields
                 let walletBalance = originalWalletBalance;
                 remainingAmountField.style.display = 'none';
@@ -658,38 +661,75 @@
                 alternativePayBySelect.value = '';
                 payingAmountField.value = billingAmount.toFixed(2);
 
-                if (payBySelect.value === "wallet") {
-                    // Wallet payment logic
-                    if (walletBalance >= billingAmount) {
-                        walletBalance -= billingAmount;
-                        payingAmountField.value = "0.00"; // Fully paid by wallet
-                    } else {
-                        const remainingAmount = billingAmount - walletBalance;
-                        walletBalance = 0;
-                        payingAmountField.value = remainingAmount.toFixed(2); // Remaining amount to be paid
-                        remainingAmountField.style.display = 'block';
-                        remainingAmountField.value = remainingAmount.toFixed(2);
-                        insufficientBalanceDiv.style.display = 'block';
-                        alternativePayBySelect.style.display = 'block';
-                        alternativePayBySelect.required = true;
+
+                // Cash or UPI payment logic
+                // Calculate 5% deduction
+                if (sponsors_count >= 11) {
+                    console.log("comming sponsor");
+                    payingAmountField.value = billingAmount.toFixed(2);
+                    if (payBySelect.value === "wallet") {
+                        if (walletBalance >= billingAmount) {
+                            walletBalance -= billingAmount;
+                            payingAmountField.value = "0.00"; // Fully paid by wallet
+                        } else {
+                            const remainingAmount = billingAmount - walletBalance;
+                            walletBalance = 0;
+                            payingAmountField.value = remainingAmount.toFixed(2); // Remaining amount to be paid
+                            remainingAmountField.style.display = 'block';
+                            remainingAmountField.value = remainingAmount.toFixed(2);
+                            insufficientBalanceDiv.style.display = 'block';
+                            alternativePayBySelect.style.display = 'block';
+                            alternativePayBySelect.required = true;
+                        }
+                    } else if (payBySelect.value === "cash" || payBySelect.value === "upi") {
+                        // Cash or UPI payment logic
+                        //  walletDeduction = billingAmount * 0.05; // Calculate 5% deduction
+                        if (walletBalance >= walletDeduction) {
+                            walletBalance -= walletDeduction;
+                        } else {
+                            walletDeduction = walletBalance;
+                            walletBalance = 0;
+                        }
+
+                        const remainingAmount = billingAmount - walletDeduction;
+
+                        payingAmountField.value = remainingAmount.toFixed(2); // Amount to be paid
                     }
-                } else if (payBySelect.value === "cash" || payBySelect.value === "upi") {
-                    // Cash or UPI payment logic
-                    const walletDeduction = billingAmount * 0.05; // Calculate 5% deduction
+                    // if (walletBalance >= billingAmount) {
+                    //     walletBalance -= billingAmount;
+                    //     payingAmountField.value = 0.00;
+                    //     walletBalanceElement.textContent = walletBalance.toFixed(2);
+
+                    //     // pay_by_input.style.display = 'none';
+                    // } else {
+                    //     walletDeduction = walletBalance;
+                    //     walletBalance -= walletDeduction;
+                    //     const remainingAmount = billingAmount - walletDeduction;
+                    //     payingAmountField.value = remainingAmount.toFixed(2);
+                    //     walletBalanceElement.textContent = walletBalance.toFixed(2);
+                    //     pay_by_input.style.display = 'block';
+                    // }
+                } else {
+                    select_wallet.style.display = 'none';
+                    console.log("without sponsor");
+                    walletDeduction = billingAmount * 0.05;
                     if (walletBalance >= walletDeduction) {
                         walletBalance -= walletDeduction;
                     } else {
                         walletDeduction = walletBalance;
                         walletBalance = 0;
                     }
-
-                    const remainingAmount = billingAmount - walletDeduction;
-
-                    payingAmountField.value = remainingAmount.toFixed(2); // Amount to be paid
+                    const remainingAmount1 = billingAmount - walletDeduction;
+                    payingAmountField.value = remainingAmount1.toFixed(2);
+                    walletBalanceElement.textContent = walletBalance.toFixed(2);
                 }
 
+
+                // Amount to be paid
+
+
                 // Update the wallet balance display
-                walletBalanceElement.textContent = walletBalance.toFixed(2);
+
             }
 
             // Event listeners for real-time updates

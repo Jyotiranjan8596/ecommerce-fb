@@ -25,6 +25,7 @@ class UserDashboardController extends Controller
         $userId = $user_profile->id;
         // dd($userId);
         $sponsors = Sponsor::where('sponsor_id', $userId)->get();
+        $sponsors_count = count($sponsors);
         // dd($sponsors);
         $transactionQuery = Wallet::where('user_id', $userId);
         // dd($transactionQuery);
@@ -57,7 +58,6 @@ class UserDashboardController extends Controller
 
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
-
         $walletBalance = self::get_total_wallet_amount($userId);
         // if ($userWallet) {
         // } else {
@@ -65,7 +65,7 @@ class UserDashboardController extends Controller
         // }
         // $walletBalance = max($walletBalance, 0);
 
-        return view('frontend.dashboard.index', compact('sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
+        return view('frontend.dashboard.index', compact('sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
     public function get_total_wallet_amount($userId)
@@ -89,11 +89,11 @@ class UserDashboardController extends Controller
     public function payment(Request $request)
     {
         // dd($request->all());
-        $user = User::find($request->user_id);  
+        $user = User::find($request->user_id);
         // Verify password
         if (!$user || !Hash::check($request->password, $user->password)) {
             return redirect()->back()->with('error', 'Incorrect password. Please try again.');
-        }   
+        }
         $userId = Auth::user()->id;
         // dd($userId);
         $posId = intval($request->input('pos_id'));
@@ -110,7 +110,7 @@ class UserDashboardController extends Controller
         $transaction_charge = $pos ? $pos->transaction_charge : 0;
         $transaction_amount = $amount * ($transaction_charge / 100);
         $walletUsedAmount = 0;
-    
+
         $userWalletEntry = new UserWallet();
         $userWalletEntry->invoice = $invoice;
         $userWalletEntry->user_id = $userId;
@@ -119,22 +119,22 @@ class UserDashboardController extends Controller
         $userWalletEntry->pay_by = 'wallet';
         $userWalletEntry->trans_type = 'debit';
         $userWalletEntry->pos_id = $pos->id ?? null;
-    
+
         if ($pay_by == 'wallet') {
             $userWallet = UserWallet::where('user_id', $userId)->get();
             // dd($userWallet);
             $walletBalance = $userWallet ? $userWallet->sum('wallet_amount') - UserWallet::where('user_id', $userId)->sum('used_amount') : 0;
-    
+
             if ($walletBalance <= 0) {
                 return redirect()->back()->with('error', 'Wallet is empty. Payment cannot be processed.');
             }
-    
+
             $walletUsedAmount = min($amount, $walletBalance);
             $remainingAmount = $amount - $walletUsedAmount;
-    
+
             $userWalletEntry->used_amount = $walletUsedAmount;
             $userWalletEntry->save();
-    
+
             $walletEntry = new Wallet();
             $walletEntry->user_id = $userId;
             $walletEntry->invoice = $invoice;
@@ -142,7 +142,7 @@ class UserDashboardController extends Controller
             $walletEntry->transaction_date = $transaction_date;
             $walletEntry->billing_amount = $amount;
             $walletEntry->transaction_amount = $transaction_amount;
-    
+
             if ($walletBalance >= $amount) {
                 $walletEntry->amount_wallet = $amount;
                 $walletEntry->pay_by = 'wallet';
@@ -155,7 +155,7 @@ class UserDashboardController extends Controller
                 // $walletEntry->status = ;
                 $walletEntry->amount = $remainingAmount;
             }
-    
+
             $walletEntry->pos_id = $pos->id ?? null;
             $walletEntry->insert_date = now();
             $walletEntry->save();
@@ -163,11 +163,11 @@ class UserDashboardController extends Controller
             $remainingAmount = $amount;
             $amount_wallet = $amount * (5 / 100);
             $currentWalletBalance = self::get_total_wallet_amount($userId);
-    
+
             if ($currentWalletBalance <= $amount_wallet) {
                 $amount_wallet = $currentWalletBalance;
             }
-    
+
             $dsrlist = new Wallet();
             $dsrlist->invoice = $invoice;
             $dsrlist->user_id = $userId;
@@ -182,20 +182,20 @@ class UserDashboardController extends Controller
             $dsrlist->pos_id = $pos->id ?? null;
             $dsrlist->insert_date = now();
             $dsrlist->save();
-    
+
             $userWalletEntry->used_amount = $amount_wallet;
             $userWalletEntry->save();
         }
-    
+
         return redirect()->back()->with('success', 'Payment successfully verified and processed.');
     }
-    
+
 
     // public function verifyPayment(Request $request)
     // {
     //     // dd($request->all());
     //     $user = User::find($request->user_id);
-    
+
     //     if ($user && Hash::check($request->password, $user->password)) {
     //         Wallet::create([
     //             'user_id' => $request->user_id,
@@ -207,13 +207,13 @@ class UserDashboardController extends Controller
     //             'pay_by' => $request->pay_by,
     //             'transaction_date' => $request->transaction_date,
     //         ]);
-    
+
     //         return redirect()->back()->with('success', 'Payment successfully verified and processed.');
     //     }
-    
+
     //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
     // }
-    
+
 
     public function addUser()
     {
