@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class AdminWalletImport implements ToModel, WithHeadingRow
 {
@@ -18,6 +19,12 @@ class AdminWalletImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         // dd($row);
+        $monthColumnValue = $row['month']; // Assuming you're reading the row with 'month' column.
+        if (is_numeric($monthColumnValue)) {
+            $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
+        } else {
+            $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
+        }
         // Find the user by user_id in the Users table
         $user = User::where('user_id', $row['user_id'])->first();
 
@@ -25,14 +32,13 @@ class AdminWalletImport implements ToModel, WithHeadingRow
         if (!$user) {
             return null; // Optionally handle missing users
         }
-
         return new UserWallet([
             'user_id' => $user->id, // Use the id from the Users table
-            'month' => $row['month'],
+            'month' => $formattedMonth,
             'wallet_amount' => $row['wallet_amount'],
             'trans_type' => $row['payment_mode'],
             'mobilenumber' => $row['mobile_number'],
-            
+
         ]);
     }
 }
