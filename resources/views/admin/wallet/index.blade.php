@@ -18,6 +18,18 @@
                     @endif
                 </form>
             </div>
+            <div class="col-md-4 mb-3">
+                <form action="{{ route('admin.used.wallet.upload') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="used_file" accept=".xlsx" required>
+                        <button class="btn btn-info" type="submit">UPLOAD USED WALLET</button>
+                    </div>
+                    @if ($errors->has('file'))
+                        <div class="text-danger mt-2">{{ $errors->first('file') }}</div>
+                    @endif
+                </form>
+            </div>
 
             <!-- Export Button -->
             <div class="col-md-6 mb-3 text-end">

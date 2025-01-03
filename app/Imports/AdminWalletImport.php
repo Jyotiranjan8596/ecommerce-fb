@@ -26,15 +26,11 @@ class AdminWalletImport implements ToModel, WithHeadingRow
         }
         // Find the user by user_id in the Users table
         $user = User::where('id', $row['user_id'])->first();
-
-        $count = 0;
         // If the user does not exist, skip the record
         if (!$user) {
-            $count++;
-            dump($count);
             return null; // Optionally handle missing users
         }
-        
+
         return new UserWallet([
             'user_id' => $user->id, // Use the id from the Users table
             'month' => $formattedMonth,

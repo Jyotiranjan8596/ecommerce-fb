@@ -463,14 +463,15 @@
                 </div>
 
                 <!-- POS Transactions Table -->
-                <div class="col-md-6 col-12 mb-4">
+                <div class="col-md-6 col-12 mb-4" style="width: 100%">
                     <div class="card flex-fill">
                         <div class="card-body py-4">
                             <h6><b>POS Transaction (Latest 5 Transactions)</b></h6>
 
                             <!-- Date Filter Form -->
                             <form action="{{ route('user.index') }}" method="GET" class="form-inline mb-3">
-                                <div class="input-group mb-3">
+                                <div class="input-group mb-3"
+                                    style="align-content: center;height: 60px; align-items: normal !important;margin-top: 1.5%">
                                     <div class="me-2">
                                         <label for="from_date" class="form-label">From</label>
                                         <input type="date" class="form-control" name="from_date" id="from_date"
@@ -483,7 +484,8 @@
                                             value="{{ request('to_date') }}" placeholder="To Date">
                                     </div>
 
-                                    <button class="btn btn-info btn-sm" type="submit">Search Transactions</button>
+                                    <button class="btn btn-info btn-sm" type="submit"
+                                        style="height: 38px;margin:2.6%">Search Transactions</button>
                                 </div>
                             </form>
                             <!-- Responsive Table -->
@@ -671,7 +673,7 @@
                             walletBalance -= billingAmount;
                             payingAmountField.value = "0.00"; // Fully paid by wallet
                             walletBalanceElement.textContent = walletBalance.toFixed(2);
-                            
+
                         } else {
                             const remainingAmount = billingAmount - walletBalance;
                             walletBalance = 0;

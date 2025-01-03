@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\AdminWalletExport;
 use App\Http\Controllers\Controller;
+use App\Imports\AdminUsedWalletImport;
 use App\Imports\AdminWalletImport;
 use App\Models\UserWallet;
 use Illuminate\Http\Request;
@@ -30,6 +31,19 @@ class WalletController extends Controller
 
         try {
             Excel::import(new AdminWalletImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Wallet data imported successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error importing wallet data: ' . $e->getMessage());
+        }
+    }
+    public function uploadUsedWallet(Request $request)
+    {
+        $request->validate([
+            'used_file' => 'required|mimes:xlsx|max:2048', // Limit file size for better control
+        ]);
+
+        try {
+            Excel::import(new AdminUsedWalletImport, $request->file('used_file'));
             return redirect()->back()->with('success', 'Wallet data imported successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error importing wallet data: ' . $e->getMessage());
