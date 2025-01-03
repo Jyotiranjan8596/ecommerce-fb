@@ -18,7 +18,6 @@ class AdminWalletImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // dd($row);
         $monthColumnValue = $row['month']; // Assuming you're reading the row with 'month' column.
         if (is_numeric($monthColumnValue)) {
             $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
@@ -26,19 +25,22 @@ class AdminWalletImport implements ToModel, WithHeadingRow
             $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
         }
         // Find the user by user_id in the Users table
-        $user = User::where('user_id', $row['user_id'])->first();
+        $user = User::where('id', $row['user_id'])->first();
 
+        $count = 0;
         // If the user does not exist, skip the record
         if (!$user) {
+            $count++;
+            dump($count);
             return null; // Optionally handle missing users
         }
+        
         return new UserWallet([
             'user_id' => $user->id, // Use the id from the Users table
             'month' => $formattedMonth,
             'wallet_amount' => $row['wallet_amount'],
             'trans_type' => $row['payment_mode'],
             'mobilenumber' => $row['mobile_number'],
-
         ]);
     }
 }
