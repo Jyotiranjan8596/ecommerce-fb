@@ -17,22 +17,26 @@
                         <th scope="col">Cash/Upi</th>
                         <th scope="col">Payment Mode</th>
                         <th scope="col">Wallet Balance</th>
+                        <th scope="col">Credit</th>
+                        <th scope="col">Debit</th>
                         <th scope="col">Transation Date</th>
                         <th scope="col">Status</th>
 
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($DsrList as $key => $customer)
+                    @foreach ($dsrLists as $key => $customer)
                         <tr>
-                            <td>{{ $DsrList->firstItem() + $key }}</td>
+                            <td>{{ $dsrLists->firstItem() + $key }}</td>
                             <td>{{ $customer->user->name ?? 'N/A' }}</td>
                             <td>{{ $customer->user->user_id ?? 'N/A' }}</td>
                             <td>{{ $customer->user->mobilenumber ?? 'N/A' }}</td>
                             <td>₹{{ $customer->billing_amount ?? 0 }}/-</td>
-                            <td>₹{{ $customer->amount ?? 0}}/-</td>
+                            <td>₹{{ $customer->amount ?? 0 }}/-</td>
                             <td>{{ $customer->pay_by }}</td>
-                            <td>₹{{ $customer->amount_wallet ?? 0}}/-</td>
+                            <td>₹{{ $customer->amount_wallet ?? 0 }}/-</td>
+                            <td>₹{{ $customer->credit ?? 0 }}</td>
+                            <td>₹{{ $customer->debit ?? 0 }}</td>
                             <td>{{ date('d/m/Y', strtotime($customer->transaction_date)) }}</td>
                             <td>
                                 <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
@@ -88,7 +92,7 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-center">
-                {{ $DsrList->links() }}
+                {{ $dsrLists->links() }}
             </div>
         </div>
     </div>

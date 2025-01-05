@@ -16,15 +16,15 @@ class WalletImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        
+
         // $existingWallet = Wallet::where('invoice', $row['voucher_no'])->first();
         // if ($existingWallet) {
-            // throw new \Exception("This file has already been uploaded.");
+        // throw new \Exception("This file has already been uploaded.");
         //     return $existingWallet;
         // }
         // if (!empty($row['mobile'])) {
         //     $user_id = User::where('mobilenumber', $row['mobile'])->value('id');
-            // Log::info($user_id);
+        // Log::info($user_id);
         // } else {
         //     $user_id = null;
         // }
@@ -59,20 +59,31 @@ class WalletImport implements ToModel, WithHeadingRow
         // }
 
         // return $wallet;
-     
+
+        if ($row['paid_by_1'] == "FB Walet" || $row['paid_by_2'] == "FB Wallet") {
+            if ($row['paid_by_1'] == "FB Walet") {
+                $amount_wallet = $row['amount_paid_by_1'];
+                $pay_by = "Wallet";
+            }
+            if ($row['paid_by_2'] == "FB Wallet") {
+                $amount_wallet = $row['amount_paid_by_1'];
+                $pay_by = "Wallet";
+            }
+        } else {
+            $pay_by = $row['paid_by_1'];
+        }
         return Wallet::create([
             'invoice'            => $row['voucher_no'],
             'billing_amount'     => $row['amount'],
             'pos_id'             => $row['branch'],
-            'amount'             => $row['amount_paid_by_1'],
-            'pay_by'             => $row['paid_by_1'],
-            'pay_by_wallet'      => $row['paid_by_2'],
-            'amount_wallet'      => $row['amount_paid_by_2'] ?? 0,
+            'amount'             => $row['amount'],
+            'pay_by'             => $pay_by,
+            // 'pay_by_wallet'      => $pay_by_wallet ?? null,
+            'amount_wallet'      => $amount_wallet ?? 0,
             'user_id'            => User::where('mobilenumber', $row['mobile'])->value('id'),
             'mobilenumber'       => $row['mobile'] ?? null,
             'transaction_date'   => Carbon::parse($row['date'])->format('Y-m-d'),
             'insert_date'        => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
-    
     }
 }

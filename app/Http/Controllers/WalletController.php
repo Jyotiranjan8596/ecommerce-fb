@@ -336,13 +336,27 @@ class WalletController extends Controller
             $posId = $pos->id;
             // dd($posId);
         }
-        $DsrList = Wallet::with(['user', 'getPos'])
+        $dsrLists = Wallet::with(['user', 'getPos'])
             ->whereHas('getPos', function ($query) use ($posId) {
                 $query->where('pos_id', $posId);
-            })->orderBy('id', 'desc')->simplePaginate(15);
+            })->orderBy('id', 'desc')->simplePaginate(15)
+            ->through(function ($data) {
+                $transaction_charge = $data->billing_amount * (5 / 100);
+                if ($data->amount_wallet > $transaction_charge) {
+                    $data->credit = $data->amount_wallet - $transaction_charge;
+                    $data->debit = 0;
+                } elseif ($data->amount_wallet == 0) {
+                    $data->debit = $transaction_charge;
+                    $data->credit = 0;
+                } else {
+                    $data->debit = $transaction_charge - $data->amount_wallet;
+                    $data->credit = 0;
+                }
+                return $data;
+            });
 
         // dd($DsrList);
-        return view('pos.unverified_user', compact('DsrList'));
+        return view('pos.unverified_user', compact('dsrLists'));
     }
 
     public function updateStatus($id)
