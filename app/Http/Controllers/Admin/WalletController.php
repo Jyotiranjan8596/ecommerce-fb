@@ -15,11 +15,18 @@ class WalletController extends Controller
 {
     public function wallet()
     {
-        $walletBalance = UserWallet::whereNotNull('wallet_amount')->orderBy('id', 'desc')->simplePaginate(15);
+        $walletBalance = UserWallet::whereNotNull('wallet_amount')->orderBy('id', 'desc')->simplePaginate(15)->through(function ($wallet) {
+            // dd($wallet->wallet_amount);
+            $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
+                ? ceil($wallet->wallet_amount)
+                : floor($wallet->wallet_amount);
+            return $wallet;
+        });
+        // dd($walletBalance);
         //  dd($walletBalance);
         return view('admin.wallet.index', compact('walletBalance'));
     }
-    public function exportWallet()
+    public function exportWallet() 
     {
         return Excel::download(new AdminWalletExport, 'admin_wallet_data.xlsx');
     }

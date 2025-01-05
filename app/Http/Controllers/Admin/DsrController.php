@@ -69,7 +69,7 @@ class DsrController extends Controller
     {
         try {
             $request->validate([
-                'file' => 'required|mimes:csv,txt',
+                'file' => 'required',
             ]);
             Excel::import(new WalletImport, $request->file('file'));
 
@@ -150,7 +150,7 @@ class DsrController extends Controller
                         });
                     }
                 });
-                $billing_amount += $item->total_billing_amount;
+                // $billing_amount += $item->total_billing_amount;
             }
             // Log::info($monthlySales);
             $item->sponsor_expenditure = $billing_amount;

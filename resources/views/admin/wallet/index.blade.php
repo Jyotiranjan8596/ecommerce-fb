@@ -66,7 +66,7 @@
                             <td>{{ $data->user->name }}</td>
                             <td>{{ $data->mobilenumber }}</td>
                             <td>{{ $data->trans_type }}</td>
-                            <td>₹{{ $data->wallet_amount }}/-</td>
+                            <td>₹{{ $data->rounded_wallet_amount }}/-</td>
                         </tr>
                     @endforeach
 
