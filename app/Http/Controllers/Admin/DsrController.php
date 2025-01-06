@@ -80,13 +80,23 @@ class DsrController extends Controller
     }
     public function msr(Request $request)
     {
+
         $pos = PosModel::with('user')->get()->map(function ($item) {
             $data = $item->toArray();
             $data['pos_id'] = $item->user ? $item->user->user_id : null;
             unset($data['user']);
             return $data;
         });
+        $defaultMonth = Carbon::now()->subMonth()->format('Y-m'); // Previous month
+        $selectedMonth = $request->input('month', $defaultMonth);
+        $monthlySales = self::msrCalculation($request);
+        $monthlySales->appends($request->only(['search', 'month', 'filter']));
 
+        return view('admin.msr.index', compact('pos', 'monthlySales', 'selectedMonth'));
+    }
+
+    public function msrCalculation($request)
+    {
         $defaultMonth = Carbon::now()->subMonth()->format('Y-m'); // Previous month
         $selectedMonth = $request->input('month', $defaultMonth);
 
@@ -156,46 +166,89 @@ class DsrController extends Controller
             $item->sponsor_expenditure = $billing_amount;
             return $item;
         });
-
-        $monthlySales->appends($request->only(['search', 'month', 'filter']));
-
-        return view('admin.msr.index', compact('pos', 'monthlySales', 'selectedMonth'));
+        return $monthlySales;
     }
     public function exportMsr(Request $request)
     {
+        $defaultMonth = Carbon::now()->subMonth()->format('Y-m'); // Previous month
+        $selectedMonth = $request->input('month', $defaultMonth);
         $query = Wallet::select(
-            'pos_id',
             'user_id',
             'mobilenumber',
             DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
             DB::raw('SUM(billing_amount) as total_billing_amount')
         )
-            ->whereNotNull('transaction_date')
-            ->groupBy('user_id', 'pos_id', 'mobilenumber', 'transaction_month');
+            ->whereNotNull(['transaction_date', 'user_id'])
+            ->groupBy(['user_id', 'mobilenumber', DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")')]);
 
-        if ($request->has('search') && !empty($request->search)) {
-            $userId = $request->search;
-            $query->where('pos_id', $userId);
-        }
 
+        // if ($request->has('search') && !empty($request->search)) {
+        //     $userId = $request->search;
+        //     $query->where('pos_id', $userId);
+        // }
         if ($request->has('month') && !empty($request->month)) {
             $selectedMonth = $request->month;
             $query->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$selectedMonth]);
         }
+        if ($request->filled('search')) {
+            $posId = $request->input('search');
+            $query->whereHas('getPos', function ($q) use ($posId) {
+                $q->where('id', $posId);
+            });
+        }
 
-        $filteredData = $query->get();
-        $dataWithSponsorExpenditure = $filteredData->map(function ($data) {
-            $check_sponsor = Sponsor::where('sponsor_id', $data->user_id)->get();
+        if ($request->filled('filter')) {
+            $mobile = $request->input('filter');
+            $query->where('mobilenumber', 'like', "%{$mobile}%");
+        }
+
+        // $filteredData = $query->orderBy('id', 'desc')->get();
+        $dataWithSponsorExpenditure = $query->orderBy('id', 'desc')->get()->map(function ($item) use ($request) {
             $billing_amount = 0;
 
+            Log::info($item->total_billing_amount);
+            $check_sponsor = Sponsor::with('user')->where('sponsor_id', $item->user_id)->get();
             if (!$check_sponsor->isEmpty()) {
-                $check_sponsor->map(function ($item) use (&$billing_amount) {
-                    $billing_amount += Wallet::where('user_id', $item->user_id)->sum('billing_amount');
+                $check_sponsor->each(function ($sponsor) use (&$billing_amount, &$item, $request) {
+                    $month = $request->input('month', Carbon::now()->subMonth()->format('Y-m'));
+                    $monthlyBilling = Wallet::select(
+                        DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
+                        DB::raw('SUM(billing_amount) as total_billing_amount')
+                    )
+                        ->where('user_id', $sponsor->user_id)
+                        ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
+                        ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
+                        ->get();
+                    // dd($monthlyBilling );
+                    foreach ($monthlyBilling as $monthData) {
+                        $billing_amount += $monthData->total_billing_amount;
+                    }
+                    $check_level_sponsor = Sponsor::with('user')->where('sponsor_id', $sponsor->user_id)->get();
+                    if (!$check_level_sponsor->isEmpty()) {
+                        $check_level_sponsor->each(function ($level_sponsor) use (&$billing_amount, &$month, &$item, $request) {
+                            $monthly_level_Billing = Wallet::select(
+                                DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
+                                DB::raw('SUM(billing_amount) as total_billing_amount')
+                            )
+                                ->where('user_id', $level_sponsor->user_id)
+                                ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
+                                ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
+                                ->get();
+                            // dd($monthlyBilling );
+                            foreach ($monthly_level_Billing as $monthData) {
+                                $billing_amount += $monthData->total_billing_amount;
+                            }
+                        });
+                    }
                 });
+                // $billing_amount += $item->total_billing_amount;
             }
-            $data->sponsor_expenditure = $billing_amount;
-            return $data;
+            // Log::info($monthlySales);
+            $item->sponsor_expenditure = $billing_amount;
+            return $item;
         });
+        
+        // dd($dataWithSponsorExpenditure->toArray());
         return Excel::download(new MsrExport($dataWithSponsorExpenditure), 'MonthlySalesReport.csv');
     }
 }

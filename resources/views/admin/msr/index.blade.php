@@ -74,7 +74,7 @@
                                 <td>{{ $monthlySales->firstItem() + $key }}</td>
                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}
                                 </td>
-                                <td>{{ $data->user->user_id }}</td>
+                                <td>{{ $data->user->user_id ?? 'N/A' }}</td>
                                 <td>{{ $data->mobilenumber }}</td>
                                 <td>
                                     @if ($data->user)
