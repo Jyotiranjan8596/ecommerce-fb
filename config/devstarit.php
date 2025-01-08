@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'app_name' => 'Laravel Admin Stater',
-    'app_desc' => 'Laravel Admin Stater',
-    'author' => 'Fazle Rabbi',
+    'app_name' => 'Freebazar',
+    'app_desc' => 'Your Everyday Shopping Partner',
+    'author' => 'Rakesh Mahanty',
     'version' => '1.0'
 ];

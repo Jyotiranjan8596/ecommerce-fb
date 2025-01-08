@@ -37,6 +37,7 @@ class AdminWalletImport implements ToModel, WithHeadingRow
             'wallet_amount' => $row['wallet_amount'],
             'trans_type' => $row['payment_mode'],
             'mobilenumber' => $row['mobile_number'],
+            'transaction_date' => date('Y-m-d', strtotime($row['transaction_date'])),
         ]);
     }
 }

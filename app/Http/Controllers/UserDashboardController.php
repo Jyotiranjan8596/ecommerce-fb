@@ -71,19 +71,20 @@ class UserDashboardController extends Controller
     public function get_total_wallet_amount($userId)
     {
         // dd($userId);
-        $userwallet = UserWallet::where('user_id', $userId)->get();
-        $totalusedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
-        if ($userwallet) {
-            $walletamount = $userwallet->sum('wallet_amount');
-            $walletBalance = $walletamount - $totalusedAmount;
-            return $walletBalance <= 0 ? 0 : $walletBalance;
-        } else {
-            $walletBalance = 0;
-        }
+        // Fetch all wallet records for the user
+        $userWallet = UserWallet::where('user_id', $userId)->get();
 
-        if ($walletBalance <= 0) {
-            $walletBalance = 0;
-        }
+        // Calculate the total used amount
+        $totalUsedAmount = $userWallet->sum('used_amount');
+
+        // Calculate the total wallet amount
+        $totalWalletAmount = $userWallet->sum('wallet_amount');
+
+        // Calculate the wallet balance
+        $walletBalance = $totalWalletAmount - $totalUsedAmount;
+
+        // Ensure the wallet balance is non-negative
+        return max($walletBalance, 0);
     }
 
     public function payment(Request $request)
@@ -299,16 +300,11 @@ class UserDashboardController extends Controller
     {
         $user_profile = auth()->user();
         $userId = $user_profile->id;
+        // dd($userId);
         $userWallet = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
-        if ($userWallet) {
-            $walletBalance = $userWallet->sum('wallet_amount') - $totalUsedAmount;
-        } else {
-            $walletBalance = 0;
-        }
-
-        $walletBalance = max($walletBalance, 0);
+        $walletBalance =self::get_total_wallet_amount($userId);
         return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance'));
     }
     public function termCondition()
