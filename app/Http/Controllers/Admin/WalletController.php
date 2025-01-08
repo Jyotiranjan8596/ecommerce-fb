@@ -26,14 +26,14 @@ class WalletController extends Controller
         //  dd($walletBalance);
         return view('admin.wallet.index', compact('walletBalance'));
     }
-    public function exportWallet() 
+    public function exportWallet()
     {
         return Excel::download(new AdminWalletExport, 'admin_wallet_data.xlsx');
     }
     public function uploadWallet(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx|max:2048', // Limit file size for better control
+            'file' => 'required', // Limit file size for better control
         ]);
 
         try {
