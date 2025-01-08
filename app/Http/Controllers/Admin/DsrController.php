@@ -205,50 +205,53 @@ class DsrController extends Controller
         // $filteredData = $query->orderBy('id', 'desc')->get();
         $dataWithSponsorExpenditure = $query->orderBy('id', 'desc')->get()->map(function ($item) use ($request) {
             $billing_amount = 0;
-
-            Log::info($item->total_billing_amount);
-            $check_sponsor = Sponsor::with('user')->where('sponsor_id', $item->user_id)->get();
-            if (!$check_sponsor->isEmpty()) {
-                $check_sponsor->each(function ($sponsor) use (&$billing_amount, &$item, $request) {
-                    $month = $request->input('month', Carbon::now()->subMonth()->format('Y-m'));
-                    $monthlyBilling = Wallet::select(
-                        DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
-                        DB::raw('SUM(billing_amount) as total_billing_amount')
-                    )
-                        ->where('user_id', $sponsor->user_id)
-                        ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
-                        ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
-                        ->get();
-                    // dd($monthlyBilling );
-                    foreach ($monthlyBilling as $monthData) {
-                        $billing_amount += $monthData->total_billing_amount;
-                    }
-                    $check_level_sponsor = Sponsor::with('user')->where('sponsor_id', $sponsor->user_id)->get();
-                    if (!$check_level_sponsor->isEmpty()) {
-                        $check_level_sponsor->each(function ($level_sponsor) use (&$billing_amount, &$month, &$item, $request) {
-                            $monthly_level_Billing = Wallet::select(
-                                DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
-                                DB::raw('SUM(billing_amount) as total_billing_amount')
-                            )
-                                ->where('user_id', $level_sponsor->user_id)
-                                ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
-                                ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
-                                ->get();
-                            // dd($monthlyBilling );
-                            foreach ($monthly_level_Billing as $monthData) {
-                                $billing_amount += $monthData->total_billing_amount;
-                            }
-                        });
-                    }
-                });
-                // $billing_amount += $item->total_billing_amount;
+            $user_billing_amount = Wallet::where('user_id', $item->user_id)->sum('billing_amount');
+            if ($user_billing_amount >= 500) {
+                // Log::info($item->total_billing_amount);
+                $check_sponsor = Sponsor::with('user')->where('sponsor_id', $item->user_id)->get();
+                if (!$check_sponsor->isEmpty()) {
+                    $check_sponsor->each(function ($sponsor) use (&$billing_amount, &$item, $request) {
+                        $month = $request->input('month', Carbon::now()->subMonth()->format('Y-m'));
+                        $monthlyBilling = Wallet::select(
+                            DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
+                            DB::raw('SUM(billing_amount) as total_billing_amount')
+                        )
+                            ->where('user_id', $sponsor->user_id)
+                            ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
+                            ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
+                            ->get();
+                        // dd($monthlyBilling );
+                        foreach ($monthlyBilling as $monthData) {
+                            $billing_amount += $monthData->total_billing_amount;
+                        }
+                        $check_level_sponsor = Sponsor::with('user')->where('sponsor_id', $sponsor->user_id)->get();
+                        if (!$check_level_sponsor->isEmpty()) {
+                            $check_level_sponsor->each(function ($level_sponsor) use (&$billing_amount, &$month, &$item, $request) {
+                                $monthly_level_Billing = Wallet::select(
+                                    DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
+                                    DB::raw('SUM(billing_amount) as total_billing_amount')
+                                )
+                                    ->where('user_id', $level_sponsor->user_id)
+                                    ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$month])
+                                    ->groupBy(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'))
+                                    ->get();
+                                // dd($monthlyBilling );
+                                foreach ($monthly_level_Billing as $monthData) {
+                                    $billing_amount += $monthData->total_billing_amount;
+                                }
+                                Log::info('Billing amount - ' . $billing_amount);
+                            });
+                        }
+                    });
+                    // $billing_amount += $item->total_billing_amount;
+                }
             }
             // Log::info($monthlySales);
             $item->sponsor_expenditure = $billing_amount;
             return $item;
         });
-        
-        // dd($dataWithSponsorExpenditure->toArray());
+
+        // Log::info($dataWithSponsorExpenditure->toArray());
         return Excel::download(new MsrExport($dataWithSponsorExpenditure), 'MonthlySalesReport.csv');
     }
 }
