@@ -18,13 +18,20 @@ class AdminWalletImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
+        // dd($row);
         $monthColumnValue = $row['month']; // Assuming you're reading the row with 'month' column.
+        $transaction_date_value = $row['transaction_date'];
         if (is_numeric($monthColumnValue)) {
             $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
-            $formattedDate = Date::excelToDateTimeObject($monthColumnValue)->format('Y-m-d');
+            
         } else {
             $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
-            $formattedDate = date('Y-m-d', strtotime($monthColumnValue));
+           
+        }
+        if(is_numeric($transaction_date_value)){
+            $formattedDate = Date::excelToDateTimeObject($transaction_date_value)->format('Y-m-d');
+        }else{
+            $formattedDate = Date::excelToDateTimeObject($transaction_date_value)->format('Y-m-d');
         }
         // Find the user by user_id in the Users table
         $user = User::where('id', $row['user_id'])->first();
