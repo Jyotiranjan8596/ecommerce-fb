@@ -6,7 +6,7 @@
         <div class="col-md-6">
 
             <h5>CURRENT WALLET BALANCE: <br> <span style="font-size:55px; color:rgb(0, 162, 255); "><i class="fa fa-inr"
-                        aria-hidden="true"></i> {{ $walletBalance }}/-</span></h5>
+                        aria-hidden="true"></i> {{ $walletBalance }}</span></h5>
             <br>
         </div>
         <div>
@@ -24,12 +24,12 @@
                             <thead>
                                 <tr>
                                     <th>Sl.No</th>
-                                    <th>USER ID</th>
+                                    {{-- <th>USER ID</th> --}}
                                     <th>USER NAME</th>
-                                    <th>INVOICE</th>
+                                    {{-- <th>INVOICE</th> --}}
                                     <th>CREDIT</th>
                                     <th>DEBIT</th>
-                                    <th>MOBILE NUMBER</th>
+                                    {{-- <th>MOBILE NUMBER</th> --}}
                                     <th>DATE OF TRANSACTION</th>
                                 </tr>
                             </thead>
@@ -37,12 +37,12 @@
                                 @foreach ($userWallet as $key => $data)
                                     <tr>
                                         <td>{{ $userWallet->firstItem() + $key }}</td>
-                                        <td>{{ $data->user->user_id }}</td>
+                                        {{-- <td>{{ $data->user->user_id }}</td> --}}
                                         <td>{{ $data->user->name }}</td>
-                                        <td>{{ $data->invoice }}</td>
-                                        <td>₹{{ $data->wallet_amount ?? 0 }}/-</td>
-                                        <td>₹{{ $data->used_amount ?? 0 }}/-</td>
-                                        <td>{{ $data->mobilenumber }}</td>
+                                        {{-- <td>{{ $data->invoice }}</td> --}}
+                                        <td>{{ $data->wallet_amount ?? 0 }}</td>
+                                        <td>{{ $data->used_amount ?? 0 }}</td>
+                                        {{-- <td>{{ $data->mobilenumber }}</td> --}}
                                         <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
                                         </td>
                                     </tr>

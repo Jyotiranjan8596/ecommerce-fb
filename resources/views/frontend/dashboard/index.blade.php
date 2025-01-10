@@ -383,7 +383,7 @@
                                 <div class="flex-grow-1">
                                     <h3 class="mb-2"><b style="color: red"><i class="fa fa-inr"
                                                 aria-hidden="true"></i> {{ $monthlyPurchase }}/-</b></h3>
-                                    <p class="mb-2">Monthly Purchase</p>
+                                    <p class="mb-2">Cur. Month Expenses</p>
                                 </div>
                                 <div class="d-inline-block ms-3">
                                     <div class="stat">
@@ -409,7 +409,8 @@
                         <div class="card-body py-4">
                             <div class="d-flex align-items-start">
                                 <div class="flex-grow-1">
-                                    <h3 class="mb-2">{{ $count['posts'] ?? 0 }}</h3>
+                                    <h3 class="mb-2"><b style="color: white"><i class="fa fa-inr"
+                                                aria-hidden="true"></i>{{ $total_payback ?? 0 }}/-</b></h3>
                                     <p class="mb-2">Payback Achieved</p>
                                 </div>
                                 <div class="d-inline-block ms-3">
@@ -428,8 +429,34 @@
                         </div>
                     </div>
                 </div>
+                {{-- sponsor count --}}
+                {{-- <div class="col-md-3 col-6 mb-4">
+                    <div class="card flex-fill">
+                        <div class="card-body py-4">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-grow-1">
+                                    <h3 class="mb-2"><b style="color: white"><i class="fa fa-user"
+                                                aria-hidden="true"></i>{{ $sponsors_count ?? 0 }}</b></h3>
+                                    <p class="mb-2">Total Sponsors</p>
+                                </div>
+                                <div class="d-inline-block ms-3">
+                                    <div class="stat">
+                                        <svg style="width: 35px; height: 35px;" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            class="feather feather-dollar-sign align-middle text-primary">
+                                            <path
+                                                d="M12 1v4m0 14v4m-5-5h10m-8 0h1m-1-7h3m1 0h1m0-4h1m1 0h1m0 4h1m1 0h1m0 4h1m-7 0v3m5-3v3m-4-9h4">
+                                            </path>
+                                            <path d="M13.6 15.6l1.8-1.8 3.2 3.2-1.8 1.8-3.2-3.2"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
 
-                <!-- Sponsored Users Card -->
+                {{-- <!-- Sponsored Users Card -->
                 <div class="col-md-3 col-12 mb-4">
                     <div class="card flex-fill">
                         <div class="card-body py-4">
@@ -460,7 +487,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- POS Transactions Table -->
                 <div class="col-md-6 col-12 mb-4" style="width: 100%">

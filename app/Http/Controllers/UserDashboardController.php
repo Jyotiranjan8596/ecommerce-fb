@@ -26,7 +26,7 @@ class UserDashboardController extends Controller
         // dd($userId);
         $sponsors = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
-        // dd($sponsors);
+        // dd($sponsors_count);
         $transactionQuery = Wallet::where('user_id', $userId);
         // dd($transactionQuery);
         //     $monthlyPurchases = Wallet::where('user_id', $userId)
@@ -59,13 +59,14 @@ class UserDashboardController extends Controller
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
         $walletBalance = self::get_total_wallet_amount($userId);
+        $total_payback = UserWallet::where('user_id', $userId)->where('trans_type', 'credit')->sum('wallet_amount');
         // if ($userWallet) {
         // } else {
         //     $walletBalance = 0;
         // }
         // $walletBalance = max($walletBalance, 0);
 
-        return view('frontend.dashboard.index', compact('sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
+        return view('frontend.dashboard.index', compact('total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
     public function get_total_wallet_amount($userId)
@@ -304,7 +305,7 @@ class UserDashboardController extends Controller
         $userWallet = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
-        $walletBalance =self::get_total_wallet_amount($userId);
+        $walletBalance = self::get_total_wallet_amount($userId);
         return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance'));
     }
     public function termCondition()

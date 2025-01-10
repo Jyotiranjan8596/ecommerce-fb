@@ -18,8 +18,10 @@ class AdminUsedWalletImport implements ToModel, WithHeadingRow
         $mobile_no = $row['mobile_no']; // Assuming you're reading the row with 'month' column.
         if (is_numeric($monthColumnValue)) {
             $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
+            $formattedDate = Date::excelToDateTimeObject($monthColumnValue)->format('Y-m-d');
         } else {
             $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
+            $formattedDate = date('Y-m-d', strtotime($monthColumnValue));
         }
         // Find the user by user_id in the Users table
         $user = User::where('mobilenumber', $mobile_no)->first();
@@ -27,7 +29,7 @@ class AdminUsedWalletImport implements ToModel, WithHeadingRow
         if (!$user) {
             return null; // Optionally handle missing users
         }
-        if ($row['paid_by_1'] == "FB Walet" || $row['paid_by_2'] == "FB Wallet") {
+        if ($row['paid_by_1'] == "FB Walet" || $row['paid_by_2'] == "FB Walet") {
             if ($row['paid_by_1'] == "FB Walet") {
                 return new UserWallet([
                     'user_id' => $user->id, // Use the id from the Users table
@@ -35,14 +37,16 @@ class AdminUsedWalletImport implements ToModel, WithHeadingRow
                     'used_amount' => $row['amount_paid_by_1'],
                     'trans_type' => 'debit',
                     'mobilenumber' => $mobile_no,
+                    'transaction_date' => $formattedDate
                 ]);
-            } elseif ($row['paid_by_2'] == "FB Wallet") {
+            } elseif ($row['paid_by_2'] == "FB Walet") {
                 return new UserWallet([
                     'user_id' => $user->id, // Use the id from the Users table
                     'month' => $formattedMonth,
                     'used_amount' => $row['amount_paid_by_2'],
                     'trans_type' => 'debit',
                     'mobilenumber' => $mobile_no,
+                    'transaction_date' => $formattedDate
                 ]);
             }
         }
