@@ -3,10 +3,7 @@
 use App\Http\Controllers\Admin\PosController as AdminPosController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PosController;
-use App\Http\Controllers\Pos\AuthController;
-use App\Http\Controllers\PosAuthController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Auth;
@@ -119,6 +116,7 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('unverified/user', [WalletController::class, 'unverified'])->name('unverified.user');
     Route::put('customers/{id}', [WalletController::class, 'update'])->name('customers.update');
     Route::get('wallet/update-status/{id}', [WalletController::class, 'updateStatus'])->name('wallet.updateStatus');
+    Route::post('verify-all/user', [PosController::class, 'verifyAllCustomer'])->name('verify.all.user');
 });
 
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');

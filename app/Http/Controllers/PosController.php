@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PosModel;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +50,44 @@ class PosController extends Controller
         if ($newpass->save()) {
             flash()->addSuccess('Your password has been successfully updated.');
             return redirect()->route('pos.index');
+        }
+    }
+
+    public function verifyAllCustomer()
+    {
+        try {
+            $posId = auth()->user()->user_id;
+            // dd($posId); 
+            $pos = PosModel::where('user_id', $posId)->first();
+            // dd($pos);
+            if ($pos) {
+                $posId = $pos->id;
+                // dd($posId);
+            }
+            // Update the status for wallets linked to the specified pos_id
+            $updatedRows = Wallet::where('pos_id', $posId)->update([
+                'status' => 1,
+            ]);
+            if($updatedRows > 0){
+                return response()->json([
+                    'code' => 200,
+                    'message' => "Costumers have been successfully verified.",
+                ]);
+            }else{
+                return response()->json([
+                    'code' => 200,
+                    'message' => "Already Verified",
+                ]);
+            }
+            // Return success response
+            
+        } catch (\Exception $e) {
+            // Handle exceptions and return error response
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while verifying customers.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

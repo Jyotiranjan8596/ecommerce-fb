@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use SebastianBergmann\CodeUnit\FunctionUnit;
 
 class PosModel extends Model
 {
@@ -32,5 +33,10 @@ class PosModel extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-   
+
+    public function wallet(){
+        return $this->hasMany(Wallet::class);
+    }
+    
+
 }

@@ -1,9 +1,13 @@
 @extends('pos.layouts.master')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @section('content')
     <div class="container my-4">
         <h3 class="text-center text-dark mb-4"><b>Customer List</b></h3>
-
+        <div class="d-flex justify-content-end ">
+            <button id="approve-btn" type="button" class="btn btn-success me-3 mb-3">Verify All</button>
+        </div>
         <!-- Responsive table -->
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
@@ -106,5 +110,38 @@
             document.getElementById('amount').value = amount;
             document.getElementById('amount_wallet').value = amountWallet;
         }
+
+        $(document).ready(function() {
+            $('#approve-btn').on('click', function() {
+                $.ajax({
+                    type: 'POST', // HTTP method
+                    url: '{{ route('pos.verify.all.user') }}',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                            'content') // CSRF token for Laravel
+                    },
+                    success: function(response) {
+                        if (response.code == 200) {
+                            // Show SweetAlert
+                            Swal.fire({
+                                title: 'Success',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Reload the page after confirmation
+                                    location.reload();
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while processing the request.');
+                    }
+                });
+            });
+        });
     </script>
 @endsection
