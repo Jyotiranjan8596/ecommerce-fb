@@ -301,11 +301,16 @@
      </div>
  </div>
  <div class="footer1">
+    <p class="info-item">
+        <b class="desc">© 2025 All Rights Reserved by Freebazar</b>
+    </p>
+</div>
+ {{-- <div class="footer1">
      <p class="info-item">
          <b class="desc">© 2025 All Rights Reserved by Freebazar & Made with ❤️ by Jyotiranjan Sahoo, <a
                  href="tel:7609942076" class="phone">7609942076</a></b>
      </p>
- </div>
+ </div> --}}
  <!-- Scroll Top Button -->
  <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
 
