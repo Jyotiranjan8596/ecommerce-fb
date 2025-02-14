@@ -27,7 +27,7 @@ class UserDashboardController extends Controller
         $sponsors = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($sponsors_count);
-        $transactionQuery = Wallet::where('user_id', $userId);
+        $transactionQuery = Wallet::where('user_id', $userId)->with('userWallets');
         // dd($transactionQuery);
         //     $monthlyPurchases = Wallet::where('user_id', $userId)
         //     ->select(
@@ -43,6 +43,7 @@ class UserDashboardController extends Controller
         $year = Carbon::now()->year;
 
         $monthlyPurchase = Wallet::where('user_id', $userId)
+            ->with('userWallets')
             ->whereMonth('transaction_date', $month)
             ->whereYear('transaction_date', $year)
             ->sum('billing_amount');
@@ -54,8 +55,17 @@ class UserDashboardController extends Controller
         } elseif ($request->has('to_date')) {
             $transactionQuery->where('transaction_date', '<=', $request->to_date);
         }
-        $walletList = $transactionQuery->orderBy('id', 'desc')->get();
+        $walletList = $transactionQuery->orderBy('id', 'desc')->get()
+            ->map(function($item){
+                $user_wallets = $item->userWallets;
+                foreach($user_wallets as $user_wallet){
+                    $item->remaining_amount = $user_wallet->remaining_amount;
+                }
+                return $item;
+            })
+        ;
 
+        // dd($walletList->all()[0]); 
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
         $walletBalance = self::get_total_wallet_amount($userId);
@@ -123,7 +133,7 @@ class UserDashboardController extends Controller
         $userWalletEntry->pay_by = 'wallet';
         $userWalletEntry->trans_type = 'debit';
         $userWalletEntry->pos_id = $pos->id ?? null;
-
+        $currentWalletBalance = self::get_total_wallet_amount($userId);
         if ($sponsors_count >= 10) {
             if ($pay_by == 'wallet') {
                 $userWallet = UserWallet::where('user_id', $userId)->get();
@@ -136,9 +146,6 @@ class UserDashboardController extends Controller
 
                 $walletUsedAmount = min($amount, $walletBalance);
                 $remainingAmount = $amount - $walletUsedAmount;
-
-                $userWalletEntry->used_amount = $walletUsedAmount;
-                $userWalletEntry->save();
 
                 $walletEntry = new Wallet();
                 $walletEntry->user_id = $userId;
@@ -164,6 +171,10 @@ class UserDashboardController extends Controller
                 $walletEntry->pos_id = $pos->id ?? null;
                 $walletEntry->insert_date = now();
                 $walletEntry->save();
+
+                $userWalletEntry->wallet_id = $walletEntry->id;
+                $userWalletEntry->used_amount = $walletUsedAmount;
+                $userWalletEntry->save();
             } else {
                 $remainingAmount = $amount;
                 $dsrlist = new Wallet();
@@ -181,13 +192,14 @@ class UserDashboardController extends Controller
                 $dsrlist->insert_date = now();
                 $dsrlist->save();
 
+                $userWalletEntry->wallet_id = $dsrlist->id;
                 $userWalletEntry->used_amount = 0;
+                $userWalletEntry->remaining_amount = $currentWalletBalance;
                 $userWalletEntry->save();
             }
         } else {
             $remainingAmount = $amount;
             $amount_wallet = $amount * (5 / 100);
-            $currentWalletBalance = self::get_total_wallet_amount($userId);
 
             if ($currentWalletBalance <= $amount_wallet) {
                 $amount_wallet = $currentWalletBalance;
@@ -208,7 +220,9 @@ class UserDashboardController extends Controller
             $dsrlist->insert_date = now();
             $dsrlist->save();
 
+            $userWalletEntry->wallet_id = $dsrlist->id;
             $userWalletEntry->used_amount = $amount_wallet;
+            $userWalletEntry->remaining_amount = $currentWalletBalance - $amount_wallet;
             $userWalletEntry->save();
         }
 

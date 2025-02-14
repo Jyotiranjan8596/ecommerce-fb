@@ -40,4 +40,9 @@ class Wallet extends Model
     {
         return $this->belongsTo(PosModel::class, 'pos_id','id');
     }
+
+    public function userWallets()
+    {
+        return $this->hasMany(UserWallet::class, 'wallet_id', 'id');
+    }
 }

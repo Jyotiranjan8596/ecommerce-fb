@@ -525,7 +525,9 @@
                                             <th>Invoice</th>
                                             <th>Transaction Date</th>
                                             <th>Billing Amount</th>
-                                            <th>Wallet Amount</th>
+                                            <th>Wallet Deduct</th>
+                                            <th>Net Pay</th>
+                                            <th>Remaining</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -538,6 +540,8 @@
                                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->billing_amount - $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
                                                 <td>
                                                     @if ($data->status == 0)
                                                         <span class="btn btn-danger btn-sm">Unverified</span>

@@ -11,6 +11,7 @@ class UserWallet extends Model
     protected $fillable = [
         'user_id',
         'pos_id',
+        'wallet_id',
         'invoice',
         'month',
         'used_amount',
@@ -28,5 +29,10 @@ class UserWallet extends Model
     public function getPos()
     {
         return $this->belongsTo(PosModel::class, 'pos_id');
+    }
+
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class, 'wallet_id', 'id');
     }
 }
