@@ -180,55 +180,85 @@
                             <a href="#" class="btn btn-sm btn-primary">See all</a>
                         </div>
                     </div>
+                </div> --}}
+
+                <!-- POS Transactions Table -->
+                <div class="col-md-6 col-12 mb-4" style="width: 100%">
+                    <div class="card flex-fill">
+                        <div class="card-body py-4">
+                            <h6><b>POS Transaction (Latest 5 Transactions)</b></h6>
+
+                            <!-- Date Filter Form -->
+                            <form action="{{ route('user.index') }}" method="GET" class="form-inline mb-3">
+                                <div class="input-group mb-3"
+                                    style="align-content: center;height: 60px; align-items: normal !important;margin-top: 1.5%">
+                                    <div class="me-2">
+                                        <label for="from_date" class="form-label">From</label>
+                                        <input type="date" class="form-control" name="from_date" id="from_date"
+                                            value="{{ request('from_date') }}" placeholder="From Date">
+                                    </div>
+
+                                    <div class="me-2">
+                                        <label for="to_date" class="form-label">To</label>
+                                        <input type="date" class="form-control" name="to_date" id="to_date"
+                                            value="{{ request('to_date') }}" placeholder="To Date">
+                                    </div>
+
+                                    <button class="btn btn-info btn-sm" type="submit"
+                                        style="height: 38px;margin:2.6%">Search Transactions</button>
+                                </div>
+                            </form>
+                            <!-- Responsive Table -->
+                            <div class="scrollable-table">
+                                <table cid="tech-companies-1" class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Sl.No</th>
+                                            <th>POS ID</th>
+                                            <th>Invoice</th>
+                                            <th>Transaction Date</th>
+                                            <th>Billing Amount</th>
+                                            <th>Wallet Deduct</th>
+                                            <th>Net Pay</th>
+                                            <th>Remaining</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($walletList as $key => $data)
+                                            <tr>
+                                                <td>{{ $key + 1 }}</td>
+                                                <td>{{ $data->getPos->user_id ?? 'N/A' }}</td>
+                                                <td>{{ $data->invoice }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
+                                                <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
+                                                <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->billing_amount - $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
+                                                <td>
+                                                    @if ($data->status == 0)
+                                                        <span class="btn btn-danger btn-sm">Unverified</span>
+                                                    @else
+                                                        <span class="btn btn-success btn-sm">Verified</span>
+                                                    @endif
+                                                </td>
+
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    <div class="alert alert-danger" role="alert">
+                                                        No transaction record found.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table align-items-center table-flush">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="border-bottom" scope="col">Sl.No</th>
-                                <th class="border-bottom" scope="col">POS ID</th>
-                                <th class="border-bottom" scope="col">Invoice</th>
-                                <th class="border-bottom" scope="col">Transaction Date</th>
-                                <th class="border-bottom" scope="col">Transaction Date</th>
-                                <th class="border-bottom" scope="col">Transaction Date</th>
-                                <th class="border-bottom" scope="col">Transaction Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($walletList as $key => $data)
-                                <tr>
-                                    <th class="text-gray-900" scope="row">
-                                        {{ $key + 1 }}
-                                    </th>
-                                    <td class="fw-bolder text-gray-500">{{ $data->getPos->user_id ?? 'N/A' }}</td>
-                                    <td class="fw-bolder text-gray-500">{{ $data->invoice }}</td>
-                                    <td class="fw-bolder text-gray-500">
-                                        {{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
-                                    <td class="fw-bolder text-gray-500">₹{{ $data->billing_amount ?? 0 }}/-</td>
-                                    <td class="fw-bolder text-gray-500">₹{{ $data->amount_wallet ?? 0 }}/-</td>
-                                    <td class="fw-bolder text-gray-500">
-                                        @if ($data->status == 0)
-                                            <span class="btn btn-danger btn-sm">Unverified</span>
-                                        @else
-                                            <span class="btn btn-success btn-sm">Verified</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        <div class="alert alert-danger" role="alert">
-                                            No transaction record found.
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-12 col-xl-8">
