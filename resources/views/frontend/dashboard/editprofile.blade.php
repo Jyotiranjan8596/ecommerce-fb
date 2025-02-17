@@ -3,7 +3,7 @@
 @section('content')
     <div class="card border-0 shadow-sm">
         <div class="card-header">
-            <h4><b>Edit Profile</b></h4>
+            <h4><b>My Profile</b></h4>
         </div>
         <form action="{{ route('user.update.profile') }}" method="POST" enctype="multipart/form-data">
             @csrf

@@ -1,285 +1,351 @@
-   <!-- HEADER -->
-   <header id="header" class="header-area style-01 layout-04">
-       <div class="header-middle biolife-sticky-object ">
-           <div class="container">
-               <div class="row">
-                   <div class="col-lg-3 col-md-2 col-md-6 col-xs-6">
-                       <a href="{{ route('frontend.index') }}" class="biolife-logo"><b
-                               style="font-size: 40px;color:orange;">FREE BAZAR</b></a>
-                   </div>
-                   <div class="col-lg-6 col-md-7 hidden-sm hidden-xs">
-                       <div class="primary-menu">
-                           <ul class="menu biolife-menu clone-main-menu clone-primary-menu" id="primary-menu"
-                               data-menuname="main menu">
-                               <li class="menu-item"><a href="{{ route('frontend.index') }}">Home</a></li>
-                               @php
-                                   $products = DB::table('products')
-                                       ->select('id', 'title')
-                                       ->latest('id')
-                                       ->take(10)
-                                       ->get();
-                               @endphp
-                               <li class="menu-item menu-item-has-children has-child">
-                                   <a href="" class="menu-name" data-title="Product">Product</a>
-                                   <ul class="sub-menu">
-                                       @foreach ($products as $product)
-                                           <li class="menu-item"><a
-                                                   href="{{ route('frontend.product', $product->id) }}">{{ $product->title }}</a>
-                                           </li>
-                                       @endforeach
-                                   </ul>
-                               </li>
-                               <li>
-                                   @auth
-                                       @if (Auth::user()->role == 3)
-                                           <a href="{{ route('user.index') }}" style="margin-right: 25px;">Dashboard</a>
-                                           <a href="{{ route('logout') }}" style="display: inline;"
-                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-                                           <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                               class="d-none">
-                                               @csrf
-                                           </form>
-                                       @else
-                                           <a class="nav-link" href="{{ route('login') }}">Login /</a>
-                                           <a class="nav-link" href="{{ route('register') }}"> Register </a>
-                                       @endif
-                                   @else
-                                       <a class="nav-link" href="{{ route('login') }}">Login /</a>
-                                       <a class="nav-link" href="{{ route('register') }}"> Register </a>
-                                   @endauth
-                               </li>
-                               {{-- <li class="menu-item"><a href="contact.html">Contact</a></li> --}}
-                           </ul>
-                       </div>
-                   </div>
-                   <div class="col-lg-3 col-md-3 col-md-6 col-xs-6">
-                       <div class="biolife-cart-info">
-                           {{-- <div class="mobile-search">
-                               <a href="javascript:void(0)" class="open-searchbox"><i
-                                       class="biolife-icon icon-search"></i></a>
-                               <div class="mobile-search-content">
-                                   <form action="#" class="form-search" name="mobile-seacrh" method="get">
-                                       <a href="#" class="btn-close"><span
-                                               class="biolife-icon icon-close-menu"></span></a>
-                                       <input type="text" name="s" class="input-text" value=""
-                                           placeholder="Search here...">
-                                       <select name="category">
-                                           <option value="-1" selected>All Categories</option>
-                                           <option value="vegetables">Vegetables</option>
-                                           <option value="fresh_berries">Fresh Berries</option>
-                                           <option value="ocean_foods">Ocean Foods</option>
-                                           <option value="butter_eggs">Butter & Eggs</option>
-                                           <option value="fastfood">Fastfood</option>
-                                           <option value="fresh_meat">Fresh Meat</option>
-                                           <option value="fresh_onion">Fresh Onion</option>
-                                           <option value="papaya_crisps">Papaya & Crisps</option>
-                                           <option value="oatmeal">Oatmeal</option>
-                                       </select>
-                                       <button type="submit" class="btn-submit">go</button>
-                                   </form>
-                               </div>
-                           </div> --}}
-                           {{-- <div class="wishlist-block hidden-sm hidden-xs">
-                               <a href="#" class="link-to">
-                                   <span class="icon-qty-combine">
-                                       <i class="icon-heart-bold biolife-icon"></i>
-                                       <span class="qty">4</span>
-                                   </span>
-                               </a>
-                           </div> --}}
-                           <div class="minicart-block">
-                               <div class="minicart-contain">
-                                   <a href="{{ route('frontend.cart') }}" class="link-to">
-                                       @php
-                                           $cart = App\Models\Cart::where('user_id', Auth::id())->get();
-                                       @endphp
-                                       <span class="icon-qty-combine">
-                                           <i class="icon-cart-mini biolife-icon"></i>
-                                           <span class="qty">{{ count($cart) }}</span>
-                                       </span>
-                                   </a>
-                                   {{-- <div class="cart-content">
-                                       <div class="cart-inner">
-                                           <ul class="products">
-                                               <li>
-                                                   <div class="minicart-item">
-                                                       <div class="thumb">
-                                                           <a href="#"><img
-                                                                   src="{{ asset('assets/images/minicart/pr-01.jpg') }}"
-                                                                   width="90" height="90"
-                                                                   alt="National Fresh"></a>
-                                                       </div>
-                                                       <div class="left-info">
-                                                           <div class="product-title"><a href="#"
-                                                                   class="product-name">National Fresh Fruit</a></div>
-                                                           <div class="price">
-                                                               <ins><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>85.00</span></ins>
-                                                               <del><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>95.00</span></del>
-                                                           </div>
-                                                           <div class="qty">
-                                                               <label for="cart[id123][qty]">Qty:</label>
-                                                               <input type="number" class="input-qty"
-                                                                   name="cart[id123][qty]" id="cart[id123][qty]"
-                                                                   value="1" disabled>
-                                                           </div>
-                                                       </div>
-                                                       <div class="action">
-                                                           <a href="#" class="edit"><i class="fa fa-pencil"
-                                                                   aria-hidden="true"></i></a>
-                                                           <a href="#" class="remove"><i class="fa fa-trash-o"
-                                                                   aria-hidden="true"></i></a>
-                                                       </div>
-                                                   </div>
-                                               </li>
-                                               <li>
-                                                   <div class="minicart-item">
-                                                       <div class="thumb">
-                                                           <a href="#"><img
-                                                                   src="{{ asset('assets/images/minicart/pr-02.jpg') }}"
-                                                                   width="90" height="90"
-                                                                   alt="National Fresh"></a>
-                                                       </div>
-                                                       <div class="left-info">
-                                                           <div class="product-title"><a href="#"
-                                                                   class="product-name">National Fresh Fruit</a></div>
-                                                           <div class="price">
-                                                               <ins><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>85.00</span></ins>
-                                                               <del><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>95.00</span></del>
-                                                           </div>
-                                                           <div class="qty">
-                                                               <label for="cart[id124][qty]">Qty:</label>
-                                                               <input type="number" class="input-qty"
-                                                                   name="cart[id124][qty]" id="cart[id124][qty]"
-                                                                   value="1" disabled>
-                                                           </div>
-                                                       </div>
-                                                       <div class="action">
-                                                           <a href="#" class="edit"><i class="fa fa-pencil"
-                                                                   aria-hidden="true"></i></a>
-                                                           <a href="#" class="remove"><i class="fa fa-trash-o"
-                                                                   aria-hidden="true"></i></a>
-                                                       </div>
-                                                   </div>
-                                               </li>
-                                               <li>
-                                                   <div class="minicart-item">
-                                                       <div class="thumb">
-                                                           <a href="#"><img
-                                                                   src="{{ asset('assets/images/minicart/pr-03.jpg') }}"
-                                                                   width="90" height="90"
-                                                                   alt="National Fresh"></a>
-                                                       </div>
-                                                       <div class="left-info">
-                                                           <div class="product-title"><a href="#"
-                                                                   class="product-name">National Fresh Fruit</a></div>
-                                                           <div class="price">
-                                                               <ins><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>85.00</span></ins>
-                                                               <del><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>95.00</span></del>
-                                                           </div>
-                                                           <div class="qty">
-                                                               <label for="cart[id125][qty]">Qty:</label>
-                                                               <input type="number" class="input-qty"
-                                                                   name="cart[id125][qty]" id="cart[id125][qty]"
-                                                                   value="1" disabled>
-                                                           </div>
-                                                       </div>
-                                                       <div class="action">
-                                                           <a href="#" class="edit"><i class="fa fa-pencil"
-                                                                   aria-hidden="true"></i></a>
-                                                           <a href="#" class="remove"><i class="fa fa-trash-o"
-                                                                   aria-hidden="true"></i></a>
-                                                       </div>
-                                                   </div>
-                                               </li>
-                                               <li>
-                                                   <div class="minicart-item">
-                                                       <div class="thumb">
-                                                           <a href="#"><img
-                                                                   src="{{ asset('assets/images/minicart/pr-04.jpg') }}"
-                                                                   width="90" height="90"
-                                                                   alt="National Fresh"></a>
-                                                       </div>
-                                                       <div class="left-info">
-                                                           <div class="product-title"><a href="#"
-                                                                   class="product-name">National Fresh Fruit</a></div>
-                                                           <div class="price">
-                                                               <ins><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>85.00</span></ins>
-                                                               <del><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>95.00</span></del>
-                                                           </div>
-                                                           <div class="qty">
-                                                               <label for="cart[id126][qty]">Qty:</label>
-                                                               <input type="number" class="input-qty"
-                                                                   name="cart[id126][qty]" id="cart[id126][qty]"
-                                                                   value="1" disabled>
-                                                           </div>
-                                                       </div>
-                                                       <div class="action">
-                                                           <a href="#" class="edit"><i class="fa fa-pencil"
-                                                                   aria-hidden="true"></i></a>
-                                                           <a href="#" class="remove"><i class="fa fa-trash-o"
-                                                                   aria-hidden="true"></i></a>
-                                                       </div>
-                                                   </div>
-                                               </li>
-                                               <li>
-                                                   <div class="minicart-item">
-                                                       <div class="thumb">
-                                                           <a href="#"><img
-                                                                   src="{{ asset('assets/images/minicart/pr-05.jpg') }}"
-                                                                   width="90" height="90"
-                                                                   alt="National Fresh"></a>
-                                                       </div>
-                                                       <div class="left-info">
-                                                           <div class="product-title"><a href="#"
-                                                                   class="product-name">National Fresh Fruit</a></div>
-                                                           <div class="price">
-                                                               <ins><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>85.00</span></ins>
-                                                               <del><span class="price-amount"><span
-                                                                           class="currencySymbol">£</span>95.00</span></del>
-                                                           </div>
-                                                           <div class="qty">
-                                                               <label for="cart[id127][qty]">Qty:</label>
-                                                               <input type="number" class="input-qty"
-                                                                   name="cart[id127][qty]" id="cart[id127][qty]"
-                                                                   value="1" disabled>
-                                                           </div>
-                                                       </div>
-                                                       <div class="action">
-                                                           <a href="#" class="edit"><i class="fa fa-pencil"
-                                                                   aria-hidden="true"></i></a>
-                                                           <a href="#" class="remove"><i class="fa fa-trash-o"
-                                                                   aria-hidden="true"></i></a>
-                                                       </div>
-                                                   </div>
-                                               </li>
-                                           </ul>
-                                           <p class="btn-control">
-                                               <a href="#" class="btn view-cart">view cart</a>
-                                               <a href="#" class="btn">checkout</a>
-                                           </p>
-                                       </div>
-                                   </div> --}}
-                               </div>
-                           </div>
-                           <div class="mobile-menu-toggle">
-                               <a class="btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
-                                   <span></span>
-                                   <span></span>
-                                   <span></span>
-                               </a>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </div>
-       </div>
-   </header>
+<!-- header  -->
+
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
+    <div class="offcanvas-header justify-content-center">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="order-md-last">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary">Your cart</span>
+                <span class="badge bg-primary rounded-pill">3</span>
+            </h4>
+            <ul class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">Growers cider</h6>
+                        <small class="text-body-secondary">Brief description</small>
+                    </div>
+                    <span class="text-body-secondary">$12</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">Fresh grapes</h6>
+                        <small class="text-body-secondary">Brief description</small>
+                    </div>
+                    <span class="text-body-secondary">$8</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">Heinz tomato ketchup</h6>
+                        <small class="text-body-secondary">Brief description</small>
+                    </div>
+                    <span class="text-body-secondary">$5</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Total (USD)</span>
+                    <strong>$20</strong>
+                </li>
+            </ul>
+
+            <button class="w-100 btn btn-primary btn-lg" type="submit">
+                Continue to checkout
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
+    <div class="offcanvas-header justify-content-between">
+        <h4 class="fw-normal text-uppercase fs-6">Menu</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-3 mb-0">
+            <li class="nav-item border-dashed active">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#fruits"></use>
+                    </svg>
+                    <span>Fruits and vegetables</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#dairy"></use>
+                    </svg>
+                    <span>Dairy and Eggs</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#meat"></use>
+                    </svg>
+                    <span>Meat and Poultry</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#seafood"></use>
+                    </svg>
+                    <span>Seafood</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#bakery"></use>
+                    </svg>
+                    <span>Bakery and Bread</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#canned"></use>
+                    </svg>
+                    <span>Canned Goods</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#frozen"></use>
+                    </svg>
+                    <span>Frozen Foods</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#pasta"></use>
+                    </svg>
+                    <span>Pasta and Rice</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#breakfast"></use>
+                    </svg>
+                    <span>Breakfast Foods</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#snacks"></use>
+                    </svg>
+                    <span>Snacks and Chips</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <button
+                    class="btn btn-toggle dropdown-toggle position-relative w-100 d-flex justify-content-between align-items-center text-dark p-2"
+                    data-bs-toggle="collapse" data-bs-target="#beverages-collapse" aria-expanded="false">
+                    <div class="d-flex gap-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <use xlink:href="#beverages"></use>
+                        </svg>
+                        <span>Beverages</span>
+                    </div>
+                </button>
+                <div class="collapse" id="beverages-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal ps-5 pb-1">
+                        <li class="border-bottom py-2">
+                            <a href="index.html" class="dropdown-item">Water</a>
+                        </li>
+                        <li class="border-bottom py-2">
+                            <a href="index.html" class="dropdown-item">Juice</a>
+                        </li>
+                        <li class="border-bottom py-2">
+                            <a href="index.html" class="dropdown-item">Soda</a>
+                        </li>
+                        <li class="border-bottom py-2">
+                            <a href="index.html" class="dropdown-item">Tea</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#spices"></use>
+                    </svg>
+                    <span>Spices and Seasonings</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#baby"></use>
+                    </svg>
+                    <span>Baby Food and Formula</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#health"></use>
+                    </svg>
+                    <span>Health and Wellness</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#household"></use>
+                    </svg>
+                    <span>Household Supplies</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#personal"></use>
+                    </svg>
+                    <span>Personal Care</span>
+                </a>
+            </li>
+            <li class="nav-item border-dashed">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#pet"></use>
+                    </svg>
+                    <span>Pet Food and Supplies</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<header>
+    <div class="container-fluid">
+        <div class="row py-3 border-bottom">
+            <div
+                class="col-sm-4 col-lg-2 text-center text-sm-start d-flex gap-3 justify-content-center justify-content-md-start">
+                <div class="d-flex align-items-center my-3 my-sm-0">
+                    <a href="index.html">
+                        <img src="{{ asset('assets/images/freebazarlogo.png') }}" alt="logo" class="img-fluid" />
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#menu"></use>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4">
+                <div class="search-bar row bg-light p-2 rounded-4">
+                    <div class="col-md-4 d-none d-md-block">
+                        <select class="form-select border-0 bg-transparent">
+                            <option>All Categories</option>
+                            <option>Groceries</option>
+                            <option>Drinks</option>
+                            <option>Chocolates</option>
+                        </select>
+                    </div>
+                    <div class="col-11 col-md-7">
+                        <form id="search-form" class="text-center" action="index.html" method="post">
+                            <input type="text" class="form-control border-0 bg-transparent"
+                                placeholder="Search for more than 20,000 products" />
+                        </form>
+                    </div>
+                    <div class="col-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <ul
+                    class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
+                    <li class="nav-item active">
+                        <a href="index.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle pe-3" role="button" id="pages"
+                            data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
+                        <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="pages">
+                            <li>
+                                <a href="index.html" class="dropdown-item">About Us </a>
+                            </li>
+                            <li><a href="index.html" class="dropdown-item">Shop </a></li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Single Product
+                                </a>
+                            </li>
+                            <li><a href="index.html" class="dropdown-item">Cart </a></li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Checkout </a>
+                            </li>
+                            <li><a href="index.html" class="dropdown-item">Blog </a></li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Single Post </a>
+                            </li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Styles </a>
+                            </li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Contact </a>
+                            </li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">Thank You </a>
+                            </li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">My Account </a>
+                            </li>
+                            <li>
+                                <a href="index.html" class="dropdown-item">404 Error </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @if (auth()->user())
+                        <li class="nav-item active">
+                        <a href="{{ route('user.index') }}" class="nav-link">Dashboard</a>
+                    </li>
+                    @else
+                        
+                    @endif
+                    
+                </ul>
+            </div>
+
+            <div
+                class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
+                <ul class="d-flex justify-content-end list-unstyled m-0">
+                    <li>
+                        @if (auth()->user())
+                        <a href="{{ route('user.index') }}" class="p-2 mx-1">
+                            <svg width="24" height="24">
+                                <use xlink:href="#user"></use>
+                            </svg>
+                        </a>
+                        @else
+                            <a href="{{ route('login') }}" class="p-2 mx-1">
+                            <svg width="24" height="24">
+                                <use xlink:href="#user"></use>
+                            </svg>
+                        </a>
+                        @endif
+                        
+                    </li>
+                    <li>
+                        <a href="#" class="p-2 mx-1">
+                            <svg width="24" height="24">
+                                <use xlink:href="#wishlist"></use>
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
+                            <svg width="24" height="24">
+                                <use xlink:href="#shopping-bag"></use>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
