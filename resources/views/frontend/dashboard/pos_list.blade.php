@@ -51,5 +51,8 @@
             {{ $pos->links() }}
         </div>  
     </div>
+
+    {{-- modal --}}
+    {{-- @include('frontend.dashboard.includes.scanmodal'); --}}
 @endsection
 

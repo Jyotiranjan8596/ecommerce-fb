@@ -58,10 +58,10 @@
 <body>
 
     <!-- mobile menu  -->
-    <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none">
+    <nav class="navbar navbar-light  px-4 col-12 d-lg-none" style="border-bottom: 5px solid #fff;">
         <a class="navbar-brand me-lg-5" href="{{ route('frontend.index') }}">
-            <img class="navbar-brand-dark" src="{{ asset('assets/img/brand/light.svg') }}" alt="Volt logo" />
-            <img class="navbar-brand-light" src="{{ asset('assets/img/brand/dark.svg') }}" alt="Volt logo" />
+            <img class="navbar-brand-dark" src="{{ asset('assets/images/logofreebazar3.png') }}" alt="Volt logo" />
+            <img class="navbar-brand-light" src="{{ asset('assets/images/logofreebazar3.png') }}" alt="Volt logo" />
         </a>
         <div class="d-flex align-items-center">
             <button class="navbar-toggler d-lg-none collapsed" type="button" data-bs-toggle="collapse"

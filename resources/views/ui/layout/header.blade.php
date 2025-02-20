@@ -219,8 +219,9 @@
             <div
                 class="col-sm-4 col-lg-2 text-center text-sm-start d-flex gap-3 justify-content-center justify-content-md-start">
                 <div class="d-flex align-items-center my-3 my-sm-0">
-                    <a href="index.html">
-                        <img src="{{ asset('assets/images/freebazarlogo.png') }}" alt="logo" class="img-fluid" />
+                    <a href="{{ route('frontend.index') }}">
+                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo"
+                            class="img-fluid" />
                     </a>
                 </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
@@ -259,54 +260,42 @@
             <div class="col-lg-4">
                 <ul
                     class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
-                    <li class="nav-item active">
-                        <a href="index.html" class="nav-link">Home</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle pe-3" role="button" id="pages"
                             data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
                         <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="pages">
                             <li>
-                                <a href="index.html" class="dropdown-item">About Us </a>
+                                <a href="#" class="dropdown-item">About Us </a>
                             </li>
-                            <li><a href="index.html" class="dropdown-item">Shop </a></li>
+                            <li><a href="#" class="dropdown-item">Mission</a></li>
                             <li>
-                                <a href="index.html" class="dropdown-item">Single Product
+                                <a href="#" class="dropdown-item">Vision
                                 </a>
                             </li>
-                            <li><a href="index.html" class="dropdown-item">Cart </a></li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">Checkout </a>
-                            </li>
-                            <li><a href="index.html" class="dropdown-item">Blog </a></li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">Single Post </a>
-                            </li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">Styles </a>
-                            </li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">Contact </a>
-                            </li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">Thank You </a>
-                            </li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">My Account </a>
-                            </li>
-                            <li>
-                                <a href="index.html" class="dropdown-item">404 Error </a>
-                            </li>
+                            <li><a href="#" class="dropdown-item">Concept</a></li>
                         </ul>
                     </li>
                     @if (auth()->user())
                         <li class="nav-item active">
-                        <a href="{{ route('user.index') }}" class="nav-link">Dashboard</a>
-                    </li>
+                            <a href="{{ route('user.index') }}" class="nav-link">Dashboard</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                class="nav-link">Logout</a>
+                        </li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     @else
-                        
+                        <li class="nav-item active">
+                            <a href="{{ route('login') }}" class="nav-link">Login In</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="{{ route('register') }}" class="nav-link">Register</a>
+                        </li>
                     @endif
-                    
+
                 </ul>
             </div>
 
@@ -315,19 +304,19 @@
                 <ul class="d-flex justify-content-end list-unstyled m-0">
                     <li>
                         @if (auth()->user())
-                        <a href="{{ route('user.index') }}" class="p-2 mx-1">
-                            <svg width="24" height="24">
-                                <use xlink:href="#user"></use>
-                            </svg>
-                        </a>
+                            <a href="{{ route('user.index') }}" class="p-2 mx-1">
+                                <svg width="24" height="24">
+                                    <use xlink:href="#user"></use>
+                                </svg>
+                            </a>
                         @else
                             <a href="{{ route('login') }}" class="p-2 mx-1">
-                            <svg width="24" height="24">
-                                <use xlink:href="#user"></use>
-                            </svg>
-                        </a>
+                                <svg width="24" height="24">
+                                    <use xlink:href="#user"></use>
+                                </svg>
+                            </a>
                         @endif
-                        
+
                     </li>
                     <li>
                         <a href="#" class="p-2 mx-1">
