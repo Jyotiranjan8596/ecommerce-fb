@@ -208,6 +208,35 @@
                         </a>
                     </li>
                 @endcan
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('user/management*') ? 'active' : '' }}" href="#"
+                        data-bs-toggle="collapse" data-bs-target="#submenu-app">
+                        <span data-feather="users" class="align-text-bottom"></span>
+                        Account
+                    </a>
+                    <div class="multi-level collapse" role="list" id="submenu-app" aria-expanded="false">
+                        <ul class="flex-column nav">
+                            <li class="nav-item" style="margin-left: 22px">
+                                <a class="nav-link {{ request()->is('add') ? 'active' : '' }}"
+                                    href="{{ route('user.add') }}">
+                                    Payment
+                                </a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 22px">
+                                <a class="nav-link {{ request()->is('user/management/list') ? 'active' : '' }}"
+                                    href="{{ route('user.sponsor.list') }}">
+                                    Receipt Journal
+                                </a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 22px">
+                                <a class="nav-link {{ request()->is('user/management/list') ? 'active' : '' }}"
+                                    href="{{ route('user.sponsor.list') }}">
+                                    Account Ledger
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
                 @can('post_access')
                     <li class="nav-item">
