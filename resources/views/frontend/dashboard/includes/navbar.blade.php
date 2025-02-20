@@ -3,7 +3,7 @@
         <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
             <div class="d-flex align-items-center">
                 <!-- Search form -->
-                <form class="navbar-search form-inline" id="navbar-search-main">
+                {{-- <form class="navbar-search form-inline" id="navbar-search-main">
                     <div class="input-group input-group-merge search-bar">
                         <span class="input-group-text" id="topbar-addon">
                             <svg class="icon icon-xs" x-description="Heroicon name: solid/search"
@@ -17,15 +17,53 @@
                         <input type="text" class="form-control" id="topbarInputIconLeft"
                             placeholder="Search" aria-label="Search" aria-describedby="topbar-addon" />
                     </div>
-                </form>
+                </form> --}}
+                <button id="my-qr-reader" class="btn btn-warning mb-2">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M4 21C3.44772 21 3 20.5523 3 20V16C3 15.4477 2.55228 15 2 15C1.44772 15 1 15.4477 1 16V20C1 21.6569 2.34315 23 4 23H8C8.55228 23 9 22.5523 9 22C9 21.4477 8.55228 21 8 21H4Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8V4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z"
+                                fill="#0F0F0F"></path>
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M11 6C11 5.44772 10.5523 5 10 5H6C5.44772 5 5 5.44772 5 6V10C5 10.5523 5.44772 11 6 11H10C10.5523 11 11 10.5523 11 10V6ZM9 7.5C9 7.22386 8.77614 7 8.5 7H7.5C7.22386 7 7 7.22386 7 7.5V8.5C7 8.77614 7.22386 9 7.5 9H8.5C8.77614 9 9 8.77614 9 8.5V7.5Z"
+                                fill="#0F0F0F"></path>
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M18 13C18.5523 13 19 13.4477 19 14V18C19 18.5523 18.5523 19 18 19H14C13.4477 19 13 18.5523 13 18V14C13 13.4477 13.4477 13 14 13H18ZM15 15.5C15 15.2239 15.2239 15 15.5 15H16.5C16.7761 15 17 15.2239 17 15.5V16.5C17 16.7761 16.7761 17 16.5 17H15.5C15.2239 17 15 16.7761 15 16.5V15.5Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M14 5C13.4477 5 13 5.44772 13 6C13 6.55229 13.4477 7 14 7H16.5C16.7761 7 17 7.22386 17 7.5V10C17 10.5523 17.4477 11 18 11C18.5523 11 19 10.5523 19 10V6C19 5.44772 18.5523 5 18 5H14Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M14 8C13.4477 8 13 8.44771 13 9V10C13 10.5523 13.4477 11 14 11C14.5523 11 15 10.5523 15 10V9C15 8.44772 14.5523 8 14 8Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M6 13C5.44772 13 5 13.4477 5 14V16C5 16.5523 5.44772 17 6 17C6.55229 17 7 16.5523 7 16V15.5C7 15.2239 7.22386 15 7.5 15H10C10.5523 15 11 14.5523 11 14C11 13.4477 10.5523 13 10 13H6Z"
+                                fill="#0F0F0F"></path>
+                            <path
+                                d="M10 17C9.44771 17 9 17.4477 9 18C9 18.5523 9.44771 19 10 19C10.5523 19 11 18.5523 11 18C11 17.4477 10.5523 17 10 17Z"
+                                fill="#0F0F0F"></path>
+                        </g>
+                    </svg>&nbsp;Scan QR Code</button>
                 <!-- / Search form -->
             </div>
             <!-- Navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
                     <a class="nav-link text-dark notification-bell unread dropdown-toggle"
-                        data-unread-notifications="true" href="#" role="button"
-                        data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
+                        data-bs-display="static" aria-expanded="false">
                         <svg class="icon icon-sm text-gray-900" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -37,7 +75,7 @@
                         <div class="list-group list-group-flush">
                             <a href="#"
                                 class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
-                            <a href="#" class="list-group-item list-group-item-action border-bottom">
+                            {{-- <a href="#" class="list-group-item list-group-item-action border-bottom">
                                 <div class="row align-items-center">
                                     <div class="col-auto">
                                         <!-- Avatar -->
@@ -157,15 +195,15 @@
                                 </div>
                             </a>
                             <a href="#" class="dropdown-item text-center fw-bold rounded-bottom py-3">
-                                <svg class="icon icon-xxs text-gray-400 me-1" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="icon icon-xxs text-gray-400 me-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
                                     <path fill-rule="evenodd"
                                         d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
                                         clip-rule="evenodd"></path>
                                 </svg>
                                 View all
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                 </li>
@@ -176,15 +214,14 @@
                             <img class="avatar rounded-circle" alt="{{ auth()->user()->name }}"
                                 src="{{ asset('assets/images/' . auth()->user()->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
-                                <span
-                                    class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
+                                <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
                             </div>
                         </div>
                     </a>
                     <div class="dropdown-menu dashboard-dropdown dropdown-menu-end mt-2 py-1">
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('user.edit.profile') }}">
-                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor"
-                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
                                     clip-rule="evenodd"></path>
@@ -192,8 +229,8 @@
                             My Profile
                         </a>
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('user.change.password') }}">
-                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor"
-                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
                                     d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
                                     clip-rule="evenodd"></path>
@@ -219,7 +256,8 @@
                             Support
                         </a> --}}
                         <div role="separator" class="dropdown-divider my-1"></div>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <svg class="dropdown-icon text-danger me-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

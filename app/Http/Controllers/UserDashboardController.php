@@ -55,15 +55,26 @@ class UserDashboardController extends Controller
         } elseif ($request->has('to_date')) {
             $transactionQuery->where('transaction_date', '<=', $request->to_date);
         }
-        $walletList = $transactionQuery->orderBy('id', 'desc')->get()
-            ->map(function($item){
-                $user_wallets = $item->userWallets;
-                foreach($user_wallets as $user_wallet){
-                    $item->remaining_amount = $user_wallet->remaining_amount;
-                }
-                return $item;
-            })
-        ;
+
+        // my code 
+        $walletList = $transactionQuery->orderBy('id', 'desc')->simplepaginate(5);
+
+        $walletList->getCollection()->transform(function ($item) {
+            $user_wallets = $item->userWallets;
+            foreach ($user_wallets as $user_wallet) {
+                $item->remaining_amount = $user_wallet->remaining_amount;
+            }
+            return $item;
+        });
+
+        // $walletList = $transactionQuery->orderBy('id', 'desc')->get()
+        //     ->map(function ($item) {
+        //         $user_wallets = $item->userWallets;
+        //         foreach ($user_wallets as $user_wallet) {
+        //             $item->remaining_amount = $user_wallet->remaining_amount;
+        //         }
+        //         return $item;
+        //     })->paginate(15);
 
         // dd($walletList->all()[0]); 
         // $userWallet = UserWallet::where('user_id', $userId)->get();
@@ -226,7 +237,9 @@ class UserDashboardController extends Controller
             $userWalletEntry->save();
         }
 
-        return redirect()->back()->with('success', 'Payment successfully verified and processed.');
+        // return redirect()->back()->with('success', 'Payment successfully verified and processed.');
+
+        return response()->json(['success' => true, 'message' => 'Payment verified successfully.', 'billing_amount' => $request->billing_amount, 'paying_amount' => $request->paying_amount]);
     }
 
 
@@ -315,12 +328,14 @@ class UserDashboardController extends Controller
     {
         $user_profile = auth()->user();
         $userId = $user_profile->id;
+        $sponsors = Sponsor::where('sponsor_id', $userId)->get();
+        $sponsors_count = count($sponsors);
         // dd($userId);
         $userWallet = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = self::get_total_wallet_amount($userId);
-        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance'));
+        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile','sponsors_count'));
     }
     public function termCondition()
     {

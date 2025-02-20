@@ -40,10 +40,6 @@
         <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
                 <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center">
-                    <span class="sidebar-icon">
-                        <img src="{{ asset('assets/img/brand/light.svg') }}" height="20" width="20"
-                            alt="Logo" />
-                    </span>
                     <span class="mt-1 ms-1 sidebar-text">FREEBAZAR</span>
                 </a>
             </li>
