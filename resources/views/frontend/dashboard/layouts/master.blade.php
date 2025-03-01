@@ -85,11 +85,12 @@
         @yield('content')
 
 
-       @include('frontend.dashboard.includes.footer')
+        @include('frontend.dashboard.includes.footer')
     </main>
     {{-- Main Content end  --}}
 
     <!-- Scripts -->
+    @include('frontend.dashboard.includes.js')
 
     <!-- Core -->
     <script src="{{ asset('vendor/@popperjs/core/dist/umd/popper.min.js') }}"></script>
