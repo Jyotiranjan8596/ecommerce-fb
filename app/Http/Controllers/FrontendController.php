@@ -1,30 +1,22 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
-use App\Models\Blog;
-use App\Models\BlogCategory;
-use App\Models\Cart;
-use App\Models\Event;
-use App\Models\EventCategory;
-use App\Models\InfoGraphic;
+use App\Models\Page;
 use App\Models\Product;
 use App\Models\Sector;
-use App\Models\SubSector;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class FrontendController extends Controller
 {
     public function index()
     {
-        $banner = Banner::latest()->take(3)->get();
-        $category = Sector::latest()->take(5)->get();  
-        $products = Product::all();
-        $bestseller = Product::where('bestseller',1)->get();
+        $banner     = Banner::latest()->take(3)->get();
+        $category   = Sector::latest()->take(5)->get();
+        $products   = Product::all();
+        $bestseller = Product::where('bestseller', 1)->get();
+        $pages = Page::all();
         // dd($bestseller);
-        return view('ui.index', compact('category', 'products','banner','bestseller'));
+        return view('ui.index', compact('category', 'products', 'banner', 'bestseller', 'pages'));
     }
 
     public function category($id)
@@ -46,7 +38,6 @@ class FrontendController extends Controller
     //     return view('frontend.highvalue', compact('product', 'sectors'));
     // }
 
-  
     // public function categoryView($id)
     // {
     //     $viewCategory = Sector::find($id);
@@ -92,7 +83,6 @@ class FrontendController extends Controller
     //     return view('frontend.blog.readmore', compact('view'));
     // }
 
-   
     // public function datasetView()
     // {
     //     $product = Product::where('dataset', 1)->orderBy('views', 'desc')->get();
@@ -123,4 +113,17 @@ class FrontendController extends Controller
     // {
     //     return view('frontend.infographics');
     // }
+
+    public function page()
+    {
+        // $pages = Page::find($id); 
+        // dd($pages->title);
+        // if (!$pages) {
+        //     return redirect()->back()->with('error', 'Page not found'); 
+        //     // OR show a 404 page: abort(404, "Page not found");
+        // }
+        return view('ui.page.index');
+    }
+    
+
 }

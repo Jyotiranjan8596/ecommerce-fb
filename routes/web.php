@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PosController as AdminPosController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WalletController;
@@ -35,6 +36,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.index');
 Route::get('/category/{id}', [FrontendController::class, 'category'])->name('frontend.category');
 Route::get('/product/{id}', [FrontendController::class, 'product'])->name('frontend.product');
+
+// Route::get('/page/{id}', [FrontendController::class, 'page'])->name('frontend.page.index');
+Route::get('/page/aboutus', [FrontendController::class, 'page'])->name('page.aboutus');
+
 // Route::get('/category/{id}', [FrontendController::class, 'categoryView'])->name('frontend.categoryView');
 Route::get('/subsector/{id}', [FrontendController::class, 'subsector'])->name('frontend.subsector');
 Route::get('/viewsubsector/{id}', [FrontendController::class, 'viewSubsector'])->name('subsector.view');

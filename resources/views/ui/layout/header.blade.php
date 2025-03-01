@@ -216,15 +216,34 @@
 <header>
     <div class="container-fluid">
         <div class="row py-3 border-bottom">
-            <div
-                class="col-sm-4 col-lg-2 text-center text-sm-start d-flex gap-3 justify-content-center justify-content-md-start">
-                <div class="d-flex align-items-center my-3 my-sm-0">
+
+            {{-- Bootstrap menu   --}}
+            {{-- <div class="grid text-center  gap-3" style="border: solid 1px black; display:flex;">
+                <div class="g-col-6" style="border: solid 1px black;">
                     <a href="{{ route('frontend.index') }}">
-                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo"
-                            class="img-fluid" />
+                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo" class="img-fluid"
+                            height="40px" width="136px" />
                     </a>
                 </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                <div class="g-col-6" style="border: solid 1px black;">
+                    <button class="navbar-toggler justify-content-md-end " type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#menu"></use>
+                    </svg>
+                </button>
+                </div>
+            </div> --}}
+
+            {{-- Original Logo menu  --}}
+            <div class="col-sm-4 col-lg-2  text-sm-start text-center d-flex gap-3 ">
+                <div class="d-flex align-items-center my-3 my-sm-0">
+                    <a href="{{ route('frontend.index') }}">
+                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo" class="img-fluid"
+                              />
+                    </a>
+                </div>
+                <button class="navbar-toggler justify-content-md-end " type="button"  data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <use xlink:href="#menu"></use>
@@ -232,8 +251,9 @@
                 </button>
             </div>
 
+            {{-- Search Bar  --}}
             <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4">
-                <div class="search-bar row bg-light p-2 rounded-4">
+                {{-- <div class="search-bar row bg-light p-2 rounded-4">
                     <div class="col-md-4 d-none d-md-block">
                         <select class="form-select border-0 bg-transparent">
                             <option>All Categories</option>
@@ -254,10 +274,10 @@
                                 d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z" />
                         </svg>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
-            <div class="col-lg-4">
+            {{-- <div class="col-lg-4" style="border: solid 1px black;">
                 <ul
                     class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
                     <li class="nav-item dropdown">
@@ -297,42 +317,57 @@
                     @endif
 
                 </ul>
+            </div> --}}
+
+            <div class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
+                <div class="d-flex justify-content-end list-unstyled m-0">
+                    {{-- <button class="navbar-toggler justify-content-right" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <use xlink:href="#menu"></use>
+                    </svg>
+                </button> --}}
+                </div>
             </div>
 
-            <div
-                class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
-                <ul class="d-flex justify-content-end list-unstyled m-0">
-                    <li>
-                        @if (auth()->user())
-                            <a href="{{ route('user.index') }}" class="p-2 mx-1">
-                                <svg width="24" height="24">
-                                    <use xlink:href="#user"></use>
-                                </svg>
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="p-2 mx-1">
-                                <svg width="24" height="24">
-                                    <use xlink:href="#user"></use>
-                                </svg>
-                            </a>
-                        @endif
-
+            <div class="col-lg-4" style=" background-color: #f3aa4b; border-radius: 10px;">
+                <ul
+                    class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle pe-3" role="button" id="pages"
+                            data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
+                        <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="pages">
+                            <li>
+                                <a href="#aboutus" class="dropdown-item">About Us </a>
+                            </li>
+                            <li><a href="#mission" class="dropdown-item">Mission</a></li>
+                            <li>
+                                <a href="#vision" class="dropdown-item">Vision
+                                </a>
+                            </li>
+                            <li><a href="#concept" class="dropdown-item">Concept</a></li>
+                        </ul>
                     </li>
-                    <li>
-                        <a href="#" class="p-2 mx-1">
-                            <svg width="24" height="24">
-                                <use xlink:href="#wishlist"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="p-2 mx-1" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
-                            <svg width="24" height="24">
-                                <use xlink:href="#shopping-bag"></use>
-                            </svg>
-                        </a>
-                    </li>
+                    @if (auth()->user())
+                        <li class="nav-item active">
+                            <a href="{{ route('user.index') }}" class="nav-link">Dashboard</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                class="nav-link">Logout</a>
+                        </li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    @else
+                        <li class="nav-item active">
+                            <a href="{{ route('login') }}" class="nav-link">Login In</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="{{ route('register') }}" class="nav-link">Register</a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>

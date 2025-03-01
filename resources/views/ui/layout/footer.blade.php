@@ -52,17 +52,18 @@
                 <div class="footer-menu">
                     <h5 class="widget-title">Pages</h5>
                     <ul class="menu-list list-unstyled">
+
                         <li class="menu-item">
-                            <a href="#" class="nav-link">About us</a>
+                            <a href="{{ route('page.aboutus') }}" class="nav-link">About us</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Mission </a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Mission </a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Vision</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Vision</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Concept</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Concept</a>
                         </li>
                     </ul>
                 </div>
@@ -72,22 +73,22 @@
                     <h5 class="widget-title">Quick Links</h5>
                     <ul class="menu-list list-unstyled">
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Offers</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Offers</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Discount Coupons</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Discount Coupons</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Stores</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Stores</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Track Order</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Track Order</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Shop</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Shop</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="nav-link">Info</a>
+                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Info</a>
                         </li>
                     </ul>
                 </div>
@@ -95,42 +96,20 @@
             <div class="col-md-2 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Customer Service</h5>
-                    <ul class="menu-list list-unstyled">
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">FAQ</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">Contact</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">Privacy Policy</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">Returns & Refunds</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">Cookie Guidelines</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="nav-link">Delivery Information</a>
-                        </li>
-                    </ul>
+                    <p>
+                        +91 9338301361 <br>
+                        customercare@freebazar.co.in
+                    </p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer-menu">
-                    <h5 class="widget-title">Subscribe Us</h5>
+                    <h5 class="widget-title">Address</h5>
                     <p>
-                        Subscribe to our newsletter to get updates about our grand
-                        offers.
+                        1625(B),Nilakantha Nagar, <br> Nayapalli, lane no 15, 751012 <br> Near Unit 8, DAV School <br>
+                        Bhubaneswar, Odisha
                     </p>
-                    <form class="d-flex mt-3 gap-0" action="index.html">
-                        <input class="form-control rounded-start rounded-0 bg-light" type="email"
-                            placeholder="Email Address" aria-label="Email Address" />
-                        <button class="btn btn-dark rounded-end rounded-0" type="submit">
-                            Subscribe
-                        </button>
-                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -140,7 +119,7 @@
     <div class="container-lg">
         <div class="row">
             <div class="col-md-6 copyright">
-                <p>© 2025 FREEBAZAR. All rights reserved.</p>
+                <p>©2018 - 2025 FREEBAZAR. All rights reserved.</p>
             </div>
             {{-- <div class="col-md-6 credit-link text-start text-md-end">
           <p>

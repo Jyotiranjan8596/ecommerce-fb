@@ -13,11 +13,11 @@
     <meta name="description" content="">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazar.png') }}" />
-    <link rel="manifest" href="{{ asset('assets/images/freebazar.png') }}" />
-    <link rel="mask-icon" href="{{ asset('assets/images/freebazar.png') }}" color="#ffffff" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
+    <link rel="manifest" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
+    <link rel="mask-icon" href="{{ asset('assets/images/faviconfreebazar.png') }}" color="#ffffff" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="theme-color" content="#ffffff" />
 
@@ -337,7 +337,20 @@
         <div class="preloader"></div>
     </div>
 
-    
+    <!-- Header -->
+    @include('ui.layout.header')
+
+    <!-- Main -->
+    @yield('content')
+    <!-- Main -->
+
+    {{-- Sweet Alert Js  --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @include('frontend.dashboard.includes.js')
+
+
+    <!-- Footer -->
+    @include('ui.layout.footer')
 
 </body>
 
