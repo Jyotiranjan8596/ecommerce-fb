@@ -67,8 +67,8 @@
                     <a class="nav-link text-dark notification-bell unread dropdown-toggle"
                         data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
                         data-bs-display="static" aria-expanded="false">
-                        <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
+                        <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor"
+                            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
                             </path>
@@ -214,8 +214,9 @@
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img width="45px" height="45px" class="avatar rounded-circle" alt="{{ auth()->user()->name }}"
-                                src="{{  asset('assets/img/team/profile-picture-3.jpg') }}" />
+                            <img width="45px" height="45px" class="avatar rounded-circle"
+                                alt="{{ auth()->user()->name }}"
+                                src="{{ asset('assets/img/team/profile-picture-3.jpg') }}" />
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
                             </div>
@@ -277,9 +278,9 @@
             </ul>
 
             {{-- Scan button  --}}
-            <div class="d-flex align-items-center">
-                <!-- Search form -->
-                {{-- <form class="navbar-search form-inline" id="navbar-search-main">
+            {{-- <div class="d-flex align-items-center"> --}}
+            <!-- Search form -->
+            {{-- <form class="navbar-search form-inline" id="navbar-search-main">
                     <div class="input-group input-group-merge search-bar">
                         <span class="input-group-text" id="topbar-addon">
                             <svg class="icon icon-xs" x-description="Heroicon name: solid/search"
@@ -294,7 +295,7 @@
                             placeholder="Search" aria-label="Search" aria-describedby="topbar-addon" />
                     </div>
                 </form> --}}
-                <button id="my-qr-reader" class="btn" style="margin-top: 0px !important;">
+            {{-- <button id="my-qr-reader" class="btn" style="margin-top: 0px !important;">
                     <svg width="43px" height="43px" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -332,9 +333,9 @@
                                 fill="#0F0F0F"></path>
                         </g>
                     </svg>
-                </button>
-                <!-- / Search form -->
-            </div>
+                </button> --}}
+            <!-- / Search form -->
+            {{-- </div> --}}
         </div>
     </div>
 </nav>
@@ -342,9 +343,8 @@
 
 <script>
     $(document).ready(function() {
-        $("#test-qr").on("click",function(){
+        $("#test-qr").on("click", function() {
             let upiUrl = `${"tez://upi/pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
-
             window.location.href = upiUrl;
         });
     });

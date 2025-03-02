@@ -49,10 +49,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p id="billing-pos-name">POS NAME: <b>Not Scanned</b></p> <!-- Display POS Name Here -->
                 <form id="qrForm" method="post" action="{{ route('user.payment') }}">
                     @csrf
+                    <div style="display: flex; justify-content: space-between">
+                        <p id="billing-pos-name"><b>Not Scanned</b></p> <!-- Display POS Name Here -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="wallet_select" id="checked-wallet" checked
+                                style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="checked-wallet"
+                                style="font-size: 16px; cursor: pointer; font-weight: 500; line-height: 18px;">
+                                Use Wallet
+                            </label>
+                        </div>
+                    </div>
                     <!-- Hidden Fields -->
+
                     <input type="hidden" name="pos_id" id="qrDataId" />
                     <input type="hidden" name="invoice" />
                     <input type="hidden" name="user_id" value="{{ $user_profile->id }}" />
@@ -72,7 +83,7 @@
                     <input id="sponsors_count" type="hidden" name="wallet_balance" value="{{ $sponsors_count }}" />
                     <!-- Paying Amount -->
                     <div class="form-group mb-3">
-                        <label for="paying_amount" style="color: black; margin-right: 367px">Paying
+                        <label for="paying_amount" style="color: black;">Paying
                             Amount</label>
                         <input type="number" class="form-control" name="paying_amount" id="paying_amount" required
                             min="0" readonly />
@@ -82,12 +93,44 @@
                         <label for="pay_by" style="color: black" class="modal-label">Pay By</label>
                         <select class="form-control" id="pay_by" name="pay_by" required>
                             <option value="">Select Payment Method</option>
-                            <option id="select-wallet" value="wallet">
+                            <option hidden id="select-wallet" value="wallet">
                                 Wallet
                             </option>
                             <option value="cash">Cash</option>
                             <option value="upi">UPI</option>
                         </select>
+                    </div>
+                    <div id="upi-options" class="form-group mb-3" style="display: none;">
+                        <label style="color: black" class="modal-label">Select UPI Provider</label>
+                        <div class="d-flex gap-3">
+                            <div>
+                                <input type="radio" id="gpay" name="upi_provider" value="googlepay" hidden
+                                    class="upi-radio">
+                                <label for="gpay" style="cursor: pointer;">
+                                    <img width="48" height="48" class="upi-image"
+                                        src="https://img.icons8.com/fluency/48/google-pay-new.png" alt="googlePay"
+                                        onclick="selectUPI('gpay')" />
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" id="phonepe" name="upi_provider" value="phonepe" hidden
+                                    class="upi-radio">
+                                <label for="phonepe" style="cursor: pointer;">
+                                    <img width="48" height="48" class="upi-image"
+                                        src="https://img.icons8.com/color/48/phone-pe.png" alt="phone-pe"
+                                        onclick="selectUPI('phonepe')" />
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" id="paytm" name="upi_provider" value="paytm" hidden
+                                    class="upi-radio">
+                                <label for="paytm" style="cursor: pointer;">
+                                    <img width="48" height="48" class="upi-image"
+                                        src="https://img.icons8.com/fluency/48/paytm.png" alt="paytm"
+                                        onclick="selectUPI('paytm')" />
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Wallet Balance -->
@@ -170,14 +213,7 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Reference to scanner instance for global access
@@ -255,9 +291,36 @@
             });
             billingModal.show();
         });
+
+
     });
 </script>
 <script>
+    function selectUPI(selectedId) {
+        // Remove border from all images first
+        document.querySelectorAll('.upi-image').forEach(img => {
+            img.style.border = "none";
+        });
+
+        // Get the radio button
+        let radioButton = document.getElementById(selectedId);
+
+        // Toggle selection: If it's not checked, check it and apply a border
+        radioButton.checked = true;
+        if (radioButton.checked) {
+            document.querySelector(`label[for="${selectedId}"] img`).style.border = "2px solid black";
+        }
+    }
+
+    document.getElementById("pay_by").addEventListener("change", function() {
+        let upiOptions = document.getElementById("upi-options");
+
+        if (this.value === "upi") {
+            upiOptions.style.display = "block";
+        } else {
+            upiOptions.style.display = "none";
+        }
+    });
     document.addEventListener("DOMContentLoaded", () => {
         let originalWalletBalance = parseFloat(document.getElementById('wallet_balance').textContent) || 0;
 
@@ -265,6 +328,7 @@
             const billingAmount = parseFloat(document.getElementById('billing_amount').value) || 0;
             const walletBalanceElement = document.getElementById('wallet_balance');
             const payBySelect = document.getElementById('pay_by');
+            const checkedWallet = document.getElementById('checked-wallet').checked;
             const select_wallet = document.getElementById('select-wallet');
             const payingAmountField = document.getElementById('paying_amount');
             const insufficientBalanceDiv = document.querySelector('.insufficient-balance');
@@ -279,14 +343,15 @@
             alternativePayBySelect.style.display = 'none';
             alternativePayBySelect.required = false;
             alternativePayBySelect.value = '';
-            payingAmountField.value = billingAmount.toFixed(2);
+            payingAmountField.value = Math.round(billingAmount);
 
+            console.log(checkedWallet);
 
             // Cash or UPI payment logic
             // Calculate 5% deduction
             if (sponsors_count >= 10) {
-                payingAmountField.value = billingAmount.toFixed(2);
-                if (payBySelect.value === "wallet") {
+                payingAmountField.value = Math.round(billingAmount);
+                if (checkedWallet) {
                     if (walletBalance >= billingAmount) {
                         walletBalance -= billingAmount;
                         payingAmountField.value = "0.00"; // Fully paid by wallet
@@ -295,7 +360,7 @@
                     } else {
                         const remainingAmount = billingAmount - walletBalance;
                         walletBalance = 0;
-                        payingAmountField.value = remainingAmount.toFixed(2); // Remaining amount to be paid
+                        payingAmountField.value = Math.round(remainingAmount); // Remaining amount to be paid
                         remainingAmountField.style.display = 'block';
                         remainingAmountField.value = remainingAmount.toFixed(2);
                         insufficientBalanceDiv.style.display = 'block';
@@ -315,7 +380,7 @@
 
                     const remainingAmount = billingAmount - walletDeduction;
                     walletBalanceElement.textContent = walletBalance.toFixed(2);
-                    payingAmountField.value = remainingAmount.toFixed(2); // Amount to be paid
+                    payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
                 }
                 // if (walletBalance >= billingAmount) {
                 //     walletBalance -= billingAmount;
@@ -331,7 +396,7 @@
                 //     walletBalanceElement.textContent = walletBalance.toFixed(2);
                 //     pay_by_input.style.display = 'block';
                 // }
-            } else {
+            } else if (checkedWallet) {
                 select_wallet.style.display = 'none';
                 console.log("without sponsor");
                 walletDeduction = billingAmount * 0.05;
@@ -342,8 +407,20 @@
                     walletBalance = 0;
                 }
                 const remainingAmount1 = billingAmount - walletDeduction;
-                payingAmountField.value = remainingAmount1.toFixed(2);
+                payingAmountField.value = Math.round(remainingAmount1);
                 walletBalanceElement.textContent = walletBalance.toFixed(2);
+            } else {
+                select_wallet.style.display = 'none';
+                if (walletBalance >= walletDeduction) {
+                    walletBalance -= walletDeduction;
+                } else {
+                    walletDeduction = walletBalance;
+                    walletBalance = 0;
+                }
+
+                const remainingAmount = billingAmount - walletDeduction;
+                walletBalanceElement.textContent = walletBalance.toFixed(2);
+                payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
             }
 
 
@@ -355,6 +432,7 @@
         }
 
         // Event listeners for real-time updates
+        document.getElementById('checked-wallet').addEventListener('change', checkWalletBalance);
         document.getElementById('pay_by').addEventListener('change', checkWalletBalance);
         document.getElementById('billing_amount').addEventListener('input', checkWalletBalance);
     });
@@ -368,6 +446,8 @@
         const billingAmount = parseFloat(qrForm.querySelector('input[name="billing_amount"]').value) || 0;
         const payingAmount = parseFloat(qrForm.querySelector('input[name="paying_amount"]').value) || 0;
         const walletAmount = billingAmount - payingAmount;
+        const selectedUPI = document.querySelector('input[name="upi_provider"]:checked');
+        const walletCheckbox = document.getElementById("checked-wallet"); 
 
         // Copy data to the passwordForm
         passwordForm.querySelector('input[name="user_id"]').value = qrForm.querySelector(
@@ -384,66 +464,76 @@
         passwordForm.querySelector('input[name="pay_by"]').value = qrForm.querySelector('select[name="pay_by"]')
             .value;
 
-            // chat gpt code 
-            document.getElementById("passwordForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent form from submitting normally
+        // chat gpt code 
+        document.getElementById("passwordForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form from submitting normally
 
-    let password = document.getElementById("password").value; // Get password input
+            let password = document.getElementById("password").value; // Get password input
 
-    if (password.trim() === "") {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: "Password cannot be empty!",
+            if (password.trim() === "") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Password cannot be empty!",
+                });
+                return;
+            }
+
+            // Create FormData object
+            let formData = new FormData(this);
+            if (selectedUPI) {
+                formData.append("upi_provider", selectedUPI.value);
+            } else {
+                formData.append("upi_provider", ""); // No selection
+            }
+            // Append wallet checkbox value (1 if checked, 0 if not)
+            formData.append("wallet_select", walletCheckbox.checked ? "1" : "0");
+
+            fetch("{{ route('user.payment') }}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Payment Success",
+                            html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
+                            showConfirmButton: true
+                        }).then(() => {
+                            // Close password modal
+                            let passwordModal = bootstrap.Modal.getInstance(document
+                                .getElementById(
+                                    "passwordModal"));
+                            if (passwordModal) passwordModal.hide();
+
+                            // Close Billing Modal
+                            let billingModal = new bootstrap.Modal(document.getElementById(
+                                "billingModal"));
+                            if (billingModal) billingModal.hide();
+
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid Password",
+                            text: data.message || "Please try again.",
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Something went wrong!",
+                        text: "Please try again later.",
+                    });
+                });
         });
-        return;
-    }
-
-    // Send AJAX request to verify password
-    let formData = new FormData(this);
-    
-    fetch("{{ route('user.payment') }}", {
-        method: "POST",
-        body: formData,
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: "success",
-                title: "Payment Success",
-                html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
-                showConfirmButton: true
-            }).then(() => {
-                // Close password modal
-                let passwordModal = bootstrap.Modal.getInstance(document.getElementById("passwordModal"));
-                passwordModal.hide();
-
-                // Open Billing Modal
-                let billingModal = new bootstrap.Modal(document.getElementById("billingModal"));
-                billingModal.hide();
-                window.location.reload();
-            });
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Invalid Password",
-                text: data.message || "Please try again.",
-            });
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Something went wrong!",
-            text: "Please try again later.",
-        });
-    });
-});
-
     });
 </script>
