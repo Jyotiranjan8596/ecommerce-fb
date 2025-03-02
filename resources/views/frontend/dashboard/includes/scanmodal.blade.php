@@ -51,6 +51,7 @@
             <div class="modal-body">
                 <form id="qrForm" method="post" action="{{ route('user.payment') }}">
                     @csrf
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div style="display: flex; justify-content: space-between">
                         <p id="billing-pos-name"><b>Not Scanned</b></p> <!-- Display POS Name Here -->
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -164,8 +165,7 @@
 
                     <!-- Submit Button -->
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                            data-bs-target="#passwordModal">
+                        <button type="submit" class="btn btn-info">
                             Submit Payment
                         </button>
                     </div>
@@ -176,7 +176,7 @@
 </div>
 
 <!-- Password Confirmation Modal -->
-<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+{{-- <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -188,6 +188,8 @@
             <div class="modal-body">
                 <form id="passwordForm" method="post" action="{{ route('user.payment') }}">
                     @csrf
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
                     <input type="hidden" name="user_id" value="{{ $user_profile->id }}" />
                     <input type="hidden" name="billing_amount" />
                     <!-- Example -->
@@ -212,7 +214,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -439,101 +441,168 @@
 </script>
 
 <script>
-    document.querySelector('#qrForm button[data-bs-target="#passwordModal"]').addEventListener('click', function() {
-        const qrForm = document.getElementById('qrForm');
-        const passwordForm = document.getElementById('passwordForm');
+    // document.querySelector('#qrForm button[data-bs-target="#passwordModal"]').addEventListener('click', function() {
+    //     const qrForm = document.getElementById('qrForm');
+    //     const passwordForm = document.getElementById('passwordForm');
 
-        const billingAmount = parseFloat(qrForm.querySelector('input[name="billing_amount"]').value) || 0;
-        const payingAmount = parseFloat(qrForm.querySelector('input[name="paying_amount"]').value) || 0;
-        const walletAmount = billingAmount - payingAmount;
-        const selectedUPI = document.querySelector('input[name="upi_provider"]:checked');
-        const walletCheckbox = document.getElementById("checked-wallet"); 
+    //     const billingAmount = parseFloat(qrForm.querySelector('input[name="billing_amount"]').value) || 0;
+    //     const payingAmount = parseFloat(qrForm.querySelector('input[name="paying_amount"]').value) || 0;
+    //     const walletAmount = billingAmount - payingAmount;
+    //     const selectedUPI = document.querySelector('input[name="upi_provider"]:checked');
+    //     const walletCheckbox = document.getElementById("checked-wallet");
 
-        // Copy data to the passwordForm
-        passwordForm.querySelector('input[name="user_id"]').value = qrForm.querySelector(
-                'input[name="user_id"]')
-            .value;
-        passwordForm.querySelector('input[name="billing_amount"]').value = billingAmount;
-        passwordForm.querySelector('input[name="paying_amount"]').value = payingAmount;
-        passwordForm.querySelector('input[name="amount_wallet"]').value =
-            walletAmount; // Set wallet amount here
-        passwordForm.querySelector('input[name="mobilenumber"]').value = qrForm.querySelector(
-            'input[name="mobilenumber"]').value;
-        passwordForm.querySelector('input[name="pos_id"]').value = qrForm.querySelector('input[name="pos_id"]')
-            .value;
-        passwordForm.querySelector('input[name="pay_by"]').value = qrForm.querySelector('select[name="pay_by"]')
-            .value;
+    //     // Copy data to the passwordForm
+    //     passwordForm.querySelector('input[name="user_id"]').value = qrForm.querySelector(
+    //             'input[name="user_id"]')
+    //         .value;
+    //     passwordForm.querySelector('input[name="billing_amount"]').value = billingAmount;
+    //     passwordForm.querySelector('input[name="paying_amount"]').value = payingAmount;
+    //     passwordForm.querySelector('input[name="amount_wallet"]').value =walletAmount; // Set wallet amount here
+    //     passwordForm.querySelector('input[name="mobilenumber"]').value = qrForm.querySelector('input[name="mobilenumber"]').value;
+    //     passwordForm.querySelector('input[name="pos_id"]').value = qrForm.querySelector('input[name="pos_id"]').value;
+    //     passwordForm.querySelector('input[name="pay_by"]').value = qrForm.querySelector('select[name="pay_by"]').value;
 
-        // chat gpt code 
-        document.getElementById("passwordForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent form from submitting normally
+    //     // chat gpt code 
+    //     document.getElementById("passwordForm").addEventListener("submit", function(event) {
+    //         event.preventDefault(); // Prevent form from submitting normally
 
-            let password = document.getElementById("password").value; // Get password input
+    //         let password = document.getElementById("password").value; // Get password input
 
-            if (password.trim() === "") {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Password cannot be empty!",
-                });
-                return;
-            }
+    //         if (password.trim() === "") {
+    //             Swal.fire({
+    //                 icon: "error",
+    //                 title: "Oops...",
+    //                 text: "Password cannot be empty!",
+    //             });
+    //             return;
+    //         }
 
-            // Create FormData object
-            let formData = new FormData(this);
-            if (selectedUPI) {
-                formData.append("upi_provider", selectedUPI.value);
-            } else {
-                formData.append("upi_provider", ""); // No selection
-            }
-            // Append wallet checkbox value (1 if checked, 0 if not)
-            formData.append("wallet_select", walletCheckbox.checked ? "1" : "0");
+    //         // Create FormData object
+    //         let formData = new FormData(this);
+    //         if (selectedUPI) {
+    //             formData.append("upi_provider", selectedUPI.value);
+    //         } else {
+    //             formData.append("upi_provider", ""); // No selection
+    //         }
+    //         // Append wallet checkbox value (1 if checked, 0 if not)
+    //         formData.append("wallet_select", walletCheckbox.checked ? "1" : "0");
 
-            fetch("{{ route('user.payment') }}", {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
+    //         fetch("{{ route('user.payment') }}", {
+    //                 method: "POST",
+    //                 body: formData,
+    //                 headers: {
+    //                     "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+    //                 }
+    //             })
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 if (data.success) {
+    //                     Swal.fire({
+    //                         icon: "success",
+    //                         title: "Payment Success",
+    //                         html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
+    //                         showConfirmButton: true
+    //                     }).then(() => {
+    //                         // Close password modal
+    //                         let passwordModal = bootstrap.Modal.getInstance(document
+    //                             .getElementById(
+    //                                 "passwordModal"));
+    //                         if (passwordModal) passwordModal.hide();
+
+    //                         // Close Billing Modal
+    //                         let billingModal = new bootstrap.Modal(document.getElementById(
+    //                             "billingModal"));
+    //                         if (billingModal) billingModal.hide();
+
+    //                         window.location.reload();
+    //                     });
+    //                 } else {
+    //                     Swal.fire({
+    //                         icon: "error",
+    //                         title: "Invalid Password",
+    //                         text: data.message || "Please try again.",
+    //                     });
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error("Error:", error);
+    //                 Swal.fire({
+    //                     icon: "error",
+    //                     title: "Something went wrong!",
+    //                     text: "Please try again later.",
+    //                 });
+    //             });
+    //     });
+    // });
+
+    document.getElementById("qrForm").addEventListener("submit", function(event) {
+
+        event.preventDefault(); // Prevent form from submitting normally
+        // Create FormData object
+        let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
+        let formData = new FormData(this);
+
+        if (selectedUPI == "googlepay") {
+            let upiUrl = `${"tez://upi/pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            window.location.href = upiUrl;
+            userPayment();
+            console.log("gpay");
+
+        } else if (selectedUPI == "phonepe") {
+            console.log("phonepe");
+
+            let upiUrl = `${"phonepe://pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            window.location.href = upiUrl;
+            userPayment();
+        } else if (selectedUPI == "paytm") {
+            console.log("paytm");
+
+            let upiUrl = `${"paytmmp://pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            window.location.href = upiUrl;
+            userPayment();
+        } else {
+
+        }
+
+        function userPayment() {
+            $.ajax({
+                url: "{{ route('user.payment') }}",
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from converting data
+                contentType: false, // Prevent jQuery from setting content type
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                success: function (data) {
+                    console.log("Response JSON:", data); // ✅ Log response JSON
+
                     if (data.success) {
                         Swal.fire({
                             icon: "success",
                             title: "Payment Success",
                             html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
-                            showConfirmButton: true
+                            showConfirmButton: true,
                         }).then(() => {
-                            // Close password modal
-                            let passwordModal = bootstrap.Modal.getInstance(document
-                                .getElementById(
-                                    "passwordModal"));
-                            if (passwordModal) passwordModal.hide();
-
-                            // Close Billing Modal
-                            let billingModal = new bootstrap.Modal(document.getElementById(
-                                "billingModal"));
-                            if (billingModal) billingModal.hide();
-
                             window.location.reload();
                         });
                     } else {
                         Swal.fire({
                             icon: "error",
-                            title: "Invalid Password",
+                            title: "Payment Failed",
                             text: data.message || "Please try again.",
                         });
                     }
-                })
-                .catch(error => {
+                },
+                error: function (xhr, status, error) {
                     console.error("Error:", error);
                     Swal.fire({
                         icon: "error",
                         title: "Something went wrong!",
                         text: "Please try again later.",
                     });
-                });
-        });
+                },
+            });
+        }
     });
 </script>

@@ -116,9 +116,9 @@ class UserDashboardController extends Controller
         $sponsors = Sponsor::where('sponsor_id', $user->id)->get();
         $sponsors_count = count($sponsors);
         // Verify password
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return redirect()->back()->with('error', 'Incorrect password. Please try again.');
-        }
+        // if (!$user || !Hash::check($request->password, $user->password)) {
+        //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
+        // }
         $userId = Auth::user()->id;
         // dd($userId);
         $posId = intval($request->input('pos_id'));
@@ -238,10 +238,16 @@ class UserDashboardController extends Controller
         }
 
         // return redirect()->back()->with('success', 'Payment successfully verified and processed.');
-
-        return response()->json(['success' => true, 'message' => 'Payment verified successfully.', 'billing_amount' => $request->billing_amount, 'paying_amount' => $request->paying_amount]);
+        // dd("comming");
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Payment verified successfully.',
+                'billing_amount' => $request->billing_amount,
+                'paying_amount' => $request->paying_amount
+            ]
+        );
     }
-
 
     // public function verifyPayment(Request $request)
     // {
@@ -265,7 +271,6 @@ class UserDashboardController extends Controller
 
     //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
     // }
-
 
     public function addUser()
     {
@@ -335,7 +340,7 @@ class UserDashboardController extends Controller
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = self::get_total_wallet_amount($userId);
-        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile','sponsors_count'));
+        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
     }
     public function termCondition()
     {
