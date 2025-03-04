@@ -556,7 +556,9 @@
         } else if (selectedUPI == "phonepe") {
             console.log("phonepe");
 
-            let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            let upiUrl = `intent://pay?pa=${upiID}&am=${payingAmount}&cu=INR#Intent;scheme=upi;package=com.phonepe.app;end;`;
+
             window.location.href = upiUrl;
             userPayment();
         } else if (selectedUPI == "paytm") {
