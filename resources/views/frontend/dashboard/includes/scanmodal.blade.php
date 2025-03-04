@@ -557,7 +557,7 @@
             console.log("phonepe");
 
             // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-            let upiUrl = `intent://pay?pa=${upiID}&am=${payingAmount}&cu=INR#Intent;scheme=upi;package=com.phonepe.app;end;`;
+            let upiUrl = `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
 
             window.location.href = upiUrl;
             userPayment();
