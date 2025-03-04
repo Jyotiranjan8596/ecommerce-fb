@@ -67,6 +67,7 @@ class PosController extends Controller
             $pos->user_id = $rand_user;
             $pos->email = $request->email;
             $pos->mobilenumber = $request->mobilenumber;
+            $pos->upi_id = $request->upi_id;
             $pos->transaction_charge = $request->transaction_charge;
             $pos->min_charge = $request->min_charge;
             $pos->max_charge = $request->max_charge;

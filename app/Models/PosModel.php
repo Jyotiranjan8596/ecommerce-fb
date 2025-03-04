@@ -14,6 +14,7 @@ class PosModel extends Model
         'name',
         'email',
         'phone',
+        'upi_id',
         'transaction_charge',
         'min_charge',
         'max_charge',

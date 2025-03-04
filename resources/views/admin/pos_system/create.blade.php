@@ -33,12 +33,22 @@
                                     </span>
                                 @enderror
                             </div>
-                           
+
                             <div class="mb-2">
                                 <label for="mobilenumber">Phone*</label>
                                 <input type="number" id="mobilenumber" name="mobilenumber"
                                     class="form-control @error('mobilenumber') is-invalid @enderror" required>
                                 @error('mobilenumber')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="mb-2">
+                                <label for="upi_id">Upi Id*</label>
+                                <input type="text" id="upi_id" name="upi_id"
+                                    class="form-control @error('Upi Id') is-invalid @enderror" required>
+                                @error('upi_id')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -117,7 +127,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card-body">                         
+                        <div class="card-body">
                             <div class="mb-2">
                                 <label for="entity_address">Entity Address*</label>
                                 <input type="text" id="entity_address" name="entity_address"

@@ -540,10 +540,15 @@
         event.preventDefault(); // Prevent form from submitting normally
         // Create FormData object
         let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
+        let payingAmount = document.getElementById("paying_amount").value
         let formData = new FormData(this);
-
+        let upiID = "paytmqrln5npu77bo@paytm"
+        if (!payingAmount || payingAmount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
         if (selectedUPI == "googlepay") {
-            let upiUrl = `${"tez://upi/pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            let upiUrl = `${"tez://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
             window.location.href = upiUrl;
             userPayment();
             console.log("gpay");
@@ -551,13 +556,13 @@
         } else if (selectedUPI == "phonepe") {
             console.log("phonepe");
 
-            let upiUrl = `${"phonepe://pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
             window.location.href = upiUrl;
             userPayment();
         } else if (selectedUPI == "paytm") {
             console.log("paytm");
 
-            let upiUrl = `${"paytmmp://pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
+            let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
             window.location.href = upiUrl;
             userPayment();
         } else {
@@ -574,7 +579,7 @@
                 headers: {
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                 },
-                success: function (data) {
+                success: function(data) {
                     console.log("Response JSON:", data); // ✅ Log response JSON
 
                     if (data.success) {
@@ -594,7 +599,7 @@
                         });
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error("Error:", error);
                     Swal.fire({
                         icon: "error",

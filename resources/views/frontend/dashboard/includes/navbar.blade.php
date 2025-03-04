@@ -57,9 +57,6 @@
                         </g>
                     </svg>&nbsp;Scan QR Code</button>
                 <!-- / Search form -->
-                <button id="test-qr">
-                    Test Qr
-                </button>
             </div>
             <!-- Navbar links -->
             <ul class="navbar-nav align-items-center">
@@ -341,11 +338,3 @@
 </nav>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function() {
-        $("#test-qr").on("click", function() {
-            let upiUrl = `${"tez://upi/pay?pa="}${"arupalaxmibehera-1@oksbi"}&am=${1}&cu=INR`;
-            window.location.href = upiUrl;
-        });
-    });
-</script>
