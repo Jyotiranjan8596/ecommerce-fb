@@ -542,7 +542,7 @@
         let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
         let payingAmount = document.getElementById("paying_amount").value
         let formData = new FormData(this);
-        let upiID = "paytmqrln5npu77bo@paytm"
+        let upiID = "paytmqr1n5npu77bo@paytm"
         if (!payingAmount || payingAmount <= 0) {
             alert("Please enter a valid amount.");
             return;
