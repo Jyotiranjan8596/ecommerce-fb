@@ -46,7 +46,7 @@ class User extends Authenticatable
         'zip',
         'sponsor_id',
         'parent_level',
-        'active',       
+        'active',
         'status'
     ];
 
@@ -79,5 +79,4 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Sponsor::class, 'user_id');
     }
-   
 }

@@ -548,7 +548,7 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = `${"tez://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            let upiUrl = `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
             window.location.href = upiUrl;
             userPayment();
             console.log("gpay");
@@ -557,7 +557,8 @@
             console.log("phonepe");
 
             // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-            let upiUrl = `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
+            let upiUrl =
+                `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
 
             window.location.href = upiUrl;
             userPayment();
