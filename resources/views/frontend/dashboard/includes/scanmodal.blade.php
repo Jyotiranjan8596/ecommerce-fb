@@ -542,76 +542,35 @@
         let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
         let payingAmount = document.getElementById("paying_amount").value
         let formData = new FormData(this);
-        let upiID = "paytmqr1n5npu77bo@paytm";
-        // if (!payingAmount || payingAmount <= 0) {
-        //     alert("Please enter a valid amount.");
-        //     return;
-        // }
-        // if (selectedUPI == "googlepay") {
-        //     let upiUrl = `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-        //     window.location.href = upiUrl;
-        //     userPayment();
-        //     console.log("gpay");
+        let upiID = "paytmqr1n5npu77bo@paytm"
+        if (!payingAmount || payingAmount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+        if (selectedUPI == "googlepay") {
+            let upiUrl = `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            window.location.href = upiUrl;
+            userPayment();
+            console.log("gpay");
 
-        // } else if (selectedUPI == "phonepe") {
-        //     console.log("phonepe");
+        } else if (selectedUPI == "phonepe") {
+            console.log("phonepe");
 
-        //     // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-        //     let upiUrl =
-        //         `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
+            // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            let upiUrl =
+                `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
 
-        //     window.location.href = upiUrl;
-        //     userPayment();
-        // } else if (selectedUPI == "paytm") {
-        //     console.log("paytm");
+            window.location.href = upiUrl;  
+            userPayment();
+        } else if (selectedUPI == "paytm") {
+            console.log("paytm");
 
-        //     let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-        //     window.location.href = upiUrl;
-        //     userPayment();
-        // } else {
+            let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            window.location.href = upiUrl;
+            userPayment();
+        } else {
 
-        // }
-        $.ajax({
-            url: "{{ route('redirect.upi') }}",
-            type: "POST",
-            data: {
-                "pa": payingAmount,
-                "upi_id": upiID,
-                "upi_provider": selectedUPI,
-                "paying_amount": payingAmount,
-            }, // Prevent jQuery from setting content type
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function(data) {
-                console.log("Response JSON:", data); // ✅ Log response JSON
-
-                if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Payment Success",
-                        showConfirmButton: true,
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Payment Failed",
-                        text: data.message || "Please try again.",
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Something went wrong!",
-                    text: "Please try again later.",
-                });
-            },
-        });
-
+        }
 
         function userPayment() {
             $.ajax({

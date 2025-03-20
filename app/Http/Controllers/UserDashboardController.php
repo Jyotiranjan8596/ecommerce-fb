@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 
 class UserDashboardController extends Controller
 {
@@ -91,27 +90,6 @@ class UserDashboardController extends Controller
         return view('frontend.dashboard.index', compact('total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
-    public function redirect(Request $request)
-    {
-        // dd($request->all());
-        $merchantVpa = $request->upiID; // Replace with your merchant VPA
-        $amount = $request->payingAmount; // Replace with your merchant name
-        // $transactionId = $request->upi_id; // Generate a unique transaction ID
-        // "pa": payingAmount,
-        //             "upi_id": upiID,
-        //             "upi_provider": selectedUPI,
-        //             "paying_amount": payingAmount,
-        $upiParams = [
-            'pa' => $merchantVpa,
-            // 'pn' => $merchantName,
-            'tr' => 'TXN' . time() . rand(1000, 9999),
-            'am' => $amount,
-            'cu' => 'INR'
-        ];
-
-        $upiUrl = "upi://pay?" . http_build_query($upiParams);
-        return Redirect::to($upiUrl);
-    }
     public function get_total_wallet_amount($userId)
     {
         // dd($userId);
