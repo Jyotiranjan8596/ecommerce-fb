@@ -542,13 +542,16 @@
         let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
         let payingAmount = document.getElementById("paying_amount").value
         let formData = new FormData(this);
-        let upiID = "paytmqr1n5npu77bo@paytm"
+        const encodedMessage = encodeURIComponent("Payment to Freebazar");
+        // let upiID = "paytmqr1n5npu77bo@paytm"
+        let upiID = "paytmqr661cw8@ptys"
         if (!payingAmount || payingAmount <= 0) {
             alert("Please enter a valid amount.");
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            let upiUrl =
+                `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR&tn=${encodedMessage}#Intent;scheme=upi;end;`;
             window.location.href = upiUrl;
             userPayment();
             console.log("gpay");
@@ -560,7 +563,7 @@
             let upiUrl =
                 `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
 
-            window.location.href = upiUrl;  
+            window.location.href = upiUrl;
             userPayment();
         } else if (selectedUPI == "paytm") {
             console.log("paytm");
