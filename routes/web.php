@@ -105,6 +105,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
     // Route::post('payment/verify/$id', [UserDashboardController::class, 'verifyPayment'])->name('verify.payment');
     Route::get('my/wallet', [UserDashboardController::class, 'wallet'])->name('wallet');
 });
+Route::post('redirect/upi',[UserDashboardController::class, 'redirect'])->name('redirect.upi');
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');
     Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
