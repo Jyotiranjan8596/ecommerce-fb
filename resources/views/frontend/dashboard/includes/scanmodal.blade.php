@@ -550,7 +550,7 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = "intent://scan/#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;";
+            let upiUrl = "upi://pay?mode=02";
 
             console.log("Redirecting to Google Pay Scanner...");
 
