@@ -551,7 +551,7 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = `gpay://pay?pa={{ urlencode(${upiID}) }}&pn={{ urlencode(${name}) }}&am={{ urlencode(${payingAmount}) }}&cu=INR{{ isset(${notes}) ? '&tn=' . urlencode(${notes}) : '' }}`;
+            let upiUrl = `gpay://pay?pa={{ urlencode(paytmqr661cw8@ptys) }}&pn={{ urlencode(${name}) }}&am={{ urlencode(${payingAmount}) }}&cu=INR{{ isset(${notes}) ? '&tn=' . urlencode(${notes}) : '' }}`;
 
             console.log("Redirecting to Google Pay Scanner...");
 
