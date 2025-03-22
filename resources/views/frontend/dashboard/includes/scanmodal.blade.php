@@ -542,7 +542,8 @@
         let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
         let payingAmount = document.getElementById("paying_amount").value
         let formData = new FormData(this);
-        const encodedMessage = encodeURIComponent("Payment to Freebazar");
+        let name = "Freebazar";
+        const notes = encodeURIComponent("Payment to Freebazar");
         // let upiID = "paytmqr1n5npu77bo@paytm"
         let upiID = "paytmqr661cw8@ptys"
         if (!payingAmount || payingAmount <= 0) {
@@ -550,7 +551,7 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = "intent://#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;";
+            let upiUrl = `gpay://pay?pa={{ urlencode(${upiId}) }}&pn={{ urlencode(${name}) }}&am={{ urlencode(${payingAmount}) }}&cu=INR{{ isset(${notes}) ? '&tn=' . urlencode(${notes}) : '' }}`;
 
             console.log("Redirecting to Google Pay Scanner...");
 
