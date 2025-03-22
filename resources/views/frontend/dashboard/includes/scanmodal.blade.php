@@ -551,8 +551,7 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl = `gpay://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(payingAmount)}&cu=INR${notes ? '&tn=' + encodeURIComponent(notes) : ''}`;
-            console.log("Redirecting to Google Pay Scanner...");
+            let upiUrl = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(payingAmount)}&cu=INR${notes ? '&tn=' + encodeURIComponent(notes) : ''}`;            console.log("Redirecting to Google Pay Scanner...");
 
             // Open UPI scanner
             window.location.replace(upiUrl); // Use replace instead of href to avoid going back
