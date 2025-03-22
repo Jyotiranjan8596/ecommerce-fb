@@ -550,8 +550,8 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            let upiUrl =
-                `${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR&tn=${encodedMessage}#Intent;scheme=upi;end;`;
+            // let upiUrl =`${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR&tn=${encodedMessage}#Intent;scheme=upi;end;`;
+            let upiUrl = "intent://scan/#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;";
             window.location.href = upiUrl;
             userPayment();
             console.log("gpay");
@@ -560,15 +560,15 @@
             console.log("phonepe");
 
             // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-            let upiUrl =
-                `upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
-
+            // let upiUrl =`upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
+            let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=com.phonepe.app;end;`;
             window.location.href = upiUrl;
             userPayment();
         } else if (selectedUPI == "paytm") {
             console.log("paytm");
 
-            let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            // let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+            let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=net.one97.paytm;end`;
             window.location.href = upiUrl;
             userPayment();
         } else {
