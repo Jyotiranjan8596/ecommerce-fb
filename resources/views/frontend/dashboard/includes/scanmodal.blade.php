@@ -550,11 +550,17 @@
             return;
         }
         if (selectedUPI == "googlepay") {
-            // let upiUrl =`${"intent://upi/pay?pa="}${upiID}&am=${payingAmount}&cu=INR&tn=${encodedMessage}#Intent;scheme=upi;end;`;
             let upiUrl = "intent://scan/#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;";
-            window.location.href = upiUrl;
-            userPayment();
-            console.log("gpay");
+
+            console.log("Redirecting to Google Pay Scanner...");
+
+            // Open UPI scanner
+            window.location.replace(upiUrl); // Use replace instead of href to avoid going back
+
+            // Call userPayment AFTER a delay (since redirection happens immediately)
+            setTimeout(() => {
+                userPayment();
+            }, 3000); // Adjust timing if needed
 
         } else if (selectedUPI == "phonepe") {
             console.log("phonepe");
