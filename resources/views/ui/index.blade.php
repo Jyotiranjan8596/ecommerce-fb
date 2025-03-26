@@ -13,6 +13,8 @@
                     aria-label="Slide 2"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
                     aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                    aria-label="Slide 4"></button>
             </div>
             <div class="carousel-inner">
                 <div class="carousel-item active">
@@ -49,9 +51,9 @@
     {{-- Custom Links just like phonpe  --}}
     <section class="p-2 text-center">
         <div class=" " style="border-radius: 15px; background-color: #e6e6e6; padding: 10px;">
-            <div class="row text-center">
+            <div class="row text-center" style="--bs-gutter-x: -0.5rem !important;">
                 <div class="col">
-                    <svg fill="#444cc5" width="64px" height="64px" viewBox="-5 -5 60.00 60.00"
+                    <svg fill="#444cc5" width="50px" height="50px" viewBox="-5 -5 60.00 60.00"
                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="#444cc5">
                         <g id="SVGRepo_bgCarrier" stroke-width="0">
                             <rect x="-5" y="-5" width="60.00" height="60.00" rx="9" fill="#c1cacd" strokewidth="0">
@@ -66,12 +68,12 @@
                     </svg>
                     <br>
                     <a href="javascript:void(0);" style="text-decoration: none;" onclick="comingSoon()">
-                        <span style="font-size: 15px; font-weight: bold;">Service</span>
+                        <span style="font-size: 13px; font-weight: bold;">Service</span>
                     </a>
                 </div>
 
                 <div class="col">
-                    <svg fill="#444cc5" height="64px" width="64px" version="1.1" id="Layer_1"
+                    <svg fill="#444cc5" height="50px" width="50px" version="1.1" id="Layer_1"
                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                         viewBox="-51.2 -51.2 614.40 614.40" xml:space="preserve" stroke="#444cc5">
                         <g id="SVGRepo_bgCarrier" stroke-width="0">
@@ -105,12 +107,12 @@
                     </svg>
                     <br>
                     <a href="javascript:void(0);" style="text-decoration: none;" onclick="comingSoon()">
-                        <span style="font-size: 15px; font-weight: bold;">Achievements</span>
+                        <span style="font-size: 13px; font-weight: bold;">Achievements</span>
                     </a>
                 </div>
 
                 <div class="col">
-                    <svg width="64px" height="64px" viewBox="-2.4 -2.4 28.80 28.80" fill="none"
+                    <svg width="50px" height="50px" viewBox="-2.4 -2.4 28.80 28.80" fill="none"
                         xmlns="http://www.w3.org/2000/svg" stroke="#444cc5">
                         <g id="SVGRepo_bgCarrier" stroke-width="0">
                             <rect x="-2.4" y="-2.4" width="28.80" height="28.80" rx="4.32" fill="#c1cacd"
@@ -128,12 +130,12 @@
                     </svg>
                     <br>
                     <a href="javascript:void(0);" style="text-decoration: none;" onclick="comingSoon()">
-                        <span style="font-size: 15px; font-weight: bold;">Location</span>
+                        <span style="font-size: 13px; font-weight: bold;">Location</span>
                     </a>
                 </div>
 
                 <div class="col">
-                    <svg fill="#444cc5" width="64px" height="64px" viewBox="-51.2 -51.2 614.40 614.40"
+                    <svg fill="#444cc5" width="50px" height="50px" viewBox="-51.2 -51.2 614.40 614.40"
                         enable-background="new 0 0 512 512" id="Achievement" version="1.1" xml:space="preserve"
                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <g id="SVGRepo_bgCarrier" stroke-width="0">
@@ -173,7 +175,7 @@
                     </svg>
                     <br>
                     <a href="javascript:void(0);" style="text-decoration: none;" onclick="comingSoon()"><span
-                            style="font-size: 15px; font-weight: bold;">Payback</span></a>
+                            style="font-size: 13px; font-weight: bold;">Payback</span></a>
                 </div>
             </div>
 
@@ -189,7 +191,22 @@
                 style="background-color: #edc78b; border-radius: 10px; padding: 16px;">
                 <div
                     class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="35px" height="35px" viewBox="0 0 94.667 94.667" xml:space="preserve" stroke="#000000" stroke-width="1.3253380000000001"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M82.413,9.146h9.346V83.33h-9.346V9.146z M63.803,11.831l-1.294,0.402c-1.62,0.512-3.524-0.201-4.179-1.558 c-0.314-0.657-0.329-1.383-0.041-2.047c0.334-0.768,1.044-1.369,1.945-1.65l14.591-4.545l1.776,13.001 c0.1,0.662-0.086,1.338-0.525,1.898c-0.537,0.688-1.4,1.134-2.368,1.226c-0.116,0.012-0.246,0.018-0.371,0.018 c-1.651,0-3.053-1.052-3.261-2.444l-0.225-1.967C52.988,37.514,14.157,62.539,12.472,63.617c-0.572,0.366-1.256,0.561-1.98,0.561 c-0.976,0-1.894-0.36-2.517-0.991c-0.573-0.577-0.841-1.313-0.758-2.069c0.087-0.785,0.558-1.507,1.294-1.975 C8.906,58.889,47.367,34.026,63.803,11.831z M74.859,25.623v57.705h-9.344V25.623H74.859z M58.518,42.77v40.56h-9.347V42.77 H58.518z M41.617,60.583v22.744h-9.345V60.583H41.617z M23.75,69.494v13.834h-9.344V69.494H23.75z M94.666,92.234H0V85.3h94.667 L94.666,92.234L94.666,92.234z"></path> </g> </g> </g></svg>
+                    <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" width="35px" height="35px"
+                        viewBox="0 0 94.667 94.667" xml:space="preserve" stroke="#000000"
+                        stroke-width="1.3253380000000001">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <g>
+                                <g>
+                                    <path
+                                        d="M82.413,9.146h9.346V83.33h-9.346V9.146z M63.803,11.831l-1.294,0.402c-1.62,0.512-3.524-0.201-4.179-1.558 c-0.314-0.657-0.329-1.383-0.041-2.047c0.334-0.768,1.044-1.369,1.945-1.65l14.591-4.545l1.776,13.001 c0.1,0.662-0.086,1.338-0.525,1.898c-0.537,0.688-1.4,1.134-2.368,1.226c-0.116,0.012-0.246,0.018-0.371,0.018 c-1.651,0-3.053-1.052-3.261-2.444l-0.225-1.967C52.988,37.514,14.157,62.539,12.472,63.617c-0.572,0.366-1.256,0.561-1.98,0.561 c-0.976,0-1.894-0.36-2.517-0.991c-0.573-0.577-0.841-1.313-0.758-2.069c0.087-0.785,0.558-1.507,1.294-1.975 C8.906,58.889,47.367,34.026,63.803,11.831z M74.859,25.623v57.705h-9.344V25.623H74.859z M58.518,42.77v40.56h-9.347V42.77 H58.518z M41.617,60.583v22.744h-9.345V60.583H41.617z M23.75,69.494v13.834h-9.344V69.494H23.75z M94.666,92.234H0V85.3h94.667 L94.666,92.234L94.666,92.234z">
+                                    </path>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
                 </div>
                 <div>
                     <h2 class=" text-body-emphasis" style="color: white !important; fornt-size: 10px !important;">IPO</h2>
@@ -203,7 +220,19 @@
                 style="background-color: #c7ed67;border-radius: 10px; padding: 16px;">
                 <div
                     class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.096"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20 15C20.5523 15 21 14.5523 21 14C21 13.4477 20.5523 13 20 13C19.4477 13 19 13.4477 19 14C19 14.5523 19.4477 15 20 15Z" fill="#0F0F0F"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M16.775 0.985398C18.4919 0.460783 20.2821 1.55148 20.6033 3.3178L20.9362 5.14896C22.1346 5.54225 23 6.67006 23 8V10.7639C23.6137 11.3132 24 12.1115 24 13V15C24 15.8885 23.6137 16.6868 23 17.2361V20C23 21.6569 21.6569 23 20 23H4C2.34315 23 1 21.6569 1 20V8C1 6.51309 2.08174 5.27884 3.50118 5.04128L16.775 0.985398ZM21 16C21.5523 16 22 15.5523 22 15V13C22 12.4477 21.5523 12 21 12H18C17.4477 12 17 12.4477 17 13V15C17 15.5523 17.4477 16 18 16H21ZM21 18V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V8C3 7.44772 3.44772 7 4 7H20C20.55 7 20.9962 7.44396 21 7.99303L21 10H18C16.3431 10 15 11.3431 15 13V15C15 16.6569 16.3431 18 18 18H21ZM18.6954 3.60705L18.9412 5H10L17.4232 2.82301C17.9965 2.65104 18.5914 3.01769 18.6954 3.60705Z" fill="#0F0F0F"></path> </g></svg>
+                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.096">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M20 15C20.5523 15 21 14.5523 21 14C21 13.4477 20.5523 13 20 13C19.4477 13 19 13.4477 19 14C19 14.5523 19.4477 15 20 15Z"
+                                fill="#0F0F0F"></path>
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M16.775 0.985398C18.4919 0.460783 20.2821 1.55148 20.6033 3.3178L20.9362 5.14896C22.1346 5.54225 23 6.67006 23 8V10.7639C23.6137 11.3132 24 12.1115 24 13V15C24 15.8885 23.6137 16.6868 23 17.2361V20C23 21.6569 21.6569 23 20 23H4C2.34315 23 1 21.6569 1 20V8C1 6.51309 2.08174 5.27884 3.50118 5.04128L16.775 0.985398ZM21 16C21.5523 16 22 15.5523 22 15V13C22 12.4477 21.5523 12 21 12H18C17.4477 12 17 12.4477 17 13V15C17 15.5523 17.4477 16 18 16H21ZM21 18V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V8C3 7.44772 3.44772 7 4 7H20C20.55 7 20.9962 7.44396 21 7.99303L21 10H18C16.3431 10 15 11.3431 15 13V15C15 16.6569 16.3431 18 18 18H21ZM18.6954 3.60705L18.9412 5H10L17.4232 2.82301C17.9965 2.65104 18.5914 3.01769 18.6954 3.60705Z"
+                                fill="#0F0F0F"></path>
+                        </g>
+                    </svg>
                 </div>
                 <div>
                     <h3 class="fs-2 text-body-emphasis" style="color: #ffffff !important;">SCO</h3>
@@ -217,7 +246,16 @@
                 style="background-color: #88e0f0; border-radius: 10px; padding: 16px;">
                 <div
                     class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5 3C3.89543 3 3 3.89543 3 5V6.83772L1.49006 11.3675C1.10052 12.5362 1.8474 13.7393 3 13.963V20C3 21.1046 3.89543 22 5 22H9H10H14H15H19C20.1046 22 21 21.1046 21 20V13.963C22.1526 13.7393 22.8995 12.5362 22.5099 11.3675L21 6.83772V5C21 3.89543 20.1046 3 19 3H5ZM15 20H19V14H17.5H12H6.5H5V20H9V17C9 15.3431 10.3431 14 12 14C13.6569 14 15 15.3431 15 17V20ZM11 20H13V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V20ZM3.38743 12L4.72076 8H6.31954L5.65287 12H4H3.38743ZM7.68046 12L8.34713 8H11V12H7.68046ZM13 12V8H15.6529L16.3195 12H13ZM18.3471 12L17.6805 8H19.2792L20.6126 12H20H18.3471ZM19 5V6H16.5H12H7.5H5V5H19Z" fill="#000000"></path> </g></svg>
+                    <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5 3C3.89543 3 3 3.89543 3 5V6.83772L1.49006 11.3675C1.10052 12.5362 1.8474 13.7393 3 13.963V20C3 21.1046 3.89543 22 5 22H9H10H14H15H19C20.1046 22 21 21.1046 21 20V13.963C22.1526 13.7393 22.8995 12.5362 22.5099 11.3675L21 6.83772V5C21 3.89543 20.1046 3 19 3H5ZM15 20H19V14H17.5H12H6.5H5V20H9V17C9 15.3431 10.3431 14 12 14C13.6569 14 15 15.3431 15 17V20ZM11 20H13V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V20ZM3.38743 12L4.72076 8H6.31954L5.65287 12H4H3.38743ZM7.68046 12L8.34713 8H11V12H7.68046ZM13 12V8H15.6529L16.3195 12H13ZM18.3471 12L17.6805 8H19.2792L20.6126 12H20H18.3471ZM19 5V6H16.5H12H7.5H5V5H19Z"
+                                fill="#000000"></path>
+                        </g>
+                    </svg>
                 </div>
                 <div>
                     <h3 class="fs-2 text-body-emphasis" style="color: #ffffff !important;">POS</h3>
@@ -372,13 +410,22 @@
             <div class="accordion-item" style="border: 1px solid #757575;" id="aboutus">
                 <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="color: black; font-weight: bold;">
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                        style="color: black; font-weight: bold;">
                         About Us
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        M/S Satshree Marketing Pvt. Ltd. (SMPL) is a Pvt. Ltd. company registered under the Companies Act of 1956, established in February 2002. It was founded by a group of professionals with extensive experience in marketing stocks, products, services, loans, financial instruments, estates, assets, and insurance for individuals, companies, and government and non-government bodies. We recognize that limited education, resources, and a weak background prevent many talented individuals from succeeding. Our mission is to create lasting opportunities for socially interactive, sustained growth, aiming to provide support for thousands of customers and contribute to the nation’s economic progress.
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
+                        M/S Satshree Marketing Pvt. Ltd. (SMPL) is a Pvt. Ltd. company registered under the Companies Act of
+                        1956, established in February 2002. It was founded by a group of professionals with extensive
+                        experience in marketing stocks, products, services, loans, financial instruments, estates, assets,
+                        and insurance for individuals, companies, and government and non-government bodies. We recognize
+                        that limited education, resources, and a weak background prevent many talented individuals from
+                        succeeding. Our mission is to create lasting opportunities for socially interactive, sustained
+                        growth, aiming to provide support for thousands of customers and contribute to the nation’s economic
+                        progress.
 
                     </div>
                 </div>
@@ -386,39 +433,60 @@
             <div class="accordion-item" style="border: 1px solid #757575;" id="mission">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseTwo" aria-expanded="false" style="color: black; font-weight: bold;" aria-controls="collapseTwo">
+                        data-bs-target="#collapseTwo" aria-expanded="false" style="color: black; font-weight: bold;"
+                        aria-controls="collapseTwo">
                         Mission
                     </button>
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Our mission is to create a free economy where individuals can enjoy spending without the burden of paying, fostering a nation where financial freedom is accessible to all. We aim to drive national growth through social engineering that empowers recession-free development, with a target of achieving a 5 trillion GDP within two years. Through our Free Bazar platform, we offer an opportunity for people to access goods and services for free, promoting financial stability, prosperity, and a better quality of life for every citizen.
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
+                        Our mission is to create a free economy where individuals can enjoy spending without the burden of
+                        paying, fostering a nation where financial freedom is accessible to all. We aim to drive national
+                        growth through social engineering that empowers recession-free development, with a target of
+                        achieving a 5 trillion GDP within two years. Through our Free Bazar platform, we offer an
+                        opportunity for people to access goods and services for free, promoting financial stability,
+                        prosperity, and a better quality of life for every citizen.
                     </div>
                 </div>
             </div>
             <div class="accordion-item" style="border: 1px solid #757575;" id="vision">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseThree" aria-expanded="false" style="color: black; font-weight: bold;" aria-controls="collapseThree">
+                        data-bs-target="#collapseThree" aria-expanded="false" style="color: black; font-weight: bold;"
+                        aria-controls="collapseThree">
                         Vision
                     </button>
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Our vision is to drive sustained economic growth in the country and provide financial support to every Indian citizen. We aim to expand Free Bazar (POS) terminals nationwide, offering customers access to quality products and services at competitive prices. By doing so, we help individuals acquire savings, security, and the potential for significant earnings, ultimately fostering a blissful and prosperous lifestyle for all.
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
+                        Our vision is to drive sustained economic growth in the country and provide financial support to
+                        every Indian citizen. We aim to expand Free Bazar (POS) terminals nationwide, offering customers
+                        access to quality products and services at competitive prices. By doing so, we help individuals
+                        acquire savings, security, and the potential for significant earnings, ultimately fostering a
+                        blissful and prosperous lifestyle for all.
                     </div>
                 </div>
             </div>
             <div class="accordion-item" style="border: 1px solid #757575;" id="concept">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseFour" style="color: black; font-weight: bold;" aria-expanded="false" aria-controls="collapseFour">
+                        data-bs-target="#collapseFour" style="color: black; font-weight: bold;" aria-expanded="false"
+                        aria-controls="collapseFour">
                         Concept
                     </button>
                 </h2>
                 <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        The FreeBazar concept is a unique retail selling program that combines the best aspects of traditional and online marketing. It offers quality products at excellent prices, with a payback facility up to 100% through the “Spend More to Earn More” technology. The concept empowers consumers to save, earn, and ride over inflation, transforming their buying habits into a means of financial stability. It presents a risk-free business opportunity, encouraging people to participate and promote the brand. Free Bazar aims to provide a hassle-free, luxurious life while offering secure lifetime returns to everyone in society.
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
+                        The FreeBazar concept is a unique retail selling program that combines the best aspects of
+                        traditional and online marketing. It offers quality products at excellent prices, with a payback
+                        facility up to 100% through the “Spend More to Earn More” technology. The concept empowers consumers
+                        to save, earn, and ride over inflation, transforming their buying habits into a means of financial
+                        stability. It presents a risk-free business opportunity, encouraging people to participate and
+                        promote the brand. Free Bazar aims to provide a hassle-free, luxurious life while offering secure
+                        lifetime returns to everyone in society.
                     </div>
                 </div>
             </div>

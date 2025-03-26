@@ -1,20 +1,14 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use Carbon\Carbon;
 use App\Models\PosModel;
-use App\Models\Product;
-use App\Models\sponcer;
 use App\Models\Sponsor;
 use App\Models\User;
-use App\Models\UserPayment;
 use App\Models\UserWallet;
 use App\Models\Wallet;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserDashboardController extends Controller
@@ -22,9 +16,9 @@ class UserDashboardController extends Controller
     public function index(Request $request)
     {
         $user_profile = auth()->user();
-        $userId = $user_profile->id;
+        $userId       = $user_profile->id;
         // dd($userId);
-        $sponsors = Sponsor::where('sponsor_id', $userId)->get();
+        $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($sponsors_count);
         $transactionQuery = Wallet::where('user_id', $userId)->with('userWallets');
@@ -40,7 +34,7 @@ class UserDashboardController extends Controller
         //    dd($monthlyPurchases);
 
         $month = Carbon::now()->month;
-        $year = Carbon::now()->year;
+        $year  = Carbon::now()->year;
 
         $monthlyPurchase = Wallet::where('user_id', $userId)
             ->with('userWallets')
@@ -54,10 +48,14 @@ class UserDashboardController extends Controller
             $transactionQuery->where('transaction_date', '>=', $request->from_date);
         } elseif ($request->has('to_date')) {
             $transactionQuery->where('transaction_date', '<=', $request->to_date);
+        } else {
+            // Default to current month filter if no date range is provided
+            $transactionQuery->whereMonth('transaction_date', now()->month)
+                ->whereYear('transaction_date', now()->year);
         }
 
-        // my code 
-        $walletList = $transactionQuery->orderBy('id', 'desc')->simplepaginate(5);
+        // my code
+        $walletList = $transactionQuery->orderBy('id', 'desc')->simplepaginate(50);
 
         $walletList->getCollection()->transform(function ($item) {
             $user_wallets = $item->userWallets;
@@ -76,7 +74,7 @@ class UserDashboardController extends Controller
         //         return $item;
         //     })->paginate(15);
 
-        // dd($walletList->all()[0]); 
+        // dd($walletList->all()[0]);
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
         $walletBalance = self::get_total_wallet_amount($userId);
@@ -112,39 +110,39 @@ class UserDashboardController extends Controller
     public function payment(Request $request)
     {
         // dd($request->all());
-        $user = User::find($request->user_id);
-        $sponsors = Sponsor::where('sponsor_id', $user->id)->get();
+        $user           = User::find($request->user_id);
+        $sponsors       = Sponsor::where('sponsor_id', $user->id)->get();
         $sponsors_count = count($sponsors);
         // Verify password
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return redirect()->back()->with('error', 'Incorrect password. Please try again.');
         }
         $userId = Auth::user()->id;
         // dd($userId);
-        $posId = intval($request->input('pos_id'));
-        $pos = PosModel::find($posId);
-        $randomNumber = mt_rand(1, 99999);
-        $invoiceNumber = $randomNumber + 1;
-        $invoice = 'S' . str_pad($invoiceNumber, 6, '0', STR_PAD_LEFT);
-        $amount = $request->billing_amount;
-        $mobilenumber = $request->mobilenumber;
+        $posId            = intval($request->input('pos_id'));
+        $pos              = PosModel::find($posId);
+        $randomNumber     = mt_rand(1, 99999);
+        $invoiceNumber    = $randomNumber + 1;
+        $invoice          = 'S' . str_pad($invoiceNumber, 6, '0', STR_PAD_LEFT);
+        $amount           = $request->billing_amount;
+        $mobilenumber     = $request->mobilenumber;
         $transaction_date = $request->transaction_date;
-        $pay_by = $request->pay_by;
-        $alt_pay_by = $request->alternative_pay_by;
+        $pay_by           = $request->pay_by;
+        $alt_pay_by       = $request->alternative_pay_by;
         // dd($alt_pay_by);
         $transaction_charge = $pos ? $pos->transaction_charge : 0;
         $transaction_amount = $amount * ($transaction_charge / 100);
-        $walletUsedAmount = 0;
+        $walletUsedAmount   = 0;
 
-        $userWalletEntry = new UserWallet();
-        $userWalletEntry->invoice = $invoice;
-        $userWalletEntry->user_id = $userId;
-        $userWalletEntry->mobilenumber = $mobilenumber;
+        $userWalletEntry                   = new UserWallet();
+        $userWalletEntry->invoice          = $invoice;
+        $userWalletEntry->user_id          = $userId;
+        $userWalletEntry->mobilenumber     = $mobilenumber;
         $userWalletEntry->transaction_date = $transaction_date;
-        $userWalletEntry->pay_by = 'wallet';
-        $userWalletEntry->trans_type = 'debit';
-        $userWalletEntry->pos_id = $pos->id ?? null;
-        $currentWalletBalance = self::get_total_wallet_amount($userId);
+        $userWalletEntry->pay_by           = 'wallet';
+        $userWalletEntry->trans_type       = 'debit';
+        $userWalletEntry->pos_id           = $pos->id ?? null;
+        $currentWalletBalance              = self::get_total_wallet_amount($userId);
         if ($sponsors_count >= 10) {
             if ($pay_by == 'wallet') {
                 $userWallet = UserWallet::where('user_id', $userId)->get();
@@ -156,83 +154,83 @@ class UserDashboardController extends Controller
                 }
 
                 $walletUsedAmount = min($amount, $walletBalance);
-                $remainingAmount = $amount - $walletUsedAmount;
+                $remainingAmount  = $amount - $walletUsedAmount;
 
-                $walletEntry = new Wallet();
-                $walletEntry->user_id = $userId;
-                $walletEntry->invoice = $invoice;
-                $walletEntry->mobilenumber = $mobilenumber;
-                $walletEntry->transaction_date = $transaction_date;
-                $walletEntry->billing_amount = $amount;
+                $walletEntry                     = new Wallet();
+                $walletEntry->user_id            = $userId;
+                $walletEntry->invoice            = $invoice;
+                $walletEntry->mobilenumber       = $mobilenumber;
+                $walletEntry->transaction_date   = $transaction_date;
+                $walletEntry->billing_amount     = $amount;
                 $walletEntry->transaction_amount = $transaction_amount;
 
                 if ($walletBalance >= $amount) {
                     $walletEntry->amount_wallet = $amount;
-                    $walletEntry->pay_by = 'wallet';
-                    $walletEntry->tran_type = 'debit';
-                    $walletEntry->amount = 0;
+                    $walletEntry->pay_by        = 'wallet';
+                    $walletEntry->tran_type     = 'debit';
+                    $walletEntry->amount        = 0;
                 } else {
                     $walletEntry->amount_wallet = $walletUsedAmount;
-                    $walletEntry->pay_by = $alt_pay_by;
-                    $walletEntry->tran_type = 'credit';
+                    $walletEntry->pay_by        = $alt_pay_by;
+                    $walletEntry->tran_type     = 'credit';
                     // $walletEntry->status = ;
                     $walletEntry->amount = $remainingAmount;
                 }
 
-                $walletEntry->pos_id = $pos->id ?? null;
+                $walletEntry->pos_id      = $pos->id ?? null;
                 $walletEntry->insert_date = now();
                 $walletEntry->save();
 
-                $userWalletEntry->wallet_id = $walletEntry->id;
+                $userWalletEntry->wallet_id   = $walletEntry->id;
                 $userWalletEntry->used_amount = $walletUsedAmount;
                 $userWalletEntry->save();
             } else {
-                $remainingAmount = $amount;
-                $dsrlist = new Wallet();
-                $dsrlist->invoice = $invoice;
-                $dsrlist->user_id = $userId;
-                $dsrlist->amount = $request->paying_amount;
-                $dsrlist->pay_by = $pay_by;
-                $dsrlist->mobilenumber = $mobilenumber;
-                $dsrlist->transaction_date = $transaction_date;
-                $dsrlist->tran_type = 'credit';
-                $dsrlist->billing_amount = $amount;
-                $dsrlist->amount_wallet = 0;
+                $remainingAmount             = $amount;
+                $dsrlist                     = new Wallet();
+                $dsrlist->invoice            = $invoice;
+                $dsrlist->user_id            = $userId;
+                $dsrlist->amount             = $request->paying_amount;
+                $dsrlist->pay_by             = $pay_by;
+                $dsrlist->mobilenumber       = $mobilenumber;
+                $dsrlist->transaction_date   = $transaction_date;
+                $dsrlist->tran_type          = 'credit';
+                $dsrlist->billing_amount     = $amount;
+                $dsrlist->amount_wallet      = 0;
                 $dsrlist->transaction_amount = $transaction_amount;
-                $dsrlist->pos_id = $pos->id ?? null;
-                $dsrlist->insert_date = now();
+                $dsrlist->pos_id             = $pos->id ?? null;
+                $dsrlist->insert_date        = now();
                 $dsrlist->save();
 
-                $userWalletEntry->wallet_id = $dsrlist->id;
-                $userWalletEntry->used_amount = 0;
+                $userWalletEntry->wallet_id        = $dsrlist->id;
+                $userWalletEntry->used_amount      = 0;
                 $userWalletEntry->remaining_amount = $currentWalletBalance;
                 $userWalletEntry->save();
             }
         } else {
             $remainingAmount = $amount;
-            $amount_wallet = $amount * (5 / 100);
+            $amount_wallet   = $amount * (5 / 100);
 
             if ($currentWalletBalance <= $amount_wallet) {
                 $amount_wallet = $currentWalletBalance;
             }
 
-            $dsrlist = new Wallet();
-            $dsrlist->invoice = $invoice;
-            $dsrlist->user_id = $userId;
-            $dsrlist->amount = $request->paying_amount;
-            $dsrlist->pay_by = $pay_by;
-            $dsrlist->mobilenumber = $mobilenumber;
-            $dsrlist->transaction_date = $transaction_date;
-            $dsrlist->tran_type = 'credit';
-            $dsrlist->billing_amount = $amount;
-            $dsrlist->amount_wallet = $amount_wallet;
+            $dsrlist                     = new Wallet();
+            $dsrlist->invoice            = $invoice;
+            $dsrlist->user_id            = $userId;
+            $dsrlist->amount             = $request->paying_amount;
+            $dsrlist->pay_by             = $pay_by;
+            $dsrlist->mobilenumber       = $mobilenumber;
+            $dsrlist->transaction_date   = $transaction_date;
+            $dsrlist->tran_type          = 'credit';
+            $dsrlist->billing_amount     = $amount;
+            $dsrlist->amount_wallet      = $amount_wallet;
             $dsrlist->transaction_amount = $transaction_amount;
-            $dsrlist->pos_id = $pos->id ?? null;
-            $dsrlist->insert_date = now();
+            $dsrlist->pos_id             = $pos->id ?? null;
+            $dsrlist->insert_date        = now();
             $dsrlist->save();
 
-            $userWalletEntry->wallet_id = $dsrlist->id;
-            $userWalletEntry->used_amount = $amount_wallet;
+            $userWalletEntry->wallet_id        = $dsrlist->id;
+            $userWalletEntry->used_amount      = $amount_wallet;
             $userWalletEntry->remaining_amount = $currentWalletBalance - $amount_wallet;
             $userWalletEntry->save();
         }
@@ -241,7 +239,6 @@ class UserDashboardController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Payment verified successfully.', 'billing_amount' => $request->billing_amount, 'paying_amount' => $request->paying_amount]);
     }
-
 
     // public function verifyPayment(Request $request)
     // {
@@ -266,11 +263,10 @@ class UserDashboardController extends Controller
     //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
     // }
 
-
     public function addUser()
     {
-        $user_id = auth()->user()->user_id;
-        $states = User::select('state')->where('role', 3)->whereNotNull('state')->where('state', '!=', '')->distinct()->pluck('state');
+        $user_id       = auth()->user()->user_id;
+        $states        = User::select('state')->where('role', 3)->whereNotNull('state')->where('state', '!=', '')->distinct()->pluck('state');
         $relation_user = User::select('relation_user')->where('role', 3)->whereNotNull('relation_user')->where('relation_user', '!=', '')->distinct()->pluck('relation_user');
         // dd($relation_user);
         return view('frontend.dashboard.adduser', compact('user_id', 'states', 'relation_user'));
@@ -284,25 +280,25 @@ class UserDashboardController extends Controller
         ]);
         $sponsor = User::where('user_id', $request->sponsor_id)->first();
         // dd($sponsor);
-        $user_add = new User;
-        $user_add->name = $request->name;
-        $user_add->user_id = mt_rand(1000000, 9999999);
-        $user_add->email = $request->email;
-        $user_add->password = Hash::make('123456');
-        $user_add->mobilenumber = $request->mobilenumber;
-        $user_add->gender = $request->gender;
-        $user_add->sponsor_id = $sponsor->id;
-        $user_add->address = $request->address;
-        $user_add->city = $request->city;
-        $user_add->state = $request->state;
-        $user_add->zip = $request->zip;
-        $user_add->pan_no = $request->pan_no;
-        $user_add->ifsc = $request->ifsc;
-        $user_add->account_no = $request->account_no;
-        $user_add->nominee_name = $request->nominee_name;
-        $user_add->bank = $request->bank;
+        $user_add                = new User;
+        $user_add->name          = $request->name;
+        $user_add->user_id       = mt_rand(1000000, 9999999);
+        $user_add->email         = $request->email;
+        $user_add->password      = Hash::make('123456');
+        $user_add->mobilenumber  = $request->mobilenumber;
+        $user_add->gender        = $request->gender;
+        $user_add->sponsor_id    = $sponsor->id;
+        $user_add->address       = $request->address;
+        $user_add->city          = $request->city;
+        $user_add->state         = $request->state;
+        $user_add->zip           = $request->zip;
+        $user_add->pan_no        = $request->pan_no;
+        $user_add->ifsc          = $request->ifsc;
+        $user_add->account_no    = $request->account_no;
+        $user_add->nominee_name  = $request->nominee_name;
+        $user_add->bank          = $request->bank;
         $user_add->relation_user = $request->relation_user;
-        $user_add->role = 3;
+        $user_add->role          = 3;
         $user_add->assignRole([$user_add->role]);
 
         if ($request->hasFile('image')) {
@@ -312,8 +308,8 @@ class UserDashboardController extends Controller
         }
 
         if ($user_add->save()) {
-            $sponcer = new Sponsor();
-            $sponcer->user_id = $user_add->id;
+            $sponcer             = new Sponsor();
+            $sponcer->user_id    = $user_add->id;
             $sponcer->sponsor_id = $request->hidden_user_id;
 
             if ($sponcer->save()) {
@@ -326,16 +322,16 @@ class UserDashboardController extends Controller
     }
     public function wallet()
     {
-        $user_profile = auth()->user();
-        $userId = $user_profile->id;
-        $sponsors = Sponsor::where('sponsor_id', $userId)->get();
+        $user_profile   = auth()->user();
+        $userId         = $user_profile->id;
+        $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $userWallet = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
+        $userWallet      = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = self::get_total_wallet_amount($userId);
-        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile','sponsors_count'));
+        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
     }
     public function termCondition()
     {
@@ -343,7 +339,7 @@ class UserDashboardController extends Controller
     }
     public function sponsorList()
     {
-        $userId = auth()->user()->id;
+        $userId  = auth()->user()->id;
         $sponcer = Sponsor::where('sponsor_id', $userId)->get();
         // dd($sponcer);
         return view('frontend.dashboard.sponser_list', compact('sponcer'));
@@ -352,7 +348,7 @@ class UserDashboardController extends Controller
     {
         $query = PosModel::query();
 
-        if ($request->has('search') && !empty($request->search)) {
+        if ($request->has('search') && ! empty($request->search)) {
             $searchTerm = $request->search;
             $query->where('city', 'LIKE', "%{$searchTerm}%")
                 ->orWhere('zip', 'LIKE', "%{$searchTerm}%");
@@ -363,18 +359,16 @@ class UserDashboardController extends Controller
         return view('frontend.dashboard.pos_list', compact('pos'));
     }
 
-
     public function editprofile()
     {
         $user_profile = auth()->user();
-        $states = User::select('state')->where('role', 3)->whereNotNull('state')->distinct()->pluck('state');
+        $states       = User::select('state')->where('role', 3)->whereNotNull('state')->distinct()->pluck('state');
         return view('frontend.dashboard.editprofile', compact('user_profile', 'states'));
     }
     public function updateprofile(Request $request)
     {
 
         $update_profile = User::find(auth()->id());
-
 
         if ($request->mobilenumber !== $update_profile->mobilenumber) {
             $update_profile->requestMobileNumberUpdate($request->mobilenumber);
@@ -383,12 +377,12 @@ class UserDashboardController extends Controller
             return redirect()->route('user.index');
         }
 
-        $update_profile->email = $request->email;
-        $update_profile->address = $request->address;
-        $update_profile->city = $request->city;
-        $update_profile->state = $request->state;
-        $update_profile->zip = $request->zip;
-        $update_profile->nominee_name = $request->nominee_name;
+        $update_profile->email         = $request->email;
+        $update_profile->address       = $request->address;
+        $update_profile->city          = $request->city;
+        $update_profile->state         = $request->state;
+        $update_profile->zip           = $request->zip;
+        $update_profile->nominee_name  = $request->nominee_name;
         $update_profile->relation_user = $request->relation_user;
 
         if ($request->hasFile('image')) {
@@ -411,7 +405,7 @@ class UserDashboardController extends Controller
         $request->validate([
             'password' => 'required|min:6|confirmed',
         ]);
-        $newpass = Auth::user();
+        $newpass           = Auth::user();
         $newpass->password = Hash::make($request->password);
         if ($newpass->save()) {
             flash()->addSuccess('Your password has been successfully updated.');
