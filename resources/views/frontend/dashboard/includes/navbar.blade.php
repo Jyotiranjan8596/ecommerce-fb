@@ -211,9 +211,8 @@
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img width="45px" height="45px" class="avatar rounded-circle"
-                                alt="{{ auth()->user()->name }}"
-                                src="{{ asset('assets/img/team/profile-picture-3.jpg') }}" />
+                            <img width="45px" height="45px" class="avatar rounded-circle" alt="{{ auth()->user()->name }}"
+                                src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
                             </div>

@@ -371,7 +371,7 @@
                 <div class="col-md-6 col-12 mb-4" style="width: 100%">
                     <div class="card flex-fill">
                         <div class="card-body py-4">
-                            <h6><b>POS Transaction (Latest 5 Transactions)</b></h6>
+                            <h6><b>POS Transaction (Latest 50 Transactions)</b></h6>
                             <br>
                             <!-- Date Filter Form -->
                             <form action="{{ route('user.index') }}" method="GET" class="form-inline mb-3">
