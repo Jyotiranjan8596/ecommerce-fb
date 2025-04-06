@@ -471,16 +471,16 @@
                     console.log(upiUrl);
 
                     // Open UPI scanners
-                    userPayment(formData);
+                    userPayment(formData, payBy);
                     window.location.href = upiUrl; // Use replace instead of href to avoid going back
 
                 } else {
-                    userPayment(formData);
+                    userPayment(formData, payBy);
                 }
             }
         });
 
-        function userPayment(formData) {
+        function userPayment(formData, payBy) {
             $.ajax({
                 url: "{{ route('user.payment') }}",
                 type: "POST",
@@ -494,14 +494,35 @@
                     console.log("Response JSON:", data); // ✅ Log response JSON
 
                     if (data.success) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Payment Success",
-                            html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
-                            showConfirmButton: true,
-                        }).then(() => {
-                            window.location.reload();
-                        });
+                        if (payBy == "upi") {
+                            Swal.fire({
+                                icon: "info",
+                                title: "Please pay only on <b>CRED</b>",
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                customClass: {
+                                    title: 'swal2-title-custom',
+                                },
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Payment Success",
+                                toast: true,
+                                position: 'top-end', // or 'bottom-end' / 'top-start' etc.
+                                showConfirmButton: false,
+                                timer: 2000, // Duration in ms
+                                timerProgressBar: true,
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+
                     } else {
                         Swal.fire({
                             icon: "error",
