@@ -66,8 +66,8 @@
                     <!-- Hidden Fields -->
 
                     <input type="hidden" name="pos_id" id="qrDataId" />
-                    <input type="hidden" name="invoice" />
                     <input type="hidden" name="upi_id" id="upi_ID" />
+                    <input type="hidden" name="invoice" />
                     <input type="hidden" name="user_id" value="{{ $user_profile->id }}" />
                     <input type="hidden" name="mobilenumber" value="{{ $user_profile->mobilenumber }}" />
                     <input type="hidden" name="insert_date" id="insert_date" />
@@ -255,7 +255,8 @@
                 console.log(id);
 
                 document.getElementById("qr-details-text").innerHTML = "Freebazar";
-                document.getElementById("upi_ID").innerHTML = name;
+                document.getElementById("upi_ID").value = name;
+                console.log(document.getElementById("upi_ID").value);
                 // Store the ID in a hidden input field
                 // document.getElementById("qrDataId").value = id;
                 // console.log("POS ID: " + id);
@@ -447,75 +448,39 @@
         document.getElementById('checked-wallet').addEventListener('change', checkWalletBalance);
         document.getElementById('pay_by').addEventListener('change', checkWalletBalance);
         document.getElementById('billing_amount').addEventListener('input', checkWalletBalance);
-    });
-    document.getElementById("qrForm").addEventListener("submit", function(event) {
 
-        event.preventDefault(); // Prevent form from submitting normally
-        // Create FormData object
-        console.log("comming");
-        let formData = new FormData(this);
-        console.log(formData);
+        document.getElementById("qrForm").addEventListener("submit", function(event) {
 
-        // let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
-        let payingAmount = document.getElementById("paying_amount").value;
-        let payBy = document.getElementById("pay_by").value;
-        // let testUpiName = document.getElementById("qr-details-text").value;
-        // console.log(testUpiName);
-        if (!payingAmount || payingAmount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        } else {
-            if (payBy == "upi") {
-                let upiUrl = document.getElementById("upi_ID").value;
-                console.log(upiUrl);
+            event.preventDefault(); // Prevent form from submitting normally
+            // Create FormData object
+            console.log("comming");
+            let formData = new FormData(this);
+            console.log(formData);
 
-                // Open UPI scanner
-                window.location.href(upiUrl); // Use replace instead of href to avoid going back
-
-                userPayment();
+            // let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
+            let payingAmount = document.getElementById("paying_amount").value;
+            let payBy = document.getElementById("pay_by").value;
+            // let testUpiName = document.getElementById("qr-details-text").value;
+            // console.log(testUpiName);
+            if (!payingAmount || payingAmount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
             } else {
-                userPayment();
+                if (payBy == "upi") {
+                    let upiUrl = document.getElementById("upi_ID").value;
+                    console.log(upiUrl);
+
+                    // Open UPI scanners
+                    userPayment(formData);
+                    window.location.href = upiUrl; // Use replace instead of href to avoid going back
+
+                } else {
+                    userPayment(formData);
+                }
             }
-        }
+        });
 
-
-        // let name = "Freebazar";
-        // const notes = encodeURIComponent("Payment to Freebazar");
-        // // let upiID = "paytmqr1n5npu77bo@paytm"
-        // let upiID = "paytmqr661cw8@ptys"
-        // if (selectedUPI == "googlepay") {
-        //     let upiUrl =
-        //         `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(payingAmount)}&cu=INR${notes ? '&tn=' + encodeURIComponent(notes) : ''}`;
-        //     console.log("Redirecting to Google Pay Scanner...");
-
-        //     // Open UPI scanner
-        //     window.location.replace(upiUrl); // Use replace instead of href to avoid going back
-
-        //     // Call userPayment AFTER a delay (since redirection happens immediately)
-        //     setTimeout(() => {
-        //         userPayment();
-        //     }, 3000); // Adjust timing if needed
-
-        // } else if (selectedUPI == "phonepe") {
-        //     console.log("phonepe");
-
-        //     // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-        //     // let upiUrl =`upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
-        //     let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=com.phonepe.app;end;`;
-        //     window.location.href = upiUrl;
-        //     userPayment();
-        // } else if (selectedUPI == "paytm") {
-        //     console.log("paytm");
-
-        //     // let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-        //     let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=net.one97.paytm;end`;
-        //     window.location.href = upiUrl;
-        //     userPayment();
-        // } else {
-
-        // }
-
-        function userPayment() {
+        function userPayment(formData) {
             $.ajax({
                 url: "{{ route('user.payment') }}",
                 type: "POST",
