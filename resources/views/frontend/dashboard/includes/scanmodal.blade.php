@@ -67,6 +67,7 @@
 
                     <input type="hidden" name="pos_id" id="qrDataId" />
                     <input type="hidden" name="invoice" />
+                    <input type="hidden" name="upi_id" id="upi_ID" />
                     <input type="hidden" name="user_id" value="{{ $user_profile->id }}" />
                     <input type="hidden" name="mobilenumber" value="{{ $user_profile->mobilenumber }}" />
                     <input type="hidden" name="insert_date" id="insert_date" />
@@ -245,14 +246,19 @@
                 let qrModal = bootstrap.Modal.getInstance(document.getElementById("qrScannerModal"));
                 qrModal.hide();
 
+                console.log("jyoti" + decodedText);
+
                 let parts = decodedText.split('|');
                 let name = parts[0]; // The name part before '|'
                 let id = parts[1]; // The id part after '|'
-                document.getElementById("qr-details-text").innerHTML = "POS NAME: <b>" + name + "</b>";
+                console.log(name);
+                console.log(id);
 
+                document.getElementById("qr-details-text").innerHTML = "Freebazar";
+                document.getElementById("upi_ID").innerHTML = name;
                 // Store the ID in a hidden input field
-                document.getElementById("qrDataId").value = id;
-                console.log("POS ID: " + id);
+                // document.getElementById("qrDataId").value = id;
+                // console.log("POS ID: " + id);
 
                 // Open the QR Details modal and stop the scanner
                 let qrDetailsModal = new bootstrap.Modal(document.getElementById("qrDetailsModal"), {
@@ -262,7 +268,9 @@
                 htmlscanner.clear(); // Properly stop the scanner
                 // qrDetailsModal.show();
 
-                document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
+                // document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
+                document.getElementById("billing-pos-name").innerHTML = "POS NAME: Freebazar";
+
 
                 // Directly open Billing Modal without showing QR Details Modal
                 let billingModal = new bootstrap.Modal(document.getElementById("billingModal"), {
@@ -314,16 +322,18 @@
         }
     }
 
-    document.getElementById("pay_by").addEventListener("change", function() {
-        let upiOptions = document.getElementById("upi-options");
+    // document.getElementById("pay_by").addEventListener("change", function() {
+    //     let upiOptions = document.getElementById("upi-options");
 
-        if (this.value === "upi") {
-            upiOptions.style.display = "block";
-        } else {
-            upiOptions.style.display = "none";
-        }
-    });
+    //     if (this.value === "upi") {
+    //         upiOptions.style.display = "block";
+    //     } else {
+    //         upiOptions.style.display = "none";
+    //     }
+    // });
     document.addEventListener("DOMContentLoaded", () => {
+        console.log("comming here");
+
         let originalWalletBalance = parseFloat(document.getElementById('wallet_balance').textContent) || 0;
 
         function checkWalletBalance() {
@@ -438,6 +448,114 @@
         document.getElementById('pay_by').addEventListener('change', checkWalletBalance);
         document.getElementById('billing_amount').addEventListener('input', checkWalletBalance);
     });
+    document.getElementById("qrForm").addEventListener("submit", function(event) {
+
+        event.preventDefault(); // Prevent form from submitting normally
+        // Create FormData object
+        console.log("comming");
+        let formData = new FormData(this);
+        console.log(formData);
+
+        // let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
+        let payingAmount = document.getElementById("paying_amount").value;
+        let payBy = document.getElementById("pay_by").value;
+        // let testUpiName = document.getElementById("qr-details-text").value;
+        // console.log(testUpiName);
+        if (!payingAmount || payingAmount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        } else {
+            if (payBy == "upi") {
+                let upiUrl = document.getElementById("upi_ID").value;
+                console.log(upiUrl);
+
+                // Open UPI scanner
+                window.location.href(upiUrl); // Use replace instead of href to avoid going back
+
+                userPayment();
+            } else {
+                userPayment();
+            }
+        }
+
+
+        // let name = "Freebazar";
+        // const notes = encodeURIComponent("Payment to Freebazar");
+        // // let upiID = "paytmqr1n5npu77bo@paytm"
+        // let upiID = "paytmqr661cw8@ptys"
+        // if (selectedUPI == "googlepay") {
+        //     let upiUrl =
+        //         `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(payingAmount)}&cu=INR${notes ? '&tn=' + encodeURIComponent(notes) : ''}`;
+        //     console.log("Redirecting to Google Pay Scanner...");
+
+        //     // Open UPI scanner
+        //     window.location.replace(upiUrl); // Use replace instead of href to avoid going back
+
+        //     // Call userPayment AFTER a delay (since redirection happens immediately)
+        //     setTimeout(() => {
+        //         userPayment();
+        //     }, 3000); // Adjust timing if needed
+
+        // } else if (selectedUPI == "phonepe") {
+        //     console.log("phonepe");
+
+        //     // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+        //     // let upiUrl =`upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
+        //     let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=com.phonepe.app;end;`;
+        //     window.location.href = upiUrl;
+        //     userPayment();
+        // } else if (selectedUPI == "paytm") {
+        //     console.log("paytm");
+
+        //     // let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
+        //     let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=net.one97.paytm;end`;
+        //     window.location.href = upiUrl;
+        //     userPayment();
+        // } else {
+
+        // }
+
+        function userPayment() {
+            $.ajax({
+                url: "{{ route('user.payment') }}",
+                type: "POST",
+                data: formData,
+                processData: false, // Prevent jQuery from converting data
+                contentType: false, // Prevent jQuery from setting content type
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                success: function(data) {
+                    console.log("Response JSON:", data); // ✅ Log response JSON
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Payment Success",
+                            html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
+                            showConfirmButton: true,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Payment Failed",
+                            text: data.message || "Please try again.",
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Something went wrong!",
+                        text: "Please try again later.",
+                    });
+                },
+            });
+        }
+    });
 </script>
 
 <script>
@@ -534,91 +652,4 @@
     //             });
     //     });
     // });
-
-    document.getElementById("qrForm").addEventListener("submit", function(event) {
-
-        event.preventDefault(); // Prevent form from submitting normally
-        // Create FormData object
-        let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
-        let payingAmount = document.getElementById("paying_amount").value
-        let formData = new FormData(this);
-        let name = "Freebazar";
-        const notes = encodeURIComponent("Payment to Freebazar");
-        // let upiID = "paytmqr1n5npu77bo@paytm"
-        let upiID = "paytmqr661cw8@ptys"
-        if (!payingAmount || payingAmount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        }
-        if (selectedUPI == "googlepay") {
-            let upiUrl = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(payingAmount)}&cu=INR${notes ? '&tn=' + encodeURIComponent(notes) : ''}`;            console.log("Redirecting to Google Pay Scanner...");
-
-            // Open UPI scanner
-            window.location.replace(upiUrl); // Use replace instead of href to avoid going back
-
-            // Call userPayment AFTER a delay (since redirection happens immediately)
-            setTimeout(() => {
-                userPayment();
-            }, 3000); // Adjust timing if needed
-
-        } else if (selectedUPI == "phonepe") {
-            console.log("phonepe");
-
-            // let upiUrl = `${"phonepe://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-            // let upiUrl =`upi://pay?pa=arupalaxmibehera-1@oksbi&pn=Arupa%20Laxmi%20Behera&am=${payingAmount}&cu=INR`;
-            let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=com.phonepe.app;end;`;
-            window.location.href = upiUrl;
-            userPayment();
-        } else if (selectedUPI == "paytm") {
-            console.log("paytm");
-
-            // let upiUrl = `${"paytmmp://pay?pa="}${upiID}&am=${payingAmount}&cu=INR`;
-            let upiUrl = `intent://pay?mode=02#Intent;scheme=upi;package=net.one97.paytm;end`;
-            window.location.href = upiUrl;
-            userPayment();
-        } else {
-
-        }
-
-        function userPayment() {
-            $.ajax({
-                url: "{{ route('user.payment') }}",
-                type: "POST",
-                data: formData,
-                processData: false, // Prevent jQuery from converting data
-                contentType: false, // Prevent jQuery from setting content type
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
-                },
-                success: function(data) {
-                    console.log("Response JSON:", data); // ✅ Log response JSON
-
-                    if (data.success) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Payment Success",
-                            html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
-                            showConfirmButton: true,
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Payment Failed",
-                            text: data.message || "Please try again.",
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Something went wrong!",
-                        text: "Please try again later.",
-                    });
-                },
-            });
-        }
-    });
 </script>
