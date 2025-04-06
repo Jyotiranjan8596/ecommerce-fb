@@ -471,8 +471,11 @@
                     console.log(upiUrl);
 
                     // Open UPI scanners
-                    userPayment(formData);
-                    window.location.href = upiUrl; // Use replace instead of href to avoid going back
+                    userPayment(formData, function(){
+                        setTimeout(() => {
+                            window.location.href = upiUrl; // Use replace instead of href to avoid going back
+                        }, 5000);
+                    });
 
                 } else {
                     userPayment(formData);
