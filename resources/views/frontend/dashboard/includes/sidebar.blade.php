@@ -1,3 +1,31 @@
+<style>
+    .sidebar-footer {
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        padding: 16px;
+        /* Dark background */
+        text-align: center;
+    }
+
+    .sidebar-footer a {
+        display: inline-block;
+        padding: 10px 20px;
+        color: #fff;
+        background: linear-gradient(135deg, #2e7dff, #9c27b0);
+        /* Gradient */
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-footer a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+</style>
 <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
     <div class="sidebar-inner px-4 pt-3">
         <div
@@ -57,8 +85,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('user.pos.list') }}"
-                    class="nav-link {{ request()->is('pos/list') ? 'active' : '' }}">
+                <a href="{{ route('user.pos.list') }}" class="nav-link {{ request()->is('pos/list') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -136,5 +163,12 @@
             <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
 
         </ul>
+
+        
+
+
     </div>
+    <footer class="sidebar-footer">
+        <a href="https://play.google.com/store/apps/details?id=com.dreamplug.androidapp">Install CRED</a>
+    </footer>
 </nav>
