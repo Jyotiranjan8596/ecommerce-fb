@@ -96,7 +96,7 @@
                         <select class="form-control" id="pay_by" name="pay_by">
                             <option value="">Select Payment Method</option>
                             <option value="cash">Cash</option>
-                            <option style="display: hidden" value="wallet">Wallet</option>
+                            <option hidden value="wallet">Wallet</option>
                             <option value="upi">UPI</option>
                         </select>
                     </div>
