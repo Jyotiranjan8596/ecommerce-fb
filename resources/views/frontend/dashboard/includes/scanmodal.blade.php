@@ -386,6 +386,7 @@
                     }
                 } else {
                     document.getElementById("pay_by_select").style.display = 'block';
+                    payBySelect.value = "";
                 }
                 if (payBySelect.value === "cash" || payBySelect.value === "upi") {
                     console.log("comming to pay check");
