@@ -91,14 +91,12 @@
                             min="0" readonly />
                     </div>
                     <!-- Pay By -->
-                    <div class="form-group mb-3">
+                    <div class="form-group mb-3" id="pay_by_select">
                         <label for="pay_by" style="color: black" class="modal-label">Pay By</label>
-                        <select class="form-control" id="pay_by" name="pay_by" required>
+                        <select class="form-control" id="pay_by" name="pay_by">
                             <option value="">Select Payment Method</option>
-                            <option hidden id="select-wallet" value="wallet">
-                                Wallet
-                            </option>
                             <option value="cash">Cash</option>
+                            <option style="display: hidden" value="wallet">Wallet</option>
                             <option value="upi">UPI</option>
                         </select>
                     </div>
@@ -357,31 +355,40 @@
             alternativePayBySelect.required = false;
             alternativePayBySelect.value = '';
             payingAmountField.value = Math.round(billingAmount);
+            console.log(payBySelect);
 
             console.log(checkedWallet);
 
             // Cash or UPI payment logic
             // Calculate 5% deduction
             if (sponsors_count >= 10) {
+                console.log(walletBalance);
+
                 payingAmountField.value = Math.round(billingAmount);
                 if (checkedWallet) {
+                    console.log("comming to check wallet");
+                    document.getElementById("pay_by_select").style.display = 'none';
+                    payBySelect.value = "wallet";
                     if (walletBalance >= billingAmount) {
                         walletBalance -= billingAmount;
-                        payingAmountField.value = "0.00"; // Fully paid by wallet
+                        payingAmountField.value = 0; // Fully paid by wallet
                         walletBalanceElement.textContent = walletBalance.toFixed(2);
-
                     } else {
                         const remainingAmount = billingAmount - walletBalance;
                         walletBalance = 0;
-                        payingAmountField.value = Math.round(remainingAmount); // Remaining amount to be paid
                         remainingAmountField.style.display = 'block';
                         remainingAmountField.value = remainingAmount.toFixed(2);
                         insufficientBalanceDiv.style.display = 'block';
                         alternativePayBySelect.style.display = 'block';
                         alternativePayBySelect.required = true;
+                        payingAmountField.value = Math.round(remainingAmount); // Remaining amount to be paid
                         walletBalanceElement.textContent = walletBalance.toFixed(2);
                     }
-                } else if (payBySelect.value === "cash" || payBySelect.value === "upi") {
+                } else {
+                    document.getElementById("pay_by_select").style.display = 'block';
+                }
+                if (payBySelect.value === "cash" || payBySelect.value === "upi") {
+                    console.log("comming to pay check");
                     // Cash or UPI payment logic
                     //  walletDeduction = billingAmount * 0.05; // Calculate 5% deduction
                     if (walletBalance >= walletDeduction) {
@@ -395,20 +402,6 @@
                     walletBalanceElement.textContent = walletBalance.toFixed(2);
                     payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
                 }
-                // if (walletBalance >= billingAmount) {
-                //     walletBalance -= billingAmount;
-                //     payingAmountField.value = 0.00;
-                //     walletBalanceElement.textContent = walletBalance.toFixed(2);
-
-                //     // pay_by_input.style.display = 'none';
-                // } else {
-                //     walletDeduction = walletBalance;
-                //     walletBalance -= walletDeduction;
-                //     const remainingAmount = billingAmount - walletDeduction;
-                //     payingAmountField.value = remainingAmount.toFixed(2);
-                //     walletBalanceElement.textContent = walletBalance.toFixed(2);
-                //     pay_by_input.style.display = 'block';
-                // }
             } else if (checkedWallet) {
                 select_wallet.style.display = 'none';
                 console.log("without sponsor");
@@ -460,12 +453,26 @@
             // let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
             let payingAmount = document.getElementById("paying_amount").value;
             let payBy = document.getElementById("pay_by").value;
+            const sponsors_counts = document.getElementById('sponsors_count').value;
             // let testUpiName = document.getElementById("qr-details-text").value;
             // console.log(testUpiName);
-            if (!payingAmount || payingAmount <= 0) {
-                alert("Please enter a valid amount.");
-                return;
+            if (sponsors_counts >= 10) {
+                if (payBy == "upi") {
+                    let upiUrl = document.getElementById("upi_ID").value;
+                    console.log(upiUrl);
+
+                    // Open UPI scanners
+                    userPayment(formData, payBy);
+                    window.location.href = upiUrl; // Use replace instead of href to avoid going back
+
+                } else {
+                    userPayment(formData, payBy);
+                }
             } else {
+                if (!payingAmount || payingAmount <= 0) {
+                    alert("Please enter a valid amount.");
+                    return;
+                }
                 if (payBy == "upi") {
                     let upiUrl = document.getElementById("upi_ID").value;
                     console.log(upiUrl);

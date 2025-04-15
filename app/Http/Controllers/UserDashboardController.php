@@ -188,6 +188,9 @@ class UserDashboardController extends Controller
                     $userWalletEntry->used_amount = $walletUsedAmount;
                     $userWalletEntry->save();
                 } else {
+                    if ($request->billing_amount > $request->paying_amount) {
+                        $wallet_balance = $request->billing_amount - $request->paying_amount;
+                    }
                     $remainingAmount             = $amount;
                     $dsrlist                     = new Wallet();
                     $dsrlist->invoice            = $invoice;
@@ -209,13 +212,27 @@ class UserDashboardController extends Controller
                     $userWalletEntry->remaining_amount = $currentWalletBalance;
                     $userWalletEntry->save();
                 }
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'Payment verified successfully.',
+                        'billing_amount' => $request->billing_amount,
+                        'paying_amount' => $request->paying_amount
+                    ]
+                );
             } else {
                 $remainingAmount = $amount;
-                $amount_wallet   = $amount * (5 / 100);
+                // $amount_wallet   = $amount * (5 / 100);
 
-                if ($currentWalletBalance <= $amount_wallet) {
-                    $amount_wallet = $currentWalletBalance;
+                if ($request->billing_amount > $request->paying_amount) {
+                    $amount_wallet = $request->billing_amount - $request->paying_amount;
+                    if ($currentWalletBalance <= $amount_wallet) {
+                        $amount_wallet = $currentWalletBalance;
+                    }
+                } else {
+                    $amount_wallet = 0;
                 }
+
 
                 $dsrlist                     = new Wallet();
                 $dsrlist->invoice            = $invoice;
