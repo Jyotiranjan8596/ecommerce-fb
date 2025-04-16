@@ -94,9 +94,9 @@
                     <div class="form-group mb-3" id="pay_by_select">
                         <label for="pay_by" style="color: black" class="modal-label">Pay By</label>
                         <select class="form-control" id="pay_by" name="pay_by">
-                            <option value="">Select Payment Method</option>
+                            <option selected value="">Select Payment Method</option>
                             <option value="cash">Cash</option>
-                            <option hidden value="wallet">Wallet</option>
+                            {{-- <option hidden value="wallet">Wallet</option> --}}
                             <option value="upi">UPI</option>
                         </select>
                     </div>
@@ -386,7 +386,7 @@
                     }
                 } else {
                     document.getElementById("pay_by_select").style.display = 'block';
-                    payBySelect.value = "";
+                    // payBySelect.value = "";
                 }
                 if (payBySelect.value === "cash" || payBySelect.value === "upi") {
                     console.log("comming to pay check");
@@ -403,26 +403,28 @@
                     walletBalanceElement.textContent = walletBalance.toFixed(2);
                     payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
                 }
-            } else if (checkedWallet) {
-                select_wallet.style.display = 'none';
-                console.log("without sponsor");
-                walletDeduction = billingAmount * 0.05;
-                if (walletBalance >= walletDeduction) {
-                    walletBalance -= walletDeduction;
-                } else {
-                    walletDeduction = walletBalance;
-                    walletBalance = 0;
-                }
-                const remainingAmount1 = billingAmount - walletDeduction;
-                payingAmountField.value = Math.round(remainingAmount1);
-                walletBalanceElement.textContent = walletBalance.toFixed(2);
             } else {
-                select_wallet.style.display = 'none';
-                if (walletBalance >= walletDeduction) {
-                    walletBalance -= walletDeduction;
+                if (checkedWallet) {
+                    // document.getElementById("pay_by_select").style.display = 'none';
+                    console.log("without sponsor");
+                    walletDeduction = billingAmount * 0.05;
+                    if (walletBalance >= walletDeduction) {
+                        walletBalance -= walletDeduction;
+                    } else {
+                        walletDeduction = walletBalance;
+                        walletBalance = 0;
+                    }
+                    const remainingAmount1 = billingAmount - walletDeduction;
+                    payingAmountField.value = Math.round(remainingAmount1);
+                    walletBalanceElement.textContent = walletBalance.toFixed(2);
                 } else {
-                    walletDeduction = walletBalance;
-                    walletBalance = 0;
+                    // document.getElementById("pay_by_select").style.display = 'none';
+                    if (walletBalance >= walletDeduction) {
+                        walletBalance -= walletDeduction;
+                    } else {
+                        walletDeduction = walletBalance;
+                        walletBalance = 0;
+                    }
                 }
 
                 const remainingAmount = billingAmount - walletDeduction;
@@ -502,6 +504,8 @@
                     console.log("Response JSON:", data); // ✅ Log response JSON
 
                     if (data.success) {
+                        console.log("Pay by", payBy);
+                        
                         if (payBy == "upi") {
                             Swal.fire({
                                 icon: "info",
