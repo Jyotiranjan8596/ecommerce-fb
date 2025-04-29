@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\PosController as AdminPosController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PageController;
@@ -125,3 +126,6 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
 });
 
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');
+
+Route::get('reset-password', [ResetPasswordController::class, 'index'])->name('reset.password');
+Route::post('update-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');

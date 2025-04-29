@@ -74,7 +74,7 @@
                                         </label>
                                     </div>
                                     <div>
-                                        <a href="./forgot-password.html" class="small text-right">Lost password?</a>
+                                        <a href="{{ route('reset.password') }}" class="small text-right">Lost password?</a>
                                     </div>
                                 </div>
                             </div>
