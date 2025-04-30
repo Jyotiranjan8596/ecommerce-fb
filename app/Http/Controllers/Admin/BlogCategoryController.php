@@ -16,8 +16,10 @@ class BlogCategoryController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $blog_categories = BlogCategory::orderBy('id', 'asc')->paginate();
-        return view('admin.blog_category.index', compact('blog_categories'));
+        return view('admin.blog_category.index', compact('blog_categories', 'userId', 'user_profile'));
     }
 
     /**
@@ -25,7 +27,9 @@ class BlogCategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.blog_category.create');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.blog_category.create', compact('userId', 'user_profile'));
     }
 
     /**
@@ -68,7 +72,9 @@ class BlogCategoryController extends Controller
      */
     public function edit(BlogCategory  $blog_category)
     {
-        return view('admin.blog_category.edit', compact('blog_category'));
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.blog_category.edit', compact('blog_category', 'userId', 'user_profile'));
     }
 
     /**

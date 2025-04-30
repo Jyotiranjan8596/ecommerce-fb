@@ -10,6 +10,8 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $count['users'] = User::count();
 
 
@@ -19,6 +21,13 @@ class AdminController extends Controller
         $topPosts = 0;
         $totaluser = User::where('role', 3)->count();
         $totalpos = User::where('role', 4)->count();
-        return view('admin.index', compact('count', 'totaluser', 'totalpos'));
+        return view('admin.index', compact('count', 'totaluser', 'totalpos', 'userId', 'user_profile', 'newPosts', 'topPosts'));
+    }
+
+    public function offer() {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+
+        return view('admin.offer.index', compact('userId', 'user_profile'));
     }
 }

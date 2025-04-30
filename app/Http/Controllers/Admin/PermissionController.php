@@ -17,11 +17,13 @@ class PermissionController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         // abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $permissions = Permission::all();
 
-        return view('admin.permissions.index', compact('permissions'));
+        return view('admin.permissions.index', compact('permissions', 'userId', 'user_profile'));
     }
 
     /**
@@ -29,9 +31,11 @@ class PermissionController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         // abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.permissions.create');
+        return view('admin.permissions.create', compact('userId', 'user_profile'));
     }
 
     /**
@@ -65,9 +69,11 @@ class PermissionController extends Controller
      */
     public function edit(Permission $permission)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('permission_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.permissions.edit', compact('permission'));
+        return view('admin.permissions.edit', compact('permission', 'userId', 'user_profile'));
     }
 
     /**

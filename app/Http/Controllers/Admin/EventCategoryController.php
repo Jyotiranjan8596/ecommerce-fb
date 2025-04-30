@@ -17,8 +17,10 @@ class EventCategoryController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $event_categories = EventCategory::orderBy('id', 'asc')->paginate();
-        return view('admin.event_category.index', compact('event_categories'));
+        return view('admin.event_category.index', compact('event_categories', 'userId', 'user_profile'));
     }
 
     /**
@@ -26,7 +28,9 @@ class EventCategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.event_category.create');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.event_category.create', compact('userId', 'user_profile'));
     }
 
     /**
@@ -70,7 +74,9 @@ class EventCategoryController extends Controller
      */
     public function edit(EventCategory  $event_category)
     {
-        return view('admin.event_category.edit', compact('event_category'));
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.event_category.edit', compact('event_category', 'userId', 'user_profile'));
     }
 
     /**

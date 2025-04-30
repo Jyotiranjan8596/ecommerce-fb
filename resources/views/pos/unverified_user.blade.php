@@ -4,9 +4,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @section('content')
     <div class="container my-4">
-        <h3 class="text-center text-dark mb-4"><b>Customer List</b></h3>
+        <h3 class="text-center text-dark mb-4"><b>Account Managemnt</b></h3>
         <div class="d-flex justify-content-end ">
-            <button id="approve-btn" type="button" class="btn btn-success me-3 mb-3">Verify All</button>
+            <button id="approve-btn" type="button" class="btn btn-success text-white me-3 mb-3">Verify All</button>
         </div>
         <!-- Responsive table -->
         <div class="table-responsive">
@@ -23,8 +23,16 @@
                         <th scope="col">Wallet Balance</th>
                         <th scope="col">Credit</th>
                         <th scope="col">Debit</th>
+                       
                         <th scope="col">Transation Date</th>
+                       
                         <th scope="col">Status</th>
+                        <th scope="col">Payable</th>
+                        <th scope="col">Paid</th>
+                        <th scope="col">Receivable</th>
+                        <th scope="col">Received</th>
+                        <th scope="col">Balance</th>
+                        <th scope="col">Remark</th>
 
                     </tr>
                 </thead>

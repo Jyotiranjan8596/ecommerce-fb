@@ -14,20 +14,24 @@ class RoleController extends Controller
 {
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('role_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::paginate(15);
 
-        return view('admin.roles.index', compact('roles'));
+        return view('admin.roles.index', compact('roles', 'userId', 'user_profile'));
     }
 
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('role_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $permissions = Permission::all()->pluck('name', 'id');
 
-        return view('admin.roles.create', compact('permissions'));
+        return view('admin.roles.create', compact('permissions', 'userId', 'user_profile'));
     }
 
     public function store(StoreRoleRequest $request)
@@ -42,13 +46,15 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('role_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $permissions = Permission::all()->pluck('name', 'id');
 
         $role->load('permissions');
 
-        return view('admin.roles.edit', compact('permissions', 'role'));
+        return view('admin.roles.edit', compact('permissions', 'role', 'userId', 'user_profile'));
     }
 
     public function update(UpdateRoleRequest $request, Role $role)
@@ -62,11 +68,13 @@ class RoleController extends Controller
 
     public function show(Role $role)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('role_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $role->load('permissions');
 
-        return view('admin.roles.show', compact('role'));
+        return view('admin.roles.show', compact('role', 'userId', 'user_profile'));
     }
 
     public function destroy(Role $role)

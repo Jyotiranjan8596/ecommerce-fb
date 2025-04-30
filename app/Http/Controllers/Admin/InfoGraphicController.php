@@ -17,9 +17,11 @@ class InfoGraphicController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $info_graphics = InfoGraphic::orderBy('id', 'desc')->paginate('10');
 
-        return view('admin.info_graphic.index', compact('info_graphics'));
+        return view('admin.info_graphic.index', compact('info_graphics', 'userId', 'user_profile'));
     }
 
     /**
@@ -27,9 +29,11 @@ class InfoGraphicController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $sector = Sector::all();
         $subsector = SubSector::all();
-        return view('admin.info_graphic.create', compact('sector','subsector'));
+        return view('admin.info_graphic.create', compact('sector','subsector', 'userId', 'user_profile'));
     }
 
     /**
@@ -76,9 +80,11 @@ class InfoGraphicController extends Controller
      */
     public function edit(InfoGraphic  $info_graphic)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $sector = Sector::all();
         $subsector = SubSector::all();
-        return view('admin.info_graphic.edit', compact('info_graphic', 'sector','subsector'));
+        return view('admin.info_graphic.edit', compact('info_graphic', 'sector','subsector', 'userId', 'user_profile'));
     }
 
     /**

@@ -13,8 +13,10 @@ class BannerController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $banners = Banner::orderBy('id', 'asc')->paginate();
-        return view('admin.banner.index', compact('banners'));
+        return view('admin.banner.index', compact('banners', 'userId', 'user_profile'));
     }
 
     /**
@@ -22,7 +24,9 @@ class BannerController extends Controller
      */
     public function create()
     {
-        return view('admin.banner.create');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.banner.create', compact('userId', 'user_profile'));
     }
 
     /**
@@ -64,8 +68,10 @@ class BannerController extends Controller
      */
     public function edit(string $id)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $banners = Banner::find($id);
-        return view('admin.banner.edit', compact('banners'));
+        return view('admin.banner.edit', compact('banners', 'userId', 'user_profile'));
     }
 
     /**

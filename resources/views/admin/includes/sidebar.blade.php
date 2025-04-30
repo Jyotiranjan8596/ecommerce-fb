@@ -6,7 +6,7 @@
             class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
             <div class="d-flex align-items-center">
                 <div class="avatar-lg me-4">
-                    <img src="{{ asset('assets/img/team/profile-picture-3.jpg') }}"
+                    <img src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}"
                         class="card-img-top rounded-circle border-white" alt="Bonnie Green" />
                 </div>
                 <div class="d-block">
@@ -307,6 +307,22 @@
                     </a>
                 </li>
             @endcan
+
+            <li class="nav-item">
+                <a href="{{ route('admin.offer') }}"
+                    class="nav-link {{ request()->is('admin.offer*') ? 'active' : '' }}">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
+                            <path fill-rule="evenodd"
+                                d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">Offer Page</span>
+                </a>
+            </li>
 
             {{-- not showing  --}}
 

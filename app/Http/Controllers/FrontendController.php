@@ -30,6 +30,9 @@ class FrontendController extends Controller
         $products = Product::find($id);
         return view('ui.product', compact('products'));
     }
+    public function offer() {
+        return view('ui.offer');
+    }
     //  public function bestseller($id)
     // {
     //     Product::where('sector_id', $id)->where('dataset', 1)->increment('views');
@@ -123,6 +126,12 @@ class FrontendController extends Controller
         //     // OR show a 404 page: abort(404, "Page not found");
         // }
         return view('ui.page.index');
+    }
+
+    public function termCondition() {
+        // $user_profile = auth()->user();
+        // $userId       = $user_profile->id;
+        return view('frontend.dashboard.termcondition');
     }
     
 

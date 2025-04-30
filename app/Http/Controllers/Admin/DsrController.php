@@ -22,6 +22,8 @@ class DsrController extends Controller
 {
     public function dsr(Request $request)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $query = Wallet::query();
 
         if (
@@ -55,7 +57,7 @@ class DsrController extends Controller
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
-        return view('admin.dsr.index', compact('wallets'));
+        return view('admin.dsr.index', compact('wallets',   'userId', 'user_profile'));
     }
 
     public function export(Request $request)
@@ -80,6 +82,8 @@ class DsrController extends Controller
     }
     public function msr(Request $request)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
 
         $pos = PosModel::with('user')->get()->map(function ($item) {
             $data = $item->toArray();
@@ -92,7 +96,7 @@ class DsrController extends Controller
         $monthlySales = self::msrCalculation($request);
         $monthlySales->appends($request->only(['search', 'month', 'filter']));
 
-        return view('admin.msr.index', compact('pos', 'monthlySales', 'selectedMonth'));
+        return view('admin.msr.index', compact('pos', 'monthlySales', 'selectedMonth', 'userId', 'user_profile'));
     }
 
     public function msrCalculation($request)

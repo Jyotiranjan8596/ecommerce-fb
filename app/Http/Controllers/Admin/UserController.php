@@ -24,6 +24,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $search = $request->input('search');
         $user = User::query()
             ->where('role', 3)
@@ -38,7 +40,7 @@ class UserController extends Controller
             ->latest()
             ->simplePaginate(15);
 
-        return view('admin.users.index', compact('user', 'search'));
+        return view('admin.users.index', compact('user', 'search', 'userId', 'user_profile'));
     }
 
     /**
@@ -48,9 +50,11 @@ class UserController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
+        return view('admin.users.create', compact('roles', 'userId', 'user_profile'));
     }
     public function searchSponsor(Request $request)
     {
@@ -138,6 +142,8 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $user = User::find($id);
         $sponsor = User::find($user->sponsor_id);
 
@@ -145,7 +151,7 @@ class UserController extends Controller
         if (!$user) {
             return redirect()->route('admin.users.index')->with('error', 'User not found.');
         }
-        return view('admin.users.edit', compact('user', 'userData', 'sponsor'));
+        return view('admin.users.edit', compact('user', 'userData', 'sponsor', 'userId', 'user_profile'));
     }
 
     /**
@@ -223,8 +229,10 @@ class UserController extends Controller
 
     public function customUser()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $userData = User::where('role', 3)->get(['id', 'name', 'user_id']);
-        return view('admin.users.custom_user', compact('userData'));
+        return view('admin.users.custom_user', compact('userData', 'userId', 'user_profile'));
     }
     public function storeCustomUser(Request $request)
     {

@@ -1,8 +1,8 @@
 @extends('pos.layouts.master')
 
 @section('content')
-    <div class="container mt-4">
-        <h3 class="text-center text-dark font-weight-bold"><b>MONTHLY SALES REPORT</b></h3>
+    <div class="container">
+        <h5 class="text-center text-dark font-weight-bold"><b>MONTHLY SALES REPORT</b></h5>
 
         {{-- Filter Form --}}
         <form method="GET" action="{{ route('pos.msr') }}" class="row align-items-center mb-3">
@@ -16,7 +16,7 @@
 
             {{-- Filter Button --}}
             <div class="col-12 col-md-auto mb-2">
-                <button class="btn btn-info btn-block" type="submit">FILTER</button>
+                <button class="btn btn-secondary btn-block" type="submit">FILTER</button>
             </div>
         </form>
 
@@ -35,10 +35,13 @@
                 <thead>
                     <tr>
                         <th>Sl.No</th>
-                        <th>MONTH</th>
+                        {{-- <th>MONTH</th> --}}
                         <th>MOBILE NUMBER</th>
                         <th>NAME</th>
                         <th>TOTAL BILLING AMOUNT</th>
+                        <th>CREDIT</th>
+                        <th>DEBIT</th>
+                        <th>STATUS</th>
                         {{-- <th>SPONSOR EXPENDITURE</th> --}}
                     </tr>
                 </thead>
@@ -51,8 +54,8 @@
                         @foreach ($monthlySales as $key => $data)
                             <tr>
                                 <td>{{ $monthlySales->firstItem() + $key }}</td>
-                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}
-                                </td>
+                                {{-- <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}
+                                </td> --}}
                                 <td>{{ $data->mobilenumber }}</td>
                                 <td>{{ optional($data->user)->name }}</td>
                                 <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>

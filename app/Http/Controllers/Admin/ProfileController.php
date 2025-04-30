@@ -14,9 +14,11 @@ class ProfileController extends Controller
 {
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $profile = Auth::user();
 
-        return view('admin.profile.edit', compact('profile'));
+        return view('admin.profile.edit', compact('profile', 'userId', 'user_profile'));
     }
 
     public function update(UpdateProfileRequest $request)
@@ -35,7 +37,9 @@ class ProfileController extends Controller
 
     public function password()
     {
-        return view('admin.profile.change-password');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.profile.change-password', compact('userId', 'user_profile'));
     }
 
     public function updatePassword(ChangePasswordRequest $request)

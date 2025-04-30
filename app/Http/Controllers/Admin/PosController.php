@@ -23,8 +23,10 @@ class PosController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $pos = PosModel::orderBy('id', 'desc')->latest()->simplePaginate(15);
-        return view('admin.pos_system.index', compact('pos'));
+        return view('admin.pos_system.index', compact('pos', 'userId', 'user_profile'));
     }
 
     /**
@@ -32,8 +34,10 @@ class PosController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $states = User::select('state')->whereNotNull('state')->distinct()->pluck('state');
-        return view('admin.pos_system.create', compact('states'));
+        return view('admin.pos_system.create', compact('states', 'userId', 'user_profile'));
     }
 
     /**
@@ -151,8 +155,10 @@ class PosController extends Controller
      */
     public function edit($id)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $pos = PosModel::find($id);
-        return view('admin.pos_system.edit', compact('pos'));
+        return view('admin.pos_system.edit', compact('pos', 'userId', 'user_profile'));
     }
 
     /**
