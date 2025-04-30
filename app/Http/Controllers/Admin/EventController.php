@@ -17,8 +17,10 @@ class EventController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $events = Event::orderBy('id', 'asc')->paginate();
-        return view('admin.event.index', compact('events'));
+        return view('admin.event.index', compact('events', 'userId', 'user_profile'));
     }
 
     /**
@@ -26,9 +28,11 @@ class EventController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $event_category = EventCategory::all();
         $sector = Sector::all();
-        return view('admin.event.create', compact('event_category', 'sector'));
+        return view('admin.event.create', compact('event_category', 'sector', 'userId', 'user_profile'));
     }
 
     /**
@@ -76,9 +80,11 @@ class EventController extends Controller
      */
     public function edit(Event  $event)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $event_category = EventCategory::all();
         $sector = Sector::all();
-        return view('admin.event.edit', compact('event', 'event_category', 'sector'));
+        return view('admin.event.edit', compact('event', 'event_category', 'sector', 'userId', 'user_profile'));
     }
 
     /**

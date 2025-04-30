@@ -21,8 +21,10 @@ class ProductController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $products = Product::orderBy('id', 'asc')->simplePaginate(15);
-        return view('admin.product.index', compact('products'));
+        return view('admin.product.index', compact('products', 'userId', 'user_profile'));
     }
 
     /**
@@ -30,10 +32,12 @@ class ProductController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $products = Product::all();
         $sector = Sector::all();
         $subsector = SubSector::all();
-        return view('admin.product.create', compact('sector', 'subsector', 'products'));
+        return view('admin.product.create', compact('sector', 'subsector', 'products', 'userId', 'user_profile'));
     }
     public function export(){
         return Excel::download(new ProductExport,'products.xlsx');
@@ -112,10 +116,12 @@ class ProductController extends Controller
      */
     public function edit(Product  $product)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $products = Product::all();
         $sector = Sector::all();
         $subsector = SubSector::all();
-        return view('admin.product.edit', compact('product', 'sector', 'subsector', 'products'));
+        return view('admin.product.edit', compact('product', 'sector', 'subsector', 'products', 'userId', 'user_profile'));
     }
 
     /**

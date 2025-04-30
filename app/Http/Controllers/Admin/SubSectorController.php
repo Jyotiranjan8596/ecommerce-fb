@@ -17,9 +17,11 @@ class SubSectorController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $subSectors = SubSector::orderBy('id', 'asc')->paginate();
 
-        return view('admin.subsector.index', compact('subSectors'));
+        return view('admin.subsector.index', compact('subSectors', 'userId', 'user_profile'));
     }
 
     /**
@@ -27,8 +29,10 @@ class SubSectorController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $sector = Sector::all();
-        return view('admin.subsector.create', compact('sector'));
+        return view('admin.subsector.create', compact('sector', 'userId', 'user_profile'));
     }
 
     /**
@@ -70,8 +74,10 @@ class SubSectorController extends Controller
      */
     public function edit(SubSector  $subsector)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $sector = Sector::all();
-        return view('admin.subsector.edit', compact('subsector', 'sector'));
+        return view('admin.subsector.edit', compact('subsector', 'sector', 'userId', 'user_profile'));
     }
 
     /**

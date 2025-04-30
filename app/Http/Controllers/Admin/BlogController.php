@@ -16,8 +16,10 @@ class BlogController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $blogs = Blog::orderBy('id', 'asc')->paginate();
-        return view('admin.blog.index', compact('blogs'));
+        return view('admin.blog.index', compact('blogs', 'userId', 'user_profile'));
     }
 
     /**
@@ -25,8 +27,10 @@ class BlogController extends Controller
      */
     public function create()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $blog_category = BlogCategory::all();
-        return view('admin.blog.create', compact('blog_category'));
+        return view('admin.blog.create', compact('blog_category',   'userId', 'user_profile'));
     }
 
     /**
@@ -69,8 +73,10 @@ class BlogController extends Controller
      */
     public function edit(Blog  $blog)
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $blog_category = BlogCategory::all();
-        return view('admin.blog.edit', compact('blog', 'blog_category'));
+        return view('admin.blog.edit', compact('blog', 'blog_category', 'userId', 'user_profile'));
     }
 
     /**

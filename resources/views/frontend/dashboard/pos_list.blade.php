@@ -9,7 +9,16 @@
             <!-- Search form -->
             <div class="float-end">
                 <form action="{{ route('user.pos.list') }}" method="GET">
-                    <input type="text" name="search" placeholder="Search by City or ZIP" value="{{ request()->search }}" class="form-control">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" name="search" placeholder="Search by City or ZIP" value="{{ request()->search }}" class="form-control">
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-warning" type="submit">Search</button>
+                        </div>
+                    </div>
+                    
+                    
                 </form>
             </div>
         </div>

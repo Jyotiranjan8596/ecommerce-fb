@@ -52,6 +52,7 @@
             
             {{-- Scan button  --}}
             <div class="d-flex align-items-center">
+                <b>Hello, {{ auth()->user()->name }}</b>
                 <!-- Search form -->
                 {{-- <form class="navbar-search form-inline" id="navbar-search-main">
                     <div class="input-group input-group-merge search-bar">

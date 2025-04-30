@@ -14,7 +14,9 @@ class PosController extends Controller
 {
     public function index()
     {
-        return view('pos.index');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('pos.index', compact('userId', 'user_profile'));
     }
     public function userList(Request $request)
     {

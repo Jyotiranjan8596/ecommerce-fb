@@ -2,7 +2,7 @@
 
 
 @section('content')
-    <div class="mt-4">
+    <div class="">
         <h4><b>User List</b></h4>
         <hr>
     </div>
@@ -10,7 +10,7 @@
         @csrf
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6 mb-4">
+                <div class="col-md-4 mb-4">
                     <label for="search_by">Search By*</label>
                     <select name="search_by" id="search_by" class="form-control">
                         <option value="">Select the Option</option>
@@ -20,18 +20,22 @@
                         <option value="mobilenumber">Phone</option>
                     </select>
                 </div>
-                <div class="col-md-6 mb-4">
+                <div class="col-md-4 mb-4">
                     <label for="search_term">Search Term*</label>
                     <input type="text" id="search_term" name="search_term" class="form-control"
                         placeholder="Enter search term">
                 </div>
+                <div class="col-md-4 mb-4">
+                    <button class="btn btn-primary me-2" type="submit">FIND USER</button>
+                    <a class="btn btn-secondary" href="{{ route('pos.index') }}">Back to list</a>
+                </div>
             </div>
         </div>
 
-        <div class="card-footer text-center mb-4">
+        {{-- <div class="card-footer text-center mb-4">
             <button class="btn btn-primary me-2" type="submit">FIND USER</button>
             <a class="btn btn-secondary" href="{{ route('pos.index') }}">Back to list</a>
-        </div>
+        </div> --}}
     </form>
     <div class="card-body">
         <div class="table-responsive">

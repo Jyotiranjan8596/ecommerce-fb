@@ -98,7 +98,7 @@
                     <h5 class="widget-title">Customer Service</h5>
                     <p>
                         +91 9338301361 <br>
-                        customercare@freebazar.co.in
+                        customercare<br>@freebazar.co.in
                     </p>
                 </div>
             </div>

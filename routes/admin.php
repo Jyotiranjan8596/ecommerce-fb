@@ -27,6 +27,8 @@ Auth::routes();
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']], function () {
     Route::get('/', [AdminController::class, 'index'])->name('index');
 
+    Route::get('/offer', [AdminController::class, 'offer'])->name('offer');
+
     // profile
     Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('profile-update', [ProfileController::class, 'update'])->name('profile.update');

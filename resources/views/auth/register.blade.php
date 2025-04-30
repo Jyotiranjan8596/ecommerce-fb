@@ -213,7 +213,7 @@
                                         <input class="form-check-input" type="checkbox" value="" id="remember" />
                                         <label class="form-check-label fw-normal mb-0" for="remember">
                                             I agree to the
-                                            <a href="#" class="fw-bold">terms and conditions</a>
+                                            <a href="{{ route('frontend.termCondition') }}" class="fw-bold" style="text-decoration: underline;">terms and conditions</a>
                                         </label>
                                     </div>
                                 </div>

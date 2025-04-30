@@ -298,10 +298,12 @@ class UserDashboardController extends Controller
     public function addUser()
     {
         $user_id       = auth()->user()->user_id;
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $states        = User::select('state')->where('role', 3)->whereNotNull('state')->where('state', '!=', '')->distinct()->pluck('state');
         $relation_user = User::select('relation_user')->where('role', 3)->whereNotNull('relation_user')->where('relation_user', '!=', '')->distinct()->pluck('relation_user');
         // dd($relation_user);
-        return view('frontend.dashboard.adduser', compact('user_id', 'states', 'relation_user'));
+        return view('frontend.dashboard.adduser', compact('user_id', 'states', 'relation_user', 'userId', 'user_profile'));
     }
 
     public function storeUser(Request $request)
@@ -346,7 +348,7 @@ class UserDashboardController extends Controller
 
             if ($sponcer->save()) {
                 flash()->addSuccess('User registered successfully.');
-                return redirect()->route('user.index');
+                return redirect()->route('user.add');
             }
         }
         flash()->addError('Whoops! User or Sponsor creation failed!');
@@ -378,6 +380,9 @@ class UserDashboardController extends Controller
     }
     public function posList(Request $request)
     {
+
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $query = PosModel::query();
 
         if ($request->has('search') && ! empty($request->search)) {
@@ -388,7 +393,7 @@ class UserDashboardController extends Controller
 
         $pos = $query->orderBy('id', 'desc')->simplePaginate(15);
 
-        return view('frontend.dashboard.pos_list', compact('pos'));
+        return view('frontend.dashboard.pos_list', compact('pos', 'userId', 'user_profile'));
     }
 
     public function editprofile()

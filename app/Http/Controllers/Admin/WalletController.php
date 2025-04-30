@@ -15,6 +15,8 @@ class WalletController extends Controller
 {
     public function wallet()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $walletBalance = UserWallet::whereNotNull('wallet_amount')->orderBy('id', 'desc')->simplePaginate(15)->through(function ($wallet) {
             // dd($wallet->wallet_amount);
             $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
@@ -24,7 +26,7 @@ class WalletController extends Controller
         });
         // dd($walletBalance);
         //  dd($walletBalance);
-        return view('admin.wallet.index', compact('walletBalance'));
+        return view('admin.wallet.index', compact('walletBalance', 'userId', 'user_profile'));
     }
     public function exportWallet()
     {

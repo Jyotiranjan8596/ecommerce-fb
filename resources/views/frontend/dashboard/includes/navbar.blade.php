@@ -64,7 +64,7 @@
             <!-- Navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
-                    <a class="nav-link text-dark notification-bell unread dropdown-toggle"
+                    {{-- <a class="nav-link text-dark notification-bell unread dropdown-toggle"
                         data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
                         data-bs-display="static" aria-expanded="false">
                         <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor"
@@ -73,8 +73,8 @@
                                 d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
                             </path>
                         </svg>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right mt-2 py-0">
+                    </a> --}}
+                    {{-- <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right mt-2 py-0">
                         <div class="list-group list-group-flush">
                             <a href="#"
                                 class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
@@ -207,8 +207,8 @@
                                 </svg>
                                 View all
                             </a> --}}
-                        </div>
-                    </div>
+                        {{-- </div>
+                    </div>  --}}
                 </li>
                 <li class="nav-item dropdown ms-lg-3">
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
@@ -216,8 +216,9 @@
                         <div class="media d-flex align-items-center">
                             <img width="45px" height="45px" class="avatar rounded-circle" alt="{{ auth()->user()->name }}"
                                 src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
-                            <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
-                                <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
+                                {{-- <p class="text-dark">{{ auth()->user()->name }}</p> --}}
+                            <div class=" ms-2 text-dark align-items-center d-lg-block">
+                                <span class="mb-0 font-small fw-bold text-gray-900">Hello, {{ auth()->user()->name }}</span>
                             </div>
                         </div>
                     </a>

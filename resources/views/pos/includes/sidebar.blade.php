@@ -121,7 +121,8 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                     </span>
-                    <span class="sidebar-text">Unverified Customer</span>
+                    {{-- <span class="sidebar-text">Unverified Customer</span> --}}
+                    <span class="sidebar-text">Account Managemnt</span>
                 </a>
             </li>
 

@@ -18,8 +18,10 @@ class SectorController extends Controller
      */
     public function index()
     {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
         $sectors = Sector::orderBy('id', 'asc')->simplePaginate(15);
-        return view('admin.sector.index', compact('sectors'));
+        return view('admin.sector.index', compact('sectors', 'userId', 'user_profile'));
     }
 
     /**
@@ -27,8 +29,9 @@ class SectorController extends Controller
      */
     public function create()
     {
-
-        return view('admin.sector.create');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.sector.create', compact('userId', 'user_profile'));
     }
 
     /**
@@ -65,7 +68,9 @@ class SectorController extends Controller
      */
     public function edit(Sector $sector)
     {
-        return view('admin.sector.edit', compact('sector'));
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        return view('admin.sector.edit', compact('sector', 'userId', 'user_profile'));
     }
 
     /**

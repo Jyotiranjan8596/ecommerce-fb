@@ -30,11 +30,13 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Route::view('/term-and-conditions', 'frontend.dashboard.termcondition')->name('termCondition');
 
-
+Route::get('/term-and-conditions', [FrontendController::class, 'termCondition'])->name('frontend.termCondition');
 //frontend
 
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.index');
+Route::get('/offer', [FrontendController::class, 'offer'])->name('frontend.offer');
 Route::get('/category/{id}', [FrontendController::class, 'category'])->name('frontend.category');
 Route::get('/product/{id}', [FrontendController::class, 'product'])->name('frontend.product');
 
