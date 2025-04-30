@@ -1,5 +1,5 @@
 <?php
- $user_profile = auth()->user();
+$user_profile = auth()->user();
 ?>
 <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
     <div class="container-fluid px-0">
@@ -21,8 +21,8 @@
                             placeholder="Search" aria-label="Search" aria-describedby="topbar-addon" />
                     </div>
                 </form> --}}
-                <button id="my-qr-reader" class="btn btn-warning mb-2">
-                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                <button id="my-qr-reader" class="btn" style="margin-top: 0px !important;">
+                    <svg width="43px" height="43px" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -58,7 +58,8 @@
                                 d="M10 17C9.44771 17 9 17.4477 9 18C9 18.5523 9.44771 19 10 19C10.5523 19 11 18.5523 11 18C11 17.4477 10.5523 17 10 17Z"
                                 fill="#0F0F0F"></path>
                         </g>
-                    </svg>&nbsp;Scan QR Code</button>
+                    </svg>
+                    </button>
                 <!-- / Search form -->
             </div>
             <!-- Navbar links -->
@@ -207,18 +208,20 @@
                                 </svg>
                                 View all
                             </a> --}}
-                        {{-- </div>
+                    {{-- </div>
                     </div>  --}}
                 </li>
                 <li class="nav-item dropdown ms-lg-3">
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img width="45px" height="45px" class="avatar rounded-circle" alt="{{ auth()->user()->name }}"
+                            <img width="45px" height="45px" class="avatar rounded-circle"
+                                alt="{{ auth()->user()->name }}"
                                 src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
-                                {{-- <p class="text-dark">{{ auth()->user()->name }}</p> --}}
+                            {{-- <p class="text-dark">{{ auth()->user()->name }}</p> --}}
                             <div class=" ms-2 text-dark align-items-center d-lg-block">
-                                <span class="mb-0 font-small fw-bold text-gray-900">Hello, {{ auth()->user()->name }}</span>
+                                <span class="mb-0 font-small fw-bold text-gray-900">Hello,
+                                    {{ auth()->user()->name }}</span>
                             </div>
                         </div>
                     </a>
@@ -340,4 +343,3 @@
     </div>
 </nav>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
