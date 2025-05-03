@@ -60,6 +60,72 @@ class DsrController extends Controller
         return view('admin.dsr.index', compact('wallets',   'userId', 'user_profile'));
     }
 
+    public function update_dsr(Request $request)
+    {
+        try {
+            // dd($request->all());
+            $wallet = Wallet::where('id', $request->wallet_id)->first();
+            $billing_amount = $request->billing_amount;
+            $transaction_date = $request->transaction_date;
+            if ($billing_amount) {
+                $wallet->billing_amount = $billing_amount;
+            }
+            if ($transaction_date) {
+                $wallet->transaction_date = date('Y-m-d', strtotime($transaction_date));
+            }
+            $res = $wallet->save();
+            if ($res) {
+                return response()->json([
+                    "message" => "Update Successful",
+                    "code" => 200
+                ]);
+            } else {
+                return response()->json([
+                    "message" => "Update Failed",
+                    "code" => 500
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            Log::error('Update DSR error: ' . $e->getMessage());
+            return response()->json([
+                "message" => $e->getMessage(),
+                "code" => 500
+            ], 200);
+        }
+    }
+
+    public function delete_dsr(Request $request)
+    {
+        try {
+            $wallet = Wallet::where('id', $request->wallet_id)->first();
+            if (!$wallet) {
+                return response()->json([
+                    "message" => "Wallet record not found.",
+                    "code" => 404
+                ], 404);
+            }
+
+            $res = $wallet->delete();
+            if ($res) {
+                return response()->json([
+                    "message" => "DSR deleted successfully.",
+                    "code" => 200
+                ], 200);
+            } else {
+                return response()->json([
+                    "message" => "Failed",
+                    "code" => 500
+                ], 200);
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Update DSR error: ' . $e->getMessage());
+            return response()->json([
+                "message" => $e->getMessage(),
+                "code" => 500
+            ], 200);
+        }
+    }
     public function export(Request $request)
     {
         $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
