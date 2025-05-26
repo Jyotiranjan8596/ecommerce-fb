@@ -103,7 +103,8 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
     Route::post('add-store', [UserDashboardController::class, 'storeUser'])->name('add.store');
     Route::get('term-condition', [UserDashboardController::class, 'termCondition'])->name('term.condition');
     Route::get('sponsor/list', [UserDashboardController::class, 'sponsorList'])->name('sponsor.list');
-    Route::get('pos/list', [UserDashboardController::class, 'posList'])->name('pos.list');
+    Route::post('pos/list', [UserDashboardController::class, 'posList'])->name('pos.list');
+    Route::get('pos/list/index', [UserDashboardController::class, 'pos_list_index'])->name('pos.list.index');
     Route::post('payment', [UserDashboardController::class, 'payment'])->name('payment');
     // Route::post('payment/verify/$id', [UserDashboardController::class, 'verifyPayment'])->name('verify.payment');
     Route::get('my/wallet', [UserDashboardController::class, 'wallet'])->name('wallet');

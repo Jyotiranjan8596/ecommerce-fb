@@ -380,20 +380,39 @@ class UserDashboardController extends Controller
     }
     public function posList(Request $request)
     {
+        try {
+            $query = PosModel::query();
 
-        $user_profile = auth()->user();
-        $userId       = $user_profile->id;
-        $query = PosModel::query();
+            if ($request->has('search') && ! empty($request->search)) {
+                $searchTerm = $request->search;
+                $query->where('city', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('zip', 'LIKE', "%{$searchTerm}%");
+            }
 
-        if ($request->has('search') && ! empty($request->search)) {
-            $searchTerm = $request->search;
-            $query->where('city', 'LIKE', "%{$searchTerm}%")
-                ->orWhere('zip', 'LIKE', "%{$searchTerm}%");
+            $pos = $query->orderBy('id', 'desc')->paginate(50)->through(function ($item) {
+                return [
+                    'name' => $item->name ?? "N/A",
+                    'mobilenumber' => $item->mobilenumber ?? "N/A",
+                    'city' => $item->city ?? "N/A",
+                    'address' => $item->address ?? "N/A",
+                    'zip' => $item->zip??"N/A"
+                ];
+            });
+            return response()->json([
+                'code' => 200,
+                'data' => $pos
+            ]);
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return response()->json([
+                'code' => 403,
+            ]);
         }
+    }
 
-        $pos = $query->orderBy('id', 'desc')->simplePaginate(15);
-
-        return view('frontend.dashboard.pos_list', compact('pos', 'userId', 'user_profile'));
+    public function pos_list_index()
+    {
+        return view('frontend.dashboard.pos_list');
     }
 
     public function editprofile()

@@ -26,6 +26,9 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     }
 </style>
+@php
+    $user_profile = auth()->user();
+@endphp
 <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
     <div class="sidebar-inner px-4 pt-3">
         <div
@@ -85,7 +88,8 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('user.pos.list') }}" class="nav-link {{ request()->is('pos/list') ? 'active' : '' }}">
+                <a href="{{ route('user.pos.list.index') }}"
+                    class="nav-link {{ request()->is('pos/list/index') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -164,7 +168,7 @@
 
         </ul>
 
-        
+
 
 
     </div>

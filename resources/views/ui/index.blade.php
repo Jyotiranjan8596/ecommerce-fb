@@ -309,7 +309,7 @@
                         <div class="col-md-5 p-3">
                             <div class="section-header">
                                 <h2 class="section-title display-5 text-light">
-                                    Get 5%* extra Discount on your purchase
+                                    Get up to 100% Savings on your purchase
                                 </h2>
                             </div>
                             <p>Just Sign Up & Register to be a smart customer.</p>
