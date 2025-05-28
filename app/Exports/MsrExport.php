@@ -34,7 +34,7 @@ class MsrExport implements FromCollection, WithHeadings
                 'user_id' => $item->user_id,
                 'sponsor_id' => $sponsor_id,
                 'total_billing_amount' => $item->total_billing_amount ?? 0,
-                'sponsor_expenditure' => $item->sponsor_expenditure ??0 ,
+                'sponsor_expenditure' => $item->sponsor_expenditure ?? 0,
             ];
         });
     }

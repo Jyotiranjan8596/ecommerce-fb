@@ -36,9 +36,9 @@
                     <tr>
                         <th>Sl.No</th>
                         {{-- <th>MONTH</th> --}}
-                        <th>MOBILE NUMBER</th>
-                        <th>NAME</th>
-                        <th>TOTAL BILLING AMOUNT</th>
+                        <th>Transaction Date</th>
+                        <th>Billing Amount</th>
+                        <th>Total Transaction</th>
                         <th>CREDIT</th>
                         <th>DEBIT</th>
                         <th>STATUS</th>
@@ -56,9 +56,12 @@
                                 <td>{{ $monthlySales->firstItem() + $key }}</td>
                                 {{-- <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}
                                 </td> --}}
-                                <td>{{ $data->mobilenumber }}</td>
-                                <td>{{ optional($data->user)->name }}</td>
-                                <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>
+                                <td>{{ $data->dates }}</td>
+                                <td>₹{{ $data->total_billing_amount  }}</td>
+                                <td>₹{{ $data->total_transactions }}</td>
+                                <td>₹{{ $data->credit }}</td>
+                                <td>₹{{ $data->debit }}</td>
+                                <td>{{ $data->status }}</td>
                                 {{-- <td>₹{{ $data->sponsor_expenditure }}/-</td> --}}
                             </tr>
                         @endforeach

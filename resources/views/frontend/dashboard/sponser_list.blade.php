@@ -12,24 +12,11 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>
-                                Sl.No
-                            </th>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                User Id
-                            </th>
-                            <th>
-                                Mobile Number
-                            </th>
-                            <th>
-                                Created ON
-                            </th>
-                            <th>
-                                Action
-                            </th>
+                            <th>Sl.No</th>
+                            <th>Name</th>
+                            <th>Picture</th>
+                            <th>Mobile Number</th>
+                            <th>Sponcer date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,22 +28,20 @@
                                         {{ $data->user->name }}
                                     @endif
                                 </td>
-                                <td> @if ($data->user)
-                                    {{ $data->user->user_id }}
-                                @endif</td>
+                                <td>
+                                    @if ($data->user)
+                                        @if ($data->user->image)
+                                            <img src="{{ asset('images/' . $data->user->image) }}" alt="User Image"
+                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                        @endif
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($data->user)
                                         {{ $data->user->mobilenumber }}
                                     @endif
                                 </td>
-                                <td>{{ $data->created_at }}</td>
-                               
-                                <td>
-                                    <a href="{{ route('frontend.index') }}">
-                                        <i class="bi bi-bookmark"
-                                            style="background-color: rgb(95, 54, 161); padding: 8.5px; border-radius: 12px; color: rgb(247, 241, 241);"></i>
-                                    </a>
-                                </td>
+                                <td>{{ $data->created_on }}</td>
                             </tr>
                         @endforeach
                     </tbody>

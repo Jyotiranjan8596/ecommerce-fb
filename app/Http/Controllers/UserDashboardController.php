@@ -374,7 +374,10 @@ class UserDashboardController extends Controller
     public function sponsorList()
     {
         $userId  = auth()->user()->id;
-        $sponcer = Sponsor::where('sponsor_id', $userId)->get();
+        $sponcer = Sponsor::where('sponsor_id', $userId)->get()->map(function($item){
+            $item->created_on = Carbon::parse($item->created_at)->format('d-m-Y h:i:s A');
+            return $item;
+        });
         // dd($sponcer);
         return view('frontend.dashboard.sponser_list', compact('sponcer'));
     }

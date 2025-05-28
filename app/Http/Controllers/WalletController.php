@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MsrExport;
+use App\Exports\PosMsrExport;
 use App\Exports\WalletExport;
 use App\Imports\WalletImport;
 use App\Models\PosModel;
@@ -264,18 +265,26 @@ class WalletController extends Controller
         // dd($selectedMonth);
 
         // Build Query
-        $query = Wallet::select(
-            'user_id',
-            'mobilenumber',
-            DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
-            DB::raw('SUM(billing_amount) as total_billing_amount')
-        )
-            ->whereNotNull('transaction_date')
-            ->where('pos_id', $pos->id)
-            ->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$selectedMonth])
-            ->groupBy('user_id', 'mobilenumber', 'transaction_month');
+        $query = $transactions = Wallet::select(
+            DB::raw('DATE(transaction_date) as date'),
+            DB::raw('COUNT(*) as total_transactions'),
+            DB::raw('SUM(billing_amount) as total_billing_amount'),
+            DB::raw('SUM(amount_wallet) as credit')
+        )->where('pos_id', $pos->id)
+            ->whereMonth('transaction_date', Carbon::now()->month)
+            ->whereYear('transaction_date', Carbon::now()->year)
+            ->groupBy(DB::raw('DATE(transaction_date)'))
+            ->orderBy('date', 'desc');
 
-        $monthlySales = $query->orderBy('transaction_month', 'desc')->simplePaginate(15);
+        // $monthlySales = $query->orderBy('transaction_month', 'desc')->simplePaginate(15);
+        $monthlySales = $query->simplePaginate(15)->through(function ($item) {
+            $transaction_debit = ($item->total_billing_amount) * (5 / 100);
+            $item->debit = $item->credit >= $transaction_debit ? 0 : $transaction_debit - $item->credit;
+            $item->dates = Carbon::parse($item->date)->format('d-M-Y');
+            $item->status = $item->debit == 0 ? 'Paid' : 'Pending';
+            // dd($item);
+            return $item;
+        });
 
         return view('pos.msr', compact('pos', 'monthlySales'));
     }
@@ -289,24 +298,32 @@ class WalletController extends Controller
         //     $posId = $pos->id;
         // }
 
-        $query = Wallet::select(
-            'user_id',
-            'mobilenumber',
-            DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as transaction_month'),
-            DB::raw('SUM(billing_amount) as total_billing_amount')
-        )
-            ->whereNotNull('transaction_date')
-            ->where('pos_id', $pos->id)
-            ->groupBy('user_id', 'mobilenumber', 'transaction_month');
+        $query =  Wallet::select(
+            DB::raw('DATE(transaction_date) as date'),
+            DB::raw('COUNT(*) as total_transactions'),
+            DB::raw('SUM(billing_amount) as total_billing_amount'),
+            DB::raw('SUM(amount_wallet) as credit')
+        )->where('pos_id', $pos->id)
+            ->whereMonth('transaction_date', Carbon::now()->month)
+            ->whereYear('transaction_date', Carbon::now()->year)
+            ->groupBy(DB::raw('DATE(transaction_date)'))
+            ->orderBy('date', 'desc');
 
         if ($request->has('month') && !empty($request->month)) {
             $selectedMonth = $request->month;
             $query->whereRaw('DATE_FORMAT(transaction_date, "%Y-%m") = ?', [$selectedMonth]);
         }
 
-        $filteredData = $query->get();
-
-        return Excel::download(new MsrExport($filteredData), 'MonthlySalesReport.csv');
+        $filteredData = $query->get()->map(function ($item) {
+            $transaction_debit = ($item->total_billing_amount) * (5 / 100);
+            $item->debit = $item->credit >= $transaction_debit ? 0 : $transaction_debit - $item->credit;
+            $item->dates = Carbon::parse($item->date)->format('d-M-Y');
+            $item->status = $item->debit == 0 ? 'Paid' : 'Pending';
+            // dd($item);
+            return $item;
+        });;
+        // dd($filteredData);
+        return Excel::download(new PosMsrExport($filteredData), 'MonthlySalesReport.csv');
     }
 
     public function journal(Request $request)
