@@ -73,27 +73,27 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="h5">Customers</h2>
-                                <h3 class="fw-extrabold mb-1">345,678</h3>
+                                <h2 class="h5">CMS</h2>
+                                <h3 class="fw-extrabold mb-1">₹{{ $msales }}</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Customers</h2>
-                                <h3 class="fw-extrabold mb-2">345k</h3>
+                                <h2 class="h6 text-gray-400 mb-0">CMS</h2>
+                                <h3 class="fw-extrabold mb-2">₹{{ $msales }}</h3>
                             </div>
-                            <small class="d-flex align-items-center text-gray-500">
+                            {{-- <small class="d-flex align-items-center text-gray-500">
                                 Feb 1 - Apr 1
-                            </small>
+                            </small> --}}
                             <div class="small d-flex mt-1">
                                 <div>
-                                    Last Month Sales
+                                    Current Month Sales
                                     <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
                                             clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">22%</span>
+                                    </svg><span class="text-success fw-bolder">2%</span>
                                 </div>
                             </div>
                         </div>
@@ -117,16 +117,16 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Revenue</h2>
-                                <h3 class="mb-1">$43,594</h3>
+                                <h2 class="fw-extrabold h5">CDS</h2>
+                                <h3 class="mb-1">₹ {{ $dsales }}</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Revenue</h2>
-                                <h3 class="fw-extrabold mb-2">$43,594</h3>
+                                <h2 class="h6 text-gray-400 mb-0">CDS</h2>
+                                <h3 class="fw-extrabold mb-2">₹ {{ $dsales }}</h3>
                             </div>
-                            <small class="d-flex align-items-center text-gray-500">
+                            {{-- <small class="d-flex align-items-center text-gray-500">
                                 Feb 1 - Apr 1,
                                 <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -135,10 +135,10 @@
                                         clip-rule="evenodd"></path>
                                 </svg>
                                 GER
-                            </small>
+                            </small> --}}
                             <div class="small d-flex mt-1">
                                 <div>
-                                    Since last month
+                                    Current Day Sales
                                     <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
@@ -167,19 +167,19 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Bounce Rate</h2>
-                                <h3 class="mb-1">50.88%</h3>
+                                <h2 class="fw-extrabold h5">₹RBW</h2>
+                                <h3 class="mb-1">₹ {{ $currentMonthWalletCredit }}</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Bounce Rate</h2>
-                                <h3 class="fw-extrabold mb-2">50.88%</h3>
+                                <h2 class="h6 text-gray-400 mb-0">₹RBW</h2>
+                                <h3 class="fw-extrabold mb-2">₹ {{ $currentMonthWalletCredit }}</h3>
                             </div>
-                            <small class="text-gray-500"> Feb 1 - Apr 1 </small>
+                            {{-- <small class="text-gray-500"> Feb 1 - Apr 1 </small> --}}
                             <div class="small d-flex mt-1">
                                 <div>
-                                    Since last month
+                                    Received By Wallet
                                     <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"

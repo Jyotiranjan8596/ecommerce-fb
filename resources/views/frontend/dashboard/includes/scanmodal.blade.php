@@ -253,7 +253,7 @@
                 console.log(id);
 
                 document.getElementById("qr-details-text").innerHTML = "Freebazar";
-                document.getElementById("upi_ID").value = name;
+                document.getElementById("qrDataId").value = id;
                 console.log(document.getElementById("upi_ID").value);
                 // Store the ID in a hidden input field
                 // document.getElementById("qrDataId").value = id;
