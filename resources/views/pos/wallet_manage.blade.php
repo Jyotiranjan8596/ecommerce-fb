@@ -1,4 +1,5 @@
 @extends('pos.layouts.master')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 @if (session('current_balance'))
     <div class="alert alert-success text-center" role="alert">
@@ -65,8 +66,16 @@
             <div class="card-box p-4 shadow-lg rounded">
                 <div class="form-group row">
                     <div class="col-md-8">
-                        <label for="myid">USER ID</label>
-                        <input name="user_id" type="text" value="{{ $user->user_id }}" class="form-control">
+                        <form action="{{ route('pos.wallet.manage') }}" method="GET">
+                            <label for="myid">USER ID</label>
+                            <div class="input-group">
+                                <input name="user_id" type="text" id="myid" value="{{ $user->user_id }}"
+                                    class="form-control">
+                                <button type="submit" class="btn btn-outline-secondary hover-blue">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <h3 class="mt-4 text-primary">WALLET INFO FOR <span class="text-danger">{{ $user->name }}</span></h3>

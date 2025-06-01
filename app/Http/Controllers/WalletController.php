@@ -19,9 +19,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class WalletController extends Controller
 {
-    public function walletManage(Request $request, $id)
+    public function walletManage(Request $request)
     {
-        $user = User::find($id);
+        $pos_id = $request->query('user_id');
+        $user = User::where('user_id',$pos_id)->first();
         $userId = Auth::user()->user_id;
         // dd($userId);
         $pos = PosModel::where('user_id', $userId)->first();

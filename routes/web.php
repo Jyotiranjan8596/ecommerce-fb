@@ -112,7 +112,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');
     Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
-    Route::get('walletmanage/{id}', [WalletController::class, 'walletManage'])->name('wallet.manage');
+    Route::get('walletmanage', [WalletController::class, 'walletManage'])->name('wallet.manage');
     Route::get('change/password', [PosController::class, 'changepassword'])->name('change.password');
     Route::post('new/password', [PosController::class, 'newpassword'])->name('new.password');
     Route::get('dsr', [WalletController::class, 'dsr'])->name('dsr');
