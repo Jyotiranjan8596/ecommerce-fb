@@ -97,7 +97,7 @@
                         <th>MOBILE</th>
                         <th>BILLING AMOUNT</th>
                         <th>Cash/Upi</th>
-                        <th>Payment Mode</th>
+                        {{-- <th>Payment Mode</th> --}}
                         <th>BY Wallet</th>
                         {{-- <th>PAY BY</th> same as Payment mode --}}
                         <th>NET AMOUNT</th>
@@ -122,14 +122,18 @@
                                 <td>{{ optional($data->user)->name }}</td>
                                 <td>{{ $data->mobilenumber }}</td>
                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
+                                <td>{{ $data->pay_by }}</td>
+                                <td>{{ $data->amount_wallet }}</td>
+                                <td>{{ $data->amount }}</td>
+                                <td>{{ $data->transaction_amount }}</td>
                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                 {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
-                                {{-- <td>{{ $data->status }}</td> --}}
+                                <td>N/A</td>
                                 <td>
                                     <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal"
                                         onclick="editCustomer({{ $data->id }}, '{{ $data->billing_amount }}', '{{ $data->amount }}', '{{ $data->amount_wallet }}')"></i>
-                                    @if ($data->status == 0)
+                                    @if ($data->status == null || $data->status == 0 )
                                         <a href="{{ route('pos.wallet.updateStatus', $data->id) }}"
                                             class="btn btn-danger btn-sm">Unverified</a>
                                     @else

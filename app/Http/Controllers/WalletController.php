@@ -108,7 +108,7 @@ class WalletController extends Controller
 
         // Retain filters in pagination
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
-
+        // dd($wallets->toArray());
         return view('pos.dsr', compact('wallets'));
     }
 
