@@ -142,13 +142,13 @@
                                     </svg>
                                 </div>
                                 <div class="d-sm-none">
-                                    <h2 class="fw-extrabold h5">Total Tags</h2>
+                                    <h2 class="fw-extrabold h5">Today's Sales</h2>
                                     <h3 class="mb-1">{{ $count['tags'] ?? 0 }}</h3>
                                 </div>
                             </div>
                             <div class="col-12 col-xl-7 px-xl-0">
                                 <div class="d-none d-sm-block">
-                                    <h2 class="h6 text-gray-400 mb-0">Total Tags</h2>
+                                    <h2 class="h6 text-gray-400 mb-0">Today's Sales</h2>
                                     <h3 class="fw-extrabold mb-2">{{ $count['tags'] ?? 0 }}</h3>
                                 </div>
                             </div>

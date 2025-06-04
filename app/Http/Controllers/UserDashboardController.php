@@ -361,7 +361,18 @@ class UserDashboardController extends Controller
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $userWallet      = UserWallet::where('user_id', $userId)->orderBy('id', 'desc')->simplePaginate(12);
+        $userWallet      = UserWallet::where('user_id', $userId)
+        ->orderBy('id', 'desc')
+        ->simplePaginate(50)
+        ->through(function($item){
+            // dd($item->toArray());
+            if($item->used_amount > 0){
+                $item->transaction_details = $item->getPos?$item->getPos->name:"N/A";
+            }else{
+                $item->transaction_details = "Admin";
+            }
+            return $item;
+        });
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = self::get_total_wallet_amount($userId);

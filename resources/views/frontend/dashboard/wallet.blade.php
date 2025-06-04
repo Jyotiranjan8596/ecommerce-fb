@@ -25,7 +25,7 @@
                                 <tr>
                                     <th>Sl.No</th>
                                     {{-- <th>USER ID</th> --}}
-                                    <th>USER NAME</th>
+                                    <th>Transaction Details</th>
                                     {{-- <th>INVOICE</th> --}}
                                     <th>CREDIT</th>
                                     <th>DEBIT</th>
@@ -38,7 +38,7 @@
                                     <tr>
                                         <td>{{ $userWallet->firstItem() + $key }}</td>
                                         {{-- <td>{{ $data->user->user_id }}</td> --}}
-                                        <td>{{ $data->user->name }}</td>
+                                        <td>{{ $data->transaction_details }}</td>
                                         {{-- <td>{{ $data->invoice }}</td> --}}
                                         <td>₹{{ $data->wallet_amount ?? 0 }}</td>
                                         <td>₹{{ $data->used_amount ?? 0 }}</td>
