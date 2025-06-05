@@ -363,7 +363,7 @@ class UserDashboardController extends Controller
         // dd($userId);
         $userWallet      = UserWallet::where('user_id', $userId)
         ->orderBy('id', 'desc')
-        ->simplePaginate(50)
+        ->simplePaginate(10)
         ->through(function($item){
             // dd($item->toArray());
             if($item->used_amount > 0){
