@@ -17,22 +17,38 @@ class PosController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $posId = $user_profile->user_id;
+        $posId        = $user_profile->user_id;
+
         $pos = PosModel::where('user_id', $posId)->first();
-        $msales  = Wallet::where('pos_id', $pos->id)
-            ->whereMonth('transaction_date', Carbon::now()->month)
-            ->whereYear('transaction_date', Carbon::now()->year)
+
+        if (!$pos) {
+            return view('pos.index', compact('userId', 'user_profile'))->withErrors(['POS not found']);
+        }
+
+        $pos_id = $pos->id;
+        $currentMonth = Carbon::now()->month;
+        $currentYear  = Carbon::now()->year;
+        $today        = Carbon::today();
+
+        $walletQuery = Wallet::where('pos_id', $pos_id);
+
+        $msales = (clone $walletQuery)
+            ->whereMonth('transaction_date', $currentMonth)
+            ->whereYear('transaction_date', $currentYear)
             ->sum('billing_amount');
-        $dsales = Wallet::where('pos_id', $pos->id)
-            ->whereDate('transaction_date', Carbon::today())
+
+        $dsales = (clone $walletQuery)
+            ->whereDate('transaction_date', $today)
             ->sum('billing_amount');
-        $currentMonthWalletCredit = Wallet::where('pos_id', $pos->id)
-            ->whereMonth('transaction_date', Carbon::now()->month)
-            ->whereYear('transaction_date', Carbon::now()->year)
+
+        $currentMonthWalletCredit = (clone $walletQuery)
+            ->whereMonth('transaction_date', $currentMonth)
+            ->whereYear('transaction_date', $currentYear)
             ->sum('amount_wallet');
 
-        return view('pos.index', compact('userId', 'user_profile', 'msales', 'dsales','currentMonthWalletCredit'));
+        return view('pos.index', compact('userId', 'user_profile', 'msales', 'dsales', 'currentMonthWalletCredit'));
     }
+
     public function userList(Request $request)
     {
         $query = DB::table('users')->where('role', 3);
@@ -73,37 +89,31 @@ class PosController extends Controller
     public function verifyAllCustomer()
     {
         try {
-            $posId = auth()->user()->user_id;
-            // dd($posId); 
-            $pos = PosModel::where('user_id', $posId)->first();
-            // dd($pos);
-            if ($pos) {
-                $posId = $pos->id;
-                // dd($posId);
-            }
-            // Update the status for wallets linked to the specified pos_id
-            $updatedRows = Wallet::where('pos_id', $posId)->update([
-                'status' => 1,
-            ]);
-            if ($updatedRows > 0) {
-                return response()->json([
-                    'code' => 200,
-                    'message' => "Costumers have been successfully verified.",
-                ]);
-            } else {
-                return response()->json([
-                    'code' => 200,
-                    'message' => "Already Verified",
-                ]);
-            }
-            // Return success response
+            $user = auth()->user();
+            $pos = PosModel::where('user_id', $user->user_id)->first();
 
+            if (!$pos) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'POS not found for the user.',
+                ], 404);
+            }
+
+            $updatedRows = Wallet::where('pos_id', $pos->id)->update(['status' => 1]);
+
+            $message = $updatedRows > 0
+                ? "Customers have been successfully verified."
+                : "Already Verified";
+
+            return response()->json([
+                'code' => 200,
+                'message' => $message,
+            ]);
         } catch (\Exception $e) {
-            // Handle exceptions and return error response
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while verifying customers.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

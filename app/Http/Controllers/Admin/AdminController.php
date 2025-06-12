@@ -11,20 +11,29 @@ class AdminController extends Controller
     public function index()
     {
         $user_profile = auth()->user();
-        $userId       = $user_profile->id;
-        $count['users'] = User::count();
+        $userId = $user_profile->id;
 
+        // Use conditional aggregation to get all counts in one query
+        $userCounts = User::selectRaw('
+        COUNT(*) as total,
+        COUNT(CASE WHEN role = 3 THEN 1 END) as role_3,
+        COUNT(CASE WHEN role = 4 THEN 1 END) as role_4
+    ')->first();
+
+        $count['users'] = $userCounts->total;
+        $totaluser = $userCounts->role_3;
+        $totalpos = $userCounts->role_4;
 
         $count['posts'] = 0;
         $count['posts_read'] = 0;
         $newPosts = 0;
         $topPosts = 0;
-        $totaluser = User::where('role', 3)->count();
-        $totalpos = User::where('role', 4)->count();
+
         return view('admin.index', compact('count', 'totaluser', 'totalpos', 'userId', 'user_profile', 'newPosts', 'topPosts'));
     }
 
-    public function offer() {
+    public function offer()
+    {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
 

@@ -22,55 +22,64 @@ class WalletController extends Controller
     public function walletManage(Request $request)
     {
         $pos_id = $request->query('user_id');
-        $user = User::where('user_id',$pos_id)->first();
+        $user = User::where('user_id', $pos_id)->first();
         $userId = Auth::user()->user_id;
         // dd($userId);
         $pos = PosModel::where('user_id', $userId)->first();
 
-        $walletBalanceQuery = Wallet::where('user_id', $user->id);
+        // Transactions for display
         $transactionQuery = Wallet::where('user_id', $user->id);
 
-        if ($request->has('balance_date') && $request->balance_date != null) {
-            $walletBalanceQuery->whereDate('transaction_date', $request->balance_date);
-        }
-
-        if ($request->has('transaction_date') && $request->transaction_date != null) {
+        if ($request->filled('transaction_date')) {
             $transactionQuery->whereDate('transaction_date', $request->transaction_date);
         }
 
-        $walletBalance = $walletBalanceQuery->first();
-        $walletList = $transactionQuery->orderBy('id', 'desc')->get();
-        // dd($walletList);
+        $walletList = $transactionQuery->orderByDesc('id')->get();
 
-        $balanceNotFound = $request->has('balance_date') && !$walletBalance;
-        $transactionsNotFound = $request->has('transaction_date') && $walletList->isEmpty();
+        // Check if specific-date balance was requested
+        $walletBalance = null;
+        $balanceNotFound = false;
 
-        $userId = $user->id;
-        $posId = $pos->id;
+        if ($request->filled('balance_date')) {
+            $walletBalance = Wallet::where('user_id', $user->id)
+                ->whereDate('transaction_date', $request->balance_date)
+                ->first();
 
-        $walletBalance = self::get_total_wallet_amount($userId);
+            $balanceNotFound = !$walletBalance;
+        }
 
+        // If no date filter, or balance found, get total
+        if (!$balanceNotFound) {
+            $walletBalance = self::get_total_wallet_amount($user->id);
+        }
 
-        return view('pos.wallet_manage', compact('user', 'walletList', 'walletBalance', 'balanceNotFound', 'transactionsNotFound'));
+        $transactionsNotFound = $request->filled('transaction_date') && $walletList->isEmpty();
+
+        return view('pos.wallet_manage', compact(
+            'user',
+            'walletList',
+            'walletBalance',
+            'balanceNotFound',
+            'transactionsNotFound'
+        ));
     }
+
 
     public function get_total_wallet_amount($userId)
     {
-        // dd($userId);
         $userwallet = UserWallet::where('user_id', $userId)->get();
-        $totalusedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
-        if ($userwallet) {
-            $walletamount = $userwallet->sum('wallet_amount');
-            $walletBalance = $walletamount - $totalusedAmount;
-            return $walletBalance <= 0 ? 0 : $walletBalance;
-        } else {
-            $walletBalance = 0;
+        if ($userwallet->isEmpty()) {
+            return 0;
         }
 
-        if ($walletBalance <= 0) {
-            $walletBalance = 0;
-        }
+        $walletAmount = $userwallet->sum('wallet_amount');
+        $usedAmount = $userwallet->sum('used_amount'); // Use the same collection instead of hitting DB again
+
+        $walletBalance = $walletAmount - $usedAmount;
+
+        return $walletBalance > 0 ? $walletBalance : 0;
     }
+
 
     public function dsr(Request $request)
     {
