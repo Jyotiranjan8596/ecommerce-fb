@@ -188,5 +188,97 @@
                 </div>
             </div>
         @endif
+        <div class="row mt-4">
+            <div class="col-md-12 col-lg-4 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-header">User Registrations</div>
+                    <div class="card-body">
+                        <canvas id="chart1" style="min-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-4 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-header">Sale Stats</div>
+                    <div class="card-body">
+                        <canvas id="chart2" style="min-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-4 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-header">Reward Stats</div>
+                    <div class="card-body">
+                        <canvas id="chart3" style="min-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        new Chart(document.getElementById('chart1'), {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($userChartLabels) !!},
+                datasets: [{
+                        label: 'Users (Actual)',
+                        data: {!! json_encode(array_slice($userChartData, 0, now()->month)) !!},
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        // tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('chart2'), {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($posChartLabels) !!},
+                datasets: [{
+                    label: 'Total Sales',
+                    data: {!! json_encode($posChartData) !!},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        new Chart(document.getElementById('chart3'), {
+            type: 'Total Giveaway',
+            data: {
+                labels: {!! json_encode($salesChartLabels) !!},
+                datasets: [{
+                    data: {!! json_encode($salesChartData) !!},
+                    backgroundColor: ['#4bc0c0', '#ffcd56', '#ff6384']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
 @endsection

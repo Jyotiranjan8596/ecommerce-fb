@@ -15,7 +15,6 @@
                     <tr>
                         <th scope="col">Sl.no</th>
                         <th scope="col">Name</th>
-                        <th scope="col">UserId</th>
                         <th scope="col">Phone</th>
                         <th scope="col">Billing Amount</th>
                         <th scope="col">Cash/Upi</th>
@@ -23,16 +22,9 @@
                         <th scope="col">Wallet Balance</th>
                         <th scope="col">Credit</th>
                         <th scope="col">Debit</th>
-                       
                         <th scope="col">Transation Date</th>
-                       
-                        <th scope="col">Status</th>
-                        <th scope="col">Payable</th>
-                        <th scope="col">Paid</th>
-                        <th scope="col">Receivable</th>
-                        <th scope="col">Received</th>
-                        <th scope="col">Balance</th>
                         <th scope="col">Remark</th>
+                        <th scope="col">Status</th>
 
                     </tr>
                 </thead>
@@ -41,7 +33,6 @@
                         <tr>
                             <td>{{ $dsrLists->firstItem() + $key }}</td>
                             <td>{{ $customer->user->name ?? 'N/A' }}</td>
-                            <td>{{ $customer->user->user_id ?? 'N/A' }}</td>
                             <td>{{ $customer->user->mobilenumber ?? 'N/A' }}</td>
                             <td>₹{{ $customer->billing_amount ?? 0 }}/-</td>
                             <td>₹{{ $customer->amount ?? 0 }}/-</td>
@@ -50,6 +41,7 @@
                             <td>₹{{ $customer->credit ?? 0 }}</td>
                             <td>₹{{ $customer->debit ?? 0 }}</td>
                             <td>{{ date('d/m/Y', strtotime($customer->transaction_date)) }}</td>
+                            <td>Remarks</td>
                             <td>
                                 <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#editModal"
