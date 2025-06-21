@@ -239,9 +239,9 @@
                     y: {
                         beginAtZero: true,
                         min: 0,
-                        max: 5,
+                        max: 100,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 10
                         }
                     }
                 }
