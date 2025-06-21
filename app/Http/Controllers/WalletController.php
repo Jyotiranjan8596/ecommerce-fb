@@ -259,45 +259,44 @@ class WalletController extends Controller
         $posId = auth()->user()->user_id;
         $pos = PosModel::where('user_id', $posId)->first();
 
-        // Check if POS exists
         if (!$pos) {
             return redirect()->back()->with('error', 'POS not found.');
         }
 
-        // Find the most recent month dynamically if no filter is provided
+        // Get the latest transaction month or fallback to previous month
         $defaultMonth = Wallet::where('pos_id', $pos->id)
             ->whereNotNull('transaction_date')
-            ->orderBy('transaction_date', 'desc')
+            ->orderByDesc('transaction_date')
             ->value(DB::raw('DATE_FORMAT(transaction_date, "%Y-%m")'));
 
-        // Fallback to previous month if no transaction exists
         $selectedMonth = $request->input('month') ?: Carbon::now()->subMonth()->format('Y-m');
-        // dd($selectedMonth);
 
-        // Build Query
-        $query = $transactions = Wallet::select(
+        // Extract year and month from selectedMonth
+        [$year, $month] = explode('-', $selectedMonth);
+
+        $monthlySales = Wallet::select(
+            DB::raw('SUM(transaction_amount) as total_transaction_amount'),
             DB::raw('DATE(transaction_date) as date'),
             DB::raw('COUNT(*) as total_transactions'),
             DB::raw('SUM(billing_amount) as total_billing_amount'),
             DB::raw('SUM(amount_wallet) as credit')
-        )->where('pos_id', $pos->id)
-            ->whereMonth('transaction_date', Carbon::now()->month)
-            ->whereYear('transaction_date', Carbon::now()->year)
+        )
+            ->where('pos_id', $pos->id)
+            ->whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
             ->groupBy(DB::raw('DATE(transaction_date)'))
-            ->orderBy('date', 'desc');
-
-        // $monthlySales = $query->orderBy('transaction_month', 'desc')->simplePaginate(15);
-        $monthlySales = $query->simplePaginate(15)->through(function ($item) {
-            $transaction_debit = ($item->total_billing_amount) * (5 / 100);
-            $item->debit = $item->credit >= $transaction_debit ? 0 : $transaction_debit - $item->credit;
-            $item->dates = Carbon::parse($item->date)->format('d-M-Y');
-            $item->status = $item->debit == 0 ? 'Paid' : 'Pending';
-            // dd($item);
-            return $item;
-        });
+            ->orderByDesc('date')
+            ->simplePaginate(15)
+            ->through(function ($item) {
+                $item->debit = max(0, $item->total_transaction_amount - $item->credit);
+                $item->dates = Carbon::parse($item->date)->format('d-M-Y');
+                $item->status = $item->debit == 0 ? 'Paid' : 'Pending';
+                return $item;
+            });
 
         return view('pos.msr', compact('pos', 'monthlySales'));
     }
+
 
 
     public function exportMsr(Request $request)
