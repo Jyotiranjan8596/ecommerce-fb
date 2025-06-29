@@ -6,10 +6,12 @@ use App\Models\PosModel;
 use App\Models\User;
 use App\Models\Wallet;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class PosController extends Controller
 {
@@ -115,6 +117,33 @@ class PosController extends Controller
                 'message' => 'An error occurred while verifying customers.',
                 'error'   => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public function verifyAllPos(Request $request)
+    {
+        try {
+            // dd($request->all());
+            $response = PosModel::getPosByUpi($request->name);
+            if ($response) {
+                return response()->json([
+                    'success' => true,
+                    'name' => $response->name,
+                    'id' => $response->id,
+                    'upi_id' => $response->upi_id
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Invalid Qr"
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
         }
     }
 }

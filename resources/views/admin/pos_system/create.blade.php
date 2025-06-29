@@ -45,8 +45,8 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="upi_id">Upi Id*</label>
-                                <input type="text" id="upi_id" name="upi_id"
+                                <label for="upi_id">Upload QR*</label>
+                                <input type="file" id="upi_id" name="upi"
                                     class="form-control @error('Upi Id') is-invalid @enderror" required>
                                 @error('upi_id')
                                     <span class="invalid-feedback" role="alert">
