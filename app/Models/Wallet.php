@@ -17,11 +17,12 @@ class Wallet extends Model
         'invoice',
         'billing_amount',
         'amount',
-        'pay_by', 
+        'pay_by',
         'tran_type',
-        'transaction_amount', 
-        'pay_by_wallet', 
-        'amount_wallet', 
+        'transaction_amount',
+        'pay_by_wallet',
+        'amount_wallet',
+        'reward_amount',
         'user_id',
         'pos_id',
         'insert_by',
@@ -30,15 +31,15 @@ class Wallet extends Model
         'status',
         'insert_date',
     ];
-   
+
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id','id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
     public function getPos()
     {
-        return $this->belongsTo(PosModel::class, 'pos_id','id');
+        return $this->belongsTo(PosModel::class, 'pos_id', 'id');
     }
 
     public function userWallets()

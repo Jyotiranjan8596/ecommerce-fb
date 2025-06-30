@@ -442,7 +442,7 @@
             if (checkedWallet) {
                 // document.getElementById("pay_by_select").style.display = 'none';
                 console.log("without sponsor");
-                walletDeduction = billingAmount * 0.20;
+                walletDeduction = billingAmount;
                 if (walletBalance >= walletDeduction) {
                     walletBalance -= walletDeduction;
                 } else {
@@ -453,18 +453,21 @@
                 payingAmountField.value = Math.round(remainingAmount1);
                 walletBalanceElement.textContent = walletBalance.toFixed(2);
             } else if (checkedReward) {
-                // console.log("rewars");
+                console.log(rewardBalance);
 
-                rewardDeduction = billingAmount;
+                rewardDeduction = billingAmount * 0.20;
                 if (rewardBalance >= rewardDeduction) {
                     rewardBalance -= rewardDeduction;
                 } else {
                     rewardDeduction = rewardBalance;
                     rewardBalance = 0;
                 }
-                const remainingAmount1 = billingAmount - rewardDeduction;
-                payingAmountField.value = Math.round(remainingAmount1);
+                const remainingAmount2 = billingAmount - rewardDeduction;
+                console.log(remainingAmount2);
+
+                payingAmountField.value = Math.round(remainingAmount2);
                 rewardBalanceElement.textContent = rewardBalance.toFixed(2);
+                walletBalanceElement.textContent = walletBalance.toFixed(2);
             } else {
                 // document.getElementById("pay_by_select").style.display = 'none';
                 if (walletBalance >= walletDeduction) {
@@ -475,9 +478,9 @@
                 }
             }
 
-            const remainingAmount = billingAmount - walletDeduction;
-            walletBalanceElement.textContent = walletBalance.toFixed(2);
-            payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
+            // const remainingAmount = billingAmount - walletDeduction;
+            // walletBalanceElement.textContent = walletBalance.toFixed(2);
+            // payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
             // }
 
 

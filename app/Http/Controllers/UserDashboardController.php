@@ -82,6 +82,7 @@ class UserDashboardController extends Controller
         $balances = self::get_total_wallet_amount($userId);
         $walletBalance = $balances['wallet_balance'];
         $rewardBalance = $balances['rewardBalance'];
+        // dd($userId);
         $total_payback = UserWallet::where('user_id', $userId)->where('trans_type', 'credit')->sum('wallet_amount');
         // if ($userWallet) {
         // } else {
@@ -97,14 +98,14 @@ class UserDashboardController extends Controller
         // dd($userId);
         // Fetch all wallet records for the user
         $userWallet = UserWallet::where('user_id', $userId)->get();
-
         // Calculate the total used amount
         $totalUsedAmount = $userWallet->sum('used_amount');
         $totalUsedRewardAmount = $userWallet->sum('used_points');
 
         // Calculate the total wallet amount
         $totalWalletAmount = $userWallet->sum('wallet_amount');
-        $totalRewardAmount = $userWallet->sum('remaining_points');
+        $totalRewardAmount = $userWallet->sum('reward_points');
+        // dd($totalRewardAmount);
 
         // Calculate the wallet balance
         $walletBalance = $totalWalletAmount - $totalUsedAmount;
@@ -273,7 +274,7 @@ class UserDashboardController extends Controller
             //     ]
             // );
         } catch (\Exception $th) {
-            Log::info("Store Payment".$th->getMessage());
+            Log::info("Store Payment" . $th->getMessage());
         }
 
         // return redirect()->back()->with('success', 'Payment successfully verified and processed.');
