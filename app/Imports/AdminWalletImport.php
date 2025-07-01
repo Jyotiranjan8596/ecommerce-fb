@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\User;
 use App\Models\UserWallet;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -18,34 +19,56 @@ class AdminWalletImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        $monthColumnValue = $row['month']; // Assuming you're reading the row with 'month' column.
-        $transaction_date_value = $row['transaction_date'];
-        if (is_numeric($monthColumnValue)) {
-            $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
-        } else {
-            $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
+        try {
+            // dd($row);
+            // $monthColumnValue = $row['month']; // Assuming you're reading the row with 'month' column.
+            // $transaction_date_value = $row['transaction_date'];
+            // if (is_numeric($monthColumnValue)) {
+            //     $formattedMonth = Date::excelToDateTimeObject($monthColumnValue)->format('M-y');
+            // } else {
+            //     $formattedMonth = $monthColumnValue; // If it's already a string, retain it.
 
-        }
-        if (is_numeric($transaction_date_value)) {
-            $formattedDate = Date::excelToDateTimeObject($transaction_date_value)->format('Y-m-d');
-        } else {
-            $formattedDate = date('Y-m-d', strtotime($transaction_date_value));
-        }
-        // Find the user by user_id in the Users table
-        $user = User::where('id', $row['user_id'])->first();
-        // If the user does not exist, skip the record
-        if (!$user) {
-            return null; // Optionally handle missing users
-        }
+            // }
+            // if (is_numeric($transaction_date_value)) {
+            //     $formattedDate = Date::excelToDateTimeObject($transaction_date_value)->format('Y-m-d');
+            // } else {
+            //     $formattedDate = date('Y-m-d', strtotime($transaction_date_value));
+            // }
+            // Find the user by user_id in the Users table
+            // $user = User::where('id', $row['mobile_number'])->first();
+            $user = User::where('mobilenumber', $row['mobile_number'])->first();
 
-        return new UserWallet([
-            'user_id' => $user->id, // Use the id from the Users table
-            'month' => $formattedMonth,
-            'wallet_amount' => $row['wallet_amount'],
-            'reward_points' => $row['reward_points'],
-            'trans_type' => $row['payment_mode'],
-            'mobilenumber' => $row['mobile_number'],
-            'transaction_date' => $formattedDate
-        ]);
+            // dump($user);
+            // If the user does not exist, skip the record
+            if (!$user) {
+                return null; // Optionally handle missing users
+            }
+
+            $userWallet = UserWallet::where('user_id', $user->id)->get();
+
+            // Calculate the total wallet amount
+            $totalWalletAmount = $userWallet->sum('wallet_amount');
+            $reward_amount = $totalWalletAmount - $row['wallet_amount'];
+            // return new UserWallet([
+            //     'user_id' => $user->id, // Use the id from the Users table
+            //     'month' => $formattedMonth,
+            //     'wallet_amount' => $row['wallet_amount'],
+            //     'reward_points' => $row['reward_points'],
+            //     'trans_type' => $row['payment_mode'],
+            //     'mobilenumber' => $row['mobile_number'],
+            //     'transaction_date' => $formattedDate
+            // ]);
+            return new UserWallet([
+                'user_id' => $user->id, // Use the id from the Users table
+                'month' => date('M-y'),
+                'wallet_amount' => $row['wallet_amount'],
+                'reward_points' => $reward_amount,
+                'trans_type' => 'credit',
+                'mobilenumber' => $row['mobile_number'],
+                'transaction_date' => date('Y-m-d')
+            ]);
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+        }
     }
 }

@@ -389,7 +389,7 @@ class UserDashboardController extends Controller
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = $currentWalletBalance;
-        return view('frontend.dashboard.wallet', compact('userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
+        return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
     }
     public function termCondition()
     {
