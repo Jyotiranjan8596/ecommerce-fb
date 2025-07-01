@@ -149,14 +149,14 @@
                         <div class="wallet-balance mb-3">
                             <strong style="color: black">Wallet Balance:
                             </strong>
-                            <span id="wallet_balance">{{ $rewardBalance }}</span>
-                            <input type="hidden" name="wallet_balance" value="{{ $rewardBalance }}" />
+                            <span id="wallet_balance">{{ $walletBalance }}</span>
+                            <input type="hidden" name="wallet_balance" value="{{ $walletBalance }}" />
                         </div>
                         <div class="reward-balance mb-3">
                             <strong style="color: black">Reward Points:
                             </strong>
-                            <span id="reward_balance">{{ $walletBalance }}</span>
-                            <input type="hidden" name="reward_balance" value="{{ $walletBalance }}" />
+                            <span id="reward_balance">{{ $rewardBalance }}</span>
+                            <input type="hidden" name="reward_balance" value="{{ $rewardBalance }}" />
                         </div>
                     </div>
 
