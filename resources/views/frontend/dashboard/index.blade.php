@@ -235,13 +235,13 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="h5">Wallet Balance</h2>
+                                <h2 class="h5">Reward Balance</h2>
                                 <h3 class="fw-extrabold mb-1">₹{{ $rewardBalance }}/-</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Wallet Balance</h2>
+                                <h2 class="h6 text-gray-400 mb-0">Reward Balance</h2>
                                 <h3 class="fw-extrabold mb-2">₹{{ $rewardBalance }}/-</h3>
                             </div>
                             {{-- <small class="d-flex align-items-center text-gray-500">
