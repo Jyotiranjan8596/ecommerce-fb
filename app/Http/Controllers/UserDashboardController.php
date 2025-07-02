@@ -160,7 +160,7 @@ class UserDashboardController extends Controller
             $userWalletEntry->pos_id           = $pos->id ?? null;
             $currentWalletBalance              = $walletBalance;
 
-            if ($wallet_select == 'on') {
+            if ($wallet_select != 'on') {
                 // $userWallet = UserWallet::where('user_id', $userId)->get();
                 // dd($userWallet);
                 $rewardBalance = $reward_balance;
@@ -168,9 +168,14 @@ class UserDashboardController extends Controller
                     return redirect()->back()->with('error', 'Reward is empty. Payment cannot be processed.');
                 }
 
-                $rewardUsedAmount = min($amount, $rewardBalance);
-                $remainingAmount  = $amount - $rewardUsedAmount;
+                if ($request->billing_amount > $request->paying_amount) {
+                    $rewardUsedAmount = $request->billing_amount - $request->paying_amount;
+                } else {
+                    $rewardUsedAmount = 0;
+                }
 
+                $remainingAmount  = $amount - $rewardUsedAmount;
+                // dd($rewardUsedAmount,$remainingAmount);
                 $walletEntry                     = new Wallet();
                 $walletEntry->user_id            = $userId;
                 $walletEntry->invoice            = $invoice;
@@ -178,10 +183,10 @@ class UserDashboardController extends Controller
                 $walletEntry->transaction_date   = $transaction_date;
                 $walletEntry->billing_amount     = $amount;
                 $walletEntry->transaction_amount = $transaction_amount;
-
+                $walletEntry->amount_wallet      = 0;
                 if ($rewardBalance >= $amount) {
                     $walletEntry->reward_amount = $amount;
-                    $walletEntry->pay_by        = 'wallet';
+                    $walletEntry->pay_by        = 'reward';
                     $walletEntry->tran_type     = 'debit';
                     $walletEntry->amount        = 0;
                 } else {
@@ -197,12 +202,16 @@ class UserDashboardController extends Controller
                 $walletEntry->save();
 
                 $userWalletEntry->wallet_id   = $walletEntry->id;
-                $userWalletEntry->used_amount = $walletUsedAmount;
+                $userWalletEntry->used_amount = 0;
+                $userWalletEntry->used_points = $rewardUsedAmount;
                 $userWalletEntry->save();
             } else {
                 if ($request->billing_amount > $request->paying_amount) {
-                    $wallet_balance = $request->billing_amount - $request->paying_amount;
+                    $wallet_balance_deduct = $request->billing_amount - $request->paying_amount;
+                } else {
+                    $wallet_balance_deduct = 0;
                 }
+                // dd($wallet_balance_deduct);
                 $remainingAmount             = $amount;
                 $dsrlist                     = new Wallet();
                 $dsrlist->invoice            = $invoice;
@@ -213,14 +222,15 @@ class UserDashboardController extends Controller
                 $dsrlist->transaction_date   = $transaction_date;
                 $dsrlist->tran_type          = 'credit';
                 $dsrlist->billing_amount     = $amount;
-                $dsrlist->amount_wallet      = 0;
+                $dsrlist->amount_wallet      = $wallet_balance_deduct;
                 $dsrlist->transaction_amount = $transaction_amount;
                 $dsrlist->pos_id             = $pos->id ?? null;
                 $dsrlist->insert_date        = now();
                 $dsrlist->save();
 
                 $userWalletEntry->wallet_id        = $dsrlist->id;
-                $userWalletEntry->used_amount      = 0;
+                $userWalletEntry->used_amount      = $wallet_balance_deduct;
+                $userWalletEntry->used_points      = 0;
                 $userWalletEntry->remaining_amount = $currentWalletBalance;
                 $userWalletEntry->save();
             }

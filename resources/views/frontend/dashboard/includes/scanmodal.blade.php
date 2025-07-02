@@ -536,7 +536,7 @@
                         if (payBy == "upi") {
                             Swal.fire({
                                 icon: "info",
-                                title: "Please pay only on <b>CRED</b>",
+                                title: "Please verify after payment.",
                                 toast: true,
                                 position: "top-end",
                                 showConfirmButton: false,
