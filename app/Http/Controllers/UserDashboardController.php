@@ -7,6 +7,7 @@ use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Models\Wallet;
+use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -83,7 +84,11 @@ class UserDashboardController extends Controller
         $walletBalance = $balances['wallet_balance'];
         $rewardBalance = $balances['rewardBalance'];
         // dd($userId);
-        $total_payback = UserWallet::where('user_id', $userId)->where('trans_type', 'credit')->sum('wallet_amount');
+        $total_payback = UserWallet::where('user_id', $userId)
+            ->where('trans_type', 'credit')
+            ->selectRaw('SUM(wallet_amount + reward_points) as total')
+            ->value('total');
+
         // if ($userWallet) {
         // } else {
         //     $walletBalance = 0;
@@ -234,6 +239,8 @@ class UserDashboardController extends Controller
                 $userWalletEntry->remaining_amount = $currentWalletBalance;
                 $userWalletEntry->save();
             }
+
+            self::sendWhatsAppMessage("7978017858", "Transaction amount of" . $amount . " is Successfull");
             return response()->json(
                 [
                     'success' => true,
@@ -291,7 +298,12 @@ class UserDashboardController extends Controller
         // dd("comming");
 
     }
-
+    public function sendWhatsAppMessage($to = '7978017858', $message)
+    {
+        $whatsapp = new WhatsappMessageService();
+        $response = $whatsapp->sendMessage($to, $message);
+        return response()->json($response);
+    }
     // public function verifyPayment(Request $request)
     // {
     //     // dd($request->all());
