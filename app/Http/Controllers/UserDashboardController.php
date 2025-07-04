@@ -64,6 +64,7 @@ class UserDashboardController extends Controller
             $user_wallets = $item->userWallets;
             foreach ($user_wallets as $user_wallet) {
                 $item->remaining_amount = $user_wallet->remaining_amount;
+                $item->remaining_reward = $user_wallet->remaining_points;
             }
             return $item;
         });
@@ -209,6 +210,7 @@ class UserDashboardController extends Controller
                 $userWalletEntry->wallet_id   = $walletEntry->id;
                 $userWalletEntry->used_amount = 0;
                 $userWalletEntry->used_points = $rewardUsedAmount;
+                $userWalletEntry->remaining_points = $rewardBalance - $rewardUsedAmount;
                 $userWalletEntry->save();
             } else {
                 if ($request->billing_amount > $request->paying_amount) {
@@ -236,7 +238,7 @@ class UserDashboardController extends Controller
                 $userWalletEntry->wallet_id        = $dsrlist->id;
                 $userWalletEntry->used_amount      = $wallet_balance_deduct;
                 $userWalletEntry->used_points      = 0;
-                $userWalletEntry->remaining_amount = $currentWalletBalance;
+                $userWalletEntry->remaining_amount = $currentWalletBalance - $wallet_balance_deduct;
                 $userWalletEntry->save();
             }
 

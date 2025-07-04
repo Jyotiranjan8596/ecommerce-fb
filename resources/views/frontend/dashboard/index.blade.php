@@ -110,16 +110,20 @@
         </div> --}}
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset('assets/images/freebazarbanner.jpg') }}" style="border-radius: 10px;" class="d-block w-100" alt="...">
+                <img src="{{ asset('assets/images/freebazarbanner.jpg') }}" style="border-radius: 10px;" class="d-block w-100"
+                    alt="...">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('assets/images/b1.png') }}" style="border-radius: 10px;" class="d-block w-100" alt="...">
+                <img src="{{ asset('assets/images/b1.png') }}" style="border-radius: 10px;" class="d-block w-100"
+                    alt="...">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('assets/images/b2.png') }}" style="border-radius: 10px;" class="d-block w-100" alt="...">
+                <img src="{{ asset('assets/images/b2.png') }}" style="border-radius: 10px;" class="d-block w-100"
+                    alt="...">
             </div>
             <div class="carousel-item">
-                <img src="{{ asset('assets/images/b3.png') }}" style="border-radius: 10px;" class="d-block w-100" alt="...">
+                <img src="{{ asset('assets/images/b3.png') }}" style="border-radius: 10px;" class="d-block w-100"
+                    alt="...">
             </div>
         </div>
         {{-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
@@ -462,7 +466,8 @@
                                             <th>Billing Amount</th>
                                             <th>Wallet Deduct</th>
                                             <th>Net Pay</th>
-                                            <th>Remaining</th>
+                                            <th>Remaining Wallet</th>
+                                            <th>Remaining Reward</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -478,6 +483,7 @@
                                                 <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
                                                 <td>₹{{ $data->amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
+                                                <td>₹{{ $data->remaining_reward ?? 0 }}/-</td>
                                                 <td>
                                                     @if ($data->status == 0)
                                                         <span class="btn btn-danger btn-sm">Unverified</span>
