@@ -240,7 +240,7 @@ class UserDashboardController extends Controller
                 $userWalletEntry->save();
             }
 
-            self::sendWhatsAppMessage("7978017858", "Transaction amount of" . $amount . " is Successfull");
+            // self::sendWhatsAppMessage("7978017858", "Transaction amount of" . $amount . " is Successfull");
             return response()->json(
                 [
                     'success' => true,
