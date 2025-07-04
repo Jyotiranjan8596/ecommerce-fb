@@ -193,7 +193,7 @@ class UserDashboardController extends Controller
                     $walletEntry->reward_amount = $amount;
                     $walletEntry->pay_by        = 'reward';
                     $walletEntry->tran_type     = 'debit';
-                    $walletEntry->amount        = 0;
+                    $walletEntry->amount        = $request->paying_amount;
                 } else {
                     $walletEntry->reward_amount = $rewardUsedAmount;
                     $walletEntry->pay_by        = $alt_pay_by;
