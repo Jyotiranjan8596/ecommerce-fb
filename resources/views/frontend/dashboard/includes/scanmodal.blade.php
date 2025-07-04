@@ -389,55 +389,8 @@
             alternativePayBySelect.required = false;
             alternativePayBySelect.value = '';
             payingAmountField.value = Math.round(billingAmount);
-            console.log(payBySelect);
-
-            console.log(checkedWallet);
-
-            // Cash or UPI payment logic
-            // Calculate 5% deduction
-            // if (sponsors_count >= 10) {
-            //     console.log(walletBalance);
-
-            //     payingAmountField.value = Math.round(billingAmount);
-            //     if (checkedWallet) {
-            //         console.log("comming to check wallet");
-            //         document.getElementById("pay_by_select").style.display = 'none';
-            //         payBySelect.value = "wallet";
-            //         if (walletBalance >= billingAmount) {
-            //             walletBalance -= billingAmount;
-            //             payingAmountField.value = 0; // Fully paid by wallet
-            //             walletBalanceElement.textContent = walletBalance.toFixed(2);
-            //         } else {
-            //             const remainingAmount = billingAmount - walletBalance;
-            //             walletBalance = 0;
-            //             remainingAmountField.style.display = 'block';
-            //             remainingAmountField.value = remainingAmount.toFixed(2);
-            //             insufficientBalanceDiv.style.display = 'block';
-            //             alternativePayBySelect.style.display = 'block';
-            //             alternativePayBySelect.required = true;
-            //             payingAmountField.value = Math.round(remainingAmount); // Remaining amount to be paid
-            //             walletBalanceElement.textContent = walletBalance.toFixed(2);
-            //         }
-            //     } else {
-            //         document.getElementById("pay_by_select").style.display = 'block';
-            //         // payBySelect.value = "";
-            //     }
-            //     if (payBySelect.value === "cash" || payBySelect.value === "upi") {
-            //         console.log("comming to pay check");
-            //         // Cash or UPI payment logic
-            //         //  walletDeduction = billingAmount * 0.05; // Calculate 5% deduction
-            //         if (walletBalance >= walletDeduction) {
-            //             walletBalance -= walletDeduction;
-            //         } else {
-            //             walletDeduction = walletBalance;
-            //             walletBalance = 0;
-            //         }
-
-            //         const remainingAmount = billingAmount - walletDeduction;
-            //         walletBalanceElement.textContent = walletBalance.toFixed(2);
-            //         payingAmountField.value = Math.round(remainingAmount) // Amount to be paid
-            //     }
-            // } else {
+            let pos_id = document.getElementById('qrDataId').value;
+            console.log(pos_id);
 
             if (checkedWallet) {
                 // document.getElementById("pay_by_select").style.display = 'none';
@@ -454,8 +407,11 @@
                 walletBalanceElement.textContent = walletBalance.toFixed(2);
             } else if (checkedReward) {
                 console.log(rewardBalance);
-
-                rewardDeduction = billingAmount * 0.20;
+                if (pos_id == 75) {
+                    rewardDeduction = billingAmount * 0.02;
+                } else {
+                    rewardDeduction = billingAmount * 0.10;
+                }
                 if (rewardBalance >= rewardDeduction) {
                     rewardBalance -= rewardDeduction;
                 } else {
