@@ -476,7 +476,7 @@
                                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
-                                                <td>₹{{ $data->billing_amount - $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
                                                 <td>
                                                     @if ($data->status == 0)
