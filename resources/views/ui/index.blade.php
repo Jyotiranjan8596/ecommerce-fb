@@ -492,12 +492,17 @@
                         Free Bazar's Inflation Protection Option (IPO) is an investment and risk-free saving opportunity.
                         Our SIP module combines the best of traditional and online marketing systems, offering benefits to
                         customers and businesses through a well-designed profit-sharing program via POS terminals. We
-                        emphasize quality products with up to 100% payback facilities through SIP.
+                        emphasize quality products with up to 100% payback facilities through SIP. <br>
+                        1. Spend: Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
+                        2. Invite: Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
+                        shopping free. <br>
+                        3. Partnership: Join as a POS partner with zero investment and grow your business with huge
+                        income possibilities.
 
                     </div>
                 </div>
             </div>
-            <div class="accordion-item" style="border: 1px solid #757575;" id="mission">
+            {{-- <div class="accordion-item" style="border: 1px solid #757575;" id="mission">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseTwo" aria-expanded="false" style="color: black; font-weight: bold;"
@@ -508,14 +513,10 @@
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
                         style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        1. Spend: Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
-                        2. Invite: Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
-                        shopping free. <br>
-                        3. Partnership: Join as a POS partner with zero investment and grow your business with huge
-                        income possibilities.
+                        
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection
