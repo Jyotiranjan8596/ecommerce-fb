@@ -493,10 +493,10 @@
                         Our SIP module combines the best of traditional and online marketing systems, offering benefits to
                         customers and businesses through a well-designed profit-sharing program via POS terminals. We
                         emphasize quality products with up to 100% payback facilities through SIP. <br>
-                        1. Spend: Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
-                        2. Invite: Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
+                        <strong>1. Spend:</strong> Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
+                        <strong>2. Invite:</strong> Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
                         shopping free. <br>
-                        3. Partnership: Join as a POS partner with zero investment and grow your business with huge
+                        <strong>3. Partnership:</strong> Join as a POS partner with zero investment and grow your business with huge
                         income possibilities.
 
                     </div>
