@@ -365,8 +365,8 @@
                         <div class="card-body p-0">
                             <h5>Best Price</h5>
                             <p class="card-text">
-                                Get 3% extra savings on every spending with more savings opportunity.
-
+                                Enjoy an extra 10% savings on every bill, on top of our regular discounts! This payback
+                                benefit is our way of saying thank you for choosing us.
                             </p>
                         </div>
                     </div>
@@ -435,15 +435,10 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                     <div class="accordion-body" style="color: black; background: rgb(226, 226, 226);">
-                        M/S Satshree Marketing Pvt. Ltd. (SMPL) is a Pvt. Ltd. company registered under the Companies Act of
-                        1956, established in February 2002. It was founded by a group of professionals with extensive
-                        experience in marketing stocks, products, services, loans, financial instruments, estates, assets,
-                        and insurance for individuals, companies, and government and non-government bodies. We recognize
-                        that limited education, resources, and a weak background prevent many talented individuals from
-                        succeeding. Our mission is to create lasting opportunities for socially interactive, sustained
-                        growth, aiming to provide support for thousands of customers and contribute to the nation’s economic
-                        progress.
-
+                        FreeBazar is a pioneering initiative by M/S Satshree Marketing Pvt. Ltd., a company founded in 2002
+                        by a team of visionary professionals. We strive to empower consumers worldwide by providing a shield
+                        against inflation, promoting economic stability, and contributing to national progress. Our aim is
+                        to create opportunities for inclusive growth, fostering a free economy that benefits all.
                     </div>
                 </div>
             </div>
@@ -458,12 +453,9 @@
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
                         style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Our mission is to create a free economy where individuals can enjoy spending without the burden of
-                        paying, fostering a nation where financial freedom is accessible to all. We aim to drive national
-                        growth through social engineering that empowers recession-free development, with a target of
-                        achieving a 5 trillion GDP within two years. Through our Free Bazar platform, we offer an
-                        opportunity for people to access goods and services for free, promoting financial stability,
-                        prosperity, and a better quality of life for every citizen.
+                        Our mission is to lead a movement against inflation, making a real difference in people's lives.
+                        We're fostering a free economy that empowers consumers worldwide by providing quality products and
+                        services at competitive prices, ensuring savings, security, and scope for huge earnings.
                     </div>
                 </div>
             </div>
@@ -478,11 +470,11 @@
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
                         style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Our vision is to drive sustained economic growth in the country and provide financial support to
-                        every Indian citizen. We aim to expand Free Bazar (POS) terminals nationwide, offering customers
-                        access to quality products and services at competitive prices. By doing so, we help individuals
-                        acquire savings, security, and the potential for significant earnings, ultimately fostering a
-                        blissful and prosperous lifestyle for all.
+                        We believe everyone deserves a chance to succeed, regardless of socio-economic barriers. Our goal is
+                        to help you beat inflation, build a stronger economy, and create opportunities for everyone to
+                        thrive. We aim to make a positive impact on communities and beyond by bridging gaps and promoting
+                        social interaction.
+
                     </div>
                 </div>
             </div>
@@ -497,16 +489,30 @@
                 <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
                         style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        FreeBazar IPO (The Inflation Protection Option) is a Movement against Inflation, A revolutionary
-                        wealth Creating concept. It’s a game-changing opportunity for the world facing inflation and global
-                        recession. We're not asking for investment at risk. We invite peoples to invest everyday spending to
-                        create wealth.
-                        Choose your option to create wealth with Zero Payment, Don't just retire – retire rich!
-                        Option1. Regular Customer: Spend a minimum of Rs.500 every month and save up to 100% (max Rs.500)
-                        savings on your monthly spending.
-                        Option 2. Smart Customer: Help minimum 10 others to join and earn up to 100% (max Rs.5,000) savings
-                        on monthly spending.
-                        Register now and be a part of this movement and start creating wealth while you shop!
+                        Free Bazar's Inflation Protection Option (IPO) is an investment and risk-free saving opportunity.
+                        Our SIP module combines the best of traditional and online marketing systems, offering benefits to
+                        customers and businesses through a well-designed profit-sharing program via POS terminals. We
+                        emphasize quality products with up to 100% payback facilities through SIP.
+
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item" style="border: 1px solid #757575;" id="mission">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" style="color: black; font-weight: bold;"
+                        aria-controls="collapseTwo">
+                        How it works
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
+                        1. Spend: Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
+                        2. Invite: Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
+                        shopping free. <br>
+                        3. Partnership: Join as a POS partner with zero investment and grow your business with huge
+                        income possibilities.
                     </div>
                 </div>
             </div>
