@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
@@ -81,7 +80,7 @@ class UserDashboardController extends Controller
         // dd($walletList->all()[0]);
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
-        $balances = self::get_total_wallet_amount($userId);
+        $balances      = self::get_total_wallet_amount($userId);
         $walletBalance = $balances['wallet_balance'];
         $rewardBalance = $balances['rewardBalance'];
         // dd($userId);
@@ -105,7 +104,7 @@ class UserDashboardController extends Controller
         // Fetch all wallet records for the user
         $userWallet = UserWallet::where('user_id', $userId)->get();
         // Calculate the total used amount
-        $totalUsedAmount = $userWallet->sum('used_amount');
+        $totalUsedAmount       = $userWallet->sum('used_amount');
         $totalUsedRewardAmount = $userWallet->sum('used_points');
 
         // Calculate the total wallet amount
@@ -120,7 +119,7 @@ class UserDashboardController extends Controller
         // return max($walletBalance, 0);
         return [
             'wallet_balance' => max($walletBalance, 0),
-            'rewardBalance' => max($rewardBalance, 0)
+            'rewardBalance'  => max($rewardBalance, 0),
         ];
     }
 
@@ -135,9 +134,9 @@ class UserDashboardController extends Controller
             // if (! $user || ! Hash::check($request->password, $user->password)) {
             //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
             // }
-            $userId = Auth::user()->id;
-            $balances = self::get_total_wallet_amount($userId);
-            $walletBalance = $balances['wallet_balance'];
+            $userId         = Auth::user()->id;
+            $balances       = self::get_total_wallet_amount($userId);
+            $walletBalance  = $balances['wallet_balance'];
             $reward_balance = $balances['rewardBalance'];
             // dd($userId);
             $posId            = intval($request->input('pos_id'));
@@ -170,9 +169,9 @@ class UserDashboardController extends Controller
                 // $userWallet = UserWallet::where('user_id', $userId)->get();
                 // dd($userWallet);
                 $rewardBalance = $reward_balance;
-                if ($rewardBalance <= 0) {
-                    return redirect()->back()->with('error', 'Reward is empty. Payment cannot be processed.');
-                }
+                // if ($rewardBalance <= 0) {
+                //     return redirect()->back()->with('error', 'Reward is empty. Payment cannot be processed.');
+                // }
 
                 if ($request->billing_amount > $request->paying_amount) {
                     $rewardUsedAmount = $request->billing_amount - $request->paying_amount;
@@ -180,7 +179,7 @@ class UserDashboardController extends Controller
                     $rewardUsedAmount = 0;
                 }
 
-                $remainingAmount  = $amount - $rewardUsedAmount;
+                $remainingAmount = $amount - $rewardUsedAmount;
                 // dd($rewardUsedAmount,$remainingAmount);
                 $walletEntry                     = new Wallet();
                 $walletEntry->user_id            = $userId;
@@ -207,9 +206,9 @@ class UserDashboardController extends Controller
                 $walletEntry->insert_date = now();
                 $walletEntry->save();
 
-                $userWalletEntry->wallet_id   = $walletEntry->id;
-                $userWalletEntry->used_amount = 0;
-                $userWalletEntry->used_points = $rewardUsedAmount;
+                $userWalletEntry->wallet_id        = $walletEntry->id;
+                $userWalletEntry->used_amount      = 0;
+                $userWalletEntry->used_points      = $rewardUsedAmount;
                 $userWalletEntry->remaining_points = $rewardBalance - $rewardUsedAmount;
                 $userWalletEntry->save();
             } else {
@@ -245,10 +244,10 @@ class UserDashboardController extends Controller
             // self::sendWhatsAppMessage("7978017858", "Transaction amount of" . $amount . " is Successfull");
             return response()->json(
                 [
-                    'success' => true,
-                    'message' => 'Payment verified successfully.',
+                    'success'        => true,
+                    'message'        => 'Payment verified successfully.',
                     'billing_amount' => $request->billing_amount,
-                    'paying_amount' => $request->paying_amount
+                    'paying_amount'  => $request->paying_amount,
                 ]
             );
             //  else {
@@ -300,12 +299,16 @@ class UserDashboardController extends Controller
         // dd("comming");
 
     }
-    public function sendWhatsAppMessage($to = '7978017858', $message)
-    {
-        $whatsapp = new WhatsappMessageService();
-        $response = $whatsapp->sendMessage($to, $message);
-        return response()->json($response);
-    }
+    // public function sendWhatsAppMessage($to = '7978017858', $message)
+    // {
+    //     try {
+    //         $whatsapp = new WhatsappMessageService();
+    //         $response = $whatsapp->sendMessage($to, $message);
+    //         return response()->json($response);
+    //     } catch (\Exception $e) {
+    //         Log::info('Dashboard Controller ' . $e->getMessage());
+    //     }
+    // }
     // public function verifyPayment(Request $request)
     // {
     //     // dd($request->all());
@@ -332,8 +335,8 @@ class UserDashboardController extends Controller
     public function addUser()
     {
         $user_id       = auth()->user()->user_id;
-        $user_profile = auth()->user();
-        $userId       = $user_profile->id;
+        $user_profile  = auth()->user();
+        $userId        = $user_profile->id;
         $states        = User::select('state')->where('role', 3)->whereNotNull('state')->where('state', '!=', '')->distinct()->pluck('state');
         $relation_user = User::select('relation_user')->where('role', 3)->whereNotNull('relation_user')->where('relation_user', '!=', '')->distinct()->pluck('relation_user');
         // dd($relation_user);
@@ -395,10 +398,10 @@ class UserDashboardController extends Controller
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $balances = self::get_total_wallet_amount($userId);
+        $balances             = self::get_total_wallet_amount($userId);
         $currentWalletBalance = $balances['wallet_balance'];
-        $rewardBalance = $balances['rewardBalance'];
-        $userWallet      = UserWallet::where('user_id', $userId)
+        $rewardBalance        = $balances['rewardBalance'];
+        $userWallet           = UserWallet::where('user_id', $userId)
             ->orderBy('id', 'desc')
             ->simplePaginate(10)
             ->through(function ($item) {
@@ -442,16 +445,16 @@ class UserDashboardController extends Controller
 
             $pos = $query->orderBy('id', 'desc')->paginate(50)->through(function ($item) {
                 return [
-                    'name' => $item->name ?? "N/A",
+                    'name'         => $item->name ?? "N/A",
                     'mobilenumber' => $item->mobilenumber ?? "N/A",
-                    'city' => $item->city ?? "N/A",
-                    'address' => $item->address ?? "N/A",
-                    'zip' => $item->zip ?? "N/A"
+                    'city'         => $item->city ?? "N/A",
+                    'address'      => $item->address ?? "N/A",
+                    'zip'          => $item->zip ?? "N/A",
                 ];
             });
             return response()->json([
                 'code' => 200,
-                'data' => $pos
+                'data' => $pos,
             ]);
         } catch (\Exception $e) {
             Log::info($e->getMessage());
