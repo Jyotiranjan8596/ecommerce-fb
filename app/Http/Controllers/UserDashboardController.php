@@ -6,7 +6,7 @@ use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Models\Wallet;
-use App\Services\WhatsappMessageService;
+use App\Services\AiSensyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -211,6 +211,15 @@ class UserDashboardController extends Controller
                 $userWalletEntry->used_points      = $rewardUsedAmount;
                 $userWalletEntry->remaining_points = $rewardBalance - $rewardUsedAmount;
                 $userWalletEntry->save();
+                $params = [
+                    (string) $user->name,
+                    (string) $amount,
+                    (string) $pos->name,
+                    (string) $invoice,
+                    (string) $request->paying_amount,
+                    "0",
+                    (string) $rewardUsedAmount,
+                ];
             } else {
                 if ($request->billing_amount > $request->paying_amount) {
                     $wallet_balance_deduct = $request->billing_amount - $request->paying_amount;
@@ -239,9 +248,18 @@ class UserDashboardController extends Controller
                 $userWalletEntry->used_points      = 0;
                 $userWalletEntry->remaining_amount = $currentWalletBalance - $wallet_balance_deduct;
                 $userWalletEntry->save();
+                $params = [
+                    (string) $user->name,
+                    (string) $amount,
+                    (string) $pos->name,
+                    (string) $invoice,
+                    (string) $request->paying_amount,
+                    (string) $wallet_balance_deduct,
+                    "0",
+                ];
             }
 
-            // self::sendWhatsAppMessage("7978017858", "Transaction amount of" . $amount . " is Successfull");
+            self::sendWhatsAppMessage($mobilenumber, $params);
             return response()->json(
                 [
                     'success'        => true,
@@ -299,16 +317,17 @@ class UserDashboardController extends Controller
         // dd("comming");
 
     }
-    // public function sendWhatsAppMessage($to = '7978017858', $message)
-    // {
-    //     try {
-    //         $whatsapp = new WhatsappMessageService();
-    //         $response = $whatsapp->sendMessage($to, $message);
-    //         return response()->json($response);
-    //     } catch (\Exception $e) {
-    //         Log::info('Dashboard Controller ' . $e->getMessage());
-    //     }
-    // }
+    public function sendWhatsAppMessage($to, $parameter)
+    {
+        try {
+            $whatsapp = new AiSensyService();
+            $response = $whatsapp->sendTransactionMessage($to, $parameter);
+            return $response;
+        } catch (\Exception $e) {
+            Log::info('Dashboard Controller ' . $e->getMessage());
+            return false;
+        }
+    }
     // public function verifyPayment(Request $request)
     // {
     //     // dd($request->all());
