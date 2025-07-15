@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -50,9 +49,15 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
+            'name'    => ['required', 'string', 'max:255'],
+            'email'   => ['required'],
+            'mobile'  => ['required'],
+            'gender'  => ['required'],
+            'address' => ['required'],
+            'state'   => ['required'],
+            'city'    => ['required'],
+            'post'    => ['required'],
+            'image'   => ['nullable'],
         ]);
     }
 
@@ -64,10 +69,25 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $imageName = null;
+
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            $imageName = time() . '.' . $data['image']->getClientOriginalExtension();
+            $data['image']->move(public_path('images'), $imageName);
+        }
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'user_id'      => mt_rand(1000000, 9999999),
+            'image'        => $imageName,
+            'name'         => $data['name'],
+            'email'        => $data['email'],
+            'gender'       => $data['gender'] == 'male' ? "M" : "F",
+            'password'     => Hash::make('123456'),
+            'address'      => $data['address'],
+            'mobilenumber' => $data['mobile'],
+            'role'         => 3,
+            'city'         => $data['city'],
+            'state'        => $data['state'],
+            'sponsor_id'   => 666666,
         ]);
     }
 }
