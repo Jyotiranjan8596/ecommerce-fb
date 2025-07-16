@@ -1,16 +1,16 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\Imports\MasterUsersImport;
-use App\Models\sponcer;
 use App\Models\Sponsor;
 use App\Models\User;
+use App\Services\AiSensyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,8 +26,8 @@ class UserController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $search = $request->input('search');
-        $user = User::query()
+        $search       = $request->input('search');
+        $user         = User::query()
             ->where('role', 3)
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
@@ -58,7 +58,7 @@ class UserController extends Controller
     }
     public function searchSponsor(Request $request)
     {
-        $query = $request->get('query');  // Get the search query
+        $query = $request->get('query'); // Get the search query
 
         // Fetch users based on name or user_id with LIKE query
         $users = User::where('mobilenumber', 'LIKE', "%$query%")
@@ -68,7 +68,6 @@ class UserController extends Controller
         // Return the users as JSON for AJAX
         return response()->json($users);
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -96,23 +95,22 @@ class UserController extends Controller
         return Excel::download(new UserExport, $fileName);
     }
 
-
     public function store(Request $request)
     {
         //
         $validatedData = $request->validate([
-            'name' => 'required|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/|max:255',
-            'email' => 'required',
+            'name'     => 'required|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/|max:255',
+            'email'    => 'required',
             'password' => 'required|string|min:8',
-            'role' => 'required',
+            'role'     => 'required',
         ]);
 
         $user = new User();
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+        $user->name     = $request->name;
+        $user->email    = $request->email;
         $user->password = $request->password;
-        $user->role = $request->role;
+        $user->role     = $request->role;
         $user->assignRole([$request->role]);
 
         if ($user->save()) {
@@ -144,11 +142,11 @@ class UserController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $user = User::find($id);
-        $sponsor = User::find($user->sponsor_id);
+        $user         = User::find($id);
+        $sponsor      = User::find($user->sponsor_id);
 
         $userData = User::where('role', 3)->get(['id', 'name', 'user_id']);
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('admin.users.index')->with('error', 'User not found.');
         }
         return view('admin.users.edit', compact('user', 'userData', 'sponsor', 'userId', 'user_profile'));
@@ -194,29 +192,29 @@ class UserController extends Controller
         ]);
 
         // Update user attributes
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->gender = $request->gender;
-        $user->address = $request->address;
-        $user->mobilenumber = $request->mobilenumber;
-        $user->city = $request->city;
-        $user->state = $request->state;
-        $user->country = $request->country;
-        $user->pan_no = $request->pan_no;
-        $user->ifsc = $request->ifsc;
-        $user->account_no = $request->account_no;
-        $user->nominee_name = $request->nominee_name;
-        $user->bank = $request->bank;
+        $user->name          = $request->name;
+        $user->email         = $request->email;
+        $user->gender        = $request->gender;
+        $user->address       = $request->address;
+        $user->mobilenumber  = $request->mobilenumber;
+        $user->city          = $request->city;
+        $user->state         = $request->state;
+        $user->country       = $request->country;
+        $user->pan_no        = $request->pan_no;
+        $user->ifsc          = $request->ifsc;
+        $user->account_no    = $request->account_no;
+        $user->nominee_name  = $request->nominee_name;
+        $user->bank          = $request->bank;
         $user->relation_user = $request->relation_user;
-        $user->zip = $request->zip;
-        $user->sponsor_id = $request->sponsor_id;
+        $user->zip           = $request->zip;
+        $user->sponsor_id    = $request->sponsor_id;
 
         if ($user->save()) {
             $sponcer = Sponsor::where('user_id', $user->id)->first();
-            // dd($sponcer); 
+            // dd($sponcer);
             if ($sponcer == null) {
-                $sponcer = new Sponsor();
-                $sponcer->user_id = $user->id;
+                $sponcer             = new Sponsor();
+                $sponcer->user_id    = $user->id;
                 $sponcer->sponsor_id = $request->sponsor_id;
             }
             $sponcer->sponsor_id = $request->sponsor_id;
@@ -231,7 +229,7 @@ class UserController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $userData = User::where('role', 3)->get(['id', 'name', 'user_id']);
+        $userData     = User::where('role', 3)->get(['id', 'name', 'user_id']);
         return view('admin.users.custom_user', compact('userData', 'userId', 'user_profile'));
     }
     public function storeCustomUser(Request $request)
@@ -239,32 +237,38 @@ class UserController extends Controller
         //  dd($request->all());
         $request->validate([
             'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
-            'sponsor_id' => 'required|exists:users,id',
+            'sponsor_id'   => 'required|exists:users,id',
         ]);
 
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->user_id = mt_rand(1000000, 9999999);
+        $user           = new User();
+        $user->name     = $request->name;
+        $user->email    = $request->email;
+        $user->user_id  = mt_rand(1000000, 9999999);
         $user->password = Hash::make('123456');
         // dd($user->password);
         $user->mobilenumber = $request->mobilenumber;
-        $user->gender = $request->gender;
-        $user->address = $request->address;
-        $user->city = $request->city;
-        $user->state = $request->state;
-        $user->zip = $request->zip;
-        $user->sponsor_id = $request->sponsor_id;
-        $user->role = 3;
+        $user->gender       = $request->gender;
+        $user->address      = $request->address;
+        $user->city         = $request->city;
+        $user->state        = $request->state;
+        $user->zip          = $request->zip;
+        $user->sponsor_id   = $request->sponsor_id;
+        $user->role         = 3;
         $user->assignRole([$user->role]);
 
         if ($user->save()) {
-            $sponcer = new Sponsor();
-            $sponcer->user_id = $user->id;
+            $sponcer             = new Sponsor();
+            $sponcer->user_id    = $user->id;
             $sponcer->sponsor_id = $request->sponsor_id;
-
+            $params              = [
+                $request->name,
+                $request->mobilenumber,
+            ];
+            $whatsapp  = new AiSensyService();
+            $msg_reslt = $whatsapp->send_registration($request->mobilenumber, $params);
+            Log::info('registration Result in Admin', [$msg_reslt]);
             if ($sponcer->save()) {
-                flash()->addSuccess('Customer User created successfully.');
+                flash()->addSuccess('User created successfully.');
                 return redirect()->back();
             }
         } else {
@@ -287,7 +291,7 @@ class UserController extends Controller
     public function banUnban($id, $status)
     {
         if (auth()->user()->hasRole('Admin')) {
-            $user = User::findOrFail($id);
+            $user         = User::findOrFail($id);
             $user->status = $status;
             if ($user->save()) {
                 flash()->addSuccess('User status updated successfully.');

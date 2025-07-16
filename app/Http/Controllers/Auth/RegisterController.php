@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\AiSensyService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -75,7 +77,7 @@ class RegisterController extends Controller
             $imageName = time() . '.' . $data['image']->getClientOriginalExtension();
             $data['image']->move(public_path('images'), $imageName);
         }
-        return User::create([
+        $user = User::create([
             'user_id'      => mt_rand(1000000, 9999999),
             'image'        => $imageName,
             'name'         => $data['name'],
@@ -89,5 +91,13 @@ class RegisterController extends Controller
             'state'        => $data['state'],
             'sponsor_id'   => 666666,
         ]);
+        $params = [
+            $data['name'],
+            $data['mobile'],
+        ];
+        $whatsapp  = new AiSensyService();
+        $msg_reslt = $whatsapp->send_registration($data['mobile'], $params);
+        Log::info('registration Result in Route', [$msg_reslt]);
+        return $user;
     }
 }

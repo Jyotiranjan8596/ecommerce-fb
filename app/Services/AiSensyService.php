@@ -29,7 +29,7 @@ class AiSensyService
                 'campaignName'   => env('AISENSY_CAMPAIGN_NAME', 'freebazar_transaction'),
                 'destination'    => $formattedPhone,
                 'userName'       => $parameters[0],
-                'source'         => 'laravel_app',
+                'source'         => 'transaction',
                 'templateParams' => $parameters,
             ];
 
@@ -38,6 +38,30 @@ class AiSensyService
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             return false;
+        }
+    }
+
+    public function send_registration($phone, $parameters)
+    {
+        try {
+            $formattedPhone = preg_replace('/\D/', '', $phone);
+            if (! str_starts_with($formattedPhone, '91')) {
+                $formattedPhone = '91' . $formattedPhone;
+            }
+
+            $payload = [
+                'apiKey'         => env('AISENSY_API_KEY'), // Set in .env
+                'campaignName'   => env('AISENSY_CAMPAIGN_NAME', 'user_signup'),
+                'destination'    => $formattedPhone,
+                'userName'       => $parameters[0],
+                'source'         => 'registration',
+                'templateParams' => $parameters,
+            ];
+            $response = Http::post($this->apiUrl, $payload);
+            return $response;
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return $response;
         }
     }
 }

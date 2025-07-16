@@ -258,8 +258,9 @@ class UserDashboardController extends Controller
                     "0",
                 ];
             }
-
-            self::sendWhatsAppMessage($mobilenumber, $params);
+            $whatsapp  = new AiSensyService();
+            $msg_reslt = $whatsapp->sendTransactionMessage($mobilenumber, $params);
+            Log::info('Message result', ['$msg_result']);
             return response()->json(
                 [
                     'success'        => true,
@@ -317,17 +318,6 @@ class UserDashboardController extends Controller
         // dd("comming");
 
     }
-    public function sendWhatsAppMessage($to, $parameter)
-    {
-        try {
-            $whatsapp = new AiSensyService();
-            $response = $whatsapp->sendTransactionMessage($to, $parameter);
-            return $response;
-        } catch (\Exception $e) {
-            Log::info('Dashboard Controller ' . $e->getMessage());
-            return false;
-        }
-    }
     // public function verifyPayment(Request $request)
     // {
     //     // dd($request->all());
@@ -353,62 +343,87 @@ class UserDashboardController extends Controller
 
     public function addUser()
     {
-        $user_id       = auth()->user()->user_id;
-        $user_profile  = auth()->user();
-        $userId        = $user_profile->id;
-        $states        = User::select('state')->where('role', 3)->whereNotNull('state')->where('state', '!=', '')->distinct()->pluck('state');
-        $relation_user = User::select('relation_user')->where('role', 3)->whereNotNull('relation_user')->where('relation_user', '!=', '')->distinct()->pluck('relation_user');
-        // dd($relation_user);
-        return view('frontend.dashboard.adduser', compact('user_id', 'states', 'relation_user', 'userId', 'user_profile'));
+        $user         = auth()->user();
+        $user_id      = $user->user_id;
+        $userId       = $user->id;
+        $user_profile = $user;
+
+        $query = User::where('role', 3);
+
+        $states = (clone $query)
+            ->whereNotNull('state')
+            ->where('state', '!=', '')
+            ->distinct()
+            ->pluck('state');
+
+        // $relation_user = (clone $query)
+        //     ->whereNotNull('relation_user')
+        //     ->where('relation_user', '!=', '')
+        //     ->distinct()
+        //     ->pluck('relation_user');
+
+        return view('frontend.dashboard.adduser', compact('user_id', 'userId', 'user_profile'));
     }
 
     public function storeUser(Request $request)
     {
-        // dd($request->all());
-        $request->validate([
-            'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
-        ]);
-        $sponsor = User::where('user_id', $request->sponsor_id)->first();
-        // dd($sponsor);
-        $user_add                = new User;
-        $user_add->name          = $request->name;
-        $user_add->user_id       = mt_rand(1000000, 9999999);
-        $user_add->email         = $request->email;
-        $user_add->password      = Hash::make('123456');
-        $user_add->mobilenumber  = $request->mobilenumber;
-        $user_add->gender        = $request->gender;
-        $user_add->sponsor_id    = $sponsor->id;
-        $user_add->address       = $request->address;
-        $user_add->city          = $request->city;
-        $user_add->state         = $request->state;
-        $user_add->zip           = $request->zip;
-        $user_add->pan_no        = $request->pan_no;
-        $user_add->ifsc          = $request->ifsc;
-        $user_add->account_no    = $request->account_no;
-        $user_add->nominee_name  = $request->nominee_name;
-        $user_add->bank          = $request->bank;
-        $user_add->relation_user = $request->relation_user;
-        $user_add->role          = 3;
-        $user_add->assignRole([$user_add->role]);
+        try {
+            // dd($request->all());
+            $request->validate([
+                'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
+            ]);
+            $sponsor = User::where('user_id', $request->sponsor_id)->first();
+            // dd($sponsor);
+            $user_add                = new User;
+            $user_add->name          = $request->name;
+            $user_add->user_id       = mt_rand(1000000, 9999999);
+            $user_add->email         = $request->email;
+            $user_add->password      = Hash::make('123456');
+            $user_add->mobilenumber  = $request->mobilenumber;
+            $user_add->gender        = $request->gender;
+            $user_add->sponsor_id    = $sponsor->id;
+            $user_add->address       = $request->address;
+            $user_add->city          = $request->city;
+            $user_add->state         = $request->state;
+            $user_add->zip           = $request->zip;
+            $user_add->pan_no        = $request->pan_no;
+            $user_add->ifsc          = $request->ifsc;
+            $user_add->account_no    = $request->account_no;
+            $user_add->nominee_name  = $request->nominee_name;
+            $user_add->bank          = $request->bank;
+            $user_add->relation_user = $request->relation_user;
+            $user_add->role          = 3;
+            $user_add->assignRole([$user_add->role]);
 
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->move(public_path('images'), $imageName);
-            $user_add->image = $imageName;
-        }
-
-        if ($user_add->save()) {
-            $sponcer             = new Sponsor();
-            $sponcer->user_id    = $user_add->id;
-            $sponcer->sponsor_id = $request->hidden_user_id;
-
-            if ($sponcer->save()) {
-                flash()->addSuccess('User registered successfully.');
-                return redirect()->route('user.add');
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+                $request->image->move(public_path('images'), $imageName);
+                $user_add->image = $imageName;
             }
+
+            if ($user_add->save()) {
+                $sponcer             = new Sponsor();
+                $sponcer->user_id    = $user_add->id;
+                $sponcer->sponsor_id = $request->hidden_user_id;
+                $params              = [
+                    $request->name,
+                    $request->mobilenumber,
+                ];
+                $whatsapp  = new AiSensyService();
+                $msg_reslt = $whatsapp->send_registration($request->mobilenumber, $params);
+                Log::info('registration Result in User', [$msg_reslt]);
+                if ($sponcer->save()) {
+                    flash()->addSuccess('User registered successfully.');
+                    return redirect()->route('user.add');
+                }
+            }
+            flash()->addError('Whoops! User or Sponsor creation failed!');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::info('Store User:-' . $e->getMessage());
+            flash()->addError('Whoops! User or Sponsor creation failed!');
+            return redirect()->back();
         }
-        flash()->addError('Whoops! User or Sponsor creation failed!');
-        return redirect()->back();
     }
     public function wallet()
     {

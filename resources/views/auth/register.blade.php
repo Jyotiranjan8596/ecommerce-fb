@@ -152,8 +152,7 @@
                                 </span>
                             </div>
                         </div>
-                        I agree to the
-                        <a href="{{ route('frontend.termCondition') }}">terms and conditions.</a>
+                        <p>I agree to the <a href="{{ route('frontend.termCondition') }}">terms and conditions.</a></p>
                     </label>
                 </div>
 
@@ -174,26 +173,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .formbold-mb-3 {
-            margin-bottom: 15px;
-        }
-
-        .formbold-relative {
-            position: relative;
-        }
-
-        .formbold-opacity-0 {
-            opacity: 0;
-        }
-
-        .formbold-stroke-current {
-            stroke: currentColor;
-        }
-
-        #supportCheckbox:checked~div span {
-            opacity: 1;
-        }
-
         .formbold-main-wrapper {
             display: flex;
             align-items: center;
@@ -211,6 +190,8 @@
 
         .formbold-img {
             margin-bottom: 45px;
+            max-width: 100%;
+            height: auto;
         }
 
         .formbold-form-title {
@@ -242,7 +223,6 @@
         }
 
         .formbold-form-input {
-            text-align: center;
             width: 100%;
             padding: 13px 22px;
             border-radius: 5px;
@@ -253,6 +233,7 @@
             color: #536387;
             outline: none;
             resize: none;
+            text-align: center;
         }
 
         .formbold-form-input:focus {
@@ -316,10 +297,66 @@
             color: white;
             cursor: pointer;
             margin-top: 25px;
+            width: 100%;
         }
 
         .formbold-btn:hover {
             box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
         }
+
+        .formbold-mb-3 {
+            margin-bottom: 15px;
+        }
+
+        .formbold-relative {
+            position: relative;
+        }
+
+        .formbold-opacity-0 {
+            opacity: 0;
+        }
+
+        .formbold-stroke-current {
+            stroke: currentColor;
+        }
+
+        #supportCheckbox:checked~div span {
+            opacity: 1;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .formbold-main-wrapper {
+                padding: 20px;
+            }
+
+            .formbold-form-wrapper {
+                padding: 20px;
+            }
+
+            .formbold-input-flex {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .formbold-input-flex>div {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .formbold-btn {
+                padding: 12px;
+            }
+
+            .formbold-img {
+                width: 100%;
+                height: auto;
+            }
+
+            .formbold-form-title h2 {
+                font-size: 22px;
+            }
+        }
     </style>
+
 @endsection
