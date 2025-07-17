@@ -189,18 +189,10 @@ class UserDashboardController extends Controller
                 $walletEntry->billing_amount     = $amount;
                 $walletEntry->transaction_amount = $transaction_amount;
                 $walletEntry->amount_wallet      = 0;
-                if ($rewardBalance >= $amount) {
-                    $walletEntry->reward_amount = $amount;
-                    $walletEntry->pay_by        = 'reward';
-                    $walletEntry->tran_type     = 'debit';
-                    $walletEntry->amount        = $request->paying_amount;
-                } else {
-                    $walletEntry->reward_amount = $rewardUsedAmount;
-                    $walletEntry->pay_by        = $alt_pay_by;
-                    $walletEntry->tran_type     = 'credit';
-                    // $walletEntry->status = ;
-                    $walletEntry->amount = $remainingAmount;
-                }
+                $walletEntry->reward_amount      = $rewardUsedAmount;
+                $walletEntry->pay_by             = 'reward';
+                $walletEntry->tran_type          = 'debit';
+                $walletEntry->amount             = $request->paying_amount;
 
                 $walletEntry->pos_id      = $pos->id ?? null;
                 $walletEntry->insert_date = now();
@@ -211,15 +203,15 @@ class UserDashboardController extends Controller
                 $userWalletEntry->used_points      = $rewardUsedAmount;
                 $userWalletEntry->remaining_points = $rewardBalance - $rewardUsedAmount;
                 $userWalletEntry->save();
-                $params = [
-                    (string) $user->name,
-                    (string) $amount,
-                    (string) $pos->name,
-                    (string) $invoice,
-                    (string) $request->paying_amount,
-                    "0",
-                    (string) $rewardUsedAmount,
-                ];
+                // $params = [
+                //     (string) $user->name,
+                //     (string) $amount,
+                //     (string) $pos->name,
+                //     (string) $invoice,
+                //     (string) $request->paying_amount,
+                //     "0",
+                //     (string) $rewardUsedAmount,
+                // ];
             } else {
                 if ($request->billing_amount > $request->paying_amount) {
                     $wallet_balance_deduct = $request->billing_amount - $request->paying_amount;
@@ -232,10 +224,10 @@ class UserDashboardController extends Controller
                 $dsrlist->invoice            = $invoice;
                 $dsrlist->user_id            = $userId;
                 $dsrlist->amount             = $request->paying_amount;
-                $dsrlist->pay_by             = $pay_by;
+                $dsrlist->pay_by             = 'wallet';
                 $dsrlist->mobilenumber       = $mobilenumber;
                 $dsrlist->transaction_date   = $transaction_date;
-                $dsrlist->tran_type          = 'credit';
+                $dsrlist->tran_type          = 'debit';
                 $dsrlist->billing_amount     = $amount;
                 $dsrlist->amount_wallet      = $wallet_balance_deduct;
                 $dsrlist->transaction_amount = $transaction_amount;
@@ -248,19 +240,19 @@ class UserDashboardController extends Controller
                 $userWalletEntry->used_points      = 0;
                 $userWalletEntry->remaining_amount = $currentWalletBalance - $wallet_balance_deduct;
                 $userWalletEntry->save();
-                $params = [
-                    (string) $user->name,
-                    (string) $amount,
-                    (string) $pos->name,
-                    (string) $invoice,
-                    (string) $request->paying_amount,
-                    (string) $wallet_balance_deduct,
-                    "0",
-                ];
+                //     $params = [
+                //         (string) $user->name,
+                //         (string) $amount,
+                //         (string) $pos->name,
+                //         (string) $invoice,
+                //         (string) $request->paying_amount,
+                //         (string) $wallet_balance_deduct,
+                //         "0",
+                //     ];
             }
-            $whatsapp  = new AiSensyService();
-            $msg_reslt = $whatsapp->sendTransactionMessage($mobilenumber, $params);
-            Log::info('Message result', ['$msg_result']);
+            // $whatsapp  = new AiSensyService();
+            // $msg_reslt = $whatsapp->sendTransactionMessage($mobilenumber, $params);
+            // Log::info('Message result', ['$msg_result']);
             return response()->json(
                 [
                     'success'        => true,

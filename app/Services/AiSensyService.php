@@ -51,7 +51,7 @@ class AiSensyService
 
             $payload = [
                 'apiKey'         => env('AISENSY_API_KEY'), // Set in .env
-                'campaignName'   => env('AISENSY_CAMPAIGN_NAME', 'user_signup'),
+                'campaignName'   => env('AISENSY_CAMPAIGN_NAME', 'user_signups'),
                 'destination'    => $formattedPhone,
                 'userName'       => $parameters[0],
                 'source'         => 'registration',
@@ -61,7 +61,7 @@ class AiSensyService
             return $response;
         } catch (\Exception $e) {
             Log::info($e->getMessage());
-            return $response;
+            return $e->getMessage();
         }
     }
 }
