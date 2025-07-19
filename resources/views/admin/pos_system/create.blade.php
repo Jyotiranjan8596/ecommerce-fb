@@ -24,7 +24,7 @@
                                 <input type="hidden" id="password" name="password">
                             </div>
                             <div class="mb-2">
-                                <label for="image">Image*</label>
+                                <label for="image">Image</label>
                                 <input type="file" id="image" name="image"
                                     class="form-control @error('image') is-invalid @enderror">
                                 @error('image')
@@ -37,7 +37,7 @@
                             <div class="mb-2">
                                 <label for="mobilenumber">Phone*</label>
                                 <input type="number" id="mobilenumber" name="mobilenumber"
-                                    class="form-control @error('mobilenumber') is-invalid @enderror" required>
+                                    class="form-control @error('mobilenumber') is-invalid @enderror">
                                 @error('mobilenumber')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -47,8 +47,8 @@
                             <div class="mb-2">
                                 <label for="upi_id">Upload QR*</label>
                                 <input type="file" id="upi_id" name="upi"
-                                    class="form-control @error('Upi Id') is-invalid @enderror" required>
-                                @error('upi_id')
+                                    class="form-control @error('Upi Id') is-invalid @enderror">
+                                @error('upi')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -180,22 +180,16 @@
                             </div>
                             <div class="mb-2">
                                 <label for="state">State*</label>
-                                <select id="state" name="state"
-                                    class="form-control @error('state') is-invalid @enderror">
-                                    <option value="">Select a state</option>
-                                    @foreach ($states as $state)
-                                        <option value="{{ $state }}"
-                                            {{ old('state') == $state ? 'selected' : '' }}>
-                                            {{ $state }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input type="text" id="state" name="state"
+                                    class="form-control @error('state') is-invalid @enderror"
+                                    value="{{ old('state') }}">
                                 @error('state')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
+
                             <div class="mb-2">
                                 <label for="zip">Zip*</label>
                                 <input type="text" id="zip" name="zip"

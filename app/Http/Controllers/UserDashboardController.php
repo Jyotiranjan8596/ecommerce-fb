@@ -305,33 +305,7 @@ class UserDashboardController extends Controller
         } catch (\Exception $th) {
             Log::info("Store Payment" . $th->getMessage());
         }
-
-        // return redirect()->back()->with('success', 'Payment successfully verified and processed.');
-        // dd("comming");
-
     }
-    // public function verifyPayment(Request $request)
-    // {
-    //     // dd($request->all());
-    //     $user = User::find($request->user_id);
-
-    //     if ($user && Hash::check($request->password, $user->password)) {
-    //         Wallet::create([
-    //             'user_id' => $request->user_id,
-    //             'billing_amount' => $request->billing_amount,
-    //             'amount' => $request->paying_amount,
-    //             'amount_wallet' => $request->amount_wallet,
-    //             'mobilenumber' => $request->mobilenumber,
-    //             'pos_id' => $request->pos_id,
-    //             'pay_by' => $request->pay_by,
-    //             'transaction_date' => $request->transaction_date,
-    //         ]);
-
-    //         return redirect()->back()->with('success', 'Payment successfully verified and processed.');
-    //     }
-
-    //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
-    // }
 
     public function addUser()
     {

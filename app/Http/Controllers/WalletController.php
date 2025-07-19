@@ -397,7 +397,7 @@ class WalletController extends Controller
 
         $whatsapp  = new AiSensyService();
         $msg_reslt = $whatsapp->sendTransactionMessage($wallet->user->mobilenumber, $params);
-        Log::info('Message result', ['$msg_result']);
+        Log::info('Message result', [$msg_reslt]);
         $wallet->status = $wallet->status = 1;
         $wallet->save();
         return redirect()->back()->with('success', 'Verified Successfully!');
