@@ -48,22 +48,23 @@ class PosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'               => 'required|string|max:255',
-            'mobilenumber'       => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
-            'email'              => 'required|email|unique:users,email',
+            'name'                      => 'required|string|max:255',
+            'mobilenumber'              => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
+            'email'                     => 'required|email|unique:users,email',
             // 'image'              => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'upi'                => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'transaction_charge' => 'required|numeric|min:0',
-            'min_charge'         => 'required|numeric|min:0',
-            'max_charge'         => 'required|numeric|min:0',
-            'entity_name'        => 'required|string|max:255',
-            'entity_address'     => 'required|string|max:500',
-            'entity_contact'     => 'required|string|max:20',
-            'comment'            => 'required|string|max:500',
-            'address'            => 'required|string|max:255',
-            'city'               => 'required|string|max:100',
-            'state'              => 'required|string|max:100',
-            'zip'                => 'required|string|max:10',
+            'upi'                       => 'required|image',
+            'transaction_charge'        => 'required|numeric|min:0',
+            'initial_letter_of_invoice' => 'required|string|max:255',
+            'min_charge'                => 'required|numeric|min:0',
+            'max_charge'                => 'required|numeric|min:0',
+            'entity_name'               => 'required|string|max:255',
+            'entity_address'            => 'required|string|max:500',
+            'entity_contact'            => 'required|string|max:20',
+            'comment'                   => 'required|string|max:500',
+            'address'                   => 'required|string|max:255',
+            'city'                      => 'required|string|max:100',
+            'state'                     => 'required|string|max:100',
+            'zip'                       => 'required|string|max:10',
             // 'latitude'           => 'required|numeric',
             // 'longitude'          => 'required|numeric',
         ]);
@@ -109,18 +110,18 @@ class PosController extends Controller
             $pos->min_charge                = $request->min_charge;
             $pos->max_charge                = $request->max_charge;
             $pos->initial_letter_of_invoice = $request->initial_letter_of_invoice;
-            $pos->pos_code                  = $request->pos_code;
-            $pos->entity_name               = $request->entity_name;
-            $pos->entity_address            = $request->entity_address;
-            $pos->entity_contact            = $request->entity_contact;
-            $pos->comment                   = $request->comment;
-            $pos->address                   = $request->address;
-            $pos->city                      = $request->city;
-            $pos->state                     = $request->state;
-            $pos->zip                       = $request->zip;
-            $pos->latitude                  = $request->latitude;
-            $pos->longitude                 = $request->longitude;
-            $pos->image                     = $imageName ?? null;
+            // $pos->pos_code                  = $request->pos_code;
+            $pos->entity_name    = $request->entity_name;
+            $pos->entity_address = $request->entity_address;
+            $pos->entity_contact = $request->entity_contact;
+            $pos->comment        = $request->comment;
+            $pos->address        = $request->address;
+            $pos->city           = $request->city;
+            $pos->state          = $request->state;
+            $pos->zip            = $request->zip;
+            $pos->latitude       = $request->latitude;
+            $pos->longitude      = $request->longitude;
+            $pos->image          = $imageName ?? null;
 
             $pos->save();
 

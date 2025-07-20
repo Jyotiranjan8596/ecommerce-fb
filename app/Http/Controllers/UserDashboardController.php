@@ -201,6 +201,7 @@ class UserDashboardController extends Controller
                 $userWalletEntry->wallet_id        = $walletEntry->id;
                 $userWalletEntry->used_amount      = 0;
                 $userWalletEntry->used_points      = $rewardUsedAmount;
+                $userWalletEntry->remaining_amount = $walletBalance;
                 $userWalletEntry->remaining_points = $rewardBalance - $rewardUsedAmount;
                 $userWalletEntry->save();
                 // $params = [
@@ -237,6 +238,7 @@ class UserDashboardController extends Controller
 
                 $userWalletEntry->wallet_id        = $dsrlist->id;
                 $userWalletEntry->used_amount      = $wallet_balance_deduct;
+                $userWalletEntry->remaining_points = $reward_balance;
                 $userWalletEntry->used_points      = 0;
                 $userWalletEntry->remaining_amount = $currentWalletBalance - $wallet_balance_deduct;
                 $userWalletEntry->save();

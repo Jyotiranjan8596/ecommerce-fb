@@ -103,14 +103,6 @@
                             min="0" readonly />
                     </div>
                     <!-- Pay By -->
-                    <div class="form-group mb-3" id="pay_by_select">
-                        <label for="pay_by" style="color: black" class="modal-label">Pay By</label>
-                        <select class="form-control" id="pay_by" name="pay_by">
-                            <option selected value="">Select Payment Method</option>
-                            {{-- <option value="cash">Cash</option> --}}
-                            <option value="upi">UPI</option>
-                        </select>
-                    </div>
                     <div id="upi-options" class="form-group mb-3" style="display: none;">
                         <label style="color: black" class="modal-label">Select UPI Provider</label>
                         <div class="d-flex gap-3">
@@ -369,7 +361,7 @@
             const billingAmount = parseFloat(document.getElementById('billing_amount').value) || 0;
             const walletBalanceElement = document.getElementById('wallet_balance');
             const rewardBalanceElement = document.getElementById('reward_balance');
-            const payBySelect = document.getElementById('pay_by');
+            // const payBySelect = document.getElementById('pay_by');
             const checkedWallet = document.getElementById('checked-wallet').checked;
             const checkedReward = document.getElementById('checked-reward').checked;
             const select_wallet = document.getElementById('select-wallet');
@@ -450,7 +442,7 @@
         // Event listeners for real-time updates
         document.getElementById('checked-wallet').addEventListener('change', checkWalletBalance);
         document.getElementById('checked-reward').addEventListener('change', checkWalletBalance);
-        document.getElementById('pay_by').addEventListener('change', checkWalletBalance);
+        // document.getElementById('pay_by').addEventListener('change', checkWalletBalance);
         document.getElementById('billing_amount').addEventListener('input', checkWalletBalance);
 
         document.getElementById("qrForm").addEventListener("submit", function(event) {
@@ -463,17 +455,17 @@
 
             // let selectedUPI = document.querySelector('input[name="upi_provider"]:checked').value;
             let payingAmount = document.getElementById("paying_amount").value;
-            let payBy = document.getElementById("pay_by").value;
+            // let payBy = document.getElementById("pay_by").value;
             const sponsors_counts = document.getElementById('sponsors_count').value;
             // let testUpiName = document.getElementById("qr-details-text").value;
             // console.log(testUpiName);
 
             // Open UPI scanners
-            userPayment(formData, payBy);
+            userPayment(formData);
 
         });
 
-        function userPayment(formData, payBy) {
+        function userPayment(formData) {
             $.ajax({
                 url: "{{ route('user.payment') }}",
                 type: "POST",
@@ -487,37 +479,33 @@
                     console.log("Response JSON:", data); // ✅ Log response JSON
 
                     if (data.success) {
-                        console.log("Pay by", payBy);
 
-                        if (payBy == "upi") {
-                            Swal.fire({
-                                icon: "info",
-                                title: "Please verify after payment.",
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 2000,
-                                timerProgressBar: true,
-                                customClass: {
-                                    title: 'swal2-title-custom',
-                                },
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Payment Success",
-                                toast: true,
-                                position: 'top-end', // or 'bottom-end' / 'top-start' etc.
-                                showConfirmButton: false,
-                                timer: 2000, // Duration in ms
-                                timerProgressBar: true,
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        }
-
+                        // if (payBy == "upi") {
+                        //     Swal.fire({
+                        //         icon: "info",
+                        //         title: "Please verify after payment.",
+                        //         text: "After making the payment, please click OK to reload.",
+                        //         showConfirmButton: true,
+                        //         timer: 4000, // optional - remove if you want the user to click OK manually
+                        //         timerProgressBar: true,
+                        //         customClass: {
+                        //             title: 'swal2-title-custom',
+                        //         },
+                        //     }).then(() => {
+                        //         window.location.reload();
+                        //     });
+                        // } else {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Transaction Success",
+                            text: "Your Transaction was successful.",
+                            showConfirmButton: true,
+                            timer: 3000, // optional
+                            timerProgressBar: true,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                        // }
                     } else {
                         Swal.fire({
                             icon: "error",

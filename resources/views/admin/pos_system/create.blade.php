@@ -95,7 +95,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="initial_letter_of_invoice">Initial Letter Of Invoice</label>
+                                <label for="initial_letter_of_invoice">Initial Letter Of Invoice*</label>
                                 <input type="text" id="initial_letter_of_invoice" name="initial_letter_of_invoice"
                                     class="form-control @error('initial_letter_of_invoice') is-invalid @enderror">
                                 @error('initial_letter_of_invoice')
@@ -105,17 +105,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="pos_code">POS CODE (To show In transaction)</label>
-                                <input type="text" id="pos_code" name="pos_code"
-                                    class="form-control @error('pos_code') is-invalid @enderror">
-                                @error('pos_code')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                            <div class="mb-2">
-                                <label for="entity_name">Entity name*</label>
+                                <label for="entity_name">Woner name*</label>
                                 <input type="text" id="entity_name" name="entity_name"
                                     class="form-control @error('entity_name') is-invalid @enderror">
                                 @error('entity_name')
@@ -129,7 +119,7 @@
                     <div class="col-md-6">
                         <div class="card-body">
                             <div class="mb-2">
-                                <label for="entity_address">Entity Address*</label>
+                                <label for="entity_address">Woner Address*</label>
                                 <input type="text" id="entity_address" name="entity_address"
                                     class="form-control @error('entity_address') is-invalid @enderror">
                                 @error('entity_address')
@@ -139,7 +129,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="entity_contact">Entity Contact*</label>
+                                <label for="entity_contact">Woner Contact*</label>
                                 <input type="text" id="entity_contact" name="entity_contact"
                                     class="form-control @error('entity_contact') is-invalid @enderror">
                                 @error('entity_contact')
@@ -201,7 +191,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="latitude">Latitude*</label>
+                                <label for="latitude">Latitude</label>
                                 <input type="text" id="latitude" name="latitude"
                                     class="form-control @error('latitude') is-invalid @enderror">
                                 @error('latitude')
@@ -211,7 +201,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="longitude">Longitude*</label>
+                                <label for="longitude">Longitude</label>
                                 <input type="text" id="longitude" name="longitude"
                                     class="form-control @error('longitude') is-invalid @enderror">
                                 @error('longitude')
