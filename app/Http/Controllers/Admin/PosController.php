@@ -65,6 +65,7 @@ class PosController extends Controller
             'city'                      => 'required|string|max:100',
             'state'                     => 'required|string|max:100',
             'zip'                       => 'required|string|max:10',
+            'terms'                     => 'required'
             // 'latitude'           => 'required|numeric',
             // 'longitude'          => 'required|numeric',
         ]);

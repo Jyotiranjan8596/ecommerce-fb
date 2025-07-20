@@ -1,75 +1,78 @@
 @extends('ui.layout.master')
 
 @section('content')
-  <div class="wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card-box">
-                    <h4 class="header-title mb-3" style="margin-top: 10px; color:red;">TERMS AND CONDITIONS</h4><hr>
-                    1. The participant must be a major, with sound mental condition, sociable and good nature here in after
-                    shall be called the customer / beneficiary and It is expressly understood that applicant is not deemed
-                    to be an employee of Free Bazar /SMPL &amp; there is no employer or employee relationship between SMPL/
-                    Free Bazar and the applicant /beneficiary are aware of the benefits of Free Bazar as explicit in the
-                    official documents issued by SMPL and M/s Satshree Marketing Pvt. Ltd. formally known as SMPL, the owner
-                    of project Free Bazar.
-                    <br><br>
-                    2. The participant has to choose and purchase any package and paid the consideration amount by cash
-                    /card / e-transfer in favour of FreeBazar or M/s Satshree Marketing Pvt. Ltd. Bhubaneswar and agreed
-                    with the following T&amp;C mention below and the invoice of the same should be collected.
-                    <br><br>
-                    3. The beneficiary should not force anybody to be the costumer of Free Bazar/SMPL. The beneficiary
-                    should not make false promises by giving misleading information to promote Free Bazar. In no way SMPL/
-                    Free Bazar will be held responsible in any manner what so ever for such false and misleading statements.
+    <div class="wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card-box">
+                        <h4 class="header-title mb-3" style="margin-top: 10px; color:red;">TERMS AND CONDITIONS</h4>
+                        <hr>
 
-                    <br><br>4. SMPL / Free Bazar reserves the right to accept / reject / cancel / terminate the Privileges
-                    to any associate customer / beneficiary in case of misbehavior, causing inconvenience to others,
-                    damaging the property and unruly act, without assigning any reason thereof.
-                    <br><br>5. The applicant has understood that under no circumstances SMPL is responsible for any
-                    unauthorized act committed by him or any other act or omission. The applicant should indemnify SMPL/
-                    Free Bazar for his unauthorized act and will be liable for all cost and consequence according to law.
-                    <br><br>6. SMPL/ Free Bazar is not liable for any kind of inconvenience caused to the beneficiary for
-                    delayed issue of any reward, break down of the systems at any service point and participating
-                    establishments or error due to postal delay or discrepancy in information supplied by the customer etc.
-                    <br><br>7. On activation of beneficiary account the customer has to maintain the secrecy and privacy of
-                    the transaction code provided. SMPL/ Free Bazar/ Allied stores shall never be held responsible for its
-                    misuse in any circumstances.
-                    <br><br>8. The beneficiary shall have only the right to enjoy the system/ privileges for the stipulated
-                    period but cannot claim the ownership rights. In the event of demise of the beneficiary, the rights and
-                    privileges occurring to him/her can be transferred to the nominee.
-                    <br><br>9. SMPL / Free Bazar Pays out all / any reward(s) only through Bank account and Pay back
-                    account.
-                    <br><br>10. The applicant agrees to comply with company’s directives for deduction of Tax at source(s)
-                    under the Income Tax Act 1961 as in force from time to time or any modification thereof. All the claims
-                    and services / facilities promised herewith is subject to change on prevailing conditions of state /
-                    central Govt. policies, emergency situations (war / Strikes / Natural calamities / Others etc).
-                    <br><br>11. Validity period of this agreement is for one year. This has to be revalidated / renewed
-                    after one year.
-                    <br><br>12. The applicant / beneficiary will be notified of all the changes in the policy and procedures
-                    governing FreeBazar/SMPL as and when changed, amended by way of circular, brochures, leaflets, letter’s,
-                    website. SMPL strives to ensure that the information provided by the customer is kept confidential.
-                    However SMPL is free to disclose and use the information for any data processing or reward activities by
-                    it or another party.
-                    JURISDICTION
-                    <br><br>Any dispute arising out of, or in relation to or in connection with this venture /contractual
-                    agreement between the parties shall first be attempted to settle by conciliation and negotiation between
-                    the parties. In the event of failure to reach a negotiated settlement within one month from the date of
-                    delivery of notice of dispute from one party to the other parties shall have the right to refer the
-                    matter to the arbitration That any dispute between the beneficiary &amp; SMPL shall be referred to an
-                    Arbitrator, which includes the Legal Advisor of M/s. Satshree Marketing Pvt. Ltd. &amp; the decision of
-                    the Arbitrator shall be final binding on all parties according to the arbitration and conciliation Act,
-                    1996 and the place of jurisdiction shall be Bhubaneswar exclusively.
-                    <br><br>
-                   <div style="margin-bottom: 20px;">
-                    <strong>DECLARATION</strong><br>
-                    This venture is a contractual agreement between the applicant and the M/s. Satshree Marketing Pvt. Ltd.
-                    as per the aforesaid terms and conditions of SMPL. I hereby confirm having gone through, read and
-                    understood the above terms and conditions and I am not a minor and competent to execute this agreement
-                    that I shall abide by the same and is acceptable to me.
-                   </div>
+                        <b>Terms & Conditions :-</b>
+                        <div style="margin-left: 20px;">
+                            1. Eligibility: The participant must be a major with a sound mental condition, sociable, good
+                            nature and willing to spend 500/- every month with FreeBazar (hereinafter referred to as the
+                            "Customer/Beneficiary"). The Subscriber/Partner understands they are not an investor/lender of
+                            Free Bazar/SMPL.<br>
+
+                            2. Promotional Conduct: The Beneficiary shall not force or mislead anyone to promote the
+                            movement. SMPL/Free Bazar will not be responsible for any false or misleading
+                            statements.<br>
+
+                            3. Termination: SMPL/Free Bazar reserves the right to accept, reject, cancel, or terminate
+                            privileges to any associate/customer/beneficiary for misbehavior, causing inconvenience,
+                            damaging property, or unruly acts.<br>
+
+                            4. Unauthorized Acts: The Subscriber/Partner is responsible for any unauthorized acts and will
+                            indemnify SMPL/Free Bazar for all costs and consequences.<br>
+
+                            5. Operational Issues: SMPL/Free Bazar is not liable for any inconvenience caused by delayed
+                            rewards, system breakdowns, or operational delays.<br>
+
+                            6. Password Security: The Beneficiary must maintain the secrecy and privacy of their transaction
+                            password. SMPL/Free Bazar/allied stores will not be responsible for any misuse.<br>
+
+                            7. Ownership Rights: The Beneficiary has no ownership rights and can only enjoy
+                            offers/privileges for the stipulated period. In the event of demise, rights and privileges can
+                            be transferred to the nominee.<br>
+
+                            8. Tax Compliance: The Subscriber/Partner agrees to comply with the company's directives for tax
+                            deduction at source as per the Income Tax Act.<br>
+
+                            9. Validity Period: This agreement is valid for one year and needs to be revalidated/renewed
+                            after one year.<br>
+
+                            10. Policy Changes: SMPL will notify the Subscriber/Partner/Beneficiary of any changes in
+                            policies and procedures. SMPL will strive to keep customer information confidential but may
+                            disclose and use it for data processing or reward activities.
+                        </div>
+
+                        <br>
+                        <b>JURISDICTION :-</b>
+                        <div style="margin-left: 20px;">
+                            Any dispute arising out of, or in relation to, or in connection with this venture/contract shall
+                            first be attempted to be settled by conciliation and negotiation between the parties. If a
+                            negotiated settlement is not reached within one month from the date of delivery of the notice of
+                            dispute, the parties shall have the right to refer the matter to arbitration.<br>
+
+                            Any dispute between the Beneficiary and SMPL shall be referred to an Arbitrator, including the
+                            Legal Advisor of M/s. Satshree Marketing Pvt. Ltd. The decision of the Arbitrator shall be final
+                            and binding on all parties. The place of jurisdiction shall be Bhubaneswar exclusively.
+                        </div>
+
+                        <br>
+                        <strong>DECLARATION :-</strong>
+                        <div style="margin-left: 20px; margin-bottom: 20px;">
+                            This venture is a mutual understanding between the Subscriber/Partner and M/s. Satshree
+                            Marketing Pvt. Ltd., as per the aforesaid terms and conditions of Freebazar. I hereby confirm
+                            that I have gone through, read, and understood the above terms and conditions. I am not a minor
+                            and am competent to execute this agreement, which I shall abide by, and it is acceptable to me.
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-  </div>
 @endsection

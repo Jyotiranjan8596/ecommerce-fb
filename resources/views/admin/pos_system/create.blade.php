@@ -213,6 +213,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="mb-2">
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" name="terms"
+                            class="form-check-input @error('terms') is-invalid @enderror">
+                        <label class="form-check-label" for="terms">
+                            I agree to the
+                            <a href="{{ route('terms.conditions') }}" class="text-primary"
+                                style="text-decoration: underline;">
+                                terms and conditions
+                            </a>.
+                        </label>
+                        @error('terms')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+
             </div>
             <div class="card-footer">
                 <button class="btn btn-primary me-2" type="submit">Register</button>

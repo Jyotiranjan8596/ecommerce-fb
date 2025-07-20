@@ -146,4 +146,8 @@ class PosController extends Controller
             ]);
         }
     }
+
+    public function terms_conditions(){
+        return view('pos.terms_conditions');
+    }
 }

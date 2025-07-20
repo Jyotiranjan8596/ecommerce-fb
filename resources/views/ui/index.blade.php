@@ -493,15 +493,106 @@
                         Our SIP module combines the best of traditional and online marketing systems, offering benefits to
                         customers and businesses through a well-designed profit-sharing program via POS terminals. We
                         emphasize quality products with up to 100% payback facilities through SIP. <br>
-                        <strong>1. Spend:</strong> Register as a regular customer, spend ₹500/month, and save 10% on every spending. <br>
-                        <strong>2. Invite:</strong> Become a smart customer, share your experience, and earn up to 100% (max ₹10,000) monthly
+                        <strong>1. Spend:</strong> Register as a regular customer, spend ₹500/month, and save 10% on every
+                        spending. <br>
+                        <strong>2. Invite:</strong> Become a smart customer, share your experience, and earn up to 100% (max
+                        ₹10,000) monthly
                         shopping free. <br>
-                        <strong>3. Partnership:</strong> Join as a POS partner with zero investment and grow your business with huge
+                        <strong>3. Partnership:</strong> Join as a POS partner with zero investment and grow your business
+                        with huge
                         income possibilities.
 
                     </div>
                 </div>
             </div>
+            <div class="accordion-item" style="border: 1px solid #757575;" id="faq">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFive" style="color: black; font-weight: bold;" aria-expanded="false"
+                        aria-controls="collapseFive">
+                        FAQs:
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body"
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8; margin-left: 10px;">
+
+                        <p><strong>Q: How can I join Free Bazar?</strong><br>
+                            A: Click on the "Register Now" button, fill the form, and accept our Terms & Conditions.</p>
+
+                        <p><strong>Q: What is the minimum eligibility to join Free Bazar?</strong><br>
+                            A: You must be an adult (above 18 years), have a sound mental condition, and be willing to spend
+                            with Free Bazar's SIP.</p>
+
+                        <p><strong>Q: Are your products priced higher than market rates?</strong><br>
+                            A: No, our prices are reasonable, and you'll get an additional 10% savings through our payback
+                            facility.</p>
+
+                        <p><strong>Q: What is IPO?</strong><br>
+                            A: Inflation Protection Option (IPO) is a risk-free opportunity to invest your expenditure and
+                            create wealth.</p>
+
+                        <p><strong>Q: What is SIP?</strong><br>
+                            A: SIP is a profit-sharing venture that helps protect against inflation, based on the concept of
+                            "spend more to save more" and "help more to earn more."</p>
+
+                        <p><strong>Q: What benefits do I get?</strong><br>
+                            A: You'll save 10% extra on every spending and earn up to 100% of your total expenditure through
+                            SIP.</p>
+
+                        <p><strong>Q: How can I get 10% extra savings?</strong><br>
+                            A: Spend a minimum of ₹500 monthly and get guaranteed 10% extra savings as payback wallet and
+                            reward balance.</p>
+
+                        <p><strong>Q: What is wallet and reward balance?</strong><br>
+                            A: Wallet balance is digital cash for bill payments, and reward balance can be redeemed as
+                            discounts at Free Bazar stores or allied POS.</p>
+
+                        <p><strong>Q: What is POS?</strong><br>
+                            A: Point of Sale (POS) is where you buy products and services.</p>
+
+                        <p><strong>Q: Can I do it properly?</strong><br>
+                            A: Yes, anyone can do it with a smartphone to scan QR codes and complete transactions.</p>
+
+                        <p><strong>Q: What if my transaction isn't verified?</strong><br>
+                            A: Contact the POS or customer care with proof of transaction.</p>
+
+                        <p><strong>Q: How will I receive my income and rewards?</strong><br>
+                            A: Through Free Bazar's payback wallet and reward balance on a monthly basis.</p>
+
+                        <p><strong>Q: What about taxes?</strong><br>
+                            A: Payable as per the prevailing Income Tax Act, GST, VAT, and Cess.</p>
+
+                        <p><strong>Q: How can I introduce this movement to others?</strong><br>
+                            A: Share the link (<a href="https://freebazar.co.in" target="_blank">freebazar.co.in</a>) with
+                            those you trust.</p>
+
+                        <p><strong>Q: What do I explain to those I invite?</strong><br>
+                            A: Share the benefits of mutual expenditure and how it works.</p>
+
+                        <p><strong>Q: What are the liabilities?</strong><br>
+                            A: There are no liabilities if there are no false commitments or manipulations.</p>
+
+                        <p><strong>Q: What more do I have to do?</strong><br>
+                            A: Simply share your experience with friends and help them ride over inflation.</p>
+
+                        <p><strong>Q: If I don't want to continue?</strong><br>
+                            A: You're free to discontinue; we're not binding anyone.</p>
+
+                        <p><strong>Q: If my address changes?</strong><br>
+                            A: Update your profile with the new address.</p>
+
+                        <p><strong>Q: What if my ID validity expires?</strong><br>
+                            A: Renewal is subject to regular monthly spending of ₹500 or ₹6000 yearly purchase through Free
+                            Bazar POS.</p>
+
+                        <p><strong>Q: Who gets the benefits if I pass away?</strong><br>
+                            A: Benefits will be transferred to your legal heir/nominee with sufficient documentary proof.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {{-- <div class="accordion-item" style="border: 1px solid #757575;" id="mission">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"

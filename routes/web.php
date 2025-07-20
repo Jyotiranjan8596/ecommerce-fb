@@ -127,6 +127,7 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('wallet/update-status/{id}', [WalletController::class, 'updateStatus'])->name('wallet.updateStatus');
     Route::post('verify-all/user', [PosController::class, 'verifyAllCustomer'])->name('verify.all.user');
 });
+Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');
 
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');
