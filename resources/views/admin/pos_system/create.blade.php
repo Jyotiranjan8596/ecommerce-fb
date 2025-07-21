@@ -105,7 +105,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="entity_name">Woner name*</label>
+                                <label for="entity_name">Owner name*</label>
                                 <input type="text" id="entity_name" name="entity_name"
                                     class="form-control @error('entity_name') is-invalid @enderror">
                                 @error('entity_name')
@@ -119,7 +119,7 @@
                     <div class="col-md-6">
                         <div class="card-body">
                             <div class="mb-2">
-                                <label for="entity_address">Woner Address*</label>
+                                <label for="entity_address">Owner Address*</label>
                                 <input type="text" id="entity_address" name="entity_address"
                                     class="form-control @error('entity_address') is-invalid @enderror">
                                 @error('entity_address')
@@ -129,7 +129,7 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
-                                <label for="entity_contact">Woner Contact*</label>
+                                <label for="entity_contact">Owner Contact*</label>
                                 <input type="text" id="entity_contact" name="entity_contact"
                                     class="form-control @error('entity_contact') is-invalid @enderror">
                                 @error('entity_contact')
