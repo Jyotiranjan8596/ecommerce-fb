@@ -215,7 +215,7 @@
 
 <header>
     <div class="container-fluid">
-        <div class="row py-3 border-bottom">
+        <div class="row py-3 border-bottom justify-content-between">
 
             {{-- Bootstrap menu   --}}
             {{-- <div class="grid text-center  gap-3" style="border: solid 1px black; display:flex;">
@@ -252,7 +252,7 @@
             </div>
 
             {{-- Search Bar  --}}
-            <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4">
+            {{-- <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4"> --}}
                 {{-- <div class="search-bar row bg-light p-2 rounded-4">
                     <div class="col-md-4 d-none d-md-block">
                         <select class="form-select border-0 bg-transparent">
@@ -275,7 +275,7 @@
                         </svg>
                     </div>
                 </div> --}}
-            </div>
+            {{-- </div> --}}
 
             {{-- <div class="col-lg-4" style="border: solid 1px black;">
                 <ul
@@ -319,18 +319,7 @@
                 </ul>
             </div> --}}
 
-            <div class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
-                <div class="d-flex justify-content-end list-unstyled m-0">
-                    {{-- <button class="navbar-toggler justify-content-right" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <use xlink:href="#menu"></use>
-                    </svg>
-                </button> --}}
-                </div>
-            </div>
-
-            <div class="col-lg-4" style=" background-color: #f3aa4b; border-radius: 10px;">
+            <div class="col-lg-5" style=" background-color: #f3aa4b; border-radius: 10px;">
                 <ul
                     class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
                     <li class="nav-item dropdown">

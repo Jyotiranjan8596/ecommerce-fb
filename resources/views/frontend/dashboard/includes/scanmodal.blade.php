@@ -272,30 +272,43 @@
                     },
                     success: function(data) {
                         console.log(data);
-                        document.getElementById("qr-details-text").innerHTML = data.name;
-                        document.getElementById("qrDataId").value = data.id;
-                        document.getElementById("billing-pos-name").innerHTML =
-                            'POS NAME:- ' + data.name;
+                        if (data.success == true) {
+                            document.getElementById("qr-details-text").innerHTML = data
+                                .name;
+                            document.getElementById("qrDataId").value = data.id;
+                            document.getElementById("billing-pos-name").innerHTML =
+                                'POS NAME:- ' + data.name;
+
+                            // Open the QR Details modal and stop the scanner
+                            let qrDetailsModal = new bootstrap.Modal(document
+                                .getElementById("qrDetailsModal"), {
+                                    backdrop: 'static',
+                                    keyboard: false
+                                });
+                            htmlscanner.clear(); // Properly stop the scanner
+                            // qrDetailsModal.show();
+
+                            // document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
+
+
+                            // Directly open Billing Modal without showing QR Details Modal
+                            let billingModal = new bootstrap.Modal(document.getElementById(
+                                "billingModal"), {
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                            billingModal.show();
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid!",
+                                text: "Kindly scan only the Freebazar QR code." ||
+                                    "Please try again.",
+                            });
+                        }
+
                     }
                 });
-
-                // Open the QR Details modal and stop the scanner
-                let qrDetailsModal = new bootstrap.Modal(document.getElementById("qrDetailsModal"), {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                htmlscanner.clear(); // Properly stop the scanner
-                // qrDetailsModal.show();
-
-                // document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
-
-
-                // Directly open Billing Modal without showing QR Details Modal
-                let billingModal = new bootstrap.Modal(document.getElementById("billingModal"), {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                billingModal.show();
             });
         }
 

@@ -6,8 +6,7 @@
 
     <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
         <div class="container">
-            <div class="row justify-content-center form-bg-image"
-                >
+            <div class="row justify-content-center form-bg-image">
                 <div class="col-12 d-flex align-items-center justify-content-center">
                     <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
                         <div class="text-center text-md-center mb-4 mt-md-0">
@@ -17,7 +16,7 @@
                             @csrf
                             <!-- Form -->
                             <div class="form-group mb-4">
-                                <label for="email">Mobile / User ID / Email</label>
+                                <label for="email">Your Mobile</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">
                                         <svg class="icon icon-xs text-gray-600" fill="currentColor" viewBox="0 0 20 20"
@@ -31,7 +30,7 @@
                                     <input type="text"
                                         class="form-control @error('mobile_or_user_id') is-invalid @enderror"
                                         name="mobile_or_user_id" value="{{ old('mobile_or_user_id') }}"
-                                        autocomplete="mobile_or_user_id" placeholder="example@freebazar.com" id="email"
+                                        autocomplete="mobile_or_user_id" placeholder="Enter Mobile Number" id="email"
                                         autofocus required />
                                     <br>
                                     @error('mobile_or_user_id')
@@ -73,9 +72,9 @@
                                             Remember me
                                         </label>
                                     </div>
-                                    <div>
+                                    {{-- <div>
                                         <a href="{{ route('reset.password') }}" class="small text-right">Lost password?</a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="d-grid">
