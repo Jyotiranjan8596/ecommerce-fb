@@ -2,9 +2,8 @@
 
 use App\Http\Controllers\Admin\PosController as AdminPosController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\PageController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WalletController;
@@ -62,8 +61,6 @@ Route::get('/infographics', [FrontendController::class, 'infographics'])->name('
 // Route::post('/decrease/quantity/{id}', [FrontendController::class, 'decreaseQuantity'])->name('decrease.quantity');
 // Route::delete('/delete/{id}', [FrontendController::class, 'delete'])->name('cart.delete');
 
-
-
 //frontend login
 // Route::get('/login/user', [LoginController::class, 'login'])->name('auth.login');
 // Route::post('/login/store', [LoginController::class, 'store'])->name('login.store');
@@ -83,14 +80,12 @@ Route::group(['middleware' => 'user'], function () {
     // Route::get('/logout/user', [LoginController::class, 'logout'])->name('auth.logout');
 });
 
-
-
 // //user dashboard
 // Route::get('user/dashboard',[UserDashboardController::class,'index'])->name('dashboard.index');
 // Route::get('user/editprofile/{id}',[UserDashboardController::class,'editprofile'])->name('edit.profile');
 // Route::get('user/profile/{id}',[UserDashboardController::class,'profile'])->name('user.profile');
 // Route::post('user/update/profile',[UserDashboardController::class, 'update'])->name('profile.update');
-// Route::get('/dashboard/cart', [UserDashboardController::class, 'cart'])->name('dashboard.cart'); 
+// Route::get('/dashboard/cart', [UserDashboardController::class, 'cart'])->name('dashboard.cart');
 // Route::delete('/dashboard/cart/delete/{id}', [UserDashboardController::class, 'delete'])->name('dashboard.deletecart');
 
 Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], function () {
@@ -126,6 +121,8 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::put('customers/{id}', [WalletController::class, 'update'])->name('customers.update');
     Route::get('wallet/update-status/{id}', [WalletController::class, 'updateStatus'])->name('wallet.updateStatus');
     Route::post('verify-all/user', [PosController::class, 'verifyAllCustomer'])->name('verify.all.user');
+    Route::get('sattlement', [PosController::class, 'sattlement_index'])->name('sattlement');
+    Route::post('dsr/verify',[PosController::class, 'verifyDsr'])->name('dsr.verify.transaction');
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');

@@ -82,9 +82,9 @@
         <!-- Divider -->
         <hr class="my-4">
 
-        {{-- <div class="d-flex justify-content-end ">
+        <div class="d-flex justify-content-end ">
             <button id="approve-btn" type="button" class="btn btn-success text-white me-3 mb-3">Verify All</button>
-        </div> --}}
+        </div>
         <!-- Data Table -->
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
@@ -155,4 +155,74 @@
             {{ $wallets->links() }}
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            console.log("script working");
+
+            $('#approve-btn').on('click', function() {
+                console.log("Coming Here!");
+
+                Swal.fire({
+                    title: 'Verify All Records?',
+                    text: "Are you sure you want to verify all transactions?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Verify All'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('pos.dsr.verify.transaction') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                wallet_ids: @json($wallets->pluck('id'))
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    if (response.count > 0) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Verified Successfully',
+                                            text: response.message,
+                                            confirmButtonText: 'OK'
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'No transactions.',
+                                            text: response.message,
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Verification Failed',
+                                        text: 'Something went wrong while verifying transactions.',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("AJAX Error:", error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Verification Failed',
+                                    text: 'Something went wrong while verifying transactions.',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+
 @endsection

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Wallet;
+use App\Observers\WalletObserver;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Wallet::observe(WalletObserver::class);
         // DB::listen(function ($query) {
         //     Log::info('SQL: ' . $query->sql);
         //     // Optional: Log bindings and time

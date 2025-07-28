@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 class Wallet extends Model
 {
@@ -48,5 +49,24 @@ class Wallet extends Model
     public static function getWallet($id)
     {
         return self::with('user')->find($id);
+    }
+
+    public static function verifyDsr($wallet_ids)
+    {
+        try {
+            $wallets = self::whereIn('id', $wallet_ids)->whereNull('status')->get();
+            $count   = 0;
+
+            foreach ($wallets as $wallet) {
+                $wallet->status = 1;
+                $wallet->save(); // This triggers the updated() observer
+                $count++;
+            }
+
+            return $count;
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            return 0;
+        }
     }
 }

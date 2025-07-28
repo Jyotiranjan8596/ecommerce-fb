@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
@@ -23,11 +22,11 @@ class PosController extends Controller
 
         $pos = PosModel::where('user_id', $posId)->first();
 
-        if (!$pos) {
+        if (! $pos) {
             return view('pos.index', compact('userId', 'user_profile'))->withErrors(['POS not found']);
         }
 
-        $pos_id = $pos->id;
+        $pos_id       = $pos->id;
         $currentMonth = Carbon::now()->month;
         $currentYear  = Carbon::now()->year;
         $today        = Carbon::today();
@@ -55,7 +54,7 @@ class PosController extends Controller
     {
         $query = DB::table('users')->where('role', 3);
         if ($request->filled('search_by') && $request->filled('search_term')) {
-            $searchBy = $request->input('search_by');
+            $searchBy   = $request->input('search_by');
             $searchTerm = $request->input('search_term');
 
             if ($searchBy == 'user_id') {
@@ -80,7 +79,7 @@ class PosController extends Controller
         $request->validate([
             'password' => 'required|min:5|confirmed',
         ]);
-        $newpass = Auth::user();
+        $newpass           = Auth::user();
         $newpass->password = Hash::make($request->password);
         if ($newpass->save()) {
             flash()->addSuccess('Your password has been successfully updated.');
@@ -92,9 +91,9 @@ class PosController extends Controller
     {
         try {
             $user = auth()->user();
-            $pos = PosModel::where('user_id', $user->user_id)->first();
+            $pos  = PosModel::where('user_id', $user->user_id)->first();
 
-            if (!$pos) {
+            if (! $pos) {
                 return response()->json([
                     'success' => false,
                     'message' => 'POS not found for the user.',
@@ -104,11 +103,11 @@ class PosController extends Controller
             $updatedRows = Wallet::where('pos_id', $pos->id)->update(['status' => 1]);
 
             $message = $updatedRows > 0
-                ? "Customers have been successfully verified."
-                : "Already Verified";
+            ? "Customers have been successfully verified."
+            : "Already Verified";
 
             return response()->json([
-                'code' => 200,
+                'code'    => 200,
                 'message' => $message,
             ]);
         } catch (\Exception $e) {
@@ -120,6 +119,38 @@ class PosController extends Controller
         }
     }
 
+    public function verifyDsr(Request $request)
+    {
+        try {
+            if ($request->wallet_ids) {
+                $res     = Wallet::verifyDsr($request->wallet_ids);
+                $message = $res > 0
+                ? "Transaction have been successfully verified."
+                : "No pending transactions to verify.";
+
+                return response()->json([
+                    'count'   => $res,
+                    'success' => true,
+                    'code'    => 200,
+                    'message' => $message,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'code'    => 200,
+                    'message' => "No transactions found for verification.",
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while verifying customers.',
+                'error'   => $e->getMessage(),
+            ], 200);
+        }
+
+    }
+
     public function verifyAllPos(Request $request)
     {
         try {
@@ -128,26 +159,32 @@ class PosController extends Controller
             if ($response) {
                 return response()->json([
                     'success' => true,
-                    'name' => $response->name,
-                    'id' => $response->id,
-                    'upi_id' => $response->upi_id
+                    'name'    => $response->name,
+                    'id'      => $response->id,
+                    'upi_id'  => $response->upi_id,
                 ]);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => "Invalid Qr"
+                    'message' => "Invalid Qr",
                 ]);
             }
         } catch (Exception $e) {
             Log::info($e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]);
         }
     }
 
-    public function terms_conditions(){
+    public function terms_conditions()
+    {
         return view('pos.terms_conditions');
+    }
+
+    public function sattlement_index()
+    {
+        return view('pos.sattlement_index');
     }
 }

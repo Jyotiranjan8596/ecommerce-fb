@@ -5,9 +5,9 @@
 @section('content')
     <div class="container my-4">
         <h3 class="text-center text-dark mb-4"><b>Account Managemnt</b></h3>
-        <div class="d-flex justify-content-end ">
+        {{-- <div class="d-flex justify-content-end ">
             <button id="approve-btn" type="button" class="btn btn-success text-white me-3 mb-3">Verify All</button>
-        </div>
+        </div> --}}
         <!-- Responsive table -->
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
