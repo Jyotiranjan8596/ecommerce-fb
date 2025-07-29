@@ -114,8 +114,36 @@ class WalletController extends Controller
 
         // Retain filters in pagination
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
+        $clone = clone $query;
+
+        $totalTransactions  = (clone $clone)->count();
+        $totalBillingAmount = (clone $clone)->sum('billing_amount');
+        $payByCashOrUpi     = (clone $clone)->sum('amount');
+        $payByWallet        = (clone $clone)->where('pay_by', 'wallet')->sum('amount_wallet');
+        $payByReward        = (clone $clone)->where('pay_by', 'reward')->sum('reward_amount');
         // dd($wallets->toArray());
-        return view('pos.dsr', compact('wallets'));
+        $total_reward_wallet_amount = $payByWallet + $payByReward;
+        $transaction_amount         = $totalBillingAmount * ($pos->transaction_charge / 100);
+        if ($total_reward_wallet_amount > $transaction_amount) {
+            $creditAmount = $total_reward_wallet_amount - $transaction_amount;
+            $debitAmount  = 0;
+        } elseif ($total_reward_wallet_amount == 0) {
+            $debitAmount  = $transaction_amount;
+            $creditAmount = 0;
+        } else {
+            $debitAmount  = $transaction_amount - $total_reward_wallet_amount;
+            $creditAmount = 0;
+        }
+        return view('pos.dsr', compact(
+            'wallets',
+            'totalTransactions',
+            'totalBillingAmount',
+            'payByCashOrUpi',
+            'payByWallet',
+            'payByReward',
+            'creditAmount',
+            'debitAmount'
+        ));
     }
 
     public function export(Request $request)
