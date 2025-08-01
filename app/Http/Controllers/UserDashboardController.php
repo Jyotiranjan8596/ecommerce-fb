@@ -385,7 +385,7 @@ class UserDashboardController extends Controller
                     return redirect()->route('user.add');
                 }
             }
-            flash()->addError('Whoops! User or Sponsor creation failed!');
+            flash()->addError('oops! User or Sponsor creation failed!');
             return redirect()->back();
         } catch (\Exception $e) {
             Log::info('Store User:-' . $e->getMessage());
