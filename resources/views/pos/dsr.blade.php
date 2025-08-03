@@ -1,8 +1,6 @@
 @extends('pos.layouts.master')
 
 @section('content')
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> --}}
     <div class="container">
         <h4 class="text-center text-dark mb-4"><b>DAILY SALES REPORT</b></h4>
 
@@ -168,7 +166,8 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content shadow-lg rounded">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="exampleModalLongTitle">DSR Summary</h5>{{ request()->start_date }}
+                    <h5 class="modal-title" id="exampleModalLongTitle">DSR Summary</h5>{{ request()->start_date }} to
+                    {{ request()->end_date }}
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -188,32 +187,32 @@
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Total Billing Amount:</div>
                                 <div class="col-2 text-right" id="billing-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $totalBillingAmount }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $totalBillingAmount }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Cash/UPI:</div>
                                 <div class="col-2 text-right" id="cash-upi">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $payByCashOrUpi }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByCashOrUpi }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Wallet:</div>
                                 <div class="col-2 text-right" id="wallet">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $payByWallet }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByWallet }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Reward:</div>
                                 <div class="col-2 text-right" id="reward">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $payByReward }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByReward }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Credit Amount:</div>
                                 <div class="col-2 text-right text-success" id="credit-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $creditAmount }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $creditAmount }}</div>
                             </div>
                             <div class="row">
                                 <div class="col-6 font-weight-bold">Debit Amount:</div>
                                 <div class="col-2 text-right text-danger" id="debit-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $debitAmount }}</div>
+                                <div class="col-4 text-right" id="total-transactions">₹ {{ $debitAmount }}</div>
                             </div>
                         </div>
                     </div>
@@ -230,9 +229,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    {{-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-    </script>
+    </script> --}}
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
     </script>
@@ -241,8 +240,6 @@
     </script>
     <script>
         $(document).ready(function() {
-            console.log("script working");
-
             $('#approve-btn').on('click', function() {
                 console.log("Coming Here!");
 
