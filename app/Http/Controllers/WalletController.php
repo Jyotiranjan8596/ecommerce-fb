@@ -97,10 +97,10 @@ class WalletController extends Controller
         ) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate   = Carbon::parse($request->end_date)->endOfDay();
-            $query->whereBetween('insert_date', [$startDate, $endDate]);
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
         } else {
             // Show only current date transactions when no start and end date are provided
-            $query->whereDate('insert_date', now()->toDateString());
+            $query->whereDate('transaction_date', now()->toDateString());
         }
 
         // Search by mobile number if search term is provided
