@@ -132,8 +132,8 @@
                                 <td>{{ $data->reward_amount }}</td>
                                 <td>{{ $data->amount }}</td>
                                 <td>{{ $data->transaction_amount }}</td>
-                                <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
-                                {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
+                                {{-- <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td> --}}
+                                <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td>
                                 <td>N/A</td>
                                 <td>
                                     {{-- <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
