@@ -211,13 +211,13 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Payback Achieved</h2>
+                                <h2 class="fw-extrabold h5">Total Payback</h2>
                                 <h3 class="mb-1">₹{{ $total_payback ?? 0 }}/-</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Payback Achieved</h2>
+                                <h2 class="h6 text-gray-400 mb-0">Total Payback</h2>
                                 <h3 class="fw-extrabold mb-2">₹{{ $total_payback ?? 0 }}/-</h3>
                             </div>
                             {{-- <small class="text-gray-500"> Feb 1 - Apr 1 </small>
@@ -314,13 +314,13 @@
                                 </svg>
                             </div>
                             <div class="d-sm-none">
-                                <h2 class="h5">Reward Balance</h2>
+                                <h2 class="h5">Reward Points</h2>
                                 <h3 class="fw-extrabold mb-1">₹{{ $rewardBalance }}/-</h3>
                             </div>
                         </div>
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Reward Balance</h2>
+                                <h2 class="h6 text-gray-400 mb-0">Reward Points</h2>
                                 <h3 class="fw-extrabold mb-2">₹{{ $rewardBalance }}/-</h3>
                             </div>
                             {{-- <small class="d-flex align-items-center text-gray-500">

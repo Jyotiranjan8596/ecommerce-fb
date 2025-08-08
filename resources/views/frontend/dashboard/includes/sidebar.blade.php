@@ -34,10 +34,18 @@
         <div
             class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
             <div class="d-flex align-items-center">
-                <div class="avatar-lg me-4">
-                    <img src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}"
-                        class="card-img-top rounded-circle border-white" alt="Bonnie Green" />
-                </div>
+                @if ($user_profile->image)
+                    <div class="avatar-lg me-4">
+                        <img src="{{ asset('images/' . $user_profile->image) }}"
+                            class="card-img-top rounded-circle border-white" alt="Freebazar" />
+                    </div>
+                @else
+                    <div class="avatar-lg me-4">
+                        <img src="{{ asset('assets/images/faviconfreebazar.png') }} "
+                            class="card-img-top rounded-circle border-white" alt="Freebazar" />
+                    </div>
+                @endif
+
                 <div class="d-block">
                     <h2 class="h5 mb-3">Hi, {{ auth()->user()->name }}</h2>
                     <a href="{{ route('logout') }}"
