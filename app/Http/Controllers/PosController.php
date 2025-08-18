@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class PosController extends Controller
@@ -50,6 +51,25 @@ class PosController extends Controller
         return view('pos.index', compact('userId', 'user_profile', 'msales', 'dsales', 'currentMonthWalletCredit'));
     }
 
+    public function initiate_payment(Request $request)
+    {
+        if ($request->hasFile('screenshot')) {
+            $file     = $request->file('screenshot');
+            $response = Http::attach(
+                'file', file_get_contents($file), 'image.jpg'
+            )->post('https://api.ocr.space/parse/image', [
+                'apikey'            => env('OCR_API_KEY'),
+                'language'          => 'eng',
+                'isOverlayRequired' => 'false',
+            ]);
+
+            $result = $response->json();
+            dd($result['ParsedResults']);
+            return response()->json([
+                'extracted_text' => $text,
+            ]);
+        }
+    }
     public function userList(Request $request)
     {
         $query = DB::table('users')->where('role', 3);
@@ -181,10 +201,5 @@ class PosController extends Controller
     public function terms_conditions()
     {
         return view('pos.terms_conditions');
-    }
-
-    public function sattlement_index()
-    {
-        return view('pos.sattlement_index');
     }
 }

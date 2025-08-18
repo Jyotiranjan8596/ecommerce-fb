@@ -62,8 +62,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('pos.user.list') }}"
-                    class="nav-link">
+                <a href="{{ route('pos.user.list') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -78,8 +77,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('pos.dsr') }}"
-                    class="nav-link">
+                <a href="{{ route('pos.dsr') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -94,8 +92,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('pos.msr') }}"
-                    class="nav-link">
+                <a href="{{ route('pos.msr') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -110,8 +107,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('pos.unverified.user') }}"
-                    class="nav-link">
+                <a href="{{ route('pos.unverified.user') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -125,10 +121,24 @@
                     <span class="sidebar-text">Account Managemnt</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('pos.sattlement') }}" class="nav-link">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zm1 17.93V19a1 1 0 1 1-2 0v-.07A8.001 8.001 0 0 1 4.07 13H5a1 1 0 1 1 0 2H4.07A8.001 8.001 0 0 1 11 4.07V5a1 1 0 1 1 2 0v.07A8.001 8.001 0 0 1 19.93 11H19a1 1 0 1 1 0-2h.93A8.001 8.001 0 0 1 13 19.93z" />
+                            <path d="M12 8a4 4 0 0 0-4 4h2a2 2 0 1 1 2 2 1 1 0 0 0 0 2h2a4 4 0 0 0-2-7.75z" />
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">Settlement</span>
+                </a>
+            </li>
 
-            
-            
-           
+
+
+
+
 
             <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
 
@@ -169,8 +179,7 @@
                 <div class="multi-level collapse" role="list" id="submenu-app-setting" aria-expanded="false">
                     <ul class="flex-column nav">
                         <li class="nav-item">
-                            <a class="nav-link"
-                                href="{{ route('pos.change.password') }}">
+                            <a class="nav-link" href="{{ route('pos.change.password') }}">
                                 <span class="sidebar-text">Change Password</span>
                             </a>
                         </li>

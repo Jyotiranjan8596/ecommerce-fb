@@ -137,24 +137,8 @@
                     </div>
                 </div>
 
-                <div class="formbold-checkbox-wrapper">
-                    <label for="supportCheckbox" class="formbold-checkbox-label">
-                        <div class="formbold-relative">
-                            <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" />
-                            <div class="formbold-checkbox-inner">
-                                <span class="formbold-opacity-0">
-                                    <svg width="11" height="8" viewBox="0 0 11 8" fill="none"
-                                        class="formbold-stroke-current">
-                                        <path
-                                            d="M10.0915 0.951972L10.0867 0.946075L10.0813 0.940568C9.90076 0.753564 9.61034 0.753146 9.42927 0.939309L4.16201 6.22962L1.58507 3.63469C1.40401 3.44841 1.11351 3.44879 0.932892 3.63584C0.755703 3.81933 0.755703 4.10875 0.932892 4.29224L0.932878 4.29225L0.934851 4.29424L3.58046 6.95832C3.73676 7.11955 3.94983 7.2 4.1473 7.2C4.36196 7.2 4.55963 7.11773 4.71406 6.9584L10.0468 1.60234C10.2436 1.4199 10.2421 1.1339 10.0915 0.951972ZM4.2327 6.30081L4.2317 6.2998C4.23206 6.30015 4.23237 6.30049 4.23269 6.30082L4.2327 6.30081Z"
-                                            stroke-width="0.4"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
-                        <p>I agree to the <a href="{{ route('frontend.termCondition') }}">terms and conditions.</a></p>
-                    </label>
-                </div>
+                <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" />
+
 
                 <button type="submit" class="formbold-btn">Register Now</button>
             </form>
@@ -249,43 +233,6 @@
             margin-bottom: 10px;
         }
 
-        .formbold-checkbox-label {
-            display: flex;
-            cursor: pointer;
-            user-select: none;
-            font-size: 16px;
-            line-height: 24px;
-            color: #536387;
-        }
-
-        .formbold-checkbox-label a {
-            margin-left: 5px;
-            color: #6a64f1;
-        }
-
-        .formbold-input-checkbox {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-
-        .formbold-checkbox-inner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            margin-right: 16px;
-            margin-top: 2px;
-            border: 0.7px solid #dde3ec;
-            border-radius: 3px;
-        }
 
         .formbold-btn {
             font-size: 16px;

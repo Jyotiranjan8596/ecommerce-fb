@@ -160,7 +160,7 @@
         </div>
     </nav>
 
-    
+
     <!-- sidebar  -->
     @include('admin.includes.sidebar')
 

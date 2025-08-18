@@ -6,7 +6,7 @@
             class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
             <div class="d-flex align-items-center">
                 <div class="avatar-lg me-4">
-                    <img src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}"
+                    <img src="{{ asset('images/' .  auth()->user()->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}"
                         class="card-img-top rounded-circle border-white" alt="Bonnie Green" />
                 </div>
                 <div class="d-block">
@@ -335,7 +335,7 @@
                         <ul class="flex-column nav">
                             <li class="nav-item" style="margin-left: 22px">
                                 <a class="nav-link {{ request()->is('add') ? 'active' : '' }}"
-                                    href="{{ route('user.add') }}">
+                                    href="{{ route('admin.settlement.index') }}">
                                     Payment
                                 </a>
                             </li>
@@ -438,7 +438,7 @@
                     <ul class="flex-column nav">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->is('add') ? 'active' : '' }}"
-                                href="{{ route('user.add') }}">
+                                href="{{ route('admin.settlement.index') }}">
                                 <span class="sidebar-text">Payment</span>
                             </a>
                         </li>

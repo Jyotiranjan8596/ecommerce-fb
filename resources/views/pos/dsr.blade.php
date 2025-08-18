@@ -56,14 +56,15 @@
                     <div class="row">
                         <div class="col-6">
                             <label for="start_date"><b>From:</b></label>
-                            <input type="date" class="form-control mb-2" name="start_date" id="start_date">
+                            <input type="date" value="{{ request('start_date') ?? now()->toDateString() }}"
+                                class="form-control mb-2" name="start_date" id="start_date">
                         </div>
-                        <div class="col-6">
+                        {{-- <div class="col-6">
                             <label for="end_date"><b>To:</b></label>
                             <input type="date" class="form-control mb-2" name="end_date" id="end_date">
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-secondary w-100" type="submit">FILTER</button>
+                        </div> --}}
+                        <div class="col-6 me-3">
+                            <button class="btn btn-secondary w-50" type="submit">FILTER</button>
                         </div>
                     </div>
                 </form>
@@ -181,46 +182,47 @@
                         <div class="container">
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Total Transactions:</div>
-                                <div class="col-2 text-right" id="total-transactions">--</div>
-                                <div class="col-4 text-right" id="total-transactions">{{ $totalTransactions }}</div>
+                                <div class="col-2 text-right" id="total-transactions-temp">--</div>
+                                <div class="col-4 text-right" id="total-transactions-val">{{ $totalTransactions }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Total Billing Amount:</div>
-                                <div class="col-2 text-right" id="billing-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $totalBillingAmount }}</div>
+                                <div class="col-2 text-right" id="billing-amount-temp">--</div>
+                                <div class="col-4 text-right" id="billing-amount-val">₹ {{ $totalBillingAmount }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Cash/UPI:</div>
-                                <div class="col-2 text-right" id="cash-upi">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByCashOrUpi }}</div>
+                                <div class="col-2 text-right" id="cash-upi-temp">--</div>
+                                <div class="col-4 text-right" id="cash-upi-val">₹ {{ $payByCashOrUpi }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Wallet:</div>
-                                <div class="col-2 text-right" id="wallet">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByWallet }}</div>
+                                <div class="col-2 text-right" id="wallet-temp">--</div>
+                                <div class="col-4 text-right" id="wallet-val">₹ {{ $payByWallet }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Pay by Reward:</div>
-                                <div class="col-2 text-right" id="reward">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $payByReward }}</div>
+                                <div class="col-2 text-right" id="reward-temp">--</div>
+                                <div class="col-4 text-right" id="reward-val">₹ {{ $payByReward }}</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-6 font-weight-bold">Credit Amount:</div>
-                                <div class="col-2 text-right text-success" id="credit-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $creditAmount }}</div>
+                                <div class="col-2 text-right text-success" id="credit-amount-temp">--</div>
+                                <div class="col-4 text-right" id="credit-amount-val">₹ {{ $creditAmount }}</div>
                             </div>
                             <div class="row">
                                 <div class="col-6 font-weight-bold">Debit Amount:</div>
-                                <div class="col-2 text-right text-danger" id="debit-amount">--</div>
-                                <div class="col-4 text-right" id="total-transactions">₹ {{ $debitAmount }}</div>
+                                <div class="col-2 text-right text-danger" id="debit-amount-temp">--</div>
+                                <div class="col-4 text-right" id="debit-amount-val">₹ {{ $debitAmount }}</div>
                             </div>
+
                         </div>
                     </div>
                 @endif
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <!-- Optional: Save or Export button -->
-                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    <button type="button" id="submitData" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </div>
@@ -296,6 +298,64 @@
                                 });
                             }
                         });
+                    }
+                });
+            });
+
+            $("#submitData").on("click", function() {
+                // Collect data
+                let startDate = $("#start_date").val();
+                console.log(startDate);
+
+                if (!startDate) {
+                    let today = new Date();
+                    let month = ("0" + (today.getMonth() + 1)).slice(-2);
+                    let day = ("0" + today.getDate()).slice(-2);
+                    startDate = today.getFullYear() + "-" + month + "-" + day;
+                }
+                let data = {
+                    date: startDate,
+                    total_transactions: $("#total-transactions-val").text().trim(),
+                    billing_amount: $("#billing-amount-val").text().replace("₹", "").trim(),
+                    cash_upi: $("#cash-upi-val").text().replace("₹", "").trim(),
+                    wallet: $("#wallet-val").text().replace("₹", "").trim(),
+                    reward: $("#reward-val").text().replace("₹", "").trim(),
+                    credit_amount: $("#credit-amount-val").text().replace("₹", "").trim(),
+                    debit_amount: $("#debit-amount-val").text().replace("₹", "").trim(),
+                    _token: "{{ csrf_token() }}" // for Laravel security
+                };
+
+                // Send AJAX
+                $.ajax({
+                    url: "{{ route('pos.save.summary.data') }}",
+                    type: "POST",
+                    data: data,
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Verified Successfully',
+                                text: response.message ?? 'Payment Submited!',
+                                confirmButtonText: 'OK'
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Verification Failed',
+                                text: response.message ??
+                                    'Something went wrong while submit payment.',
+                                confirmButtonText: 'OK'
+                            }).then(() => location.reload());
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Verification Failed',
+                            text: xhr.responseJSON?.message ??
+                                'Something went wrong while submit payment.',
+                            confirmButtonText: 'OK'
+                        }).then(() => location.reload());
                     }
                 });
             });

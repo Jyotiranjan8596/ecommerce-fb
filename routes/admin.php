@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BlogCategoryController;
@@ -10,17 +8,18 @@ use App\Http\Controllers\Admin\DsrController;
 use App\Http\Controllers\Admin\EventCategoryController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\InfoGraphicController;
-use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PosController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SectorController;
-use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\SubSectorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
+use App\Http\Controllers\PaymentSummaryController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
@@ -43,12 +42,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::get('user-customer', [UserController::class, 'customUser'])->name('user.customer');
     Route::get('search-sponsor', [UserController::class, 'searchSponsor'])->name('search.sponsor');
 
-
     // Route::get('user/edit/{$id}', [UserController::class,'userEdit'])->name('user.edit');
     Route::post('user-customer/store', [UserController::class, 'storeCustomUser'])->name('user.customer-store');
     Route::post('import/user', [UserController::class, 'importUser'])->name('user.import');
     Route::get('user/export', [UserController::class, 'export'])->name('user.export');
-
 
     //roles
     Route::resource('roles', RoleController::class);
@@ -64,9 +61,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::resource('sector', SectorController::class);
     Route::post('sector/{id}/update', [SectorController::class, 'update'])->name('sector.update');
 
-       //sub-sector
-       Route::resource('subsector', SubSectorController::class);
-       Route::post('subsector/{id}/update', [SubSectorController::class, 'update'])->name('subsector.update');
+    //sub-sector
+    Route::resource('subsector', SubSectorController::class);
+    Route::post('subsector/{id}/update', [SubSectorController::class, 'update'])->name('subsector.update');
 
     //Blog
     Route::resource('blog', BlogController::class);
@@ -92,8 +89,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::resource('product', ProductController::class);
     Route::post('product/{id}/update', [ProductController::class, 'update'])->name('product.update');
     Route::post('/get-subsector', [ProductController::class, 'getSubsector'])->name('getSubsector');
-    Route::get('/export-product',[ProductController::class, 'export'])->name('product.export');
-    Route::post('/import-product',[ProductController::class, 'import'])->name('product.import');
+    Route::get('/export-product', [ProductController::class, 'export'])->name('product.export');
+    Route::post('/import-product', [ProductController::class, 'import'])->name('product.import');
 
     //pos
     Route::resource('pos_system', PosController::class);
@@ -105,7 +102,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('import-dsr', [DsrController::class, 'import'])->name('dsr.import');
 
     Route::get('msr', [DsrController::class, 'msr'])->name('msr');
-   
+
     Route::get('export-msr', [DsrController::class, 'exportMsr'])->name('msr.export');
 
     Route::get('wallet', [WalletController::class, 'wallet'])->name('wallet');
@@ -113,5 +110,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('/upload-wallet', [WalletController::class, 'uploadWallet'])->name('wallet.upload');
     Route::post('/upload-used-wallet', [DsrController::class, 'update_dsr'])->name('used.wallet.upload');
     Route::post('/delete-wallet', [DsrController::class, 'delete_dsr'])->name('used.wallet.delete');
+
+    Route::get('settlement', [PaymentSummaryController::class, 'admin_settlemt_index'])->name('settlement.index');
+    Route::post('settlement-verify', [PaymentSummaryController::class, 'verify_settlement'])->name('settlement.verify');
 
 });
