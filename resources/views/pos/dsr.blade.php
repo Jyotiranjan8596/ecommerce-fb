@@ -59,10 +59,11 @@
                             <input type="date" value="{{ request('start_date') ?? now()->toDateString() }}"
                                 class="form-control mb-2" name="start_date" id="start_date">
                         </div>
-                        {{-- <div class="col-6">
+                        <div class="col-6">
                             <label for="end_date"><b>To:</b></label>
-                            <input type="date" class="form-control mb-2" name="end_date" id="end_date">
-                        </div> --}}
+                            <input type="date" value="{{ request('end_date') ?? now()->toDateString() }}"
+                                class="form-control mb-2" name="end_date" id="end_date">
+                        </div>
                         <div class="col-6 me-3">
                             <button class="btn btn-secondary w-50" type="submit">FILTER</button>
                         </div>
@@ -167,63 +168,76 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content shadow-lg rounded">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="exampleModalLongTitle">DSR Summary</h5>{{ request()->start_date }} to
-                    {{ request()->end_date }}
+                    <h5 class="modal-title" id="exampleModalLongTitle">DSR Summary</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                @if ($totalTransactions == 0)
-                    <div class="modal-body">
-                        There are no transactions for today !
-                    </div>
+                @if (request()->start_date == request()->end_date)
+                    @if ($totalTransactions == 0)
+                        <div class="modal-body">
+                            There are no transactions for today !
+                        </div>
+                        <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                    @else
+                        <div class="modal-body">
+                            <div class="container">
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Total Transactions:</div>
+                                    <div class="col-2 text-right" id="total-transactions-temp">--</div>
+                                    <div class="col-4 text-right" id="total-transactions-val">{{ $totalTransactions }}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Total Billing Amount:</div>
+                                    <div class="col-2 text-right" id="billing-amount-temp">--</div>
+                                    <div class="col-4 text-right" id="billing-amount-val">₹ {{ $totalBillingAmount }}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Pay by Cash/UPI:</div>
+                                    <div class="col-2 text-right" id="cash-upi-temp">--</div>
+                                    <div class="col-4 text-right" id="cash-upi-val">₹ {{ $payByCashOrUpi }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Pay by Wallet:</div>
+                                    <div class="col-2 text-right" id="wallet-temp">--</div>
+                                    <div class="col-4 text-right" id="wallet-val">₹ {{ $payByWallet }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Pay by Reward:</div>
+                                    <div class="col-2 text-right" id="reward-temp">--</div>
+                                    <div class="col-4 text-right" id="reward-val">₹ {{ $payByReward }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 font-weight-bold">Credit Amount:</div>
+                                    <div class="col-2 text-right text-success" id="credit-amount-temp">--</div>
+                                    <div class="col-4 text-right" id="credit-amount-val">₹ {{ $creditAmount }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 font-weight-bold">Debit Amount:</div>
+                                    <div class="col-2 text-right text-danger" id="debit-amount-temp">--</div>
+                                    <div class="col-4 text-right" id="debit-amount-val">₹ {{ $debitAmount }}</div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Optional: Save or Export button -->
+                            <button type="button" id="submitData" class="btn btn-primary">Submit</button>
+                        </div>
+                    @endif
                 @else
                     <div class="modal-body">
-                        <div class="container">
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Total Transactions:</div>
-                                <div class="col-2 text-right" id="total-transactions-temp">--</div>
-                                <div class="col-4 text-right" id="total-transactions-val">{{ $totalTransactions }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Total Billing Amount:</div>
-                                <div class="col-2 text-right" id="billing-amount-temp">--</div>
-                                <div class="col-4 text-right" id="billing-amount-val">₹ {{ $totalBillingAmount }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Pay by Cash/UPI:</div>
-                                <div class="col-2 text-right" id="cash-upi-temp">--</div>
-                                <div class="col-4 text-right" id="cash-upi-val">₹ {{ $payByCashOrUpi }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Pay by Wallet:</div>
-                                <div class="col-2 text-right" id="wallet-temp">--</div>
-                                <div class="col-4 text-right" id="wallet-val">₹ {{ $payByWallet }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Pay by Reward:</div>
-                                <div class="col-2 text-right" id="reward-temp">--</div>
-                                <div class="col-4 text-right" id="reward-val">₹ {{ $payByReward }}</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-6 font-weight-bold">Credit Amount:</div>
-                                <div class="col-2 text-right text-success" id="credit-amount-temp">--</div>
-                                <div class="col-4 text-right" id="credit-amount-val">₹ {{ $creditAmount }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 font-weight-bold">Debit Amount:</div>
-                                <div class="col-2 text-right text-danger" id="debit-amount-temp">--</div>
-                                <div class="col-4 text-right" id="debit-amount-val">₹ {{ $debitAmount }}</div>
-                            </div>
-
-                        </div>
+                        Multiple dates cannot be selected for summary !
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 @endif
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <!-- Optional: Save or Export button -->
-                    <button type="button" id="submitData" class="btn btn-primary">Submit</button>
-                </div>
             </div>
         </div>
     </div>
