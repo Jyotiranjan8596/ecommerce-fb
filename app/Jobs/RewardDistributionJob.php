@@ -29,19 +29,27 @@ class RewardDistributionJob implements ShouldQueue
     public function handle(): void
     {
         $users = User::with('sponcer')
-            ->whereDate('created_at', '>=', Carbon::parse('2025-08-02 09:37:41'))
+            ->whereDate('created_at', '>=', Carbon::parse('2025-07-31 22:31:14'))
             ->get();
+
         foreach ($users as $user) {
-            $sponser = $user->sponcer->first();
-            Log::info($sponser->id);
-            UserWallet::create([
-                'user_id'          => $sponser->sponsor_id,
-                'month'            => '25-Aug',
-                'reward_points'    => 50,
-                'trans_type'       => 'credit',
-                'transaction_date' => $sponser->created_at,
-            ]);
+            // if sponcer is a relationship that returns a collection (hasMany)
+            $sponsor = $user->sponcer->first() ?? null;
+
+            if ($sponsor) {
+                Log::info("Sponsor ID: " . $sponsor->id);
+
+                UserWallet::create([
+                    'user_id'          => $sponsor->sponsor_id ?? null,
+                    'month'            => '25-Aug',
+                    'reward_points'    => 50,
+                    'trans_type'       => 'credit',
+                    'transaction_date' => $sponsor->created_at ?? now(),
+                ]);
+            } else {
+                Log::warning("No sponsor found for user ID: {$user->id}");
+            }
         }
-        // Log::info($users->toArray());
     }
+
 }
