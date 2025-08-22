@@ -2,6 +2,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use App\Models\UserWallet;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,16 +31,16 @@ class RewardDistributionJob implements ShouldQueue
         $users = User::with('sponcer')
             ->whereDate('created_at', '>=', Carbon::parse('2025-08-02 09:37:41'))
             ->get();
-        // foreach ($users as $user) {
-        //     $sponser = $user->sponcer->first();
-        //     UserWallet::create([
-        //         'user_id' => $sponser->sponsor_id,
-        //         'month' => '25-Aug',
-        //         'wallet_id' => 50,
-        //         'trans_type' => 'credit',
-        //         'transaction_date' => $sponser->created_at,
-        //     ]);
-        // }
+        foreach ($users as $user) {
+            $sponser = $user->sponcer->first();
+            UserWallet::create([
+                'user_id' => $sponser->sponsor_id,
+                'month' => '25-Aug',
+                'wallet_id' => 50,
+                'trans_type' => 'credit',
+                'transaction_date' => $sponser->created_at,
+            ]);
+        }
         Log::info($users->toArray());
     }
 }
