@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Jobs\RewardDistributionJob;
+use Illuminate\Console\Command;
+
+class Commands extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:commands';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        RewardDistributionJob::dispatch();
+    }
+}
