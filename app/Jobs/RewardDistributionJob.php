@@ -31,16 +31,16 @@ class RewardDistributionJob implements ShouldQueue
         $users = User::with('sponcer')
             ->whereDate('created_at', '>=', Carbon::parse('2025-07-31 22:31:14'))
             ->get();
-        foreach ($users as $user) {
-            $sponser = $user->sponcer->first();
-            UserWallet::create([
-                'user_id' => $sponser->sponsor_id,
-                'month' => '25-Aug',
-                'wallet_id' => 50,
-                'trans_type' => 'credit',
-                'transaction_date' => $sponser->created_at,
-            ]);
-        }
+        // foreach ($users as $user) {
+        //     $sponser = $user->sponcer->first();
+        //     UserWallet::create([
+        //         'user_id' => $sponser->sponsor_id,
+        //         'month' => '25-Aug',
+        //         'wallet_id' => 50,
+        //         'trans_type' => 'credit',
+        //         'transaction_date' => $sponser->created_at,
+        //     ]);
+        // }
         Log::info($users->toArray());
     }
 }
