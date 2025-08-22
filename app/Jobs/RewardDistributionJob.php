@@ -2,7 +2,6 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Models\UserWallet;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,7 +28,7 @@ class RewardDistributionJob implements ShouldQueue
     public function handle(): void
     {
         $users = User::with('sponcer')
-            ->whereDate('created_at', '>=', Carbon::parse('2025-07-31 22:31:14'))
+            ->whereDate('created_at', '>=', Carbon::parse('2025-08-02 09:37:41'))
             ->get();
         // foreach ($users as $user) {
         //     $sponser = $user->sponcer->first();
