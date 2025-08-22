@@ -33,13 +33,16 @@ class RewardDistributionJob implements ShouldQueue
             ->get();
         foreach ($users as $user) {
             $sponser = $user->sponcer->first();
-            UserWallet::create([
-                'user_id' => $sponser->sponsor_id,
-                'month' => '25-Aug',
-                'wallet_id' => 50,
-                'trans_type' => 'credit',
-                'transaction_date' => $sponser->created_at,
-            ]);
+            if ($sponser->sponsor_id != null) {
+
+                UserWallet::create([
+                    'user_id'          => $sponser->sponsor_id,
+                    'month'            => '25-Aug',
+                    'wallet_id'        => 50,
+                    'trans_type'       => 'credit',
+                    'transaction_date' => $sponser->created_at,
+                ]);
+            }
         }
         Log::info($users->toArray());
     }
