@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentSummary;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -97,5 +98,42 @@ class PaymentSummaryController extends Controller
                 'message' => 'Verification Failed',
             ]);
         }
+    }
+
+    public function reject_settlement($id)
+    {
+        try {
+            $settlement = PaymentSummary::findOrFail($id);
+
+            if ($settlement->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending settlements can be rejected.',
+                ], 400);
+            }
+
+            $settlement->status = 'rejected';
+            $settlement->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Settlement rejected successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function downloadInvoice($id)
+    {
+        $settlement = PaymentSummary::with('creator')->findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.settlement_payment.invoice', compact('settlement'))
+            ->setPaper('a4');
+
+        return $pdf->download('Invoice-' . $settlement->id . '.pdf');
     }
 }

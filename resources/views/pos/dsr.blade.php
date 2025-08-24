@@ -179,8 +179,8 @@
                             There are no transactions for today !
                         </div>
                         <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
                     @else
                         <div class="modal-body">
                             <div class="container">

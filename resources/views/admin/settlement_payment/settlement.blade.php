@@ -5,6 +5,39 @@
             cursor: pointer;
         }
     </style>
+    <div class="row">
+
+        <!-- Search -->
+        <div class="col-md-4 mb-3">
+            <form method="GET" action="{{ route('admin.settlement.index') }}">
+                <div class="input-group">
+                    <input type="number" class="form-control" name="search" placeholder="Search By...">
+                    <button class="btn btn-secondary" type="submit">SEARCH</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-end mb-2">
+        <div class="col-12">
+            <form method="GET" action="{{ route('admin.settlement.index') }}">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="start_date"><b>From:</b></label>
+                        <input type="date" value="{{ request('start_date') ?? now()->toDateString() }}"
+                            class="form-control mb-2" name="start_date" id="start_date">
+                    </div>
+                    <div class="col-6">
+                        <label for="end_date"><b>To:</b></label>
+                        <input type="date" value="{{ request('end_date') ?? now()->toDateString() }}"
+                            class="form-control mb-2" name="end_date" id="end_date">
+                    </div>
+                    <div class="col-6 me-3">
+                        <button class="btn btn-secondary w-50" type="submit">FILTER</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="card">
         <div class="card-header">
             <div class="float-start">
@@ -28,6 +61,7 @@
                             <th scope="col">Credit</th>
                             <th scope="col">Debit</th>
                             <th scope="col">Status</th>
+                            <th scope="col">Action</th>
                     </thead>
                     <tbody>
                         @foreach ($settlements as $key => $settlement)
@@ -53,16 +87,54 @@
                                     {{ $settlement->admin_debit }}
                                 </td>
                                 @if ($settlement->status == 'pending')
-                                    <td id="status-id" data-bs-toggle="modal" data-bs-target="#reference-modal"
-                                        data-id="{{ $settlement->id }}">
-                                        <span data-id="{{ $settlement->id }}" onclick="openVerifyModal(this)"
+                                    <td id="status-id">
+                                        <span data-id="{{ $settlement->id }}"
                                             class="badge bg-warning text-dark">Pending</span>
+                                    </td>
+                                @elseif ($settlement->status == 'rejected')
+                                    <td>
+                                        <span class="badge bg-danger"><b>Rejected</b></span>
                                     </td>
                                 @else
                                     <td>
                                         <span class="badge bg-success"><b>Settled</b></span>
                                     </td>
                                 @endif
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                            id="actionMenu{{ $settlement->id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            ⋮
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="actionMenu{{ $settlement->id }}">
+                                            @if ($settlement->status == 'pending')
+                                                <li>
+                                                    <a class="dropdown-item text-success" href="javascript:void(0)"
+                                                        data-bs-toggle="modal" data-bs-target="#reference-modal"
+                                                        data-id="{{ $settlement->id }}" onclick="openVerifyModal(this)">
+                                                        Approve
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="javascript:void(0)"
+                                                        onclick="rejectSettlement({{ $settlement->id }})">
+                                                        Reject
+                                                    </a>
+                                                </li>
+                                            @else
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('admin.settlement.invoice', $settlement->id) }}">
+                                                        >
+                                                        Download Invoice
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                        </ul>
+                                    </div>
+                                </td>
 
                             </tr>
                         @endforeach
@@ -175,5 +247,38 @@
                 });
             }
         });
+        window.rejectSettlement = function(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This settlement will be marked as rejected.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, reject it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('admin/settlement/reject') }}/" + id,
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire('Rejected!', response.message, 'success')
+                                    .then(() => location.reload());
+                            } else {
+                                Swal.fire('Error!', response.message, 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error!', xhr.responseJSON?.message ??
+                                'Something went wrong.', 'error');
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endsection

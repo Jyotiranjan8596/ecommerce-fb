@@ -113,5 +113,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
     Route::get('settlement', [PaymentSummaryController::class, 'admin_settlemt_index'])->name('settlement.index');
     Route::post('settlement-verify', [PaymentSummaryController::class, 'verify_settlement'])->name('settlement.verify');
-
+    Route::post('settlement/reject/{id}', [PaymentSummaryController::class, 'reject_settlement'])->name('settlement.reject');
+    Route::get('admin/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadInvoice'])->name('settlement.invoice');
 });
