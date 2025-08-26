@@ -12,7 +12,7 @@ class SponsorObserver
      */
     public function created(Sponsor $sponsor): void
     {
-        $month            = Carbon::now()->format('M-d');   // e.g., Apr-19
+        $month            = Carbon::now()->format('d-M');   // e.g., Apr-19
         $transaction_date = Carbon::now()->format('Y-m-d'); // e.g., 2024-12-31
         $res              = UserWallet::create([
             'user_id'          => $sponsor->sponsor_id, // Use the id from the Users table
