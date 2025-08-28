@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <div class="col-md-2 col-sm-6">
+            {{-- <div class="col-md-2 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Pages</h5>
                     <ul class="menu-list list-unstyled">
@@ -67,7 +67,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-2 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Quick Links</h5>
@@ -109,7 +109,7 @@
                         1625(B),Nilakantha Nagar, <br> Nayapalli, lane no 15, 751012 <br> Near Unit 8, DAV School <br>
                         Bhubaneswar, Odisha
                     </p>
-                    
+
                 </div>
             </div>
         </div>

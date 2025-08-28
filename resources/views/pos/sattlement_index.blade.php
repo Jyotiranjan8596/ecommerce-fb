@@ -40,13 +40,22 @@
                             <td>₹{{ $settlement->by_reward ?? 0 }}/-</td>
                             <td>₹{{ $settlement->pos_credit ?? 0 }}</td>
                             <td>₹{{ $settlement->pos_debit ?? 0 }}</td>
-                            <td>
-                                @if ($settlement->status == 'pending')
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                @else
-                                    <span class="badge bg-success">Paid</span>
-                                @endif
-                            </td>
+                            @if ($settlement->status == 'pending')
+                                <td id="status-id">
+                                    <span data-id="{{ $settlement->id }}" class="badge bg-warning text-dark">Pending</span>
+                                </td>
+                            @elseif ($settlement->status == 'rejected')
+                                <td>
+                                    <span class="badge bg-danger"><b>Rejected</b></span>
+                                </td>
+                            @else
+                                <td>
+                                    <a href="{{ route('pos.settlement.invoice', $settlement->id) }}"
+                                        class="badge bg-success">
+                                        Settled
+                                    </a>
+                                </td>
+                            @endif
                             {{-- <td>
                                 <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#editModal"

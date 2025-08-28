@@ -126,7 +126,7 @@
                                                 <li>
                                                     <a class="dropdown-item"
                                                         href="{{ route('admin.settlement.invoice', $settlement->id) }}">
-                                                        
+
                                                         Download Invoice
                                                     </a>
                                                 </li>

@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\NumberToWordsHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -103,4 +104,45 @@ class PaymentSummary extends Model
             return false;
         }
     }
+
+    public static function getinvoice($id)
+    {
+        $res = self::with('creator')->findOrFail($id);
+
+        return [
+            'pos_name'             => $res->creator->name,
+            'pos_user_id'          => $res->creator->user_id,
+            'bill_date'            => Carbon::parse($res->date)->format('d-m-Y'),
+            'total_transaction'    => $res->total_transaction,
+            'total_billing_amount' => $res->total_billing_amount,
+            'by_cash'              => $res->by_cash,
+            'by_wallet'            => $res->by_wallet,
+            'by_reward'            => $res->by_reward,
+            'credit'         => $res->admin_credit,
+            'debit'          => $res->admin_debit,
+            'status'               => $res->status,
+            'in_letter'            => NumberToWordsHelper::convert($res->admin_debit) . ' Rupees Only/-',
+        ];
+    }
+
+    public static function getposinvoice($id)
+    {
+        $res = self::with('creator')->findOrFail($id);
+
+        return [
+            'pos_name'             => $res->creator->name,
+            'pos_user_id'          => $res->creator->user_id,
+            'bill_date'            => Carbon::parse($res->date)->format('d-m-Y'),
+            'total_transaction'    => $res->total_transaction,
+            'total_billing_amount' => $res->total_billing_amount,
+            'by_cash'              => $res->by_cash,
+            'by_wallet'            => $res->by_wallet,
+            'by_reward'            => $res->by_reward,
+            'credit'           => $res->pos_credit,
+            'debit'            => $res->pos_debit,
+            'status'               => $res->status,
+            'in_letter'            => NumberToWordsHelper::convert($res->pos_debit) . ' Rupees Only/-',
+        ];
+    }
+
 }

@@ -126,6 +126,8 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::post('initiate-payment', [PosController::class, 'initiate_payment'])->name('initiate.payment');
     Route::get('sattlement', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
     Route::post('/save-modal-data', [PaymentSummaryController::class, 'saveSummaryData'])->name('save.summary.data');
+    Route::get('pos/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadPosInvoice'])->name('settlement.invoice');
+
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');

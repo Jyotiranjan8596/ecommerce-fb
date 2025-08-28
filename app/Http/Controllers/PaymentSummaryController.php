@@ -129,11 +129,21 @@ class PaymentSummaryController extends Controller
 
     public function downloadInvoice($id)
     {
-        $settlement = PaymentSummary::with('creator')->findOrFail($id);
-
+        $settlement = PaymentSummary::getinvoice($id);
+        // dd($settlement);
         $pdf = Pdf::loadView('admin.settlement_payment.invoice', compact('settlement'))
             ->setPaper('a4');
 
-        return $pdf->download('Invoice-' . $settlement->id . '.pdf');
+        return $pdf->download('Invoice-' . $settlement['pos_name'] . $settlement['pos_user_id'] . '.pdf');
+    }
+
+    public function downloadPosInvoice($id)
+    {
+        $settlement = PaymentSummary::getposinvoice($id);
+        // dd($settlement);
+        $pdf = Pdf::loadView('admin.settlement_payment.invoice', compact('settlement'))
+            ->setPaper('a4');
+
+        return $pdf->download('Invoice-' . $settlement['pos_name'] . $settlement['pos_user_id'] . '.pdf');
     }
 }

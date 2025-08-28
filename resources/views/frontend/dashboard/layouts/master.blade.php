@@ -32,7 +32,8 @@
         content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-pro-bootstrap-5-dashboard/volt-pro-preview.jpg">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
+    <link rel="apple-touch-icon" type="image/png" sizes="120x120"
+        href="{{ asset('assets/images/faviconfreebazar.png') }}" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
     <link rel="manifest" href="{{ asset('assets/images/faviconfreebazar.png') }}" />

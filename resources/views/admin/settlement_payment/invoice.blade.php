@@ -3,253 +3,195 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invoice #{{ $settlement->id }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeBazar Invoice</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.4;
-            color: #333;
-            font-size: 14px;
+            margin: 0;
+            background-color: white;
         }
 
         .invoice-container {
-            width: 100%;
             max-width: 800px;
             margin: 0 auto;
+            background-color: white;
+            padding: 0;
         }
 
-        /* Header Section - DomPDF Compatible */
-        .invoice-header {
-            background-color: #4a5568;
-            color: white;
-            padding: 25px;
-            margin-bottom: 20px;
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #000;
         }
 
-        .header-table {
+        .logo {
+            margin-bottom: 10px;
+        }
+
+        .logo-image {
+            max-height: 80px;
+            max-width: 300px;
+            height: auto;
+            width: auto;
+        }
+
+        .company-details {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-bottom: 1px solid #000;
+        }
+
+        .bill-to {
+            flex: 1;
+        }
+
+        .bill-details {
+            text-align: right;
+        }
+
+        .bill-to h3,
+        .bill-details h3 {
+            margin: 0 0 4px 0;
+            /* tightened margin */
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .bill-to p,
+        .bill-details p {
+            margin: 0;
+            /* removed extra vertical gaps */
+            font-size: 14px;
+            color: #333;
+        }
+
+        .items-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .header-table td {
-            vertical-align: top;
-            padding: 0;
+        .items-table th {
+            background-color: #f8f9fa;
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        .company-info {
+        .items-table td {
+            border: none;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .items-table .sr-no {
+            width: 40px;
+            text-align: center;
+        }
+
+        .items-table .particulars {
             width: 60%;
         }
 
-        .logo-space {
-            width: 150px;
-            /* background-color: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.5); */
-            text-align: center;
-            margin-bottom: 10px;
-            color: white;
-            padding-left: 25px;
+        .items-table .amount {
+            width: 100px;
+            text-align: right;
         }
 
-        /* Desktop padding for logo */
-        @media (min-width: 768px) {
-            .logo-space {
-                width: 100px;
-            }
-        }
-
-        .company-name {
-            font-size: 24px;
+        .total-row {
             font-weight: bold;
-            margin-bottom: 8px;
         }
 
-        .company-details {
-            font-size: 13px;
-            line-height: 1.3;
+        .total-section {
+            border-top: 1px solid #000;
         }
 
-        .invoice-info {
+        .total-section td {
+            border: none;
+        }
+
+        .receivable-payable {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .footer {
+            border-top: 1px solid #000;
+            padding: 5px 20px;
+            /* reduced padding */
+        }
+
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .footer-table td {
+            border: none;
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .footer-left {
+            width: 40%;
+            text-align: left;
+        }
+
+        .footer-center {
+            width: 21%;
+            text-align: center;
+        }
+
+        .footer-right {
             width: 40%;
             text-align: right;
         }
 
-        .invoice-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .invoice-details {
-            font-size: 13px;
-        }
-
-        /* Body Section */
-        .invoice-body {
-            padding: 0 25px;
-        }
-
-        .section-title {
+        .notes {
             font-size: 16px;
-            font-weight: bold;
-            color: #4a5568;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #e2e8f0;
         }
 
-        .billing-section {
-            margin-bottom: 25px;
-        }
-
-        .billing-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-left: 4px solid #4a5568;
-        }
-
-        .billing-info div {
-            margin-bottom: 3px;
-        }
-
-        /* Status Section */
-        .status-section {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border: 1px solid;
-        }
-
-        .status-pending {
-            color: #92400e;
-            background-color: #fef3c7;
-            border-color: #f59e0b;
-        }
-
-        .status-rejected {
-            color: #991b1b;
-            background-color: #fee2e2;
-            border-color: #dc2626;
-        }
-
-        .status-settled {
-            color: #065f46;
-            background-color: #d1fae5;
-            border-color: #10b981;
-        }
-
-        /* Settlement Table - DomPDF Compatible */
-        .settlement-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            border: 1px solid #d1d5db;
-        }
-
-        .settlement-table thead {
-            background-color: #4a5568;
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            background-color: #000;
             color: white;
-        }
-
-        .settlement-table th {
-            padding: 12px;
-            text-align: left;
-            font-weight: bold;
-            font-size: 13px;
-            border: 1px solid #d1d5db;
-        }
-
-        .settlement-table th:last-child {
-            text-align: right;
-        }
-
-        .settlement-table tbody tr {
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .settlement-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .settlement-table td {
-            padding: 10px 12px;
-            font-size: 13px;
-            border: 1px solid #d1d5db;
-        }
-
-        .settlement-table td:first-child {
-            font-weight: normal;
-        }
-
-        .settlement-table td:last-child {
-            text-align: right;
-            font-weight: bold;
-        }
-
-        .amount-positive {
-            color: #059669;
-        }
-
-        .amount-negative {
-            color: #dc2626;
-        }
-
-        /* Footer */
-        .invoice-footer {
-            background-color: #f8f9fa;
-            padding: 20px 25px;
-            border-top: 1px solid #e2e8f0;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .footer-content {
             font-size: 12px;
-            color: #6b7280;
-            line-height: 1.4;
+            text-align: center;
+            line-height: 80px;
+            margin: 0 auto;
         }
 
-        .footer-content p {
-            margin-bottom: 4px;
-        }
-
-        .highlight {
-            color: #4a5568;
+        .bank-logo {
+            background-color: #004B9F;
+            color: white;
+            padding: 4px 8px;
+            font-size: 14px;
             font-weight: bold;
+            margin-top: 5px;
+            text-align: center;
         }
 
-        /* Utility Classes */
-        .text-bold {
+        .bank-logo img {
+            height: 20px;
+            width: 20px
+        }
+
+        .team-name {
             font-weight: bold;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .mb-10 {
-            margin-bottom: 10px;
-        }
-
-        .mb-15 {
-            margin-bottom: 15px;
-        }
-
-        .mb-20 {
-            margin-bottom: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -257,106 +199,119 @@
 <body>
     <div class="invoice-container">
         <!-- Header -->
-        <div class="invoice-header">
-            <table class="header-table">
+        <div class="header">
+            <div class="logo">
+                {{-- <img src="freebazar-logo.png" alt="FreeBazar Logo" class="logo-image"> --}}
+                <img src="{{ public_path('assets/images/logofreebazar3.png') }}" alt="Freebazar Logo" class="logo-image">
+            </div>
+            <div class="company-details">
+                Plot-424 , Nayapalli, Bhubaneswar<br>
+                Mob - 9853560459, website - freebazar.in<br>
+                GSTIN - 21AAHCS0488R1ZX
+            </div>
+        </div>
+
+        <!-- Invoice Information -->
+        <div class="invoice-info">
+            <div class="bill-to">
+                <h3>BILL TO :</h3>
+                <p><strong>{{ $settlement['pos_name'] }} (ID {{ $settlement['pos_user_id'] }})</strong></p>
+                <p>PLOT NO. 1625, NILAKANTHA NAGAR,</p>
+                <p>BHUBANESWAR, 751012</p>
+                <p>MOB: 9853560459</p>
+            </div>
+            <div class="bill-details">
+                <p>Bill Date: {{ $settlement['bill_date'] }}</p>
+                <p>INVOICE. NO.05 / 20-08-25</p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
                 <tr>
-                    <td class="company-info">
-                        <div class="logo-space">
-                            <img src="{{ public_path('assets/images/logofreebazar3.png') }}" alt="Logo"
-                                style="max-width: 150px;">
+                    <th class="sr-no"></th>
+                    <th class="particulars">PARTICULARS</th>
+                    <th class="amount">AMOUNT<br>IN (RS.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="sr-no">1</td>
+                    <td>No of Transaction</td>
+                    <td class="amount">{{ $settlement['total_transaction'] }}</td>
+                </tr>
+                <tr>
+                    <td class="sr-no">2</td>
+                    <td>Total Billing Amount</td>
+                    <td class="amount">{{ $settlement['total_billing_amount'] }}</td>
+                </tr>
+                <tr>
+                    <td class="sr-no">3</td>
+                    <td>Received Cash/ UPI</td>
+                    <td class="amount">{{ $settlement['by_cash'] }}</td>
+                </tr>
+                <tr>
+                    <td class="sr-no">4</td>
+                    <td>Trade Discount(Payable)</td>
+                    <td class="amount">{{ $settlement['by_wallet'] }}</td>
+                </tr>
+                <tr>
+                    <td class="sr-no">5</td>
+                    <td>Reward points redeemed</td>
+                    <td class="amount">{{ $settlement['by_reward'] }}</td>
+                </tr>
+                <tr>
+                    <td class="sr-no">6</td>
+                    <td>Wallet balance redeemed</td>
+                    <td class="amount">{{ $settlement['by_wallet'] }}</td>
+                </tr>
+                {{-- <tr>
+                    <td class="sr-no">7</td>
+                    <td>Rounded off</td>
+                    <td class="amount">300.00</td>
+                </tr> --}}
+            </tbody>
+        </table>
+
+        <!-- Total Section -->
+        <table class="items-table total-section">
+            <tr class="total-row">
+                <td style="border: none; padding-left: 20px;">
+                    <strong>TOTAL RS.</strong><br>
+                    <span style="font-size: 10px;">(Rs. {{ $settlement['in_letter'] }})</span>
+                </td>
+                <td style="border: none; padding-right: 20px;">
+                    <div class="receivable-payable">
+                        <div>
+                            <div>Receivable</div>
+                            <div>Payable</div>
                         </div>
-                        <div class="company-name">Freebazar Pvt Ltd</div>
-                        <div class="company-details">
-                            <div>Bhubaneswar, Odisha</div>
-                            <div>support@freebazar.com</div>
-                            <div>+91-9876543210</div>
+                        <div style="text-align: right; margin: 0%">
+                            <div>{{ $settlement['credit'] }}</div>
+                            <div><strong>{{ $settlement['debit'] }}</strong></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Notes and Footer Combined -->
+        <div class="footer">
+            <table class="footer-table">
+                <tr>
+                    <td class="footer-left">
+                        <div class="notes">
+                            <strong>Note:</strong><br>
+                            1 &nbsp; Please pay before 2 PM today.<br>
+                            2 &nbsp; E&OE
                         </div>
                     </td>
-                    <td class="invoice-info">
-                        <div class="invoice-title">INVOICE</div>
-                        <div class="invoice-details">
-                            <div><strong>Invoice #:</strong> {{ $settlement->id }}</div>
-                            <div><strong>Date:</strong>
-                                {{ \Carbon\Carbon::parse($settlement->intiate_date)->format('d-m-Y') }}</div>
-                        </div>
+                    <td class="footer-right">
+                        <div class="team-name">Team Freebazar</div>
                     </td>
                 </tr>
             </table>
-        </div>
-
-        <!-- Body -->
-        <div class="invoice-body">
-            <!-- Customer Info -->
-            <div class="billing-section">
-                <h3 class="section-title">Bill To</h3>
-                <div class="billing-info">
-                    <div class="text-bold">{{ $settlement->creator->name }}</div>
-                    <div>POS ID: {{ $settlement->creator->id }}</div>
-                    <div>Email: {{ $settlement->creator->email ?? 'N/A' }}</div>
-                </div>
-            </div>
-
-            <!-- Status -->
-            <div class="status-section">
-                @if ($settlement->status == 'pending')
-                    <span class="status-badge status-pending">Pending</span>
-                @elseif ($settlement->status == 'rejected')
-                    <span class="status-badge status-rejected">Rejected</span>
-                @else
-                    <span class="status-badge status-settled">Settled</span>
-                @endif
-            </div>
-
-            <!-- Settlement Details Table -->
-            <table class="settlement-table">
-                <thead>
-                    <tr>
-                        <th>Settlement Details</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Total Transactions</td>
-                        <td>{{ $settlement->total_transaction }}</td>
-                    </tr>
-                    <tr>
-                        <td>Billing Amount</td>
-                        <td>{{ number_format($settlement->total_billing_amount, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Cash / UPI</td>
-                        <td>{{ number_format($settlement->by_cash, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Wallet</td>
-                        <td>{{ number_format($settlement->by_wallet, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Reward</td>
-                        <td>{{ number_format($settlement->by_reward, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Credit</td>
-                        <td class="amount-positive">+{{ number_format($settlement->admin_credit, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Debit</td>
-                        <td class="amount-negative">-{{ number_format($settlement->admin_debit, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Footer -->
-        <div class="invoice-footer">
-            <div class="footer-content">
-                <p>Thank you for partnering with <span class="highlight">Freebazar</span>.</p>
-                <p>This is a system-generated invoice and does not require a signature.</p>
-                <p style="margin-top: 10px; font-size: 11px;">
-                    For any queries, please contact us at support@freebazar.com
-                </p>
-            </div>
         </div>
     </div>
 </body>
