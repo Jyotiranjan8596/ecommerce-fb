@@ -27,8 +27,9 @@
                                     {{-- <th>USER ID</th> --}}
                                     <th>Transaction Details</th>
                                     {{-- <th>INVOICE</th> --}}
-                                    <th>CREDIT</th>
-                                    <th>DEBIT</th>
+                                    <th>Transaction Type</th>
+                                    <th>Wallet</th>
+                                    <th>Reward</th>
                                     {{-- <th>MOBILE NUMBER</th> --}}
                                     <th>DATE OF TRANSACTION</th>
                                 </tr>
@@ -40,8 +41,14 @@
                                         {{-- <td>{{ $data->user->user_id }}</td> --}}
                                         <td>{{ $data->transaction_details }}</td>
                                         {{-- <td>{{ $data->invoice }}</td> --}}
-                                        <td>₹{{ $data->wallet_amount ?? 0 }}</td>
-                                        <td>₹{{ $data->used_amount ?? 0 }}</td>
+                                        <td>₹{{ $data->trans_type ?? 'N/A' }}</td>
+                                        @if ($data->trans_type == 'credit')
+                                            <td>₹{{ $data->wallet_amount ?? 0 }}</td>
+                                            <td>₹{{ $data->reward_points ?? 0 }}</td>
+                                        @else
+                                            <td>₹{{ $data->used_amount ?? 0 }}</td>
+                                            <td>₹{{ $data->used_points ?? 0 }}</td>
+                                        @endif
                                         {{-- <td>{{ $data->mobilenumber }}</td> --}}
                                         <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
                                         </td>
