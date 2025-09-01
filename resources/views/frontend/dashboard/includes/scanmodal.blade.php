@@ -249,6 +249,7 @@
                 qrbox: 250
             });
 
+            
             // Render the scanner and handle successful scan
             htmlscanner.render((decodedText, decodedResult) => {
                 // Hide QR Scanner modal on successful scan
