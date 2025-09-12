@@ -175,56 +175,28 @@
 
                     <!-- Submit Button -->
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-info">
+                        <button type="submit" id="submitPaymentButton" class="btn btn-info">
                             Submit Payment
                         </button>
                     </div>
+                    <!-- Loader -->
+                    <!-- Full Page Loader -->
+                    <div id="fullPageLoader"
+                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1055; justify-content: center; align-items: center;">
+                        <div class="text-center">
+                            <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-white mt-3">Processing Payment...</p>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
+
 </div>
 
-<!-- Password Confirmation Modal -->
-{{-- <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="passwordModalLabel">
-                    Enter Password
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="passwordForm" method="post" action="{{ route('user.payment') }}">
-                    @csrf
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-                    <input type="hidden" name="user_id" value="{{ $user_profile->id }}" />
-                    <input type="hidden" name="billing_amount" />
-                    <!-- Example -->
-                    <input type="hidden" name="paying_amount" />
-                    <input type="hidden" name="amount_wallet" />
-                    <input type="hidden" name="mobilenumber" />
-                    <input type="hidden" name="pos_id" />
-                    <input type="hidden" name="alternative_pay_by" />
-                    <!-- Example -->
-                    <input type="hidden" name="pay_by" />
-                    <!-- Example -->
-                    <input type="hidden" name="transaction_date" value="{{ now()->format('Y-m-d') }}" />
-                    <div class="form-group mt-2">
-                        <label for="password" class="modal-label">Login Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required />
-                        <input type="hidden" name="form_data" id="form_data" />
-                    </div>
-                    <button type="submit" class="btn btn-info mt-2">
-                        Verify & Proceed
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> --}}
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -249,7 +221,7 @@
                 qrbox: 250
             });
 
-            
+
             // Render the scanner and handle successful scan
             htmlscanner.render((decodedText, decodedResult) => {
                 // Hide QR Scanner modal on successful scan
@@ -471,9 +443,9 @@
             let payingAmount = document.getElementById("paying_amount").value;
             // let payBy = document.getElementById("pay_by").value;
             const sponsors_counts = document.getElementById('sponsors_count').value;
-            // let testUpiName = document.getElementById("qr-details-text").value;
-            // console.log(testUpiName);
 
+            document.getElementById("fullPageLoader").style.display = "flex";
+            document.getElementById("submitPaymentButton").disabled = true;
             // Open UPI scanners
             userPayment(formData);
 
@@ -491,24 +463,8 @@
                 },
                 success: function(data) {
                     console.log("Response JSON:", data); // ✅ Log response JSON
-
                     if (data.success) {
 
-                        // if (payBy == "upi") {
-                        //     Swal.fire({
-                        //         icon: "info",
-                        //         title: "Please verify after payment.",
-                        //         text: "After making the payment, please click OK to reload.",
-                        //         showConfirmButton: true,
-                        //         timer: 4000, // optional - remove if you want the user to click OK manually
-                        //         timerProgressBar: true,
-                        //         customClass: {
-                        //             title: 'swal2-title-custom',
-                        //         },
-                        //     }).then(() => {
-                        //         window.location.reload();
-                        //     });
-                        // } else {
                         Swal.fire({
                             icon: "success",
                             title: "Transaction Success",
@@ -530,109 +486,15 @@
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Something went wrong!",
-                        text: "Please try again later.",
-                    });
+                    document.getElementById("fullPageLoader").style.display = "flex";
+                    document.getElementById("submitPaymentButton").disabled = true;
+                    // Swal.fire({
+                    //     icon: "error",
+                    //     title: "Something went wrong!",
+                    //     text: "Please try again later.",
+                    // });
                 },
             });
         }
     });
-</script>
-
-<script>
-    // document.querySelector('#qrForm button[data-bs-target="#passwordModal"]').addEventListener('click', function() {
-    //     const qrForm = document.getElementById('qrForm');
-    //     const passwordForm = document.getElementById('passwordForm');
-
-    //     const billingAmount = parseFloat(qrForm.querySelector('input[name="billing_amount"]').value) || 0;
-    //     const payingAmount = parseFloat(qrForm.querySelector('input[name="paying_amount"]').value) || 0;
-    //     const walletAmount = billingAmount - payingAmount;
-    //     const selectedUPI = document.querySelector('input[name="upi_provider"]:checked');
-    //     const walletCheckbox = document.getElementById("checked-wallet");
-
-    //     // Copy data to the passwordForm
-    //     passwordForm.querySelector('input[name="user_id"]').value = qrForm.querySelector(
-    //             'input[name="user_id"]')
-    //         .value;
-    //     passwordForm.querySelector('input[name="billing_amount"]').value = billingAmount;
-    //     passwordForm.querySelector('input[name="paying_amount"]').value = payingAmount;
-    //     passwordForm.querySelector('input[name="amount_wallet"]').value =walletAmount; // Set wallet amount here
-    //     passwordForm.querySelector('input[name="mobilenumber"]').value = qrForm.querySelector('input[name="mobilenumber"]').value;
-    //     passwordForm.querySelector('input[name="pos_id"]').value = qrForm.querySelector('input[name="pos_id"]').value;
-    //     passwordForm.querySelector('input[name="pay_by"]').value = qrForm.querySelector('select[name="pay_by"]').value;
-
-    //     // chat gpt code 
-    //     document.getElementById("passwordForm").addEventListener("submit", function(event) {
-    //         event.preventDefault(); // Prevent form from submitting normally
-
-    //         let password = document.getElementById("password").value; // Get password input
-
-    //         if (password.trim() === "") {
-    //             Swal.fire({
-    //                 icon: "error",
-    //                 title: "Oops...",
-    //                 text: "Password cannot be empty!",
-    //             });
-    //             return;
-    //         }
-
-    //         // Create FormData object
-    //         let formData = new FormData(this);
-    //         if (selectedUPI) {
-    //             formData.append("upi_provider", selectedUPI.value);
-    //         } else {
-    //             formData.append("upi_provider", ""); // No selection
-    //         }
-    //         // Append wallet checkbox value (1 if checked, 0 if not)
-    //         formData.append("wallet_select", walletCheckbox.checked ? "1" : "0");
-
-    //         fetch("{{ route('user.payment') }}", {
-    //                 method: "POST",
-    //                 body: formData,
-    //                 headers: {
-    //                     "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-    //                 }
-    //             })
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 if (data.success) {
-    //                     Swal.fire({
-    //                         icon: "success",
-    //                         title: "Payment Success",
-    //                         html: `<b>Paying Amount: <del style="color: silver;">₹${data.billing_amount}</del> ₹${data.paying_amount}</b>`,
-    //                         showConfirmButton: true
-    //                     }).then(() => {
-    //                         // Close password modal
-    //                         let passwordModal = bootstrap.Modal.getInstance(document
-    //                             .getElementById(
-    //                                 "passwordModal"));
-    //                         if (passwordModal) passwordModal.hide();
-
-    //                         // Close Billing Modal
-    //                         let billingModal = new bootstrap.Modal(document.getElementById(
-    //                             "billingModal"));
-    //                         if (billingModal) billingModal.hide();
-
-    //                         window.location.reload();
-    //                     });
-    //                 } else {
-    //                     Swal.fire({
-    //                         icon: "error",
-    //                         title: "Invalid Password",
-    //                         text: data.message || "Please try again.",
-    //                     });
-    //                 }
-    //             })
-    //             .catch(error => {
-    //                 console.error("Error:", error);
-    //                 Swal.fire({
-    //                     icon: "error",
-    //                     title: "Something went wrong!",
-    //                     text: "Please try again later.",
-    //                 });
-    //             });
-    //     });
-    // });
 </script>
