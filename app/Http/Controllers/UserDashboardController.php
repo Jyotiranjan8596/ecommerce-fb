@@ -335,9 +335,11 @@ class UserDashboardController extends Controller
 
     public function storeUser(Request $request)
     {
-        try {
+        // try {
             // dd($request->all());
             $request->validate([
+                'name' => 'required|string|max:30',
+                'zip' =>'required',
                 'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
             ]);
             $sponsor = User::where('user_id', $request->sponsor_id)->first();
@@ -387,11 +389,11 @@ class UserDashboardController extends Controller
             }
             flash()->addError('oops! User or Sponsor creation failed!');
             return redirect()->back();
-        } catch (\Exception $e) {
-            Log::info('Store User:-' . $e->getMessage());
-            flash()->addError('Whoops! User or Sponsor creation failed!');
-            return redirect()->back();
-        }
+        // } catch (\Exception $e) {
+        //     Log::info('Store User:-' . $e->getMessage());
+        //     flash()->addError('Oops! User or Sponsor creation failed!');
+        //     return redirect()->back();
+        // }
     }
     public function wallet()
     {
@@ -408,11 +410,13 @@ class UserDashboardController extends Controller
             ->simplePaginate(10)
             ->through(function ($item) {
                 // dd($item->toArray());
+                
                 if ($item->used_amount > 0) {
                     $item->transaction_details = $item->getPos ? $item->getPos->name : "N/A";
                 } else {
                     $item->transaction_details = "Admin";
                 }
+                
                 return $item;
             });
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
@@ -427,7 +431,7 @@ class UserDashboardController extends Controller
     public function sponsorList()
     {
         $userId  = auth()->user()->id;
-        $sponcer = Sponsor::where('sponsor_id', $userId)->get()->map(function ($item) {
+        $sponcer = Sponsor::where('sponsor_id', $userId)->orderBy('id','desc')->get()->map(function ($item) {
             $item->created_on = Carbon::parse($item->created_at)->format('d-m-Y h:i:s A');
             return $item;
         });

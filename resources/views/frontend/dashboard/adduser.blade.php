@@ -12,7 +12,7 @@
                     <div class="col-md-6">
                         <div class="mb-2">
                             <label for="name">Name*</label>
-                            <input type="text" id="name" name="name"
+                            <input type="text" id="name" name="name" minlength="5" maxlength="30"
                                 class="form-control @error('name') is-invalid @enderror">
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
@@ -33,7 +33,7 @@
                         </div>
                         <div class="mb-2">
                             <label for="mobilenumber">Phone*</label>
-                            <input type="number" id="mobilenumber" name="mobilenumber"
+                            <input type="number" id="mobilenumber" name="mobilenumber" minlength="10" maxlength="10"
                                 class="form-control @error('mobilenumber') is-invalid @enderror" required>
                             @error('mobilenumber')
                                 <span class="invalid-feedback" role="alert">
@@ -96,6 +96,16 @@
                             <input type="text" id="state" name="state"
                                 class="form-control @error('state') is-invalid @enderror" value="{{ old('state') }}">
                             @error('state')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div class="mb-2">
+                            <label for="zip">Zip*</label>
+                            <input type="text" id="zip" name="zip"
+                                class="form-control @error('zip') is-invalid @enderror" value="{{ old('zip') }}">
+                            @error('zip')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

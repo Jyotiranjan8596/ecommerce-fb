@@ -102,7 +102,7 @@
                         <th>NAME</th>
                         <th>MOBILE</th>
                         <th>BILLING AMOUNT</th>
-                        <th>Cash/Upi</th>
+                        {{-- <th>Cash/Upi</th> --}}
                         {{-- <th>Payment Mode</th> --}}
                         <th>BY Wallet</th>
                         <th>BY Reward</th>
@@ -129,7 +129,7 @@
                                 <td>{{ optional($data->user)->name }}</td>
                                 <td>{{ $data->mobilenumber }}</td>
                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
-                                <td>{{ $data->pay_by }}</td>
+                                {{-- <td>{{ $data->pay_by }}</td> --}}
                                 <td>{{ $data->amount_wallet }}</td>
                                 <td>{{ $data->reward_amount }}</td>
                                 <td>{{ $data->amount }}</td>
@@ -212,12 +212,12 @@
                                     <div class="col-4 text-right" id="reward-val">₹ {{ $payByReward }}</div>
                                 </div>
                                 <div class="row mb-2">
-                                    <div class="col-6 font-weight-bold">Credit Amount:</div>
+                                    <div class="col-6 font-weight-bold">Receivable Amount:</div>
                                     <div class="col-2 text-right text-success" id="credit-amount-temp">--</div>
                                     <div class="col-4 text-right" id="credit-amount-val">₹ {{ $creditAmount }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-6 font-weight-bold">Debit Amount:</div>
+                                    <div class="col-6 font-weight-bold">Payble Amount:</div>
                                     <div class="col-2 text-right text-danger" id="debit-amount-temp">--</div>
                                     <div class="col-4 text-right" id="debit-amount-val">₹ {{ $debitAmount }}</div>
                                 </div>

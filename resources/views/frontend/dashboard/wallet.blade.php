@@ -5,8 +5,10 @@
 
         <div class="col-md-6">
 
-            <h5>CURRENT WALLET BALANCE: <br> <span style="font-size:55px; color:rgb(0, 162, 255); "><i class="fa fa-inr"
-                        aria-hidden="true"></i>₹{{ $walletBalance }}/-</span></h5>
+            <h6>CURRENT WALLET BALANCE: <br> <span style="font-size:55px; color:rgb(0, 162, 255); "><i class="fa fa-inr"
+                        aria-hidden="true"></i>₹{{ $walletBalance }}/-</span></h6>
+            <h6>CURRENT Reward BALANCE: <br> <span style="font-size:55px; color:rgb(0, 162, 255); "><i class="fa fa-inr"
+                        aria-hidden="true"></i>₹{{ $rewardBalance }}/-</span></h6>
             <br>
         </div>
         <div>
@@ -30,12 +32,15 @@
                                     <th>Transaction Type</th>
                                     <th>Wallet</th>
                                     <th>Reward</th>
+                                    <th>Remaining Wallet</th>
+                                    <th>Remaning Reward</th>
                                     {{-- <th>MOBILE NUMBER</th> --}}
                                     <th>DATE OF TRANSACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($userWallet as $key => $data)
+                                    {{-- {{ dd($data); }} --}}
                                     <tr>
                                         <td>{{ $userWallet->firstItem() + $key }}</td>
                                         {{-- <td>{{ $data->user->user_id }}</td> --}}
@@ -49,6 +54,8 @@
                                             <td>₹{{ $data->used_amount ?? 0 }}</td>
                                             <td>₹{{ $data->used_points ?? 0 }}</td>
                                         @endif
+                                        <td>{{ $data->remaining_amount }}</td>
+                                        <td>{{ $data->remaining_points }}</td>
                                         {{-- <td>{{ $data->mobilenumber }}</td> --}}
                                         <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
                                         </td>
