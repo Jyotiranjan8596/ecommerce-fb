@@ -199,6 +199,11 @@
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
+    import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+    QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js';
+    window.QrScanner = QrScanner;
+</script>
+<script>
     document.addEventListener("DOMContentLoaded", function() {
         // Reference to scanner instance for global access
         let htmlscanner;
@@ -215,75 +220,105 @@
 
         // QR Code Scanner function
         function startMainScanner() {
-            // Initialize a new Html5QrcodeScanner instance
-            htmlscanner = new Html5QrcodeScanner("qr-reader", {
-                fps: 10,
-                qrbox: 250
-            });
+            const videoElem = document.createElement("video");
+            videoElem.setAttribute("id", "qr-video");
+            videoElem.style.width = "100%";
+            videoElem.style.border = "1px solid #ccc";
 
+            // Append video to the modal body if not already there
+            const container = document.getElementById("qr-reader");
+            container.innerHTML = ""; // Clear previous video if any
+            container.appendChild(videoElem);
 
-            // Render the scanner and handle successful scan
-            htmlscanner.render((decodedText, decodedResult) => {
-                // Hide QR Scanner modal on successful scan
-                let qrModal = bootstrap.Modal.getInstance(document.getElementById("qrScannerModal"));
-                qrModal.hide();
+            const resultDiv = document.getElementById("qr-details-text");
 
-                console.log("jyoti" + decodedText);
+            const constraints = {
+                video: {
+                    facingMode: {
+                        exact: "environment"
+                    } // Prefer back camera
+                }
+            };
 
-                let parts = decodedText.split('|');
-                let name = parts[0]; // The name part before '|'
-                let id = parts[1]; // The id part after '|'
-                console.log(name);
-                console.log(id);
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    videoElem.srcObject = stream;
+                    videoElem.play();
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('verify.all_pos') }}",
-                    data: {
-                        "name": name,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        console.log(data);
-                        if (data.success == true) {
-                            document.getElementById("qr-details-text").innerHTML = data
-                                .name;
-                            document.getElementById("qrDataId").value = data.id;
-                            document.getElementById("billing-pos-name").innerHTML =
-                                'POS NAME:- ' + data.name;
+                    const qrScanner = new QrScanner(videoElem, result => {
+                        // Stop scanner and video
+                        qrScanner.stop();
+                        stream.getTracks().forEach(track => track.stop());
 
-                            // Open the QR Details modal and stop the scanner
-                            let qrDetailsModal = new bootstrap.Modal(document
-                                .getElementById("qrDetailsModal"), {
-                                    backdrop: 'static',
-                                    keyboard: false
-                                });
-                            htmlscanner.clear(); // Properly stop the scanner
-                            // qrDetailsModal.show();
+                        // Hide QR Scanner modal
+                        let qrModal = bootstrap.Modal.getInstance(document.getElementById(
+                            "qrScannerModal"));
+                        qrModal.hide();
 
-                            // document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
+                        console.log("jyoti " + result);
 
+                        let parts = result.split('|');
+                        let name = parts[0]; // The name part before '|'
+                        let id = parts[1]; // The id part after '|'
+                        console.log(name);
+                        console.log(id);
 
-                            // Directly open Billing Modal without showing QR Details Modal
-                            let billingModal = new bootstrap.Modal(document.getElementById(
-                                "billingModal"), {
-                                backdrop: 'static',
-                                keyboard: false
-                            });
-                            billingModal.show();
-                        } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Invalid!",
-                                text: "Kindly scan only the Freebazar QR code." ||
-                                    "Please try again.",
-                            });
-                        }
+                        // Run your existing AJAX logic
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('verify.all_pos') }}",
+                            data: {
+                                "name": name,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(data) {
+                                console.log(data);
+                                if (data.success == true) {
+                                    document.getElementById("qr-details-text")
+                                        .innerHTML = data.name;
+                                    document.getElementById("qrDataId").value = data.id;
+                                    document.getElementById("billing-pos-name")
+                                        .innerHTML = 'POS NAME:- ' + data.name;
 
-                    }
+                                    // Open the QR Details modal and stop the scanner
+                                    let qrDetailsModal = new bootstrap.Modal(document
+                                        .getElementById("qrDetailsModal"), {
+                                            backdrop: 'static',
+                                            keyboard: false
+                                        });
+                                    // qrDetailsModal.show(); // Uncomment if needed
+
+                                    // Directly open Billing Modal without showing QR Details Modal
+                                    let billingModal = new bootstrap.Modal(document
+                                        .getElementById("billingModal"), {
+                                            backdrop: 'static',
+                                            keyboard: false
+                                        });
+                                    billingModal.show();
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Invalid!",
+                                        text: "Kindly scan only the Freebazar QR code." ||
+                                            "Please try again.",
+                                    });
+                                }
+                            }
+                        });
+                    });
+
+                    qrScanner.start();
+                })
+                .catch(err => {
+                    console.error("Camera error:", err);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Camera access error",
+                        text: "Please allow camera access and try again.",
+                    });
                 });
-            });
         }
+
 
         // Stop the scanner if the QR scanner modal is manually closed
         document.getElementById("qrScannerModal").addEventListener('hidden.bs.modal', function() {
