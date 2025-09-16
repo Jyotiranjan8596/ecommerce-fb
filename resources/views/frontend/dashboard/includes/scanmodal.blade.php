@@ -199,11 +199,6 @@
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-    import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
-    QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js';
-    window.QrScanner = QrScanner;
-</script>
-<script>
     document.addEventListener("DOMContentLoaded", function() {
         // Reference to scanner instance for global access
         let htmlscanner;
@@ -220,117 +215,75 @@
 
         // QR Code Scanner function
         function startMainScanner() {
-            const videoElem = document.createElement("video");
-            videoElem.setAttribute("id", "qr-video");
-            videoElem.style.width = "100%";
-            videoElem.style.border = "1px solid #ccc";
+            // Initialize a new Html5QrcodeScanner instance
+            htmlscanner = new Html5QrcodeScanner("qr-reader", {
+                fps: 10,
+                qrbox: 250
+            });
 
-            const container = document.getElementById("qr-reader");
-            container.innerHTML = ""; // Clear previous video
-            container.appendChild(videoElem);
 
-            const resultDiv = document.getElementById("qr-details-text");
+            // Render the scanner and handle successful scan
+            htmlscanner.render((decodedText, decodedResult) => {
+                // Hide QR Scanner modal on successful scan
+                let qrModal = bootstrap.Modal.getInstance(document.getElementById("qrScannerModal"));
+                qrModal.hide();
 
-            const tryScanner = (constraints) => {
-                navigator.mediaDevices.getUserMedia(constraints)
-                    .then(stream => {
-                        videoElem.srcObject = stream;
-                        videoElem.play();
+                console.log("jyoti" + decodedText);
 
-                        const qrScanner = new QrScanner(videoElem, result => {
-                            qrScanner.stop();
-                            stream.getTracks().forEach(track => track.stop());
+                let parts = decodedText.split('|');
+                let name = parts[0]; // The name part before '|'
+                let id = parts[1]; // The id part after '|'
+                console.log(name);
+                console.log(id);
 
-                            let qrModal = bootstrap.Modal.getInstance(document.getElementById(
-                                "qrScannerModal"));
-                            qrModal.hide();
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('verify.all_pos') }}",
+                    data: {
+                        "name": name,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        if (data.success == true) {
+                            document.getElementById("qr-details-text").innerHTML = data
+                                .name;
+                            document.getElementById("qrDataId").value = data.id;
+                            document.getElementById("billing-pos-name").innerHTML =
+                                'POS NAME:- ' + data.name;
 
-                            console.log("jyoti " + result);
+                            // Open the QR Details modal and stop the scanner
+                            let qrDetailsModal = new bootstrap.Modal(document
+                                .getElementById("qrDetailsModal"), {
+                                    backdrop: 'static',
+                                    keyboard: false
+                                });
+                            htmlscanner.clear(); // Properly stop the scanner
+                            // qrDetailsModal.show();
 
-                            let parts = result.split('|');
-                            let name = parts[0];
-                            let id = parts[1];
-                            console.log(name);
-                            console.log(id);
+                            // document.getElementById("billing-pos-name").innerHTML = "POS NAME: <b>" + name + "</b>";
 
-                            $.ajax({
-                                type: "POST",
-                                url: "{{ route('verify.all_pos') }}",
-                                data: {
-                                    "name": name,
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(data) {
-                                    console.log(data);
-                                    if (data.success == true) {
-                                        document.getElementById("qr-details-text")
-                                            .innerHTML = data.name;
-                                        document.getElementById("qrDataId").value =
-                                            data.id;
-                                        document.getElementById("billing-pos-name")
-                                            .innerHTML = 'POS NAME:- ' + data.name;
 
-                                        let qrDetailsModal = new bootstrap.Modal(
-                                            document.getElementById(
-                                                "qrDetailsModal"), {
-                                                backdrop: 'static',
-                                                keyboard: false
-                                            });
-                                        // qrDetailsModal.show();
-
-                                        let billingModal = new bootstrap.Modal(
-                                            document.getElementById(
-                                                "billingModal"), {
-                                                backdrop: 'static',
-                                                keyboard: false
-                                            });
-                                        billingModal.show();
-                                    } else {
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Invalid!",
-                                            text: "Kindly scan only the Freebazar QR code." ||
-                                                "Please try again.",
-                                        });
-                                    }
-                                }
+                            // Directly open Billing Modal without showing QR Details Modal
+                            let billingModal = new bootstrap.Modal(document.getElementById(
+                                "billingModal"), {
+                                backdrop: 'static',
+                                keyboard: false
                             });
-                        });
-
-                        qrScanner.start();
-                    })
-                    .catch(err => {
-                        console.error("Error with constraints:", err);
-
-                        if (constraints.video.facingMode.exact) {
-                            console.log("Retrying with relaxed constraints...");
-                            // Retry with facingMode as ideal instead of exact
-                            tryScanner({
-                                video: {
-                                    facingMode: "environment"
-                                }
-                            });
+                            billingModal.show();
                         } else {
                             Swal.fire({
                                 icon: "error",
-                                title: "Camera access error",
-                                text: "Please allow camera access and try again.",
+                                title: "Invalid!",
+                                text: "Kindly scan only the Freebazar QR code." ||
+                                    "Please try again.",
                             });
                         }
-                    });
-            };
 
-            // Start trying with strict constraints first
-            tryScanner({
-                video: {
-                    facingMode: {
-                        exact: "environment"
-                    } // strict attempt to use back camera
-                }
+                    }
+                });
             });
         }
-
-
 
         // Stop the scanner if the QR scanner modal is manually closed
         document.getElementById("qrScannerModal").addEventListener('hidden.bs.modal', function() {
