@@ -63,7 +63,7 @@
     <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazar.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazar.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazar.png') }}">
-    <link rel="manifest" href="{{ asset('assets/images/freebazar.png') }}">
+    <link rel="icon" href="{{ asset('assets/images/freebazar.png') }}">
     <link rel="mask-icon" href="{{ asset('assets/images/freebazar.png') }}" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
