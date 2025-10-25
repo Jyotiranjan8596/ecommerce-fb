@@ -10,19 +10,27 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-2">
-                            <label for="name">Name*</label>
-                            <input type="text" id="name" name="name"
-                                class="form-control @error('name') is-invalid @enderror">
-                            @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
+    <label for="name">Name*</label>
+    <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        value="{{ old('name') }}" 
+        minlength="5" 
+        maxlength="30" 
+        class="form-control @error('name') is-invalid @enderror">
+
+    @error('name')
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $message }}</strong>
+        </span>
+    @enderror
+</div>
+
                         <input type="hidden" name="password">
                         <div class="mb-2">
                             <label for="email">Email*</label>
-                            <input type="email" id="email" name="email"
+                            <input type="email" id="email" name="email" 
                                 class="form-control @error('email') is-invalid @enderror">
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
@@ -32,7 +40,8 @@
                         </div>
                         <div class="mb-2">
                             <label for="mobilenumber">Phone*</label>
-                            <input type="number" id="mobilenumber" name="mobilenumber"
+                            <input type="number" id="mobilenumber" name="mobilenumber" minlength="10" 
+        maxlength="10"
                                 class="form-control @error('mobilenumber') is-invalid @enderror" required>
                             @error('mobilenumber')
                                 <span class="invalid-feedback" role="alert">

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\UserExport;
@@ -236,6 +237,7 @@ class UserController extends Controller
     {
         //  dd($request->all());
         $request->validate([
+            'name' => 'required|max:30',
             'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
             'sponsor_id'   => 'required|exists:users,id',
         ]);

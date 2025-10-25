@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
@@ -336,59 +337,59 @@ class UserDashboardController extends Controller
     public function storeUser(Request $request)
     {
         // try {
-            // dd($request->all());
-            $request->validate([
-                'name' => 'required|string|max:30',
-                'zip' =>'required',
-                'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
-            ]);
-            $sponsor = User::where('user_id', $request->sponsor_id)->first();
-            // dd($sponsor);
-            $user_add                = new User;
-            $user_add->name          = $request->name;
-            $user_add->user_id       = mt_rand(1000000, 9999999);
-            $user_add->email         = $request->email;
-            $user_add->password      = Hash::make('123456');
-            $user_add->mobilenumber  = $request->mobilenumber;
-            $user_add->gender        = $request->gender;
-            $user_add->sponsor_id    = $sponsor->id;
-            $user_add->address       = $request->address;
-            $user_add->city          = $request->city;
-            $user_add->state         = $request->state;
-            $user_add->zip           = $request->zip;
-            $user_add->pan_no        = $request->pan_no;
-            $user_add->ifsc          = $request->ifsc;
-            $user_add->account_no    = $request->account_no;
-            $user_add->nominee_name  = $request->nominee_name;
-            $user_add->bank          = $request->bank;
-            $user_add->relation_user = $request->relation_user;
-            $user_add->role          = 3;
-            $user_add->assignRole([$user_add->role]);
+        // dd($request->all());
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'zip' => 'required',
+            'mobilenumber' => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
+        ]);
+        $sponsor = User::where('user_id', $request->sponsor_id)->first();
+        // dd($sponsor);
+        $user_add                = new User;
+        $user_add->name          = $request->name;
+        $user_add->user_id       = mt_rand(1000000, 9999999);
+        $user_add->email         = $request->email;
+        $user_add->password      = Hash::make('123456');
+        $user_add->mobilenumber  = $request->mobilenumber;
+        $user_add->gender        = $request->gender;
+        $user_add->sponsor_id    = $sponsor->id;
+        $user_add->address       = $request->address;
+        $user_add->city          = $request->city;
+        $user_add->state         = $request->state;
+        $user_add->zip           = $request->zip;
+        $user_add->pan_no        = $request->pan_no;
+        $user_add->ifsc          = $request->ifsc;
+        $user_add->account_no    = $request->account_no;
+        $user_add->nominee_name  = $request->nominee_name;
+        $user_add->bank          = $request->bank;
+        $user_add->relation_user = $request->relation_user;
+        $user_add->role          = 3;
+        $user_add->assignRole([$user_add->role]);
 
-            if ($request->hasFile('image')) {
-                $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-                $request->image->move(public_path('images'), $imageName);
-                $user_add->image = $imageName;
-            }
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(public_path('images'), $imageName);
+            $user_add->image = $imageName;
+        }
 
-            if ($user_add->save()) {
-                $sponcer             = new Sponsor();
-                $sponcer->user_id    = $user_add->id;
-                $sponcer->sponsor_id = $request->hidden_user_id;
-                $params              = [
-                    $request->name,
-                    $request->mobilenumber,
-                ];
-                $whatsapp  = new AiSensyService();
-                $msg_reslt = $whatsapp->send_registration($request->mobilenumber, $params);
-                Log::info('registration Result in User', [$msg_reslt]);
-                if ($sponcer->save()) {
-                    flash()->addSuccess('User registered successfully.');
-                    return redirect()->route('user.add');
-                }
+        if ($user_add->save()) {
+            $sponcer             = new Sponsor();
+            $sponcer->user_id    = $user_add->id;
+            $sponcer->sponsor_id = $request->hidden_user_id;
+            $params              = [
+                $request->name,
+                $request->mobilenumber,
+            ];
+            $whatsapp  = new AiSensyService();
+            $msg_reslt = $whatsapp->send_registration($request->mobilenumber, $params);
+            Log::info('registration Result in User', [$msg_reslt]);
+            if ($sponcer->save()) {
+                flash()->addSuccess('User registered successfully.');
+                return redirect()->route('user.add');
             }
-            flash()->addError('oops! User or Sponsor creation failed!');
-            return redirect()->back();
+        }
+        flash()->addError('oops! User or Sponsor creation failed!');
+        return redirect()->back();
         // } catch (\Exception $e) {
         //     Log::info('Store User:-' . $e->getMessage());
         //     flash()->addError('Oops! User or Sponsor creation failed!');
@@ -410,13 +411,13 @@ class UserDashboardController extends Controller
             ->simplePaginate(10)
             ->through(function ($item) {
                 // dd($item->toArray());
-                
+
                 if ($item->used_amount > 0) {
                     $item->transaction_details = $item->getPos ? $item->getPos->name : "N/A";
                 } else {
                     $item->transaction_details = "Admin";
                 }
-                
+
                 return $item;
             });
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
@@ -431,7 +432,7 @@ class UserDashboardController extends Controller
     public function sponsorList()
     {
         $userId  = auth()->user()->id;
-        $sponcer = Sponsor::where('sponsor_id', $userId)->orderBy('id','desc')->get()->map(function ($item) {
+        $sponcer = Sponsor::where('sponsor_id', $userId)->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->created_on = Carbon::parse($item->created_at)->format('d-m-Y h:i:s A');
             return $item;
         });
