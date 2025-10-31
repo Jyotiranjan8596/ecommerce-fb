@@ -73,10 +73,10 @@
                     fill="#E5E5E5"></path>
             </svg>
 
-            <form action="{{ route('register') }}" method="POST">
+            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="formbold-form-title">
-                    <h2 class="">Register now</h2>
+                    <h2 class="">Register Now</h2>
                 </div>
 
                 <div class="formbold-input-flex">
@@ -84,11 +84,21 @@
                         <label for="name" class="formbold-form-label">
                             Name
                         </label>
-                        <input type="text" name="name" id="name" class="formbold-form-input" />
+                        <input type="text" name="name" id="name" minlength="10" maxlength="30" class="formbold-form-input" />
+                        @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                     </div>
                     <div>
                         <label for="mobile" class="formbold-form-label"> Mobile </label>
-                        <input type="text" name="mobile" id="mobile" class="formbold-form-input" />
+                        <input type="text" name="mobile" id="mobile" minlength="10" maxlength="10" class="formbold-form-input" />
+                        @error('mobile')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                     </div>
                 </div>
 
@@ -96,6 +106,11 @@
                     <div>
                         <label for="email" class="formbold-form-label"> Email </label>
                         <input type="email" name="email" id="email" class="formbold-form-input" />
+                         @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                     </div>
                     <div>
                         <label for="gender" class="formbold-form-label"> Gender </label>
@@ -137,7 +152,7 @@
                     </div>
                 </div>
 
-                <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" />
+                {{-- <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" /> --}}
 
 
                 <button type="submit" class="formbold-btn">Register Now</button>

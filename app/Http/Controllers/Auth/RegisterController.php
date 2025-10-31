@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -51,15 +52,53 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name'    => ['required', 'string', 'max:255'],
-            'email'   => ['required'],
-            'mobile'  => ['required'],
-            'gender'  => ['required'],
-            'address' => ['required'],
-            'state'   => ['required'],
-            'city'    => ['required'],
-            'post'    => ['required'],
-            'image'   => ['nullable'],
+            'name' => [
+                'required',
+                'string',
+                'regex:/^[a-zA-Z\s]+$/',
+                'max:30'
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:100'
+            ],
+            'mobile' => [
+                'required',
+                'digits_between:10,15',
+                'regex:/^[0-9]+$/'
+            ],
+            'gender' => [
+                'required',
+                'in:male,female,other'
+            ],
+            'address' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'state' => [
+                'required',
+                'string',
+                'max:50'
+            ],
+            'city' => [
+                'required',
+                'string',
+                'max:50'
+            ],
+            'post' => [
+                'required',
+                'string',
+                'max:20'
+            ],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,webp',
+                'max:2048' // Max 2MB
+            ],
         ]);
     }
 
@@ -71,6 +110,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        // dd($data);
         $imageName = null;
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
