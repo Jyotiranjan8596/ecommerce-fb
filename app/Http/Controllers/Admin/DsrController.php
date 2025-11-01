@@ -117,7 +117,6 @@ class DsrController extends Controller
                     "code" => 500
                 ], 200);
             }
-            
         } catch (\Exception $e) {
             Log::error('Update DSR error: ' . $e->getMessage());
             return response()->json([
@@ -139,10 +138,13 @@ class DsrController extends Controller
             $request->validate([
                 'file' => 'required',
             ]);
-            Excel::import(new WalletImport, $request->file('file'));
 
+            DB::beginTransaction();
+            Excel::import(new WalletImport, $request->file('file'));
+            DB::commit();
             return redirect()->back()->with('success', 'DSR File Uploaded Successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

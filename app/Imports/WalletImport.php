@@ -17,73 +17,73 @@ class WalletImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
 
-        // $existingWallet = Wallet::where('invoice', $row['voucher_no'])->first();
-        // if ($existingWallet) {
-        // throw new \Exception("This file has already been uploaded.");
-        //     return $existingWallet;
-        // }
-        // if (!empty($row['mobile'])) {
-        //     $user_id = User::where('mobilenumber', $row['mobile'])->value('id');
-        // Log::info($user_id);
-        // } else {
-        //     $user_id = null;
-        // }
-        // $wallet = Wallet::create([
-        //     'invoice'            => $row['voucher_no'],
-        //     'billing_amount'     => $row['amount'],
-        //     'pos_id'             => $row['branch'],
-        //     'amount'             => $row['amount_paid_by_1'],
-        //     'pay_by'             => $row['paid_by_1'],
-        //     // 'transaction_amount' => $row['transaction_amount'],
-        //     'pay_by_wallet'      => $row['paid_by_2'],
-        //     'amount_wallet'      => $row['amount_paid_by_2'] ?? 0,
-        //     'user_id'          => $user_id,
-        //     'mobilenumber'       => $row['mobile'] ?? null,
-        //     'transaction_date'   => date('Y-m-d', strtotime($row['date'])),
-        //     'insert_date'        => date('Y-m-d H:m:s')
-        // ]);
-        // $wallet->save();
-
-        // if (!is_null($row['amount_paid_by_2'])) {
-        //     $userWallet = new UserWallet([
-        //         'user_id'         => $wallet->user_id, 
-        //         'pos_id'          => $row['branch'],
-        //         'invoice'         => $row['voucher_no'],
-        //         'used_amount'     => $row['amount_paid_by_2'],
-        //         'pay_by'          => $row['paid_by_2'],
-        //         'mobilenumber'    => $row['mobile_number'] ?? null,
-        //         'transaction_date' => date('Y-m-d', strtotime($row['date'])),
-        //         'trans_type'      => 'debit',
-        //     ]);
-        //     $userWallet->save();
-        // }
-
-        // return $wallet;
-
-        if ($row['paid_by_1'] == "FB Walet" || $row['paid_by_2'] == "FB Wallet") {
-            if ($row['paid_by_1'] == "FB Walet") {
-                $amount_wallet = $row['amount_paid_by_1'];
-                $pay_by = "Wallet";
-            }
-            if ($row['paid_by_2'] == "FB Wallet") {
-                $amount_wallet = $row['amount_paid_by_1'];
-                $pay_by = "Wallet";
-            }
-        } else {
-            $pay_by = $row['paid_by_1'];
+        $existingWallet = Wallet::where('invoice', $row['voucher_no'])->first();
+        if ($existingWallet) {
+            throw new \Exception("This file has already been uploaded.");
+            return $existingWallet;
         }
-        return Wallet::create([
+        if (!empty($row['mobile'])) {
+            $user_id = User::where('mobilenumber', $row['mobile'])->value('id');
+            Log::info($user_id);
+        } else {
+            $user_id = null;
+        }
+        $wallet = Wallet::create([
             'invoice'            => $row['voucher_no'],
             'billing_amount'     => $row['amount'],
             'pos_id'             => $row['branch'],
-            'amount'             => $row['amount'],
-            'pay_by'             => $pay_by,
-            // 'pay_by_wallet'      => $pay_by_wallet ?? null,
-            'amount_wallet'      => $amount_wallet ?? 0,
-            'user_id'            => User::where('mobilenumber', $row['mobile'])->value('id'),
+            'amount'             => $row['amount_paid_by_1'],
+            'pay_by'             => $row['paid_by_1'],
+            // 'transaction_amount' => $row['transaction_amount'],
+            'pay_by_wallet'      => $row['paid_by_2'],
+            'amount_wallet'      => $row['amount_paid_by_2'] ?? 0,
+            'user_id'          => $user_id,
             'mobilenumber'       => $row['mobile'] ?? null,
-            'transaction_date'   => Carbon::parse($row['date'])->format('Y-m-d'),
-            'insert_date'        => Carbon::now()->format('Y-m-d H:i:s'),
+            'transaction_date'   => date('Y-m-d', strtotime($row['date'])),
+            'insert_date'        => date('Y-m-d H:m:s')
         ]);
+        $wallet->save();
+
+        if (!is_null($row['amount_paid_by_2'])) {
+            $userWallet = new UserWallet([
+                'user_id'         => $wallet->user_id,
+                'pos_id'          => $row['branch'],
+                'invoice'         => $row['voucher_no'],
+                'used_amount'     => $row['amount_paid_by_2'],
+                'pay_by'          => $row['paid_by_2'],
+                'mobilenumber'    => $row['mobile_number'] ?? null,
+                'transaction_date' => date('Y-m-d', strtotime($row['date'])),
+                'trans_type'      => 'debit',
+            ]);
+            $userWallet->save();
+        }
+
+        return $wallet;
+
+        // if ($row['paid_by_1'] == "FB Walet" || $row['paid_by_2'] == "FB Wallet") {
+        //     if ($row['paid_by_1'] == "FB Walet") {
+        //         $amount_wallet = $row['amount_paid_by_1'];
+        //         $pay_by = "Wallet";
+        //     }
+        //     if ($row['paid_by_2'] == "FB Wallet") {
+        //         $amount_wallet = $row['amount_paid_by_1'];
+        //         $pay_by = "Wallet";
+        //     }
+        // } else {
+        //     $pay_by = $row['paid_by_1'];
+        // }
+        // return Wallet::create([
+        //     'invoice'            => $row['voucher_no'],
+        //     'billing_amount'     => $row['amount'],
+        //     'pos_id'             => $row['branch'],
+        //     'amount'             => $row['amount'],
+        //     'pay_by'             => $pay_by,
+        //     // 'pay_by_wallet'      => $pay_by_wallet ?? null,
+        //     'amount_wallet'      => $amount_wallet ?? 0,
+        //     'user_id'            => User::where('mobilenumber', $row['mobile'])->value('id'),
+        //     'mobilenumber'       => $row['mobile'] ?? null,
+        //     'transaction_date'   => Carbon::parse($row['date'])->format('Y-m-d'),
+        //     'insert_date'        => Carbon::now()->format('Y-m-d H:i:s'),
+        // ]);
     }
 }
