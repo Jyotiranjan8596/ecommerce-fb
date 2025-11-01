@@ -18,10 +18,10 @@ class WalletImport implements ToModel, WithHeadingRow
     {
 
         $existingWallet = Wallet::where('invoice', $row['voucher_no'])->first();
-        if ($existingWallet) {
-            throw new \Exception("This file has already been uploaded.");
-            return $existingWallet;
-        }
+        // if ($existingWallet) {
+        //     throw new \Exception("This file has already been uploaded.");
+        //     return $existingWallet;
+        // }
         if (!empty($row['mobile'])) {
             $user_id = User::where('mobilenumber', $row['mobile'])->value('id');
             Log::info($user_id);
@@ -34,7 +34,7 @@ class WalletImport implements ToModel, WithHeadingRow
             'pos_id'             => $row['branch'],
             'amount'             => $row['amount_paid_by_1'],
             'pay_by'             => $row['paid_by_1'],
-            // 'transaction_amount' => $row['transaction_amount'],
+            'transaction_amount' => $row['amount'] * (7 / 100),
             'pay_by_wallet'      => $row['paid_by_2'],
             'amount_wallet'      => $row['amount_paid_by_2'] ?? 0,
             'user_id'          => $user_id,
