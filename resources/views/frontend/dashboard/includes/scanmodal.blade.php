@@ -462,9 +462,8 @@
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                 },
                 success: function(data) {
-                    console.log("Response JSON:", data); // ✅ Log response JSON
+                    console.log("Response JSON:", data);
                     if (data.success) {
-
                         Swal.fire({
                             icon: "success",
                             title: "Transaction Success",
@@ -486,7 +485,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);
-                    document.getElementById("fullPageLoader").style.display = "flex";
+                    // document.getElementById("fullPageLoader").style.display = "flex";
                     document.getElementById("submitPaymentButton").disabled = true;
                     // Swal.fire({
                     //     icon: "error",
