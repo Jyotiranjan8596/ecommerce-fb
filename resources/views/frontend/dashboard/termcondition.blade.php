@@ -8,30 +8,29 @@
                     <div class="card-box">
                         <h4 class="header-title mb-3" style="margin-top: 10px; color:red;">TERMS AND CONDITIONS</h4>
                         <hr>
-
                         <b>Terms & Conditions :-</b>
                         <div style="margin-left: 20px;">
                             1. Eligibility: The participant must be a major with a sound mental condition, sociable, good
                             nature and willing to spend 500/- every month with FreeBazar (hereinafter referred to as the
                             "Customer/Beneficiary"). The Subscriber/Partner understands they are not an investor/lender of
-                            Free Bazar/SMPL.<br>
+                            FreeBazar/SMPL.<br>
 
                             2. Promotional Conduct: The Beneficiary shall not force or mislead anyone to promote the
-                            movement. SMPL/Free Bazar will not be responsible for any false or misleading
+                            movement. SMPL/FreeBazar will not be responsible for any false or misleading
                             statements.<br>
 
-                            3. Termination: SMPL/Free Bazar reserves the right to accept, reject, cancel, or terminate
+                            3. Termination: SMPL/FreeBazar reserves the right to accept, reject, cancel, or terminate
                             privileges to any associate/customer/beneficiary for misbehavior, causing inconvenience,
                             damaging property, or unruly acts.<br>
 
                             4. Unauthorized Acts: The Subscriber/Partner is responsible for any unauthorized acts and will
-                            indemnify SMPL/Free Bazar for all costs and consequences.<br>
+                            indemnify SMPL/FreeBazar for all costs and consequences.<br>
 
-                            5. Operational Issues: SMPL/Free Bazar is not liable for any inconvenience caused by delayed
+                            5. Operational Issues: SMPL/FreeBazar is not liable for any inconvenience caused by delayed
                             rewards, system breakdowns, or operational delays.<br>
 
                             6. Password Security: The Beneficiary must maintain the secrecy and privacy of their transaction
-                            password. SMPL/Free Bazar/allied stores will not be responsible for any misuse.<br>
+                            password. SMPL/FreeBazar/allied stores will not be responsible for any misuse.<br>
 
                             7. Ownership Rights: The Beneficiary has no ownership rights and can only enjoy
                             offers/privileges for the stipulated period. In the event of demise, rights and privileges can
@@ -70,7 +69,6 @@
                             and am competent to execute this agreement, which I shall abide by, and it is acceptable to me.
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

@@ -324,7 +324,7 @@
                 </ul>
             </div>
             <p class="copy-right-line">
-                &copy; Copyright SRDC Pvt Ltd. All rights reserved.
+                &copy; Copyright Freebazar. All rights reserved.
             </p>
         </div>
     </footer>

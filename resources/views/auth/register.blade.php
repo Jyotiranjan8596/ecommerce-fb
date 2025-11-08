@@ -152,7 +152,8 @@
                     </div>
                 </div>
 
-                {{-- <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" /> --}}
+                <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" />
+                 I agree to the <a href="{{route('frontend.termCondition')}}" class="text-blue-600 hover:underline">Terms & Conditions</a>
 
 
                 <button type="submit" class="formbold-btn">Register Now</button>

@@ -79,6 +79,9 @@
                             <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Discount Coupons</a>
                         </li>
                         <li class="menu-item">
+                            <a href="{{route('frontend.termCondition')}}" class="nav-link">Terms & Conditions</a>
+                        </li>
+                        <li class="menu-item">
                             <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Stores</a>
                         </li>
                         <li class="menu-item">
