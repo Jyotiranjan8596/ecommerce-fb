@@ -46,7 +46,7 @@ class WhatsappMessageService
                 ->post($url, $payload)
                 ->json();
 
-            Log::info('Whatsapp Message' . $response);
+            Log::info('Whatsapp Message' ,['data'=>$response]);
 
             return $response;
         } catch (Exception $e) {
