@@ -22,7 +22,7 @@ class WhatsappMessageService
                 "to" => $to,
                 "type" => "template",
                 "template" => [
-                    "name" => "test2",
+                    "name" => "address_update2",
                     "language" => ["code" => "en_US"],
                     "components" => [
                         [
