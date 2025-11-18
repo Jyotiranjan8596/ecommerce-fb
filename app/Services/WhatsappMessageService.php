@@ -28,7 +28,14 @@ class WhatsappMessageService
                         [
                             "type" => "body",
                             "parameters" => [
-                                ["type" => "text", "text" => "Jyotiranjan"]
+                                [
+                                    "type" => "text",
+                                    "text" => "Confirmed"   // {{1}} Order Status
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => "Jyotiranjan" // {{2}} Customer Name
+                                ]
                             ]
                         ]
                     ]
