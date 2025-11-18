@@ -13,7 +13,7 @@ class WhatsappMessageService
         try {
             $token = env('WHATSAPP_TOKEN');
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
-            $to = '917609942076'; // Verified test number
+            $to = '917978017858'; // Verified test number
 
             $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
             $template = 'hello_world';
@@ -22,8 +22,16 @@ class WhatsappMessageService
                 "to" => $to,
                 "type" => "template",
                 "template" => [
-                    "name" => "address_update",
-                    "language" => ["code" => "en_US"]
+                    "name" => "test2",
+                    "language" => ["code" => "en_US"],
+                    "components" => [
+                        [
+                            "type" => "body",
+                            "parameters" => [
+                                ["type" => "text", "text" => "Jyotiranjan"]
+                            ]
+                        ]
+                    ]
                 ]
             ];
 
@@ -31,7 +39,7 @@ class WhatsappMessageService
                 ->post($url, $payload)
                 ->json();
 
-            Log::info($response);
+            Log::info('Whatsapp Message' . $response);
 
             return $response;
         } catch (Exception $e) {
