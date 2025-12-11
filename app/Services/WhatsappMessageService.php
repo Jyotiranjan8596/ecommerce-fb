@@ -23,30 +23,16 @@ class WhatsappMessageService
                 "type" => "template",
                 "template" => [
                     "name" => "address_update2",
-                    "language" => ["code" => "en_US"],
-                    "components" => [
-                        [
-                            "type" => "body",
-                            "parameters" => [
-                                [
-                                    "type" => "text",
-                                    "text" => "Confirmed"   // {{1}} Order Status
-                                ],
-                                [
-                                    "type" => "text",
-                                    "text" => "Jyotiranjan" // {{2}} Customer Name
-                                ]
-                            ]
-                        ]
-                    ]
+                    "language" => ["code" => "en_US"]
                 ]
+
             ];
 
             $response = Http::withToken($token)
                 ->post($url, $payload)
                 ->json();
 
-            Log::info('Whatsapp Message' ,['data'=>$response]);
+            Log::info('Whatsapp Message', ['data' => $response]);
 
             return $response;
         } catch (Exception $e) {
