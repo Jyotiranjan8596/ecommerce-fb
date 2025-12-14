@@ -12,7 +12,7 @@ class WhatsappController extends Controller
 
     public function handle(Request $request)
     {
-        Log::info('Webhook Received:', $request->all());
+        // Log::info('Webhook Received:', $request->all());
 
         return response()->json(['status' => 'ok'], 200);
     }
