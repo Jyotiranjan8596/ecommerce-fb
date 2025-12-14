@@ -31,12 +31,15 @@ class WhatsappController extends Controller
         if (isset($value['statuses'])) {
             $status = $value['statuses'][0];
 
-            Log::info('Message status update', [
+            Log::error('Message status update', [
                 'message_id' => $status['id'] ?? null,
                 'status'     => $status['status'] ?? null,
-                'timestamp'  => $status['timestamp'] ?? null,
+                'errors'     => $status['errors'] ?? null,
+                'conversation' => $status['conversation'] ?? null,
+                'pricing' => $status['pricing'] ?? null,
             ]);
         }
+
 
         return response()->json(['status' => 'ok'], 200);
     }
