@@ -14,8 +14,33 @@ class WhatsappController extends Controller
     {
         // Log::info('Webhook Received:', $request->all());
 
+        $value = $request->input('entry.0.changes.0.value');
+
+        // Incoming message
+        if (isset($value['messages'])) {
+            $message = $value['messages'][0];
+            $from = $message['from'];
+            $text = $message['text']['body'] ?? '';
+
+            Log::info("Incoming message from {$from}: {$text}");
+
+            // you can reply here
+        }
+
+        // Message status update
+        if (isset($value['statuses'])) {
+            $status = $value['statuses'][0];
+
+            Log::info('Message status update', [
+                'message_id' => $status['id'] ?? null,
+                'status'     => $status['status'] ?? null,
+                'timestamp'  => $status['timestamp'] ?? null,
+            ]);
+        }
+
         return response()->json(['status' => 'ok'], 200);
     }
+
 
     // for webhook verification
     public function verify(Request $request)
