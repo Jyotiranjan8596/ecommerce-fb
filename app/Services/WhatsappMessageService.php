@@ -47,7 +47,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'pswd_reset';
+            $template = 'pswd_resets';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,
