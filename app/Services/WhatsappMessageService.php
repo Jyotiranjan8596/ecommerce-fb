@@ -40,7 +40,7 @@ class WhatsappMessageService
         }
     }
 
-    public static function password_reset($mob)
+    public static function password_reset($mob, $otp)
     {
         try {
             $token = env('WHATSAPP_TOKEN');
@@ -54,7 +54,18 @@ class WhatsappMessageService
                 "type" => "template",
                 "template" => [
                     "name" => $template,
-                    "language" => ["code" => "en"]
+                    "language" => ["code" => "en"],
+                    'components' => [
+                        [
+                            "type" => 'body',
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => (string) $otp
+                                ]
+                            ]
+                        ]
+                    ]
                 ]
 
             ];
