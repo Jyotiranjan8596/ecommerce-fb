@@ -64,6 +64,17 @@ class WhatsappMessageService
                                     "text" => (string) $otp
                                 ]
                             ]
+                        ],
+                        [
+                            "type" => "button",
+                            "sub_type" => "url",
+                            "index" => "0",
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => (string) $otp
+                                ]
+                            ]
                         ]
                     ]
                 ]
