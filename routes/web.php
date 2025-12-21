@@ -135,4 +135,4 @@ Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');
 
 Route::get('reset-password', [ResetPasswordController::class, 'index'])->name('reset.password');
-Route::post('update-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
+Route::post('update-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset.otp');

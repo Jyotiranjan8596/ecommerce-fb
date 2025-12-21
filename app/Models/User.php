@@ -8,6 +8,7 @@ use App\Mail\PendingMobileNumberUpdate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\HasApiTokens;
@@ -24,7 +25,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'user_id',
-        'image',       
+        'image',
         'name',
         'email',
         'gender',
@@ -78,5 +79,24 @@ class User extends Authenticatable
     public function sponcer()
     {
         return $this->hasMany(Sponsor::class, 'user_id');
+    }
+
+    public function passwordResetOtps()
+    {
+        return $this->hasMany(OtpVerification::class);
+    }
+
+    public static function updatePassword($mob, $pswd, $otp_id)
+    {
+        self::where('mobilenumber', $mob)
+            ->update(['password' => Hash::make($pswd)]);
+
+        OtpVerification::where('id', $otp_id)
+            ->update([
+                'is_used' => 1,
+                'used_at' => now()
+            ]);
+
+        return true;
     }
 }

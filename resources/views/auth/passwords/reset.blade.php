@@ -1,72 +1,81 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">{{ __('Reset Password') }}</div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Reset Password via OTP
+                </div>
 
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('password.update') }}">
-                            @csrf
+                <div class="card-body">
 
-                            {{-- <input type="hidden" name="token" value="{{ $token }}"> --}}
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
 
-                            <div class="row mb-3">
-                                <label for="phone" class="col-md-4 col-form-label text-md-end">{{ __('Phone') }}</label>
+                    <form method="POST" action="{{ route('password.reset.otp') }}">
+                        @csrf
 
-                                <div class="col-md-6">
-                                    <input id="phone" type="phone"
-                                        class="form-control @error('phone') is-invalid @enderror" name="mobilenumber"
-                                        value="{{ $phone ?? old('phone') }}" required autocomplete="mobilenumber" autofocus>
+                        {{-- Phone --}}
+                        <div class="mb-3">
+                            <label>Phone Number</label>
+                            <input type="tel"
+                                   class="form-control @error('mobilenumber') is-invalid @enderror"
+                                   name="mobilenumber"
+                                   placeholder="Enter Number"
+                                   value="{{ session('mobilenumber') ?? old('mobilenumber') }}"
+                                   {{ session('otp_sent') ? 'readonly' : '' }}
+                                   required>
 
-                                    @error('phone')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                            @error('mobilenumber')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        @if(session('otp_sent'))
+                            {{-- OTP --}}
+                            <div class="mb-3">
+                                <label>OTP</label>
+                                <input type="text"
+                                       class="form-control @error('otp') is-invalid @enderror"
+                                       name="otp"
+                                       inputmode="numeric"
+                                       required>
+
+                                @error('otp')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>
 
-                            <div class="row mb-3">
-                                <label for="password"
-                                    class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                                <div class="col-md-6">
-                                    <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror" name="password"
-                                        required autocomplete="new-password">
-
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                            {{-- New Password --}}
+                            <div class="mb-3">
+                                <label>New Password</label>
+                                <input type="password"
+                                       class="form-control @error('password') is-invalid @enderror"
+                                       name="password"
+                                       required>
                             </div>
 
-                            <div class="row mb-3">
-                                <label for="password-confirm"
-                                    class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                                <div class="col-md-6">
-                                    <input id="password-confirm" type="password" class="form-control"
-                                        name="password_confirmation" required autocomplete="new-password">
-                                </div>
+                            {{-- Confirm Password --}}
+                            <div class="mb-3">
+                                <label>Confirm Password</label>
+                                <input type="password"
+                                       class="form-control"
+                                       name="password_confirmation"
+                                       required>
                             </div>
+                        @endif
 
-                            <div class="row mb-0">
-                                <div class="col-md-6 offset-md-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        {{ __('Reset Password') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        <button class="btn btn-primary w-100">
+                            {{ session('otp_sent') ? 'Verify OTP & Reset Password' : 'Send OTP' }}
+                        </button>
+
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection

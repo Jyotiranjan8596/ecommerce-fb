@@ -72,9 +72,9 @@
                                             Remember me
                                         </label>
                                     </div>
-                                    {{-- <div>
+                                    <div>
                                         <a href="{{ route('reset.password') }}" class="small text-right">Lost password?</a>
-                                    </div> --}}
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-grid">
