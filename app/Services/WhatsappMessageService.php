@@ -54,7 +54,7 @@ class WhatsappMessageService
                 "type" => "template",
                 "template" => [
                     "name" => $template,
-                    "language" => ["code" => "en"],
+                    "language" => ["code" => "en_US"],
                     'components' => [
                         [
                             "type" => 'body',
