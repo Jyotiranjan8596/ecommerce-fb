@@ -50,7 +50,7 @@ class OtpVerification extends Model
                 'updated_at'      => now(),
             ]);
 
-            $whtsapi = WhatsappMessageService::password_reset($mob);
+            $whtsapi = WhatsappMessageService::password_reset($mob,$otp);
             return true;
         } catch (\Exception $e) {
             Log::info("Store Otp", ['error' => $e->getMessage()]);
