@@ -100,7 +100,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'pswd_resets';
+            $template = 'pomotion_tem';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,
@@ -117,18 +117,19 @@ class WhatsappMessageService
                                     "text" => (string) $name
                                 ]
                             ]
-                                ],
-                        [
-                            "type" => "button",
-                            "sub_type" => "url",
-                            "index" => "0",
-                            "parameters" => [
-                                [
-                                    "type" => "text",
-                                    "text" => 'login'
-                                ]
-                            ]
                         ]
+                        // ,
+                        // [
+                        //     "type" => "button",
+                        //     "sub_type" => "url",
+                        //     "index" => "0",
+                        //     "parameters" => [
+                        //         [
+                        //             "type" => "text",
+                        //             "text" => 'login'
+                        //         ]
+                        //     ]
+                        // ]
                     ]
                 ]
 
