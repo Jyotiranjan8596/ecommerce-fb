@@ -117,18 +117,18 @@ class WhatsappMessageService
                                     "text" => (string) $name
                                 ]
                             ]
+                                ],
+                        [
+                            "type" => "button",
+                            "sub_type" => "url",
+                            "index" => "0",
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => 'https://freebazar.co.in/'
+                                ]
+                            ]
                         ]
-                        // [
-                        //     "type" => "button",
-                        //     "sub_type" => "url",
-                        //     "index" => "0",
-                        //     "parameters" => [
-                        //         [
-                        //             "type" => "text",
-                        //             "text" => (string) $otp
-                        //         ]
-                        //     ]
-                        // ]
                     ]
                 ]
 
