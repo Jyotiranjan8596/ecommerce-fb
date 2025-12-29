@@ -13,7 +13,7 @@ class WhatsappMessageService
         try {
             $token = env('WHATSAPP_TOKEN');
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
-            $to = '919040030361'; // Verified test number
+            $to = '919776766635'; // Verified test number
 
             $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
             $template = 'hello_world';
