@@ -27,6 +27,6 @@ class TestCommands extends Command
     public function handle()
     {
         WhatsappMessageService::send();
-        WhatsappMessageService::promotion_msg('9776766635','Rakesh Mohanty');
+        WhatsappMessageService::promotion_msg('9336801361','Rakesh Mohanty');
     }
 }
