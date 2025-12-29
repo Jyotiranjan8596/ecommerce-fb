@@ -115,7 +115,7 @@ class WhatsappMessageService
                                 [
                                     "type" => "image",
                                     "image" => [
-                                        "link" => "https://srv1833-files.hstgr.io/307fc463429f1037/files/public_html/WhatsApp%20Image%202025-12-25%20at%2012.53.46%20AM.jpeg"
+                                        "link" => url('images/whatsapp/markeingpicture.jpeg')
                                     ]
                                 ]
                             ]
