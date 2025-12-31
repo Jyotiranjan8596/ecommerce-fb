@@ -29,7 +29,7 @@ class SendNewyrMessage extends Command
      */
     public function handle()
     {
-        $fileName = 'uwtst.csv';
+        $fileName = 'uw.csv';
         $filePath = public_path($fileName);
         if (!file_exists($filePath)) {
             throw new \Exception("Excel file not found.");
