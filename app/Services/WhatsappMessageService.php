@@ -16,13 +16,13 @@ class WhatsappMessageService
             $to = '7978910379'; // Verified test number
 
             $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
-            $template = 'hello_world';
+            $template = 'happy_new_year';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $to,
                 "type" => "template",
                 "template" => [
-                    "name" => "hello_world",
+                    "name" => "happy_new_year",
                     "language" => ["code" => "en_US"]
                 ]
 
