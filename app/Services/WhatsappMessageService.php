@@ -23,7 +23,20 @@ class WhatsappMessageService
                 "type" => "template",
                 "template" => [
                     "name" => "happy_new_year",
-                    "language" => ["code" => "en_US"]
+                    "language" => ["code" => "en_US"],
+                    'components' => [
+                        [
+                            "type" => "header",
+                            "parameters" => [
+                                [
+                                    "type" => "image",
+                                    "image" => [
+                                        "link" => url('images/whatsapp/newyrmsg.jpeg')
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
                 ]
 
             ];
