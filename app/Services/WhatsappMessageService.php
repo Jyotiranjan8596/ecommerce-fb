@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsappMessageService
 {
-    public static function send()
+    public static function send($to)
     {
         try {
             $token = env('WHATSAPP_TOKEN');
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
-            $to = '7077783948'; // Verified test number
+            // $to = '7077783948'; // Verified test number
 
             $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
             $template = 'happy_new_year';
