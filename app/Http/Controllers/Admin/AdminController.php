@@ -14,40 +14,42 @@ class AdminController extends Controller
         $user_profile = auth()->user();
         $userId = $user_profile->id;
 
-        // Combined query using conditional aggregation and grouping by month
-        $results = DB::select("
-        SELECT 
-            COUNT(*) as total,
-            COUNT(CASE WHEN role = 3 THEN 1 END) as role_3,
-            COUNT(CASE WHEN role = 4 THEN 1 END) as role_4,
-            MONTH(created_at) as month,
-            COUNT(*) as month_count
-        FROM users
-        WHERE YEAR(created_at) = YEAR(CURDATE())
-        GROUP BY month WITH ROLLUP
-    ");
-
-        // Process results
+        // Initialize defaults to avoid undefined variable errors
         $count = ['users' => 0, 'posts' => 0, 'posts_read' => 0];
-        $userChartData = array_fill(1, 12, 0); // Default 0 for each month
+        $totaluser = 0;
+        $totalpos = 0;
+
+        // Prepare monthly data (Jan–Dec)
+        $userChartData = array_fill(1, 12, 0);
+
+        // Eloquent-based aggregation
+        $results = User::query()
+            ->selectRaw('
+            COUNT(*) as total,
+            SUM(role = 3) as role_3,
+            SUM(role = 4) as role_4,
+            MONTH(created_at) as month
+        ')
+            // ->whereYear('created_at', now()->year)
+            ->groupByRaw('MONTH(created_at) WITH ROLLUP')
+            ->get();
 
         foreach ($results as $row) {
             if (is_null($row->month)) {
-                // ROLLUP row, get totals
+                // ROLLUP totals
                 $count['users'] = $row->total;
                 $totaluser = $row->role_3;
                 $totalpos = $row->role_4;
             } else {
-                $userChartData[(int) $row->month] = $row->month_count;
+                $userChartData[(int) $row->month] = $row->total;
             }
         }
 
-        // Labels
-        $monthNames = [1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'];
-        $userChartLabels = array_values($monthNames);
-        $userChartData = array_values($userChartData); // Ensure 0-based index for JS
+        // Chart labels
+        $userChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $userChartData   = array_values($userChartData);
 
-        // Static Data
+        // Static placeholders
         $newPosts = 0;
         $topPosts = 0;
         $posChartLabels = ['Jan', 'Feb', 'Mar'];
