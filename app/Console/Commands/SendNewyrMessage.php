@@ -29,7 +29,8 @@ class SendNewyrMessage extends Command
      */
     public function handle()
     {
-        $fileName = 'uw.csv';
+        // $fileName = 'user_wallets.csv';
+        $fileName = 'user_wallets.csv';
         $filePath = public_path($fileName);
         if (!file_exists($filePath)) {
             throw new \Exception("Excel file not found.");
@@ -71,7 +72,7 @@ class SendNewyrMessage extends Command
             $name   = $data[$nameIndex] ?? null;
             Log::info($mobile);
             if ($mobile && $name) {
-                WhatsappMessageService::send($mobile);
+                WhatsappMessageService::promotion_msg($mobile,$name);
             }
         }
 
