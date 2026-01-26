@@ -63,8 +63,8 @@ class UserDashboardController extends Controller
         $walletList->getCollection()->transform(function ($item) {
             $user_wallets = $item->userWallets;
             foreach ($user_wallets as $user_wallet) {
-                $item->remaining_amount = $user_wallet->remaining_amount;
-                $item->remaining_reward = $user_wallet->remaining_points;
+                $item->remaining_amount = round($user_wallet->remaining_amount);
+                $item->remaining_reward = round($user_wallet->remaining_points);
             }
             return $item;
         });
@@ -82,12 +82,12 @@ class UserDashboardController extends Controller
         // $userWallet = UserWallet::where('user_id', $userId)->get();
         // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
         $balances      = self::get_total_wallet_amount($userId);
-        $walletBalance = $balances['wallet_balance'];
-        $rewardBalance = $balances['rewardBalance'];
+        $walletBalance = round($balances['wallet_balance']);
+        $rewardBalance = round($balances['rewardBalance']);
         // dd($userId);
         $total_payback = UserWallet::where('user_id', $userId)
             ->where('trans_type', 'credit')
-            ->selectRaw('SUM(wallet_amount + reward_points) as total')
+            ->selectRaw('ROUND(SUM(wallet_amount + reward_points), 0) as total')
             ->value('total');
 
         // if ($userWallet) {
@@ -405,18 +405,17 @@ class UserDashboardController extends Controller
         $sponsors_count = count($sponsors);
         // dd($userId);
         $balances             = self::get_total_wallet_amount($userId);
-        $currentWalletBalance = $balances['wallet_balance'];
-        $rewardBalance        = $balances['rewardBalance'];
+        $currentWalletBalance = round($balances['wallet_balance']);
+        $rewardBalance        = round($balances['rewardBalance']);
         $userWallet           = UserWallet::where('user_id', $userId)
             ->orderBy('id', 'desc')
             ->simplePaginate(10)
             ->through(function ($item) {
                 // dd($item->toArray());
-
-                if ($item->used_amount > 0) {
-                    $item->transaction_details = $item->getPos ? $item->getPos->name : "N/A";
-                } else {
+                if ($item->trans_type == 'credit') {
                     $item->transaction_details = "Admin";
+                } else {
+                    $item->transaction_details = $item->getPos ? $item->getPos->name : "N/A";
                 }
 
                 return $item;

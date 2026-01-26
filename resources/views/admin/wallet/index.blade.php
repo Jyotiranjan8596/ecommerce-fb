@@ -18,7 +18,7 @@
                     @endif
                 </form>
             </div>
-            <div class="col-md-4 mb-3">
+            {{-- <div class="col-md-4 mb-3">
                 <form action="{{ route('admin.used.wallet.upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="input-group">
@@ -29,7 +29,7 @@
                         <div class="text-danger mt-2">{{ $errors->first('file') }}</div>
                     @endif
                 </form>
-            </div>
+            </div> --}}
 
             <!-- Export Button -->
             <div class="col-md-6 mb-3 text-end">
@@ -57,7 +57,7 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    
                     @foreach ($walletBalance as $key => $data)
                         <tr>
                             <td>{{ $walletBalance->firstItem() + $key }}</td>

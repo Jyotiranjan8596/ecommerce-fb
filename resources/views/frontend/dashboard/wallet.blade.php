@@ -46,7 +46,7 @@
                                         {{-- <td>{{ $data->user->user_id }}</td> --}}
                                         <td>{{ $data->transaction_details }}</td>
                                         {{-- <td>{{ $data->invoice }}</td> --}}
-                                        <td>₹{{ $data->trans_type ?? 'N/A' }}</td>
+                                        <td>{{ $data->trans_type ?? 'N/A' }}</td>
                                         @if ($data->trans_type == 'credit')
                                             <td>₹{{ $data->wallet_amount ?? 0 }}</td>
                                             <td>₹{{ $data->reward_points ?? 0 }}</td>

@@ -17,8 +17,9 @@ class AdminWalletExport implements FromCollection, WithHeadings
             ->with('user')
             ->get()
             ->map(function ($wallet) {
+                // dd($wallet->user);
                 return [
-                    'User ID' => $wallet->user->user_id,
+                    'User ID' => $wallet->user?->user_id ?? 'NA',
                     'Month' => $wallet->month, 
                     'Wallet Amount' => $wallet->wallet_amount,
                     'Payment Mode' => $wallet->trans_type,
