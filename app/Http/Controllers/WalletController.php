@@ -414,7 +414,7 @@ class WalletController extends Controller
             return redirect()->back()->with('info', 'Already Verified');
         }
         $params = [
-            (string) $wallet->user->name,
+            (string) $user ? $user->name : "Not Available",
             (string) $wallet->billing_amount,
             (string) $user ? $user->name : "Not Available",
             (string) $wallet->invoice,
