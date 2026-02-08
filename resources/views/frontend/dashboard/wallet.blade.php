@@ -62,7 +62,7 @@
                                     </td>
                                     {{-- Mode --}}
                                     <td>
-                                        @if ($data->trans_type == 'credit')
+                                        @if ($data->trans_type == 'credit' || $data->trans_type == 'Credit')
                                             {{ $data->display_type ?? 'NA' }}
                                         @else
                                             @if ($data->remaining_amount > 0)
