@@ -407,19 +407,40 @@ class UserDashboardController extends Controller
         $balances             = self::get_total_wallet_amount($userId);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
-        $userWallet           = UserWallet::where('user_id', $userId)
+        $userWallet = UserWallet::where('user_id', $userId)
             ->orderBy('id', 'desc')
-            ->simplePaginate(10)
-            ->through(function ($item) {
-                // dd($item->toArray());
-                if ($item->trans_type == 'credit') {
-                    $item->transaction_details = "Admin";
-                } else {
-                    $item->transaction_details = $item->getPos ? $item->getPos->name : "N/A";
-                }
+            ->simplePaginate(10);
 
-                return $item;
-            });
+        $collection = $userWallet->getCollection();
+        $newCollection = collect();
+        foreach ($collection as $item) {
+
+            if ($item->trans_type == 'credit') {
+
+                // ---- Wallet credit row ----
+                $walletRow = clone $item;
+                $walletRow->transaction_details = 'Admin';
+                $walletRow->display_type = 'Wallet';
+                $walletRow->amount = $item->wallet_amount;
+                $walletRow->remaning_balance = $currentWalletBalance;
+                $newCollection->push($walletRow);
+
+                // ---- Reward credit row ----
+                $rewardRow = clone $item;
+                $rewardRow->transaction_details = 'Admin';
+                $rewardRow->display_type = 'Reward';
+                $rewardRow->amount = $item->reward_points;
+                $walletRow->remaning_balance = $rewardBalance;
+                $newCollection->push($rewardRow);
+            } else {
+                $item->transaction_details = $item->getPos ? $item->getPos->name : 'N/A';
+                $item->display_type = 'debit';
+                $newCollection->push($item);
+            }
+        }
+
+        $userWallet->setCollection($newCollection);
+
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
 
         $walletBalance = $currentWalletBalance;

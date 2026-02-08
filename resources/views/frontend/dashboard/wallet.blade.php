@@ -26,42 +26,72 @@
                             <thead>
                                 <tr>
                                     <th>Sl.No</th>
-                                    {{-- <th>USER ID</th> --}}
                                     <th>Transaction Details</th>
-                                    {{-- <th>INVOICE</th> --}}
                                     <th>Transaction Type</th>
-                                    <th>Wallet</th>
-                                    <th>Reward</th>
-                                    <th>Remaining Wallet</th>
-                                    <th>Remaning Reward</th>
-                                    {{-- <th>MOBILE NUMBER</th> --}}
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Remaining Balance</th>
                                     <th>DATE OF TRANSACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($userWallet as $key => $data)
-                                    {{-- {{ dd($data); }} --}}
-                                    <tr>
-                                        <td>{{ $userWallet->firstItem() + $key }}</td>
-                                        {{-- <td>{{ $data->user->user_id }}</td> --}}
-                                        <td>{{ $data->transaction_details }}</td>
-                                        {{-- <td>{{ $data->invoice }}</td> --}}
-                                        <td>{{ $data->trans_type ?? 'N/A' }}</td>
+                                {{-- {{dd($userWallet[6]);}} --}}
+                                <tr>
+                                    {{-- Sl.No --}}
+                                    <td>{{ $userWallet->firstItem() + $key }}</td>
+
+                                    {{-- Transaction Details --}}
+                                    <td>{{ $data->transaction_details ?? 'N/A' }}</td>
+
+                                    {{-- Transaction Type --}}
+                                    <td>{{ $data->trans_type ?? 'N/A' }}</td>
+
+                                    {{-- Amount --}}
+                                    <td>
                                         @if ($data->trans_type == 'credit')
-                                            <td>₹{{ $data->wallet_amount ?? 0 }}</td>
-                                            <td>₹{{ $data->reward_points ?? 0 }}</td>
+                                            ₹{{ $data->amount ?? 0 }}
                                         @else
-                                            <td>₹{{ $data->used_amount ?? 0 }}</td>
-                                            <td>₹{{ $data->used_points ?? 0 }}</td>
+                                            @if ($data->remaining_amount > 0)
+                                                ₹{{ $data->used_amount ?? 0 }}
+                                            @else
+                                                ₹{{ $data->used_points ?? 0 }}
+                                            @endif
                                         @endif
-                                        <td>{{ $data->remaining_amount }}</td>
-                                        <td>{{ $data->remaining_points }}</td>
-                                        {{-- <td>{{ $data->mobilenumber }}</td> --}}
-                                        <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
-                                        </td>
-                                    </tr>
+                                        
+                                    </td>
+                                    {{-- Mode --}}
+                                    <td>
+                                        @if ($data->trans_type == 'credit')
+                                            {{ $data->display_type ?? 'NA' }}
+                                        @else
+                                            @if ($data->remaining_amount > 0)
+                                                Reward
+                                            @else
+                                                Wallet
+                                            @endif
+                                        @endif
+                                    </td>
+
+                                    {{-- Remaining Balance --}}
+                                    {{-- <td>{{ $data->remaining_amount ?? 0 }}</td> --}}
+
+                                    {{-- Remaining Points --}}
+                                    <td>
+                                        @if ($data->trans_type == 'credit')
+                                            {{ $data->remaning_balance ?? 0 }}
+                                        @else
+                                            
+                                        @endif
+                                    </td>
+
+                                    {{-- Date --}}
+                                    <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
+                                </tr>
                                 @endforeach
                             </tbody>
+
+
                         </table>
                     </div>
                 </div>
