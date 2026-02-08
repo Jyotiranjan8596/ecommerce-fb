@@ -52,7 +52,7 @@
                                         @if ($data->trans_type == 'credit' || $data->trans_type == 'Credit')
                                             ₹{{ $data->amount ?? 0 }}
                                         @else
-                                            @if ($data->remaining_amount > 0)
+                                            @if ($data->used_amount > 0)
                                                 ₹{{ $data->used_amount ?? 0 }}
                                             @else
                                                 ₹{{ $data->used_points ?? 0 }}
