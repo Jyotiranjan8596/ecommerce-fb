@@ -30,7 +30,7 @@
                                     <th>Transaction Type</th>
                                     <th>Amount</th>
                                     <th>Mode</th>
-                                    <th>Remaining Balance</th>
+                                    {{-- <th>Remaining Balance</th> --}}
                                     <th>DATE OF TRANSACTION</th>
                                 </tr>
                             </thead>
@@ -77,13 +77,13 @@
                                     {{-- <td>{{ $data->remaining_amount ?? 0 }}</td> --}}
 
                                     {{-- Remaining Points --}}
-                                    <td>
+                                    {{-- <td>
                                         @if ($data->trans_type == 'credit')
                                             {{ $data->remaning_balance ?? 0 }}
                                         @else
                                             
                                         @endif
-                                    </td>
+                                    </td> --}}
 
                                     {{-- Date --}}
                                     <td>{{ date('d-m-Y', strtotime($data->transaction_date)) }}</td>
