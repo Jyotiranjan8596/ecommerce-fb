@@ -49,7 +49,7 @@
 
                                     {{-- Amount --}}
                                     <td>
-                                        @if ($data->trans_type == 'credit')
+                                        @if ($data->trans_type == 'credit' || $data->trans_type == 'Credit')
                                             ₹{{ $data->amount ?? 0 }}
                                         @else
                                             @if ($data->remaining_amount > 0)

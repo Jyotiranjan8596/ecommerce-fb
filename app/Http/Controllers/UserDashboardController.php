@@ -415,7 +415,7 @@ class UserDashboardController extends Controller
         $newCollection = collect();
         foreach ($collection as $item) {
 
-            if ($item->trans_type == 'credit') {
+            if ($item->trans_type == 'credit' || $item->trans_type == 'Credit') {
 
                 // ---- Wallet credit row ----
                 $walletRow = clone $item;
