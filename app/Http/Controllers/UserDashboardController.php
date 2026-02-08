@@ -442,7 +442,7 @@ class UserDashboardController extends Controller
         $userWallet->setCollection($newCollection);
 
         $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
-
+        Log::info($userWallet->toArray());
         $walletBalance = $currentWalletBalance;
         return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
     }
