@@ -15,14 +15,6 @@ class WalletObserver
      */
     public function created(Wallet $wallet): void
     {
-        //
-    }
-
-    /**
-     * Handle the Wallet "updated" event.
-     */
-    public function updated(Wallet $wallet): void
-    {
         Log::info("Working Observer");
         $user   = Auth::user();
         $pos = $wallet->getPos;
@@ -40,6 +32,14 @@ class WalletObserver
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_transaction($wallet->user->mobilenumber, $params);
         Log::info('Message result from observer', [$msg_reslt]);
+    }
+
+    /**
+     * Handle the Wallet "updated" event.
+     */
+    public function updated(Wallet $wallet): void
+    {
+        
     }
 
     /**
