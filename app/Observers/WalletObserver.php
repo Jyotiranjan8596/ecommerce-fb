@@ -26,7 +26,7 @@ class WalletObserver
             'user_name' => (string) $user ? $user->name : "Not Available",
             'trans_id' => (string) $wallet->invoice,
             'date' => (string) now()->format('d-m-Y'),
-            'billing_amount' => (string) $wallet->amount_wallet,
+            'billing_amount' => (string) $wallet->billing_amount,
         ];
 
         $whatsapp  = new WhatsappMessageService();
