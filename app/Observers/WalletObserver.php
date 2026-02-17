@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Observers;
 
 use App\Models\Wallet;
 use App\Services\AiSensyService;
+use App\Services\WhatsappMessageService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -23,18 +25,20 @@ class WalletObserver
     {
         Log::info("Working Observer");
         $user   = Auth::user();
+        $pos = $wallet->getPos;
+        // dd($wallet->getPos);
         $params = [
-            (string) $wallet->user->name,
-            (string) $wallet->billing_amount,
-            (string) $user ? $user->name : "Not Available",
-            (string) $wallet->invoice,
-            (string) $wallet->amount,
-            (string) $wallet->amount_wallet,
-            (string) $wallet->reward_amount,
+            'pos_name' => (string) $pos?$pos->name:'NA',
+            'user_id' => (string) $user->id,
+            'billing_amount' => (string) $wallet->billing_amount,
+            'user_name' => (string) $user ? $user->name : "Not Available",
+            'trans_id' => (string) $wallet->invoice,
+            'date' => (string) now()->format('d-m-Y'),
+            'billing_amount' => (string) $wallet->amount_wallet,
         ];
 
-        $whatsapp  = new AiSensyService();
-        $msg_reslt = $whatsapp->sendTransactionMessage($wallet->user->mobilenumber, $params);
+        $whatsapp  = new WhatsappMessageService();
+        $msg_reslt = $whatsapp->user_transaction($wallet->user->mobilenumber, $params);
         Log::info('Message result from observer', [$msg_reslt]);
     }
 

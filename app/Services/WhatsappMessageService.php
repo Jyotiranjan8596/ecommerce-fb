@@ -143,17 +143,17 @@ class WhatsappMessageService
                         //     ]
                         // ]
                         // ,
-                        [
-                            "type" => "button",
-                            "sub_type" => "url",
-                            "index" => "0",
-                            // "parameters" => [
-                            //     [
-                            //         "type" => "text",
-                            //         "text" => 'login'
-                            //     ]
-                            // ]
-                        ]
+                        // [
+                        //     "type" => "button",
+                        //     "sub_type" => "url",
+                        //     "index" => "0",
+                        //     // "parameters" => [
+                        //     //     [
+                        //     //         "type" => "text",
+                        //     //         "text" => 'login'
+                        //     //     ]
+                        //     // ]
+                        // ]
                     ]
                 ]
 
@@ -168,6 +168,77 @@ class WhatsappMessageService
             return $response;
         } catch (Exception $e) {
             Log::info('Marketing message Whatsapp Error' . $e->getMessage());
+        }
+    }
+
+    public static function user_transaction($mob, $parameters)
+    {
+        try {
+            $token = env('WHATSAPP_TOKEN');
+            $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
+
+            $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
+            $template = 'user_transaction';
+            $payload = [
+                "messaging_product" => "whatsapp",
+                "to" => $mob,
+                "type" => "template",
+                "template" => [
+                    "name" => $template,
+                    "language" => ["code" => "en_US"],
+                    'components' => [
+                        [
+                            "type" => "header",
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['user_name']   // Jyotiranjan Sahoo
+                                ]
+                            ]
+                        ],
+                        [
+                            "type" => 'body',
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['user_id']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['pos_name']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['trans_id']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['date']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['billing_amount']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['billing_amount']
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+
+            ];
+
+            $response = Http::withToken($token)
+                ->post($url, $payload)
+                ->json();
+
+            Log::info('Whatsapp Message', ['data' => $response]);
+
+            return $response;
+        } catch (Exception $e) {
+            Log::info('USer Transaction Whatsapp Error' . $e->getMessage());
         }
     }
 }
