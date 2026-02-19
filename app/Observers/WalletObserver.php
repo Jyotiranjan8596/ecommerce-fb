@@ -20,7 +20,7 @@ class WalletObserver
         $pos = $wallet->getPos;
         // dd($wallet->getPos);
         $params = [
-            'pos_name' => (string) $pos?$pos->name:'NA',
+            'pos_name' => (string) $pos ? $pos->name : 'NA',
             'user_id' => (string) $user->id,
             'billing_amount' => (string) $wallet->billing_amount,
             'user_name' => (string) $user ? $user->name : "Not Available",
@@ -31,16 +31,14 @@ class WalletObserver
 
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_transaction($wallet->user->mobilenumber, $params);
+        $pos_reslt = $whatsapp->pos_transaction($wallet->user->mobilenumber, $params);
         Log::info('Message result from observer', [$msg_reslt]);
     }
 
     /**
      * Handle the Wallet "updated" event.
      */
-    public function updated(Wallet $wallet): void
-    {
-        
-    }
+    public function updated(Wallet $wallet): void {}
 
     /**
      * Handle the Wallet "deleted" event.
