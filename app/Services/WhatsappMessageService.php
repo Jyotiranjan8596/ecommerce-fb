@@ -249,7 +249,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'user_transaction';
+            $template = 'pos_transaction_message';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,

@@ -31,7 +31,7 @@ class WalletObserver
 
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_transaction($wallet->user->mobilenumber, $params);
-        $pos_reslt = $whatsapp->pos_transaction($wallet->user->mobilenumber, $params);
+        $pos_reslt = $whatsapp->pos_transaction($pos->mobilenumber, $params);
         Log::info('Message result from observer', [$msg_reslt]);
     }
 
