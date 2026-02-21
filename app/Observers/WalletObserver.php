@@ -28,11 +28,12 @@ class WalletObserver
             'date' => (string) now()->format('d-m-Y'),
             'billing_amount' => (string) $wallet->billing_amount,
         ];
-
+        Log::info($pos->mobilenumber);
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_transaction($wallet->user->mobilenumber, $params);
         $pos_reslt = $whatsapp->pos_transaction($pos->mobilenumber, $params);
         Log::info('Message result from observer', [$msg_reslt]);
+        Log::info('Message result from observer', [$pos_reslt]);
     }
 
     /**
