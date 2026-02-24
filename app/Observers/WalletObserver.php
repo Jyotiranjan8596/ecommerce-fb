@@ -21,7 +21,7 @@ class WalletObserver
         // dd($wallet->getPos);
         $params = [
             'pos_name' => (string) $pos ? $pos->name : 'NA',
-            'user_id' => (string) $user->id,
+            'user_id' => (string) $user->user_id,
             'billing_amount' => (string) $wallet->billing_amount,
             'user_name' => (string) $user ? $user->name : "Not Available",
             'trans_id' => (string) $wallet->invoice,
