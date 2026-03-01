@@ -39,7 +39,7 @@ class WalletImport implements ToModel, WithHeadingRow
             'amount_wallet'      => $row['amount_paid_by_2'] ?? 0,
             'user_id'          => $user_id,
             'mobilenumber'       => $row['mobile'] ?? null,
-            'transaction_date'   => date('Y-m-d', strtotime($row['date'])),
+            'transaction_date'   => date('Y-m-d H:m:s', strtotime($row['date'])),
             'insert_date'        => date('Y-m-d H:m:s')
         ]);
         $wallet->save();
@@ -52,7 +52,7 @@ class WalletImport implements ToModel, WithHeadingRow
                 'used_amount'     => $row['amount_paid_by_2'],
                 'pay_by'          => $row['paid_by_2'],
                 'mobilenumber'    => $row['mobile_number'] ?? null,
-                'transaction_date' => date('Y-m-d', strtotime($row['date'])),
+                'transaction_date' => date('Y-m-d H:m:s', strtotime($row['date'])),
                 'trans_type'      => 'debit',
             ]);
             $userWallet->save();
