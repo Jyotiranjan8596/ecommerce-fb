@@ -27,6 +27,8 @@ class WalletObserver
             'trans_id' => (string) $wallet->invoice,
             'date' => (string) now()->format('d-m-Y'),
             'billing_amount' => (string) $wallet->billing_amount,
+            'pay_by' => strtoupper($wallet->pay_by),
+            'paid_amount' => $wallet->pay_by == 'reward' ? $wallet->reward_amount : $wallet->amount_wallet
         ];
         Log::info($pos->mobilenumber);
         $whatsapp  = new WhatsappMessageService();

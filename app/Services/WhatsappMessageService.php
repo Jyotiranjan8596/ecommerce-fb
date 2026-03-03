@@ -178,7 +178,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'user_transaction';
+            $template = 'user_transaction2';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,
@@ -221,7 +221,11 @@ class WhatsappMessageService
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $parameters['billing_amount']
+                                    "text" => $parameters['pay_by']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['paid_amount']
                                 ],
                             ]
                         ]
@@ -249,7 +253,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'pos_transaction_message';
+            $template = 'pos_transaction2';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,
@@ -293,6 +297,14 @@ class WhatsappMessageService
                                 [
                                     "type" => "text",
                                     "text" => $parameters['billing_amount']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['pay_by']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['paid_amount']
                                 ],
                             ]
                         ]
