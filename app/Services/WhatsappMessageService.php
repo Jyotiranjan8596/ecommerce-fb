@@ -126,10 +126,8 @@ class WhatsappMessageService
                             "type" => "header",
                             "parameters" => [
                                 [
-                                    "type" => "image",
-                                    "image" => [
-                                        "link" => url('images/whatsapp/markeingpicture.jpeg')
-                                    ]
+                                    "type" => "text",
+                                    "text" => (string) $name
                                 ]
                             ]
                         ],

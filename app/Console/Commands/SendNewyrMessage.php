@@ -30,14 +30,15 @@ class SendNewyrMessage extends Command
     public function handle()
     {
         // $fileName = 'user_wallets.csv';
-        $fileName = 'user_wallets.csv';
+        $fileName = 'book.xlsx';
         $filePath = public_path($fileName);
+        // dd($filePath);
         if (!file_exists($filePath)) {
             throw new \Exception("Excel file not found.");
         }
 
         $reader = IOFactory::createReaderForFile($filePath);
-        $reader->setReadDataOnly(true); // 🔥 Optimization
+        $reader->setReadDataOnly(true); 
         $spreadsheet = $reader->load($filePath);
 
         $sheet = $spreadsheet->getActiveSheet();
