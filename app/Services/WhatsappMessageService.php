@@ -296,10 +296,6 @@ class WhatsappMessageService
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $parameters['billing_amount']
-                                ],
-                                [
-                                    "type" => "text",
                                     "text" => $parameters['pay_by']
                                 ],
                                 [
