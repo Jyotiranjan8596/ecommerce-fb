@@ -113,7 +113,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
 
             $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
-            $template = 'jan_mark';
+            $template = 'holi_message';
             $payload = [
                 "messaging_product" => "whatsapp",
                 "to" => $mob,
@@ -294,11 +294,15 @@ class WhatsappMessageService
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $parameters['pay_by']
+                                    "text" => $parameters['paid_amount']
                                 ],
                                 [
                                     "type" => "text",
-                                    "text" => $parameters['paid_amount']
+                                    "text" => $parameters['by_cash']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['transaction_amount']
                                 ],
                             ]
                         ]

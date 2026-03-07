@@ -29,8 +29,8 @@ class SendNewyrMessage extends Command
      */
     public function handle()
     {
-        // $fileName = 'user_wallets.csv';
-        $fileName = 'book.xlsx';
+        $fileName = 'wallets.csv';
+        // $fileName = 'book.xlsx';
         $filePath = public_path($fileName);
         // dd($filePath);
         if (!file_exists($filePath)) {
