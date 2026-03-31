@@ -150,8 +150,9 @@ class WalletController extends Controller
     {
         $startDate = $request->has('start_date') && ! empty($request->start_date) ? $request->start_date : null;
         $endDate   = $request->has('end_date') && ! empty($request->end_date) ? $request->end_date : null;
-
-        return Excel::download(new WalletExport($startDate, $endDate), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        $posId = auth()->user()->user_id;
+        // $pos   = PosModel::where('user_id', $posId)->first();
+        return Excel::download(new WalletExport($startDate, $endDate,$posId), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
     public function import(Request $request)
