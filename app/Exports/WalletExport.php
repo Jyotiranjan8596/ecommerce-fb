@@ -23,7 +23,7 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        $query = Wallet::where('pos_id', $pos->id)->with('user', 'getPos');
+        $query = Wallet::where('pos_id', $this->posId)->with('user', 'getPos');
     
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('transaction_date', [$this->startDate, $this->endDate]);
