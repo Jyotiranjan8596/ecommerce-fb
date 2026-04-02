@@ -26,10 +26,16 @@ class UserWallet extends Model
         'mobilenumber'
     ];
 
+    public function user_data()
+    {
+        return $this->belongsTo(User::class, 'id');
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    
     public function getPos()
     {
         return $this->belongsTo(PosModel::class, 'pos_id');

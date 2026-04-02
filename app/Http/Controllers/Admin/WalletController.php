@@ -17,14 +17,16 @@ class WalletController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $walletBalance = UserWallet::whereNotNull('wallet_amount')->orderBy('id', 'desc')->simplePaginate(15)->through(function ($wallet) {
+        $walletBalance = UserWallet::whereNotNull('wallet_amount')->with('user_data')->orderBy('id', 'desc')->simplePaginate(15)->through(function ($wallet) {
             // dd($wallet->wallet_amount);
             $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
                 ? ceil($wallet->wallet_amount)
                 : floor($wallet->wallet_amount);
+                $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
+                ? ceil($wallet->reward_points)
+                : floor($wallet->reward_points);
             return $wallet;
         });
-        // dd($walletBalance);
         //  dd($walletBalance);
         return view('admin.wallet.index', compact('walletBalance', 'userId', 'user_profile'));
     }

@@ -53,6 +53,7 @@
                         <th>MOBILE NUMBER</th>
                         <th>PAYMENT MODE</th>
                         <th>WALLET AMOUNT</th>
+                        <th>REWARD POINTS</th>
 
                     </tr>
                 </thead>
@@ -62,11 +63,12 @@
                         <tr>
                             <td>{{ $walletBalance->firstItem() + $key }}</td>
                             <td>{{ $data->month }}</td>
-                            <td>{{ $data->user?->user_id }}</td>
-                            <td>{{ $data->user?->name }}</td>
+                            <td>{{ $data->user_data?->user_id }}</td>
+                            <td>{{ $data->user_data?->name }}</td>
                             <td>{{ $data->mobilenumber }}</td>
                             <td>{{ $data->trans_type }}</td>
                             <td>₹{{ $data->rounded_wallet_amount }}/-</td>
+                            <td>₹{{ $data->rounded_reward_point }}/-</td>
                         </tr>
                     @endforeach
 
