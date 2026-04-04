@@ -22,7 +22,7 @@ class WalletController extends Controller
             $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
                 ? ceil($wallet->wallet_amount)
                 : floor($wallet->wallet_amount);
-                $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
+            $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
                 ? ceil($wallet->reward_points)
                 : floor($wallet->reward_points);
             return $wallet;

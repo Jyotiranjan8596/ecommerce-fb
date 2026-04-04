@@ -32,14 +32,14 @@ class AdminWalletImport implements ToModel, WithHeadingRow
             $formattedDate = date('Y-m-d', strtotime($transaction_date_value));
         }
         // Find the user by user_id in the Users table
-        // $user = User::where('id', $row['user_id'])->first();
+        $user = User::where('user_id', $row['user_id'])->first();
         // If the user does not exist, skip the record
-        // if (!$user) {
-        //     return null; // Optionally handle missing users
-        // }
+        if (!$user) {
+            return null; // Optionally handle missing users
+        }
 
         return new UserWallet([
-            'user_id' => $row['user_id'], // Use the id from the Users table
+            'user_id' => $user->id, // Use the id from the Users table
             'month' => $formattedMonth,
             'wallet_amount' => $row['wallet_amount'],
             'reward_points' => $row['reward_points'],

@@ -103,7 +103,7 @@ class UserDashboardController extends Controller
     {
         // dd($userId);
         // Fetch all wallet records for the user
-        $userWallet = UserWallet::where('user_id', $userId)->get();
+        $userWallet = UserWallet::where('user_id', $userId)->orWhere('id', $userId)->get();
         // Calculate the total used amount
         $totalUsedAmount       = $userWallet->sum('used_amount');
         $totalUsedRewardAmount = $userWallet->sum('used_points');
@@ -408,6 +408,7 @@ class UserDashboardController extends Controller
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
         $userWallet = UserWallet::where('user_id', $userId)
+            ->orWhere('id', $userId)
             ->orderBy('id', 'desc')
             ->simplePaginate(10);
 
@@ -441,7 +442,7 @@ class UserDashboardController extends Controller
 
         $userWallet->setCollection($newCollection);
 
-        $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
+        $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('id', $userId)->sum('used_amount');
         Log::info($userWallet->toArray());
         $walletBalance = $currentWalletBalance;
         return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
