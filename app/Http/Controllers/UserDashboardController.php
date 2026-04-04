@@ -99,11 +99,11 @@ class UserDashboardController extends Controller
         return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
-    public function get_total_wallet_amount($userId)
+    public function get_total_wallet_amount($userId,$users_id=null)
     {
         // dd($userId);
         // Fetch all wallet records for the user
-        $userWallet = UserWallet::where('user_id', $userId)->orWhere('id', $userId)->get();
+        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id',$users_id)->get();
         // Calculate the total used amount
         $totalUsedAmount       = $userWallet->sum('used_amount');
         $totalUsedRewardAmount = $userWallet->sum('used_points');
@@ -404,11 +404,10 @@ class UserDashboardController extends Controller
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $balances             = self::get_total_wallet_amount($userId);
+        $balances             = self::get_total_wallet_amount($userId,$user_profile->user_id);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
-        $userWallet = UserWallet::where('user_id', $userId)
-            ->orWhere('id', $userId)
+        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id',$user_profile->user_id)
             ->orderBy('id', 'desc')
             ->simplePaginate(10);
 
@@ -442,7 +441,7 @@ class UserDashboardController extends Controller
 
         $userWallet->setCollection($newCollection);
 
-        $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('id', $userId)->sum('used_amount');
+        $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('user_id',$user_profile->user_id)->sum('used_amount');
         Log::info($userWallet->toArray());
         $walletBalance = $currentWalletBalance;
         return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
