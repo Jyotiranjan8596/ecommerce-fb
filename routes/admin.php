@@ -106,6 +106,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::get('export-msr', [DsrController::class, 'exportMsr'])->name('msr.export');
 
     Route::get('wallet', [WalletController::class, 'wallet'])->name('wallet');
+    Route::post('wallet', [WalletController::class, 'wallet'])->name('wallet');
     Route::get('/export-wallet', [WalletController::class, 'exportWallet'])->name('wallet.export');
     Route::post('/upload-wallet', [WalletController::class, 'uploadWallet'])->name('wallet.upload');
     Route::post('/upload-used-wallet', [DsrController::class, 'update_dsr'])->name('used.wallet.upload');

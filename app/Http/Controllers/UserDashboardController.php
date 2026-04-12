@@ -99,11 +99,11 @@ class UserDashboardController extends Controller
         return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
-    public function get_total_wallet_amount($userId,$users_id=null)
+    public function get_total_wallet_amount($userId, $users_id = null)
     {
         // dd($userId);
         // Fetch all wallet records for the user
-        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id',$users_id)->get();
+        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $users_id)->get();
         // Calculate the total used amount
         $totalUsedAmount       = $userWallet->sum('used_amount');
         $totalUsedRewardAmount = $userWallet->sum('used_points');
@@ -135,11 +135,11 @@ class UserDashboardController extends Controller
             // if (! $user || ! Hash::check($request->password, $user->password)) {
             //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
             // }
-            $userId         = Auth::user()->id;
-            $balances       = self::get_total_wallet_amount($userId);
+            $userIds         = Auth::user();
+            $balances       = self::get_total_wallet_amount($userIds->id,$userIds->user_id);
             $walletBalance  = $balances['wallet_balance'];
             $reward_balance = $balances['rewardBalance'];
-            // dd($userId);
+            // dd($userIds);
             $posId            = intval($request->input('pos_id'));
             $pos              = PosModel::find($posId);
             $randomNumber     = mt_rand(1, 99999);
@@ -158,7 +158,7 @@ class UserDashboardController extends Controller
 
             $userWalletEntry                   = new UserWallet();
             $userWalletEntry->invoice          = $invoice;
-            $userWalletEntry->user_id          = $userId;
+            $userWalletEntry->user_id          = $userIds->user_id;
             $userWalletEntry->mobilenumber     = $mobilenumber;
             $userWalletEntry->transaction_date = $transaction_date;
             $userWalletEntry->pay_by           = 'wallet';
@@ -167,7 +167,7 @@ class UserDashboardController extends Controller
             $currentWalletBalance              = $walletBalance;
 
             if ($wallet_select != 'on') {
-                // $userWallet = UserWallet::where('user_id', $userId)->get();
+                // $userWallet = UserWallet::where('user_id', $userIds)->get();
                 // dd($userWallet);
                 $rewardBalance = $reward_balance;
                 // if ($rewardBalance <= 0) {
@@ -183,7 +183,7 @@ class UserDashboardController extends Controller
                 $remainingAmount = $amount - $rewardUsedAmount;
                 // dd($rewardUsedAmount,$remainingAmount);
                 $walletEntry                     = new Wallet();
-                $walletEntry->user_id            = $userId;
+                $walletEntry->user_id            = $userIds->id;
                 $walletEntry->invoice            = $invoice;
                 $walletEntry->mobilenumber       = $mobilenumber;
                 $walletEntry->transaction_date   = $transaction_date;
@@ -225,7 +225,7 @@ class UserDashboardController extends Controller
                 $remainingAmount             = $amount;
                 $dsrlist                     = new Wallet();
                 $dsrlist->invoice            = $invoice;
-                $dsrlist->user_id            = $userId;
+                $dsrlist->user_id            = $userIds->id;
                 $dsrlist->amount             = $request->paying_amount;
                 $dsrlist->pay_by             = 'wallet';
                 $dsrlist->mobilenumber       = $mobilenumber;
@@ -280,7 +280,7 @@ class UserDashboardController extends Controller
 
             // $dsrlist                     = new Wallet();
             // $dsrlist->invoice            = $invoice;
-            // $dsrlist->user_id            = $userId;
+            // $dsrlist->user_id            = $userIds;
             // $dsrlist->amount             = $request->paying_amount;
             // $dsrlist->pay_by             = $pay_by;
             // $dsrlist->mobilenumber       = $mobilenumber;
@@ -404,10 +404,10 @@ class UserDashboardController extends Controller
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $balances             = self::get_total_wallet_amount($userId,$user_profile->user_id);
+        $balances             = self::get_total_wallet_amount($userId, $user_profile->user_id);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
-        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id',$user_profile->user_id)
+        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)
             ->orderBy('id', 'desc')
             ->simplePaginate(10);
 
@@ -441,7 +441,7 @@ class UserDashboardController extends Controller
 
         $userWallet->setCollection($newCollection);
 
-        $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('user_id',$user_profile->user_id)->sum('used_amount');
+        $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)->sum('used_amount');
         Log::info($userWallet->toArray());
         $walletBalance = $currentWalletBalance;
         return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
