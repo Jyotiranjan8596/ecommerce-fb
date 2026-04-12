@@ -72,7 +72,6 @@ class UserWallet extends Model
             $query->where('trans_type', $type);
         }
         return $query->simplePaginate(15)->through(function ($wallet) {
-            dd($wallet);
             // dd($wallet->wallet_amount);
             $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
                 ? ceil($wallet->wallet_amount)
