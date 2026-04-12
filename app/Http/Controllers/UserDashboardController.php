@@ -131,15 +131,16 @@ class UserDashboardController extends Controller
             $user           = User::find($request->user_id);
             $sponsors       = Sponsor::where('sponsor_id', $user->id)->get();
             $sponsors_count = count($sponsors);
+            $month = Carbon::now()->format('M-y');
             // Verify password
             // if (! $user || ! Hash::check($request->password, $user->password)) {
             //     return redirect()->back()->with('error', 'Incorrect password. Please try again.');
             // }
-            $userIds         = Auth::user();
-            $balances       = self::get_total_wallet_amount($userIds->id,$userIds->user_id);
+            $userId         = Auth::user()->id;
+            $balances       = self::get_total_wallet_amount($userId);
             $walletBalance  = $balances['wallet_balance'];
             $reward_balance = $balances['rewardBalance'];
-            // dd($userIds);
+            // dd($userId);
             $posId            = intval($request->input('pos_id'));
             $pos              = PosModel::find($posId);
             $randomNumber     = mt_rand(1, 99999);
@@ -158,7 +159,8 @@ class UserDashboardController extends Controller
 
             $userWalletEntry                   = new UserWallet();
             $userWalletEntry->invoice          = $invoice;
-            $userWalletEntry->user_id          = $userIds->user_id;
+            $userWalletEntry->month = $month;
+            $userWalletEntry->user_id          = $userId;
             $userWalletEntry->mobilenumber     = $mobilenumber;
             $userWalletEntry->transaction_date = $transaction_date;
             $userWalletEntry->pay_by           = 'wallet';
@@ -167,7 +169,7 @@ class UserDashboardController extends Controller
             $currentWalletBalance              = $walletBalance;
 
             if ($wallet_select != 'on') {
-                // $userWallet = UserWallet::where('user_id', $userIds)->get();
+                // $userWallet = UserWallet::where('user_id', $userId)->get();
                 // dd($userWallet);
                 $rewardBalance = $reward_balance;
                 // if ($rewardBalance <= 0) {
@@ -183,7 +185,7 @@ class UserDashboardController extends Controller
                 $remainingAmount = $amount - $rewardUsedAmount;
                 // dd($rewardUsedAmount,$remainingAmount);
                 $walletEntry                     = new Wallet();
-                $walletEntry->user_id            = $userIds->id;
+                $walletEntry->user_id            = $userId;
                 $walletEntry->invoice            = $invoice;
                 $walletEntry->mobilenumber       = $mobilenumber;
                 $walletEntry->transaction_date   = $transaction_date;
@@ -225,7 +227,7 @@ class UserDashboardController extends Controller
                 $remainingAmount             = $amount;
                 $dsrlist                     = new Wallet();
                 $dsrlist->invoice            = $invoice;
-                $dsrlist->user_id            = $userIds->id;
+                $dsrlist->user_id            = $userId;
                 $dsrlist->amount             = $request->paying_amount;
                 $dsrlist->pay_by             = 'wallet';
                 $dsrlist->mobilenumber       = $mobilenumber;
@@ -280,7 +282,7 @@ class UserDashboardController extends Controller
 
             // $dsrlist                     = new Wallet();
             // $dsrlist->invoice            = $invoice;
-            // $dsrlist->user_id            = $userIds;
+            // $dsrlist->user_id            = $userId;
             // $dsrlist->amount             = $request->paying_amount;
             // $dsrlist->pay_by             = $pay_by;
             // $dsrlist->mobilenumber       = $mobilenumber;

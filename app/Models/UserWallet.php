@@ -73,12 +73,12 @@ class UserWallet extends Model
         }
         return $query->simplePaginate(15)->through(function ($wallet) {
             // dd($wallet->wallet_amount);
-            $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
-                ? ceil($wallet->wallet_amount)
-                : floor($wallet->wallet_amount);
-            $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
-                ? ceil($wallet->reward_points)
-                : floor($wallet->reward_points);
+            $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
+                ? ceil($wallet->used_amount)
+                : floor($wallet->used_amount);
+            $wallet->rounded_reward_point = ($wallet->used_points - floor($wallet->used_points)) > 0.3
+                ? ceil($wallet->used_points)
+                : floor($wallet->used_points);
             return $wallet;
         });
     }
