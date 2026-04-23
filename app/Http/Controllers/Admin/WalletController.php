@@ -13,13 +13,22 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class WalletController extends Controller
 {
-    public function wallet(Request $request)
+    public function wallet()
+    {
+        return view('admin.wallet.index');
+        // return view('admin.wallet.index', compact('walletBalance', 'userId', 'user_profile'));
+    }
+
+    public function wallet_load(Request $request)
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $walletBalance = UserWallet::getAdminWallet($request);
-        //  dd($walletBalance);
-        return view('admin.wallet.index', compact('walletBalance', 'userId', 'user_profile'));
+        $pagination = $walletBalance->links()->render();
+        return response()->json([
+            'data'=>$walletBalance,
+            'pagination'=> $pagination
+        ]); 
     }
     public function exportWallet()
     {

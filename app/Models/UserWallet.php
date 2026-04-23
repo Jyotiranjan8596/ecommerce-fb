@@ -71,14 +71,23 @@ class UserWallet extends Model
         if ($type && $type != 'all') {
             $query->where('trans_type', $type);
         }
-        return $query->simplePaginate(15)->through(function ($wallet) {
-            // dd($wallet->wallet_amount);
-            $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
-                ? ceil($wallet->used_amount)
-                : floor($wallet->used_amount);
-            $wallet->rounded_reward_point = ($wallet->used_points - floor($wallet->used_points)) > 0.3
-                ? ceil($wallet->used_points)
-                : floor($wallet->used_points);
+        return $query->paginate(50)->through(function ($wallet) {
+            if ($wallet->trans_type == 'debit') {
+                $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
+                    ? ceil($wallet->used_amount)
+                    : floor($wallet->used_amount);
+                $wallet->rounded_reward_point = ($wallet->used_points - floor($wallet->used_points)) > 0.3
+                    ? ceil($wallet->used_points)
+                    : floor($wallet->used_points);
+            } else {
+                $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
+                    ? ceil($wallet->wallet_amount)
+                    : floor($wallet->wallet_amount);
+                $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
+                    ? ceil($wallet->reward_points)
+                    : floor($wallet->reward_points);
+            }
+
             return $wallet;
         });
     }
