@@ -28,10 +28,17 @@ class WalletImport implements ToModel, WithHeadingRow
         } else {
             $user_id = null;
         }
+
+        if (!empty($row['branch'])) {
+            $pos_id = PosModel::where('user_id', $row['branch'])->value('id');
+            Log::info($user_id);
+        } else {
+            $pos_id = null;
+        }
         $wallet = Wallet::create([
             'invoice'            => $row['voucher_no'],
             'billing_amount'     => $row['amount'],
-            'pos_id'             => $row['branch'],
+            'pos_id'             => $pos_id,
             'amount'             => $row['amount_paid_by_1'],
             'pay_by'             => $row['paid_by_1'],
             'transaction_amount' => $row['amount'] * (7 / 100),
