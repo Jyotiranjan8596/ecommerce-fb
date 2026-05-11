@@ -112,7 +112,7 @@
                         <th>TRANSACTION DATE</th>
                         <th>REMARK</th>
                         <th>STATUS</th>
-                    </tr>
+                    </tr>   
                 </thead>
                 <tbody>
                     @if ($wallets->isEmpty())
@@ -227,7 +227,7 @@
                         <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <!-- Optional: Save or Export button -->
-                            <button type="button" id="submitData" class="btn btn-primary">Submit</button>
+                            {{-- <button type="button" id="submitData" class="btn btn-primary">Submit</button> --}}
                         </div>
                     @endif
                 @else

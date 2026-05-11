@@ -69,4 +69,8 @@ class Wallet extends Model
             return 0;
         }
     }
+
+    public static function getWalletDetails($date){
+        $query = Wallet::where('pos_id', $pos->id);
+    }
 }

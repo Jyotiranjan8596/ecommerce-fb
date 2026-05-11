@@ -67,7 +67,7 @@
                         @foreach ($settlements as $key => $settlement)
                             <tr>
                                 <td> {{ $key + 1 }}</td>
-                                <td>{{ $settlement->creator->name }}</td>
+                                <td>{{ $settlement->pos_system->name ?? 'NA' }}</td>
                                 <td>
                                     {{ $settlement->intiate_date }}
                                 </td>

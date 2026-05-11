@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Helpers\NumberToWordsHelper;
@@ -11,6 +12,7 @@ class PaymentSummary extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'pos_id',
         'date',
         'total_transaction',
         'total_billing_amount',
@@ -33,6 +35,10 @@ class PaymentSummary extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function pos_system()
+    {
+        return $this->belongsTo(PosModel::class, 'pos_id', 'id');
+    }
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
@@ -42,7 +48,7 @@ class PaymentSummary extends Model
     {
         try {
             $existing = self::where('date', $data['date'])
-                ->where('created_by', auth()->id())
+                ->where('pos_id', $data['pos_id'])
                 ->first();
 
             if ($existing) {
@@ -50,25 +56,28 @@ class PaymentSummary extends Model
                 return 1;
             }
             $res = self::create([
+                'pos_id' => $data['pos_id'],
                 'date'                 => $data['date'],
                 'total_transaction'    => $data['total_transactions'],
                 'total_billing_amount' => $data['billing_amount'],
-                'by_cash'              => $data['cash_upi'],
-                'by_wallet'            => $data['wallet'],
-                'by_reward'            => $data['reward'],
-                'pos_credit'           => $data['credit_amount'],
-                'pos_debit'            => $data['debit_amount'],
-                'admin_credit'         => $data['debit_amount'],
-                'admin_debit'          => $data['credit_amount'],
+                'by_cash'              => $data['cash_upi'] ?? $data['payByCashOrUpi'],
+                'by_wallet'            => $data['wallet'] ?? $data['payByWallet'],
+                'by_reward'            => $data['reward'] ?? $data['payByReward'],
+                'pos_credit'           => $data['credit_amount'] ?? $data['creditAmount'],
+                'pos_debit'            => $data['debit_amount'] ?? $data['debitAmount'],
+                'admin_credit'         => $data['debit_amount'] ?? $data['debitAmount'],
+                'admin_debit'          => $data['credit_amount'] ?? $data['creditAmount'],
                 'status'               => 'pending',
-                'created_by'           => auth()->user()->id,
+                'created_by'           => null,
                 // 'updated_by' => auth()->user()->id,
             ]);
             if ($res) {
                 return true;
             }
         } catch (\Exception $e) {
-            Log::info('Summary Creation' . $e->getMessage());
+            Log::info('Summary Creation Error: ' . $e->getMessage());
+            Log::info('File: ' . $e->getFile());
+            Log::info('Line: ' . $e->getLine());
             return false;
         }
     }
@@ -84,7 +93,7 @@ class PaymentSummary extends Model
 
     public static function fetch_summary_admin()
     {
-        $resp = self::with('creator')->orderBy('id', 'desc')->get()->map(function ($item) {
+        $resp = self::with('pos_system')->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->intiate_date = Carbon::parse($item->date)->format('d-m-Y');
             return $item;
         });
@@ -144,5 +153,4 @@ class PaymentSummary extends Model
             'in_letter'            => NumberToWordsHelper::convert($res->pos_debit) . ' Rupees Only/-',
         ];
     }
-
 }

@@ -189,6 +189,7 @@ class UserDashboardController extends Controller
                 $walletEntry->invoice            = $invoice;
                 $walletEntry->mobilenumber       = $mobilenumber;
                 $walletEntry->transaction_date   = $transaction_date;
+                $walletEntry->status   = '1';
                 $walletEntry->billing_amount     = $amount;
                 $walletEntry->transaction_amount = $transaction_amount;
                 $walletEntry->amount_wallet      = 0;
