@@ -20,21 +20,9 @@ class UserDashboardController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        // dd($userId);
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
-        // dd($sponsors_count);
         $transactionQuery = Wallet::where('user_id', $userId)->with('userWallets');
-        // dd($transactionQuery);
-        //     $monthlyPurchases = Wallet::where('user_id', $userId)
-        //     ->select(
-        //         DB::raw('SUM(billing_amount) as total_billing'),
-        //         DB::raw('MONTH(transaction_date) as month')
-        //     )
-        //     ->groupBy(DB::raw('MONTH(transaction_date)'))
-        //     ->get();
-
-        //    dd($monthlyPurchases);
 
         $month = Carbon::now()->month;
         $year  = Carbon::now()->year;
@@ -68,41 +56,19 @@ class UserDashboardController extends Controller
             }
             return $item;
         });
-
-        // $walletList = $transactionQuery->orderBy('id', 'desc')->get()
-        //     ->map(function ($item) {
-        //         $user_wallets = $item->userWallets;
-        //         foreach ($user_wallets as $user_wallet) {
-        //             $item->remaining_amount = $user_wallet->remaining_amount;
-        //         }
-        //         return $item;
-        //     })->paginate(15);
-
-        // dd($walletList->all()[0]);
-        // $userWallet = UserWallet::where('user_id', $userId)->get();
-        // $totalUsedAmount = UserWallet::where('user_id', $userId)->sum('used_amount');
         $balances      = self::get_total_wallet_amount($userId);
         $walletBalance = round($balances['wallet_balance']);
         $rewardBalance = round($balances['rewardBalance']);
-        // dd($userId);
         $total_payback = UserWallet::where('user_id', $userId)
             ->where('trans_type', 'credit')
             ->selectRaw('ROUND(SUM(wallet_amount + reward_points), 0) as total')
             ->value('total');
-
-        // if ($userWallet) {
-        // } else {
-        //     $walletBalance = 0;
-        // }
-        // $walletBalance = max($walletBalance, 0);
 
         return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
     }
 
     public function get_total_wallet_amount($userId, $users_id = null)
     {
-        // dd($userId);
-        // Fetch all wallet records for the user
         $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $users_id)->get();
         // Calculate the total used amount
         $totalUsedAmount       = $userWallet->sum('used_amount');

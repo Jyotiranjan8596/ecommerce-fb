@@ -168,7 +168,7 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                     </span>
-                    <span class="sidebar-text">My Wallet</span>
+                    <span class="sidebar-text">My Payback</span>
                 </a>
             </li>
 
