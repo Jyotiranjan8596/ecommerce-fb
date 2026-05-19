@@ -249,7 +249,7 @@
                                     clip-rule="evenodd"></path>
                             </svg>
                         </span>
-                        <span class="sidebar-text">WALLET</span>
+                        <span class="sidebar-text">Pay Back</span>
                     </a>
                 </li>
             @endcan

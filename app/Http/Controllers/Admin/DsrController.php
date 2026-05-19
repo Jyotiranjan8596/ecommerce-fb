@@ -49,7 +49,9 @@ class DsrController extends Controller
         }
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%");
+            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('user',function($qry) use($searchTerm){
+                $qry->where('name', 'LIKE', "%{$searchTerm}%");
+            });
         }
 
         $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')

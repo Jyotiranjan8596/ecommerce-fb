@@ -51,12 +51,14 @@ class UserWallet extends Model
         $year = $request->year;
         $month = $request->month;
         $type = $request->type;
-        // dd($year, $month, $type);
         $query = self::whereNotNull('wallet_amount')->with('user_data')->orderBy('id', 'desc');
-        if ($month && $year) {
+        if ($month && $year && $type) {
+            // dd($year, $month, $type);
             $formatted = date('M', mktime(0, 0, 0, $month, 1)) . '-' . substr($year, -2);
             // e.g. month=3, year=2026 → "Mar-26"
-            $query->where('month', $formatted);
+            $format2 = substr($year, -2) . '-' . date('M', mktime(0, 0, 0, $month, 1));
+            // Output: 26-Mar
+            $query->where('trans_type', $type)->where('month', $formatted)->orWhere('month', $format2);
         } elseif ($month) {
             $formatted = date('M', mktime(0, 0, 0, $month, 1));
             $query->where('month', 'LIKE', $formatted . '-%');
@@ -65,13 +67,12 @@ class UserWallet extends Model
             $shortYear = substr($year, -2);
             $query->where('month', 'LIKE', '%-' . $shortYear);
             // e.g. year=2026 → "%-26"
-        }
-
-        // Filter by type
-        if ($type && $type != 'all') {
+        } elseif ($type && $type != 'all') {
+            dd($type);
             $query->where('trans_type', $type);
         }
         return $query->paginate(50)->through(function ($wallet) {
+            // dd($wallet->toArray());
             if ($wallet->trans_type == 'debit') {
                 $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
                     ? ceil($wallet->used_amount)

@@ -104,7 +104,7 @@
         }
     </style>
     <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">WALLET DETAILS</b></h3>
+        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">PAYBACK DETAILS</b></h3>
 
         <div class="row g-3 mb-3">
 

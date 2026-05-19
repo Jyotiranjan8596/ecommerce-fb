@@ -22,7 +22,7 @@
             <div class="col-md-4 mb-3">
                 <form method="GET" action="{{ route('admin.dsr') }}">
                     <div class="input-group">
-                        <input type="number" class="form-control" name="search" placeholder="Search By...">
+                        <input type="text" class="form-control" name="search" placeholder="Search By...">
                         <button class="btn btn-info" type="submit">SEARCH</button>
                     </div>
                 </form>

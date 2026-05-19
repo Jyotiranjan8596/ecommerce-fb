@@ -100,7 +100,7 @@
                         <th>INVOICE</th>
                         {{-- <th>POS ID</th> --}}
                         <th>NAME</th>
-                        <th>MOBILE</th>
+                        <th>User Id</th>
                         <th>BILLING AMOUNT</th>
                         {{-- <th>Cash/Upi</th> --}}
                         {{-- <th>Payment Mode</th> --}}
@@ -127,7 +127,7 @@
                                 <td>{{ $data->invoice }}</td>
                                 {{-- <td>{{ $data->getPos ? $data->getPos->user_id : '' }}</td> --}}
                                 <td>{{ optional($data->user)->name }}</td>
-                                <td>{{ $data->mobilenumber }}</td>
+                                <td>{{ optional($data->user)->user_id }}</td>
                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
                                 {{-- <td>{{ $data->pay_by }}</td> --}}
                                 <td>{{ $data->amount_wallet }}</td>
