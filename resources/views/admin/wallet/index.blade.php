@@ -160,6 +160,13 @@
                                 <option value="debit">Debit</option>
                             </select>
                         </div>
+                        <div class="col-6 col-sm-3 col-md-3">
+                            <select name="pay_by" id="pay_by" class="form-select form-select-sm w-100">
+                                <option value=null>Select</option>
+                                <option value="wallet">Wallet</option>
+                                <option value="reward">Reward</option>
+                            </select>
+                        </div>
 
                         <div class="col-6 col-sm-2 col-md-2 d-flex gap-1">
                             <button type="submit" class="btn btn-primary btn-sm fw-semibold flex-fill">
@@ -244,7 +251,7 @@
                             const pagination = response.data;
                             let paginationHtml = '';
                             response.data.data.forEach(function(item) {
-                                
+
                                 rows += `
                                         <tr>
                                             <td>${index++}</td>
@@ -286,7 +293,7 @@
             // Filter submit
             $('#wallet-form').on('submit', function(e) {
                 e.preventDefault();
-                walletLoad(1,this);
+                walletLoad(1, this);
             });
 
             // Pagination click
