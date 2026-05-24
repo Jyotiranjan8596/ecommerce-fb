@@ -108,7 +108,7 @@
                             @enderror
                         </div>
                         <div class="mb-2">
-                            <label for="image">Image*</label>
+                            <label for="image">Profile Image*</label>
                             <input type="file" id="image" name="image"
                                 class="form-control @error('image') is-invalid @enderror">
                             @error('image')

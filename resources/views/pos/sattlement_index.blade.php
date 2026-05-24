@@ -4,11 +4,20 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @section('content')
     <div class="container my-4">
-        {{-- {{ dd($settlements) }} --}}
-        <h3 class="text-center text-dark mb-4"><b>Account Sattlements</b></h3>
+        {{-- Header Section --}}
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+            <h3 class="fw-bold text-primary m-0">Account Settlements
+            </h3>
+
+            <button class="btn btn-success px-4 shadow-sm">
+                <i class="fas fa-file-export me-1"></i> Export
+            </button>
+        </div>
+
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
                     <tr>
                         <th scope="col">Sl.no</th>
                         <th scope="col">Date</th>
@@ -20,14 +29,9 @@
                         <th scope="col">Credit</th>
                         <th scope="col">Debit</th>
                         <th scope="col">Status</th>
-                        {{-- <th scope="col">Payment Mode</th>
-                        <th scope="col">Wallet Balance</th>
-                        <th scope="col">Credit</th>
-                        <th scope="col">Debit</th>
-                        <th scope="col">Remark</th>
-                        <th scope="col">Status</th> --}}
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach ($settlements as $key => $settlement)
                         <tr>
@@ -40,78 +44,31 @@
                             <td>₹{{ $settlement->by_reward ?? 0 }}/-</td>
                             <td>₹{{ $settlement->pos_credit ?? 0 }}</td>
                             <td>₹{{ $settlement->pos_debit ?? 0 }}</td>
+
                             @if ($settlement->status == 'pending')
-                                <td id="status-id">
-                                    <span data-id="{{ $settlement->id }}" class="badge bg-warning text-dark">Pending</span>
+                                <td>
+                                    <span data-id="{{ $settlement->id }}" class="badge bg-warning text-dark px-3 py-2">
+                                        Pending
+                                    </span>
                                 </td>
                             @elseif ($settlement->status == 'rejected')
                                 <td>
-                                    <span class="badge bg-danger"><b>Rejected</b></span>
+                                    <span class="badge bg-danger px-3 py-2">
+                                        Rejected
+                                    </span>
                                 </td>
                             @else
                                 <td>
                                     <a href="{{ route('pos.settlement.invoice', $settlement->id) }}"
-                                        class="badge bg-success">
+                                        class="badge bg-success text-decoration-none px-3 py-2">
                                         Settled
                                     </a>
                                 </td>
                             @endif
-                            {{-- <td>
-                                <i class="fas fa-ellipsis-h btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#editModal"
-                                    onclick="editsettlement({{ $settlement->id }}, '{{ $settlement->billing_amount }}', '{{ $settlement->amount }}', '{{ $settlement->amount_wallet }}')"></i>
-                                @if ($settlement->status == 0)
-                                    <a href="{{ route('pos.wallet.updateStatus', $settlement->id) }}"
-                                        class="btn btn-danger btn-sm">Unverified</a>
-                                @else
-                                    <a href="{{ route('pos.wallet.updateStatus', $settlement->id) }}"
-                                        class="btn btn-success btn-sm">Verified</a>
-                                @endif
-                            </td> --}}
-
                         </tr>
-                        {{-- <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editModalLabel">Edit Billing Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="editCustomerForm" method="POST"
-                                            action="{{ route('pos.customers.update', ['id' => $customer->id]) }}">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="mb-3">
-                                                <label for="billing_amount" class="form-label">Billing Amount</label>
-                                                <input type="text" class="form-control" id="billing_amount"
-                                                    name="billing_amount" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="amount" class="form-label">Amount</label>
-                                                <input type="text" class="form-control" id="amount" name="amount"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="amount_wallet" class="form-label">Amount Wallet</label>
-                                                <input type="text" class="form-control" id="amount_wallet"
-                                                    name="amount_wallet" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Update</button>
-                                        </form>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     @endforeach
                 </tbody>
             </table>
-            {{-- <div class="d-flex justify-content-center">
-                {{ $dsrLists->links() }}
-            </div> --}}
         </div>
     </div>
     <div class="modal fade" id="pay-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"

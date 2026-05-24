@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -40,6 +41,27 @@ class PosController extends Controller
         $userId       = $user_profile->id;
         $states       = User::select('state')->whereNotNull('state')->distinct()->pluck('state');
         return view('admin.pos_system.create', compact('states', 'userId', 'user_profile'));
+    }
+
+    public function userList(Request $request)
+    {
+        $query = DB::table('users')->where('role', 3);
+        if ($request->filled('search_by') && $request->filled('search_term')) {
+            $searchBy   = $request->input('search_by');
+            $searchTerm = $request->input('search_term');
+
+            if ($searchBy == 'user_id') {
+                $query->where('user_id', $searchTerm);
+            } elseif ($searchBy == 'name') {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            } elseif ($searchBy == 'mobilenumber') {
+                $query->where('mobilenumber', 'like', '%' . $searchTerm . '%');
+            }
+        }
+
+        $users = $query->orderBy('id', 'desc')->simplePaginate(15);
+
+        return view('pos.user_list', compact('users'));
     }
 
     /**

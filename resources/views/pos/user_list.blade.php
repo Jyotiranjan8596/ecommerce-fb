@@ -1,4 +1,4 @@
-@extends('pos.layouts.master')
+@extends('layouts.master')
 <!-- Add this in your main layout blade file, like layouts/app.blade.php -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     integrity="sha512-dNmIQjY1j5UrU4Gm7QNz+6EmcHivd6i0VdCw8pOfAGg6pY9HJg8uySOIWlKb7Gp3MeR9RmRbS/m4K0lwRXX7Wg=="
@@ -9,7 +9,7 @@
         <h4><b>User List</b></h4>
         <hr>
     </div>
-    <form action="{{ route('pos.user.list') }}" method="GET">
+    <form action="{{ route('admin.user.list') }}" method="GET">
         @csrf
         <div class="card-body">
             <div class="row">
@@ -62,7 +62,7 @@
                             <td>
                                 {{-- <a href="{{ route('pos.wallet.manage') }}?user_id={{ $user->user_id }}">
                                     <i class="fas fa-eye"></i></a> --}}
-                                <a href="{{ route('pos.wallet.manage') }}?user_id={{ $user->user_id }}"><i
+                                <a href="{{ route('admin.wallet.manage') }}?user_id={{ $user->user_id }}"><i
                                         class="fas fa-eye"></i></a>
 
                             </td>

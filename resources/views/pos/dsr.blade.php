@@ -74,26 +74,64 @@
 
         <!-- Divider -->
         <hr class="my-4">
-        <div class="d-flex justify-content-end ">
-            <div class="d-flex justify-content-end ">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center">
+
+            <!-- Left side -->
+            @if ($totalTransactions != 0)
+                <div class="row mb-3 w-100">
+                    <div class="col-7 col-sm-6 col-md-4 font-weight-bold">
+                        Total Transactions:
+                    </div>
+
+                    <div class="col-5 col-sm-2 text-muted small fst-italic" id="total-transactions-temp">
+                        --
+                    </div>
+
+                    <div class="col-12 col-sm-4 text-sm-end mb-2 mb-sm-0" id="total-transactions-val">
+                        {{ $totalTransactions }}
+                    </div>
+
+                    <div class="col-7 col-sm-6 col-md-4 font-weight-bold">
+                        Total Billing Amount:
+                    </div>
+
+                    <div class="col-5 col-sm-2 text-muted small fst-italic" id="billing-amount-temp">
+                        --
+                    </div>
+
+                    <div class="col-12 col-sm-4 text-sm-end" id="billing-amount-val">
+                        ₹ {{ $totalBillingAmount }}
+                    </div>
+                </div>
+            @endif
+
+            <!-- Right side -->
+            <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-lg-end w-100 w-lg-auto">
+
                 <button id="summary-btn" type="button" data-target="#exampleModalCenter"
-                    class="btn btn-secondary text-white me-3 mb-3" data-toggle="modal">Summary</button>
-            </div>
-            <div class="d-flex justify-content-end ">
-                <button id="approve-btn" type="button" class="btn btn-success text-white me-3 mb-3">Verify All</button>
-            </div>
-            <!-- Export -->
-            <div class="d-flex justify-content-end ">
+                    class="btn btn-secondary text-white" data-toggle="modal">
+                    Summary
+                </button>
+
+                <button id="approve-btn" type="button" class="btn btn-success text-white">
+                    Verify All
+                </button>
+
+                <!-- Export -->
                 <form method="GET" action="{{ route('pos.dsr.export') }}">
                     <input type="hidden" name="start_date" value="{{ request()->start_date }}">
                     <input type="hidden" name="end_date" value="{{ request()->end_date }}">
-                    <button class="btn btn-danger" type="submit">EXPORT</button>
+
+                    <button class="btn btn-danger" type="submit">
+                        EXPORT
+                    </button>
                 </form>
+
             </div>
         </div>
         <!-- Data Table -->
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered" style="margin-top: 1.5px">
                 <thead class="thead-dark">
                     <tr>
                         <th>Sl.No</th>
@@ -112,7 +150,7 @@
                         <th>TRANSACTION DATE</th>
                         <th>REMARK</th>
                         <th>STATUS</th>
-                    </tr>   
+                    </tr>
                 </thead>
                 <tbody>
                     @if ($wallets->isEmpty())

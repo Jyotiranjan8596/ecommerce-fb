@@ -474,7 +474,6 @@ class UserDashboardController extends Controller
     }
     public function updateprofile(Request $request)
     {
-
         $update_profile = User::find(auth()->id());
 
         if ($request->mobilenumber !== $update_profile->mobilenumber) {

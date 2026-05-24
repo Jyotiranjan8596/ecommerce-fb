@@ -26,9 +26,13 @@ class ProfileController extends Controller
         $user = User::findOrFail(auth()->id());
         $user->name = $request->name;
         $user->email = $request->email;
-
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(public_path('images'), $imageName);
+            $user->image = $imageName;
+        }
         if ($user->save()) {
-            flash()->addSuccess('Profile Profile successfully.');
+            flash()->addSuccess('Profile Updated successfully.');
             return redirect()->back();
         }
         flash()->addError('Password update fail!.');

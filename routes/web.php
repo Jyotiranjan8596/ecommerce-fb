@@ -107,8 +107,8 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
 });
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');
-    Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
-    Route::get('walletmanage', [WalletController::class, 'walletManage'])->name('wallet.manage');
+    Route::get('profile/index', [PosController::class, 'pos_profile_index'])->name('profile.index');
+    Route::post('update/profile/', [PosController::class, 'updateprofile'])->name('update.profile');
     Route::get('change/password', [PosController::class, 'changepassword'])->name('change.password');
     Route::post('new/password', [PosController::class, 'newpassword'])->name('new.password');
     Route::get('dsr', [WalletController::class, 'dsr'])->name('dsr');
@@ -127,7 +127,6 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('sattlement', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
     Route::post('/save-modal-data', [PaymentSummaryController::class, 'saveSummaryData'])->name('save.summary.data');
     Route::get('pos/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadPosInvoice'])->name('settlement.invoice');
-
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');

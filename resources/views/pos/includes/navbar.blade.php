@@ -45,11 +45,13 @@
 </header>
 
  --}}
-
- <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
+<?php
+$user_profile = auth()->user();
+?>
+<nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
     <div class="container-fluid px-0">
         <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
-            
+
             {{-- Scan button  --}}
             <div class="d-flex align-items-center">
                 <b>Hello, {{ auth()->user()->name }}</b>
@@ -128,7 +130,7 @@
                         <div class="list-group list-group-flush">
                             <a href="#"
                                 class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
-                           
+
                         </div>
                     </div>
                 </li>
@@ -138,14 +140,14 @@
                         <div class="media d-flex align-items-center">
                             <img width="45px" height="45px" class="avatar rounded-circle"
                                 alt="{{ auth()->user()->name }}"
-                                src="{{ asset('assets/img/team/profile-picture-3.jpg') }}" />
+                                src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
                             </div>
                         </div>
                     </a>
                     <div class="dropdown-menu dashboard-dropdown dropdown-menu-end mt-2 py-1">
-                        
+
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('pos.change.password') }}">
                             <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -154,6 +156,15 @@
                                     clip-rule="evenodd"></path>
                             </svg>
                             Change Password
+                        </a>
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('pos.profile.index') }}">
+                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            My Profile
                         </a>
                         {{-- <a class="dropdown-item d-flex align-items-center" href="#">
                             <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor"
@@ -195,11 +206,3 @@
         </div>
     </div>
 </nav>
-
-
-
-
-
-
-
-

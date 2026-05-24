@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SubSectorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\PaymentSummaryController;
+use App\Http\Controllers\WalletController as ControllersWalletController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -116,4 +117,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('settlement-verify', [PaymentSummaryController::class, 'verify_settlement'])->name('settlement.verify');
     Route::post('settlement/reject/{id}', [PaymentSummaryController::class, 'reject_settlement'])->name('settlement.reject');
     Route::get('admin/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadInvoice'])->name('settlement.invoice');
+
+    Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
+    Route::get('walletmanage', [ControllersWalletController::class, 'walletManage'])->name('wallet.manage');
 });

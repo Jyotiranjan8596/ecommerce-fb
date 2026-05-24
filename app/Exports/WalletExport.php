@@ -13,17 +13,17 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
     protected $startDate;
     protected $endDate;
     protected $serialNumber = 1;
-    protected $posId;
-    public function __construct($startDate = null, $endDate = null,$posId=null)
+    // protected $posId;
+    public function __construct($startDate = null, $endDate = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->posId = $posId;
+        // $this->posId = $posId;
     }
 
     public function collection()
     {
-        $query = Wallet::where('pos_id', $this->posId)->with('user', 'getPos');
+        $query = Wallet::with('user', 'getPos');
     
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('transaction_date', [$this->startDate, $this->endDate]);
@@ -31,13 +31,12 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
     
         return $query->get();
     }
-    
 
     public function map($wallet): array
     {
         return [
             $this->serialNumber++,
-            $wallet->pos_id,
+            $wallet->getPos?->name ?? 'N/A',
             $wallet->transaction_date,
             $wallet->invoice,                     
             // $wallet->user ? $wallet->user->user_id : 'N/A',

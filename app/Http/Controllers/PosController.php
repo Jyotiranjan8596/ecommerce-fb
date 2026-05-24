@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
@@ -56,7 +57,9 @@ class PosController extends Controller
         if ($request->hasFile('screenshot')) {
             $file     = $request->file('screenshot');
             $response = Http::attach(
-                'file', file_get_contents($file), 'image.jpg'
+                'file',
+                file_get_contents($file),
+                'image.jpg'
             )->post('https://api.ocr.space/parse/image', [
                 'apikey'            => env('OCR_API_KEY'),
                 'language'          => 'eng',
@@ -70,25 +73,49 @@ class PosController extends Controller
             ]);
         }
     }
-    public function userList(Request $request)
-    {
-        $query = DB::table('users')->where('role', 3);
-        if ($request->filled('search_by') && $request->filled('search_term')) {
-            $searchBy   = $request->input('search_by');
-            $searchTerm = $request->input('search_term');
 
-            if ($searchBy == 'user_id') {
-                $query->where('user_id', $searchTerm);
-            } elseif ($searchBy == 'name') {
-                $query->where('name', 'like', '%' . $searchTerm . '%');
-            } elseif ($searchBy == 'mobilenumber') {
-                $query->where('mobilenumber', 'like', '%' . $searchTerm . '%');
-            }
+    public function pos_profile_index()
+    {
+        $user = auth()->user();
+        $user_profile = PosModel::where('user_id', $user->user_id)->first();
+        // dd($user_profile);
+        return view('pos.profile', compact('user_profile'));
+    }
+
+    public function updateprofile(Request $request)
+    {
+        // dd($request->all());
+        $update_profile = User::find(auth()->id());
+        $pos = PosModel::where('user_id', $update_profile->user_id)->first();
+        if ($request->mobilenumber !== $update_profile->mobilenumber) {
+            $update_profile->requestMobileNumberUpdate($request->mobilenumber);
+
+            flash()->addSuccess('Your mobile number update request has been submitted and is awaiting admin approval.');
+            return redirect()->route('user.index');
         }
 
-        $users = $query->orderBy('id', 'desc')->simplePaginate(15);
+        $update_profile->email         = $request->email;
+        $update_profile->address       = $request->address;
+        $update_profile->city          = $request->city;
+        $update_profile->state         = $request->state;
+        $update_profile->zip           = $request->zip;
 
-        return view('pos.user_list', compact('users'));
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(public_path('images'), $imageName);
+            $update_profile->image = $imageName;
+            $pos->image = $imageName;
+        }
+        $pos->email         = $request->email;
+        $pos->address       = $request->address;
+        $pos->city          = $request->city;
+        $pos->state         = $request->state;
+        $pos->zip           = $request->zip;
+        $pos->upi_id           = $request->upi_id;
+        if ($update_profile->save() && $pos->save()) {
+            flash()->addSuccess('Profile Update successfully.');
+            return redirect()->route('user.index');
+        }
     }
     public function changepassword()
     {
@@ -123,8 +150,8 @@ class PosController extends Controller
             $updatedRows = Wallet::where('pos_id', $pos->id)->update(['status' => 1]);
 
             $message = $updatedRows > 0
-            ? "Customers have been successfully verified."
-            : "Already Verified";
+                ? "Customers have been successfully verified."
+                : "Already Verified";
 
             return response()->json([
                 'code'    => 200,
@@ -145,8 +172,8 @@ class PosController extends Controller
             if ($request->wallet_ids) {
                 $res     = Wallet::verifyDsr($request->wallet_ids);
                 $message = $res > 0
-                ? "Transaction have been successfully verified."
-                : "No pending transactions to verify.";
+                    ? "Transaction have been successfully verified."
+                    : "No pending transactions to verify.";
 
                 return response()->json([
                     'count'   => $res,
@@ -168,7 +195,6 @@ class PosController extends Controller
                 'error'   => $e->getMessage(),
             ], 200);
         }
-
     }
 
     public function verifyAllPos(Request $request)
