@@ -61,12 +61,12 @@
                 <thead>
                     <tr>
                         <th>Sl.No</th>
-                        <th>INVOICE</th>
                         <th>POS ID</th>
                         {{-- <th>USER ID</th> --}}
-                        <th>MOBILE</th>
                         <th>NAME</th>
+                        <th>MOBILE</th>
                         <th>BILLING AMOUNT</th>
+                        <th>Transactions</th>
                         <th>TRANSACTION DATE</th>
                         <th>Action</th>
                         {{-- <th>INSERT DATE</th> --}}
@@ -80,23 +80,34 @@
                         </tr>
                     @else
                         @foreach ($wallets as $key => $data)
+                            {{-- {{ dd($data) }} --}}
                             <tr>
                                 <td>{{ $wallets->firstItem() + $key }}</td>
-                                <td>{{ $data->invoice }}</td>
+                                {{-- <td>{{ $data->invoice }}</td> --}}
                                 <td>{{ $data->getPos ? $data->getPos->user_id : '' }}</td>
                                 {{-- <td>{{ $data->user_id }}</td> --}}
-                                <td>{{ $data->mobilenumber }}</td>
-                                <td>{{ $data->user ? $data->user->name : '' }}</td>
-                                <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
+                                <td>{{ $data->getPos->name }}</td>
+                                <td>{{ $data->getPos->mobilenumber }}</td>
+                                <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>
+                                <td>{{ $data->total_transactions }}</td>
                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                 {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
-                                <td>
-                                    {{-- <a href="" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal">Edit</a> --}}
+                                {{-- <td>
                                     <button class="btn btn-sm btn-primary" data-toggle="modal"
                                         data-id="{{ $data->id }}" data-target="#exampleModal">Edit</button>
 
                                     <button type="button" id="delete-dsr" data-id="{{ $data->id }}"
                                         class="btn btn-sm btn-danger">Delete</button>
+                                </td> --}}
+                                <td>
+                                    <a href="{{ route('admin.transaction.details', [
+                                        'id' => encrypt($data->pos_id),
+                                        'start_date' => request()->start_date,
+                                        'end_date' => request()->end_date,
+                                    ]) }}"
+                                        class="btn btn-sm btn-primary">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

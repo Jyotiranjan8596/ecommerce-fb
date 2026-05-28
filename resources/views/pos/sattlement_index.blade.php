@@ -10,9 +10,15 @@
             <h3 class="fw-bold text-primary m-0">Account Settlements
             </h3>
 
-            <button class="btn btn-success px-4 shadow-sm">
-                <i class="fas fa-file-export me-1"></i> Export
-            </button>
+            <form method="POST" action="{{ route('pos.export.settlement') }}">
+                @csrf
+                {{-- <input type="hidden" name="start_date" value="{{ request()->start_date }}">
+                <input type="hidden" name="end_date" value="{{ request()->end_date }}"> --}}
+
+                <button id="export-smry" class="btn btn-success px-4 shadow-sm">
+                    <i class="fas fa-file-export me-1"></i> Export
+                </button>
+            </form>
         </div>
 
         <div class="table-responsive">
@@ -95,23 +101,51 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
     <script>
         $(document).ready(function() {
             // $('#pay-form').on('submit',function(e){
             //     e.prevenetDefault();
             //     var formData = new FormData(this);
             // });
+
+            // $('#export-smry').on('click', function() {
+            //     $.ajax({
+            //         type: 'POST', // HTTP method
+            //         url: '{{ route('pos.export.settlement') }}',
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+            //                 'content') // CSRF token for Laravel
+            //         },
+            //         success: function(response) {
+            //             if (response.code == 200) {
+            //                 // Show SweetAlert
+            //                 Swal.fire({
+            //                     title: 'Success',
+            //                     text: response.message,
+            //                     icon: 'success',
+            //                     confirmButtonText: 'Okay'
+            //                 }).then((result) => {
+            //                     if (result.isConfirmed) {
+            //                         // Reload the page after confirmation
+            //                         location.reload();
+            //                     }
+            //                 });
+            //             }
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.error('Error:', error);
+            //             alert('An error occurred while processing the request.');
+            //         }
+            //     });
+            // });
         });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
 @endsection

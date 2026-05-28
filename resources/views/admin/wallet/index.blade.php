@@ -2,6 +2,19 @@
 
 @section('content')
     <style>
+        #wallet-tbl thead th {
+            position: sticky;
+            top: 0;
+            background-color: #000;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
         .pagination-wrapper {
             display: flex;
             align-items: center;
@@ -210,9 +223,9 @@
                         <th>PAYMENT MODE</th>
                         <th>WALLET AMOUNT</th>
                         <th>REWARD POINTS</th>
-
                     </tr>
                 </thead>
+
                 <tbody id="wlt-tbl-bdy">
                 </tbody>
             </table>

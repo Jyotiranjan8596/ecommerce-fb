@@ -1,6 +1,20 @@
 @extends('layouts.master')
 
 @section('content')
+    <style>
+        #msr-tbl thead th {
+            position: sticky;
+            top: 0;
+            background-color: #000;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
     <div class="container mt-4">
         <h3 class="text-center text-dark font-weight-bold"><b>MONTHLY SALES REPORT</b></h3>
 
@@ -51,7 +65,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-striped text-center">
+            <table class="table table-striped text-center" id="msr-tbl">
                 <thead>
                     <tr>
                         <th>Sl.No</th>

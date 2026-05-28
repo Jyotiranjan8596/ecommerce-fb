@@ -13,22 +13,24 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
     protected $startDate;
     protected $endDate;
     protected $serialNumber = 1;
-    // protected $posId;
-    public function __construct($startDate = null, $endDate = null)
+    protected $pos_id;
+    public function __construct($startDate = null, $endDate = null, $posId = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        // $this->posId = $posId;
+        $this->pos_id = $posId;
     }
 
     public function collection()
     {
         $query = Wallet::with('user', 'getPos');
-    
+        if ($this->pos_id != null) {
+            $query->where('pos_id', $this->pos_id);
+        }
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('transaction_date', [$this->startDate, $this->endDate]);
         }
-    
+
         return $query->get();
     }
 
@@ -38,16 +40,16 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
             $this->serialNumber++,
             $wallet->getPos?->name ?? 'N/A',
             $wallet->transaction_date,
-            $wallet->invoice,                     
+            $wallet->invoice,
             // $wallet->user ? $wallet->user->user_id : 'N/A',
-            $wallet->user ? $wallet->user->mobilenumber : 'N/A',                      
+            $wallet->user ? $wallet->user->mobilenumber : 'N/A',
             $wallet->user ? $wallet->user->name : 'N/A',
             $wallet->user ? $wallet->user->address : 'N/A',
             $wallet->billing_amount ?? 0,
             $wallet->pay_by,
-            $wallet->amount ?? 0,           
+            $wallet->amount ?? 0,
             $wallet->tran_type,
-            $wallet->pay_by_wallet,           
+            $wallet->pay_by_wallet,
             $wallet->amount_wallet !== null ? $wallet->amount_wallet : 0,
             number_format($wallet->transaction_amount, 2) ?? 0,
             $wallet->insert_date
@@ -57,19 +59,19 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'Sl. No.', 
-            'BRANCH',          
+            'Sl. No.',
+            'BRANCH',
             'DATE',
-            'VOUCHER NUMBER',            
+            'VOUCHER NUMBER',
             // 'USER ID',
-            'MOBILE NUMBER',            
+            'MOBILE NUMBER',
             'CUSTOMER NAME',
             'ADDRESS',
             'AMOUNT',
             'PAID BY',
-            'AMOUNT PAID BY CASH/UPI',           
+            'AMOUNT PAID BY CASH/UPI',
             'TRANSACTION TYPE',
-            'PAY BY WALLET',            
+            'PAY BY WALLET',
             'AMOUNT WALLET',
             'TRANSACTION AMOUNT',
             'INSERT DATE'

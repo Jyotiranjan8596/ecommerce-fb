@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\AccountSettlementExport;
 use App\Models\PaymentSummary;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentSummaryController extends Controller
 {
@@ -42,6 +44,32 @@ class PaymentSummaryController extends Controller
         }
     }
 
+    public function export_settlement(){
+        try {
+            $result = PaymentSummary::fetch_summary_pos();
+            if ($result) {
+               return Excel::download(new AccountSettlementExport($result), 'AccountSettlement.csv');
+                // return response()->json([
+                //     'status' => 'success',
+                //     'code'   => 200,
+                //     'data'   => $result,
+                // ]);
+            } else {
+                return response()->json([
+                    'status'  => 'failed',
+                    'code'    => 500,
+                    'message' => 'Something Went Wrong!',
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::info("Summary Controller" . $e->getMessage());
+            return response()->json([
+                'status'  => 'failed',
+                'code'    => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
     public function fetch_summary_pos()
     {
         try {

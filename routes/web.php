@@ -125,6 +125,7 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::post('dsr/verify', [PosController::class, 'verifyDsr'])->name('dsr.verify.transaction');
     Route::post('initiate-payment', [PosController::class, 'initiate_payment'])->name('initiate.payment');
     Route::get('sattlement', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
+    Route::post('export-settlement',[PaymentSummaryController::class,'export_settlement'])->name('export.settlement');
     Route::post('/save-modal-data', [PaymentSummaryController::class, 'saveSummaryData'])->name('save.summary.data');
     Route::get('pos/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadPosInvoice'])->name('settlement.invoice');
 });

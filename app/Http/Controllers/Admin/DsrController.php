@@ -24,8 +24,14 @@ class DsrController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $query = Wallet::query();
-
+        $query = Wallet::with('getPos')
+            ->selectRaw('
+                pos_id,
+                DATE(transaction_date) as transaction_date,
+                SUM(billing_amount) as total_billing_amount,
+                COUNT(id) as total_transactions
+            ')
+            ->groupBy('pos_id', DB::raw('DATE(transaction_date)'));
         if (
             $request->has('start_date') && !empty($request->start_date) &&
             $request->has('end_date') && !empty($request->end_date)
@@ -35,7 +41,7 @@ class DsrController extends Controller
             $endDate = Carbon::parse($request->end_date)->endOfDay();
             $query->whereBetween('transaction_date', [$startDate, $endDate]);
         } else {
-            $query->whereDate('insert_date', now()->toDateString());
+            $query->whereDate('transaction_date', today());
 
             if ($query->count() == 0) {
                 $previousDate = DB::table('wallets')
@@ -49,8 +55,8 @@ class DsrController extends Controller
         }
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('user',function($qry) use($searchTerm){
-                $qry->where('name', 'LIKE', "%{$searchTerm}%");
+            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('getPos', function ($qry) use ($searchTerm) {
+                $qry->where('name', 'LIKE', "%{$searchTerm}%")->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
             });
         }
 
@@ -60,6 +66,48 @@ class DsrController extends Controller
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
         return view('admin.dsr.index', compact('wallets',   'userId', 'user_profile'));
+    }
+
+    public function transaction_details(Request $request, $id)
+    {
+        // dd($request->all());
+        $user_profile = auth()->user();
+        $userId       = $user_profile->id;
+        $id = decrypt($id);
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $query =  Wallet::where('pos_id', $id)->with('user');
+        if (!empty($start_date) && !empty($end_date)) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        } else {
+            $query->whereDate('transaction_date', today());
+
+            if ($query->count() == 0) {
+                $previousDate = DB::table('wallets')
+                    ->whereDate('insert_date', '<', now()->toDateString())
+                    ->max('insert_date');
+
+                if ($previousDate) {
+                    $query->whereDate('insert_date', $previousDate);
+                }
+            }
+        }
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('user', function ($qry) use ($searchTerm) {
+                $qry->where('name', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
+            ->simplePaginate(15);
+        // dd($wallets);
+        $wallets->appends($request->only(['search', 'start_date', 'end_date']));
+
+        return view('admin.dsr.indivisualDsr', compact('wallets', 'userId', 'user_profile', 'id', 'start_date', 'end_date'));
     }
 
     public function update_dsr(Request $request)
@@ -131,8 +179,16 @@ class DsrController extends Controller
     {
         $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
         $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
-        $posId = auth()->user()->user_id;
-        return Excel::download(new WalletExport($startDate, $endDate,$posId), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new WalletExport($startDate, $endDate), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+    }
+
+    public function userTransactionExport(Request $request)
+    {   
+        // dd($request->all());
+        $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
+        $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
+        $pos_id = $request->pos_id;
+        return Excel::download(new WalletExport($startDate, $endDate, $pos_id), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
     }
     public function import(Request $request)
     {

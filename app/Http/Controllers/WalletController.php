@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Exports\PosMsrExport;
@@ -97,7 +98,7 @@ class WalletController extends Controller
         ) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate   = Carbon::parse($request->end_date)->endOfDay();
-           $query->whereBetween('transaction_date', [$startDate, $endDate]);
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
         } else {
             // Show only current date transactions when no start and end date are provided
             $query->whereDate('transaction_date', now()->toDateString());
@@ -151,8 +152,8 @@ class WalletController extends Controller
         $startDate = $request->has('start_date') && ! empty($request->start_date) ? $request->start_date : null;
         $endDate   = $request->has('end_date') && ! empty($request->end_date) ? $request->end_date : null;
         $posId = auth()->user()->user_id;
-        // $pos   = PosModel::where('user_id', $posId)->first();
-        return Excel::download(new WalletExport($startDate, $endDate,$posId), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        $pos   = PosModel::where('user_id', $posId)->value('id');
+        return Excel::download(new WalletExport($startDate, $endDate, $pos), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
     public function import(Request $request)

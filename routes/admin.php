@@ -103,9 +103,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('import-dsr', [DsrController::class, 'import'])->name('dsr.import');
 
     Route::get('msr', [DsrController::class, 'msr'])->name('msr');
-
     Route::get('export-msr', [DsrController::class, 'exportMsr'])->name('msr.export');
-
+    Route::get('/transaction-details/{id}', [DsrController::class, 'transaction_details'])->name('transaction.details');
+    Route::get('user-transaction-export-dsr', [DsrController::class, 'userTransactionExport'])->name('dsr.user.transaction.export');
     Route::get('wallet', [WalletController::class, 'wallet'])->name('wallet');
     Route::post('wallet', [WalletController::class, 'wallet_load'])->name('wallet.index');
     Route::get('/export-wallet', [WalletController::class, 'exportWallet'])->name('wallet.export');
