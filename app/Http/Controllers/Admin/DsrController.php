@@ -59,13 +59,17 @@ class DsrController extends Controller
                 $qry->where('name', 'LIKE', "%{$searchTerm}%")->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
             });
         }
+        $summary = (clone $query)->get();
 
+        $totalTransactions = $summary->sum('total_transactions');
+        $totalBillingAmount = $summary->sum('total_billing_amount');
+        $totalPos = $summary->pluck('pos_id')->unique()->count();
         $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
             ->simplePaginate(15);
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
-        return view('admin.dsr.index', compact('wallets',   'userId', 'user_profile'));
+        return view('admin.dsr.index', compact('totalBillingAmount','totalTransactions','totalPos','wallets','userId', 'user_profile'));
     }
 
     public function transaction_details(Request $request, $id)
@@ -183,7 +187,7 @@ class DsrController extends Controller
     }
 
     public function userTransactionExport(Request $request)
-    {   
+    {
         // dd($request->all());
         $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
         $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
