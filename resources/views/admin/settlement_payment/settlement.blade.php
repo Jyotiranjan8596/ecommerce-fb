@@ -88,16 +88,25 @@
                                 </td>
                                 @if ($settlement->status == 'pending')
                                     <td id="status-id">
-                                        <span data-id="{{ $settlement->id }}"
-                                            class="badge bg-warning text-dark">Pending</span>
+                                        <span data-id="{{ $settlement->id }}" class="badge bg-warning text-dark"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Ref: {{ $settlement->reference_number ?? 'Not yet assigned' }}">
+                                            Pending
+                                        </span>
                                     </td>
                                 @elseif ($settlement->status == 'rejected')
                                     <td>
-                                        <span class="badge bg-danger"><b>Rejected</b></span>
+                                        <span class="badge bg-danger" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Ref: {{ $settlement->reference_number ?? 'Not yet assigned' }}">
+                                            <b>Rejected</b>
+                                        </span>
                                     </td>
                                 @else
                                     <td>
-                                        <span class="badge bg-success"><b>Settled</b></span>
+                                        <span class="badge bg-success" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Ref: {{ $settlement->reference_number ?? 'Something Wrong!' }}">
+                                            <b>Settled</b>
+                                        </span>
                                     </td>
                                 @endif
                                 <td>
@@ -194,6 +203,16 @@
     <script>
         $(document).ready(function() {
 
+            const tooltipEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipEls.forEach(el => {
+                const tooltip = new bootstrap.Tooltip(el, {
+                    trigger: 'hover focus click'
+                });
+
+                el.addEventListener('click', function() {
+                    setTimeout(() => tooltip.hide(), 2500); // hides after 2.5s on tap
+                });
+            });
             // Make openVerifyModal globally accessible
             window.openVerifyModal = function(el) {
                 let settlementId = $(el).data('id');
