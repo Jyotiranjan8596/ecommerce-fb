@@ -50,7 +50,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::get('user/export', [UserController::class, 'export'])->name('user.export');
     Route::get('user/all/transaction',[UserAllTransactionController::class,'allUserTransaction'])->name('user.all.transaction');
     Route::post('get/all/user/transactions',[UserAllTransactionController::class,'userAllTransactions'])->name('all.users.transactions');
-    Route::post('get/all/user/transactions',[UserAllTransactionController::class,'userAllTransactions'])->name('all.users.transactions.export');
+    Route::post('get/all/user/transactions/export',[UserAllTransactionController::class,'userAllTransactionsExport'])->name('all.users.transactions.export');
     //roles
     Route::resource('roles', RoleController::class);
 
