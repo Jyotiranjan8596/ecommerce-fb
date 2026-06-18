@@ -58,7 +58,6 @@ class PosModel extends Model
 
     public static function getWalletDetails($date)
     {
-        Log::info($date);
         $data = self::select(['id', 'name', 'transaction_charge'])->with(['wallet' => function ($qry) use ($date) {
             $qry->whereDate('transaction_date', $date);
         }])->whereHas('wallet', function ($qry) use ($date) {

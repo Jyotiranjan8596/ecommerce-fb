@@ -108,7 +108,17 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('admin/users/custom') ? 'active' : '' }}"
                                     href="{{ route('admin.user.customer') }}">
-                                    <span class="sidebar-text">Add Customer</span>
+                                    <span class="sidebar-text"> Add Customer</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="multi-level collapse" role="list" id="submenu-app" aria-expanded="false">
+                        <ul class="flex-column nav">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('admin/user/all/transaction') ? 'active' : '' }}"
+                                    href="{{ route('admin.user.all.transaction') }}">
+                                    <span class="sidebar-text">All Transactions</span>
                                 </a>
                             </li>
                         </ul>

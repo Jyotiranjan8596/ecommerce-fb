@@ -32,16 +32,13 @@ class VerifiedTransactionsJob implements ShouldQueue
     {
         $fileName = 'paymentsummary/payment_summary_' . time() . '.xlsx';
 
-        Excel::store(
-            new PaymentSummaryExport($this->wallet_data),
-            $fileName
-        );
+        Excel::store(new PaymentSummaryExport($this->wallet_data),$fileName);
 
         $filePath = storage_path('app/' . $fileName);
 
         Mail::raw('Please find attached payment summary.', function ($msg) use ($filePath) {
 
-            $msg->to('sahoorinku63@gmail.com')
+            $msg->to('satshreemarketing@gmail.com')
                 ->subject('Payment Summary Report')
                 ->attach($filePath);
         });
