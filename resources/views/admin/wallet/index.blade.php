@@ -120,7 +120,6 @@
         <h3 class="text-center"><b style="color: rgb(8, 7, 20)">PAYBACK DETAILS</b></h3>
 
         <div class="row g-3 mb-3">
-
             {{-- File Upload --}}
             <div class="col-12 col-md-4">
                 <form action="{{ route('admin.wallet.upload') }}" method="POST" enctype="multipart/form-data">

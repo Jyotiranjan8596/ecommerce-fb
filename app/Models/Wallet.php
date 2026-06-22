@@ -80,6 +80,36 @@ class Wallet extends Model
         try {
             $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
 
+            if ($req->has('start_date') && $req->has('end_date')) {
+                $transQuery->whereBetween('transaction_date', [$req->start_date, $req->end_date]);
+            } elseif ($req->has('start_date')) {
+                $transQuery->where('transaction_date', '>=', $req->start_date);
+            } elseif ($req->has('end_date')) {
+                $transQuery->where('transaction_date', '<=', $req->end_date);
+            }
+            return $transQuery->paginate(50)->through(function ($item) {
+                $user_wallets = $item->userWallets;
+                $user = $item->user;
+                foreach ($user_wallets as $user_wallet) {
+                    $item->remaining_amount = round($user_wallet->remaining_amount);
+                    $item->remaining_reward = round($user_wallet->remaining_points);
+                }
+                $item->user_name = $user ? $user->name : "NA";
+                $item->mobile = $user ? $user->mobilenumber : "NA";
+                $item->pos_name = $item->getPos ? $item->getPos->name : "NA";
+                $item->trans_date = $item->transaction_date ? date('d-m-Y', strtotime($item->transaction_date)) : 'Na';
+                return $item;
+            });
+        } catch (\Exception $e) {
+            Log::info('All transaction Message Export', ['msg' => $e->getMessage()]);
+        }
+    }
+
+    public static function export_user_transaction($req)
+    {
+        try {
+            $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
+
             if ($req->has('from_date') && $req->has('to_date')) {
                 $transQuery->whereBetween('transaction_date', [$req->from_date, $req->to_date]);
             } elseif ($req->has('from_date')) {
@@ -87,7 +117,7 @@ class Wallet extends Model
             } elseif ($req->has('to_date')) {
                 $transQuery->where('transaction_date', '<=', $req->to_date);
             }
-            return $transQuery->paginate(50)->through(function ($item) {
+            return $transQuery->get()->map(function ($item) {
                 $user_wallets = $item->userWallets;
                 $user = $item->user;
                 foreach ($user_wallets as $user_wallet) {

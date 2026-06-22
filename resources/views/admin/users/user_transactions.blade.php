@@ -127,11 +127,11 @@
                     <label class="form-label small text-muted mb-1">Filter Records</label>
                     <div class="row g-2">
                         <div class="col-6 col-sm-4 col-md-4">
-                            <input name="from_date" class="form-select form-select-sm w-100" type="date">
+                            <input id="start_date" name="start_date" class="form-select form-select-sm w-100" type="date">
                             </input>
                         </div>
                         <div class="col-6 col-sm-4 col-md-4">
-                            <input name="to_date" class="form-select form-select-sm w-100" type="date">
+                            <input id="end_date" name="end_date" class="form-select form-select-sm w-100" type="date">
                             </input>
                         </div>
 
@@ -167,15 +167,16 @@
             </div>
 
             {{-- Export --}}
-            {{-- <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
-                <form method="POST" action="{{ route('all.users.transactions.export') }}" class="w-100">
+            <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
+                <form method="POST" action="{{ route('admin.all.users.transactions.export') }}" class="w-100">
                     @csrf
+                    <input id="hidden_start_date" type="hidden" name="from_date" value="{{ request()->start_date }}">
+                    <input id="hidden_end_date" type="hidden" name="to_date" value="{{ request()->end_date }}">
                     <button class="btn btn-danger btn-sm fw-semibold w-100" type="submit">
                         <i class="bi bi-download me-1"></i> EXPORT
                     </button>
                 </form>
-            </div> --}}
-
+            </div>
         </div>
         <hr class="my-4">
 
@@ -212,6 +213,13 @@
     <script>
         $(document).ready(function() {
 
+            $('#start_date').on('change', function() {
+                $('#hidden_start_date').val(this.value);
+            });
+
+            $('#end_date').on('change', function() {
+                $('#hidden_end_date').val(this.value);
+            });
             // Initial load
             transactionsLoad(1);
 
@@ -266,6 +274,9 @@
                                         </td>
                                     </tr>
                                 `;
+
+                            $('#pagination-container').html('');
+                            $('#pagination-link').html('');
                         }
 
                         $('#wlt-tbl-bdy').html(rows);
