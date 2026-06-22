@@ -373,7 +373,7 @@ class UserDashboardController extends Controller
         $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
         $sponsors_count = count($sponsors);
         // dd($userId);
-        $balances             = self::get_total_wallet_amount($userId, $user_profile->user_id);
+        $balances             = self::get_total_wallet_amount($userId);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
         $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)
