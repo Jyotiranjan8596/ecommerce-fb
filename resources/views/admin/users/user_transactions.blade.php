@@ -127,11 +127,13 @@
                     <label class="form-label small text-muted mb-1">Filter Records</label>
                     <div class="row g-2">
                         <div class="col-6 col-sm-4 col-md-4">
-                            <input id="start_date" name="start_date" class="form-select form-select-sm w-100" type="date">
+                            <input required id="start_date" name="start_date" class="form-select form-select-sm w-100"
+                                type="date">
                             </input>
                         </div>
                         <div class="col-6 col-sm-4 col-md-4">
-                            <input id="end_date" name="end_date" class="form-select form-select-sm w-100" type="date">
+                            <input required id="end_date" name="end_date" class="form-select form-select-sm w-100"
+                                type="date">
                             </input>
                         </div>
 
@@ -212,7 +214,6 @@
 
     <script>
         $(document).ready(function() {
-
             $('#start_date').on('change', function() {
                 $('#hidden_start_date').val(this.value);
             });
@@ -224,7 +225,6 @@
             transactionsLoad(1);
 
             function transactionsLoad(page = 1, formElement) {
-
                 let formData = new FormData(formElement)
                 formData.append('page', page);
                 $.ajax({

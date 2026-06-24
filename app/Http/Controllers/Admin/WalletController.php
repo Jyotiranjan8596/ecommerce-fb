@@ -26,13 +26,16 @@ class WalletController extends Controller
         $walletBalance = UserWallet::getAdminWallet($request);
         $pagination = $walletBalance->links()->render();
         return response()->json([
-            'data'=>$walletBalance,
-            'pagination'=> $pagination
-        ]); 
+            'data' => $walletBalance,
+            'pagination' => $pagination
+        ]);
     }
-    public function exportWallet()
+    public function exportWallet(Request $request)
     {
-        return Excel::download(new AdminWalletExport, 'admin_wallet_data.xlsx');
+        // dd($request->all());
+        $data = UserWallet::getAdminWalletExport($request);
+        // dd($data->toArray());
+        return Excel::download(new AdminWalletExport($data), 'admin_wallet_data.xlsx');
     }
     public function uploadWallet(Request $request)
     {

@@ -11,22 +11,25 @@ class AdminWalletExport implements FromCollection, WithHeadings
     /**
      * @return \Illuminate\Support\Collection
      */
+    protected $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
     public function collection()
     {
-        return UserWallet::whereNotNull('wallet_amount')
-            ->with('user')
-            ->get()
-            ->map(function ($wallet) {
-                // dd($wallet->user);
-                return [
-                    'User ID' => $wallet->user?->user_id ?? 'NA',
-                    'Month' => $wallet->month, 
-                    'Wallet Amount' => $wallet->wallet_amount,
-                    'Payment Mode' => $wallet->trans_type,
-                    'Mobile Number' => $wallet->mobilenumber
-                   
-                ];
-            });
+        return collect($this->data)->map(function ($wallet) {
+            return [
+                $wallet->month,
+                $wallet->user_data?->user_id ?? '',
+                $wallet->user_data?->name ?? '',
+                $wallet->mobilenumber,
+                $wallet->trans_type,
+                $wallet->rounded_wallet_amount ?? 0,
+                $wallet->rounded_reward_point ?? 0,
+            ];
+        });
     }
 
     /**
@@ -37,12 +40,13 @@ class AdminWalletExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'User ID',
             'Month',
-            'Wallet Amount',
+            'User ID',
+            'Name',
+            'Mobile Number',
             'Payment Mode',
-            'Mobile Number'
-            
+            'Wallet Amount',
+            'Reward Points',
         ];
     }
 }

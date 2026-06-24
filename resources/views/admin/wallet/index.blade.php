@@ -140,6 +140,7 @@
             {{-- Filters --}}
             <div class="col-12 col-md-6">
                 <form id="wallet-form">
+
                     @csrf
                     <label class="form-label small text-muted mb-1">Filter Records</label>
                     <div class="row g-2">
@@ -198,8 +199,12 @@
 
             {{-- Export --}}
             <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
-                <form method="GET" action="{{ route('admin.wallet.export') }}" class="w-100">
+                <form method="post" action="{{ route('admin.wallet.export') }}" class="w-100">
                     @csrf
+                    <input id="hidden_month" type="hidden" name="month">
+                    <input id="hidden_year" type="hidden" name="year">
+                    <input id="hidden_trans_type" type="hidden" name="trans_type">
+                    <input id="hidden_pay_by" type="hidden" name="pay_by">
                     <button class="btn btn-danger btn-sm fw-semibold w-100" type="submit">
                         <i class="bi bi-download me-1"></i> EXPORT
                     </button>
@@ -240,6 +245,22 @@
 
             // Initial load
             walletLoad(1);
+
+
+            $('#month').on('change', function() {
+                $('#hidden_month').val(this.value);
+            });
+
+            $('#year').on('change', function() {
+                $('#hidden_year').val(this.value);
+            });
+            $('#trans_type').on('change', function() {
+                $('#hidden_trans_type').val(this.value);
+            });
+
+            $('#pay_by').on('change', function() {
+                $('#hidden_pay_by').val(this.value);
+            });
 
             function walletLoad(page = 1, formElement) {
 

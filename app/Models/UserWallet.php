@@ -35,7 +35,6 @@ class UserWallet extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-
     public function getPos()
     {
         return $this->belongsTo(PosModel::class, 'pos_id');
@@ -82,6 +81,64 @@ class UserWallet extends Model
         }
         return $query->paginate(50)->through(function ($wallet) {
             // dd($wallet->toArray());
+            if ($wallet->trans_type == 'debit') {
+                $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
+                    ? ceil($wallet->used_amount)
+                    : floor($wallet->used_amount);
+                $wallet->rounded_reward_point = ($wallet->used_points - floor($wallet->used_points)) > 0.3
+                    ? ceil($wallet->used_points)
+                    : floor($wallet->used_points);
+            } else {
+                $wallet->rounded_wallet_amount = ($wallet->wallet_amount - floor($wallet->wallet_amount)) > 0.3
+                    ? ceil($wallet->wallet_amount)
+                    : floor($wallet->wallet_amount);
+                $wallet->rounded_reward_point = ($wallet->reward_points - floor($wallet->reward_points)) > 0.3
+                    ? ceil($wallet->reward_points)
+                    : floor($wallet->reward_points);
+            }
+
+            return $wallet;
+        });
+    }
+
+    public static function getAdminWalletExport($request)
+    {
+        // dd($request->all());
+        $year = $request->year;
+        $month = $request->month;
+        $type = $request->trans_type;
+        $pay_by = $request->pay_by;
+        $query = self::whereNotNull('wallet_amount')->with('user_data')->orderBy('id', 'desc');
+        if ($month && $year && $type && $pay_by) {
+            // dd($year, $month, $type, $pay_by);
+            $formatted = date('M', mktime(0, 0, 0, $month, 1)) . '-' . substr($year, -2);
+            // e.g. month=3, year=2026 → "Mar-26"
+            $format2 = substr($year, -2) . '-' . date('M', mktime(0, 0, 0, $month, 1));
+            // Output: 26-Mar
+            $query->where('trans_type', $type)->where(function ($q) use ($formatted, $format2) {
+                $q->where('month', $formatted)
+                    ->orWhere('month', $format2);
+            });
+            if ($pay_by == 'wallet') {
+                // dd('wallet');
+                $query->where('wallet_amount', '!=', '0');
+            } elseif ($pay_by == 'reward') {
+                $query->where('used_points', '>', '0');
+            }
+        } elseif ($month) {
+            $formatted = date('M', mktime(0, 0, 0, $month, 1));
+            $query->where('month', 'LIKE', $formatted . '-%');
+            // e.g. month=3 → "Mar-%"
+        } elseif ($year) {
+            $shortYear = substr($year, -2);
+            $query->where('month', 'LIKE', '%-' . $shortYear);
+            // e.g. year=2026 → "%-26"
+        } elseif ($type && $type != 'all') {
+            $query->where('trans_type', $type);
+        }
+
+        // dd($year, $month, $type, $pay_by);
+        return $query->get()->map(function ($wallet) {
             if ($wallet->trans_type == 'debit') {
                 $wallet->rounded_wallet_amount = ($wallet->used_amount - floor($wallet->used_amount)) > 0.3
                     ? ceil($wallet->used_amount)
