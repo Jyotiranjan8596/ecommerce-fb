@@ -465,6 +465,7 @@
                                             <th>Transaction Date</th>
                                             <th>Billing Amount</th>
                                             <th>Wallet Deduct</th>
+                                            <th>Reward Deduct</th>
                                             <th>Net Pay</th>
                                             <th>Remaining Wallet</th>
                                             <th>Remaining Reward</th>
@@ -481,6 +482,7 @@
                                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
+                                                <td>₹{{ $data->userWallets[0]->used_points ?? 0 }}/-</td>
                                                 <td>₹{{ $data->amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
                                                 <td>₹{{ $data->remaining_reward ?? 0 }}/-</td>

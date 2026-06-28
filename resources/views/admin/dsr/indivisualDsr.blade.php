@@ -37,6 +37,11 @@
                         <th>MOBILE</th>
                         <th>NAME</th>
                         <th>BILLING AMOUNT</th>
+                        <th>Wallet Deduct</th>
+                        <th>Reward Deduct</th>
+                        <th>Net Pay</th>
+                        <th>Remaining Wallet</th>
+                        <th>Remaining Reward</th>
                         <th>TRANSACTION DATE</th>
                         <th>Action</th>
                         {{-- <th>INSERT DATE</th> --}}
@@ -50,6 +55,7 @@
                         </tr>
                     @else
                         @foreach ($wallets as $key => $data)
+                        {{-- {{dd($data);}} --}}
                             <tr>
                                 <td>{{ $wallets->firstItem() + $key }}</td>
                                 <td>{{ $data->invoice }}</td>
@@ -58,6 +64,11 @@
                                 <td>{{ $data->mobilenumber }}</td>
                                 <td>{{ $data->user ? $data->user->name : '' }}</td>
                                 <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
+                                <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
+                                <td>₹{{ $data->reward_amount ?? 0 }}/-</td>
+                                <td>₹{{ $data->amount ?? 0 }}/-</td>
+                                <td>₹{{ $data->userWallets[0]->used_amount ?? 0 }}/-</td>
+                                <td>₹{{ $data->userWallets[0]->remaining_points ?? 0 }}/-</td>
                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                 {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
                                 <td>

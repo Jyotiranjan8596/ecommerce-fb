@@ -134,4 +134,23 @@ class Wallet extends Model
             Log::info('All transaction Message', ['msg' => $e->getMessage()]);
         }
     }
+
+    public static function export_user_transaction_of_pos($date, $id)
+    {
+        $query =  Wallet::where('pos_id', $id)->with('user', 'userWallets')->whereDate('transaction_date', $date);
+        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')->get()->map(function ($item) {
+            return [
+                'pos_id' => $item?->getPos?->user_id ?? 'NA',
+                'invoice' => $item?->invoice,
+                'billing_amount' => $item?->billing_amount ?? 'NA',
+                'wallet_deduct' => $item?->amount_wallet ?? 'NA',
+                'reward_deduct' => $item?->userWallets[0]?->used_points ?? 'NA',
+                'net_pay' => $item?->amount ?? 'NA',
+                'remaining_amount' => round($item?->userWallets[0]?->remaining_amount),
+                'remaining_reward' => round($item?->userWallets[0]?->remaining_points),
+                'status' => 'Varified'
+            ];
+        });
+        return $wallets;
+    }
 }

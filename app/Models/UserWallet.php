@@ -52,32 +52,44 @@ class UserWallet extends Model
         $type = $request->type;
         $pay_by = $request->pay_by;
         $query = self::whereNotNull('wallet_amount')->with('user_data')->orderBy('id', 'desc');
-        if ($month && $year && $type && $pay_by) {
-            // dd($year, $month, $type);
+        if ($month && $year) {
+
             $formatted = date('M', mktime(0, 0, 0, $month, 1)) . '-' . substr($year, -2);
-            // e.g. month=3, year=2026 → "Mar-26"
             $format2 = substr($year, -2) . '-' . date('M', mktime(0, 0, 0, $month, 1));
-            // Output: 26-Mar
-            $query->where('trans_type', $type)->where(function ($q) use ($formatted, $format2) {
+
+            $query->where(function ($q) use ($formatted, $format2) {
                 $q->where('month', $formatted)
                     ->orWhere('month', $format2);
             });
-            if ($pay_by == 'wallet') {
-                // dd('wallet');
-                $query->where('wallet_amount', '!=', '0');
-            } elseif ($pay_by == 'reward') {
-                $query->where('used_points', '>', '0');
-            }
-        } elseif ($month) {
+        }
+
+        if ($month && !$year) {
+
             $formatted = date('M', mktime(0, 0, 0, $month, 1));
+
             $query->where('month', 'LIKE', $formatted . '-%');
-            // e.g. month=3 → "Mar-%"
-        } elseif ($year) {
+        }
+
+        if ($year && !$month) {
+
             $shortYear = substr($year, -2);
+
             $query->where('month', 'LIKE', '%-' . $shortYear);
-            // e.g. year=2026 → "%-26"
-        } elseif ($type && $type != 'all') {
+        }
+
+        if ($type && $type != 'all') {
+
             $query->where('trans_type', $type);
+        }
+
+        if ($pay_by == 'wallet') {
+
+            $query->where('wallet_amount', '!=', '0');
+        }
+
+        if ($pay_by == 'reward') {
+
+            $query->where('used_points', '>', '0');
         }
         return $query->paginate(50)->through(function ($wallet) {
             // dd($wallet->toArray());
@@ -103,7 +115,6 @@ class UserWallet extends Model
 
     public static function getAdminWalletExport($request)
     {
-        // dd($request->all());
         $year = $request->year;
         $month = $request->month;
         $type = $request->trans_type;

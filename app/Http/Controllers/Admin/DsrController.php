@@ -67,7 +67,7 @@ class DsrController extends Controller
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
-        return view('admin.dsr.index', compact('totalBillingAmount','totalTransactions','totalPos','wallets','userId', 'user_profile'));
+        return view('admin.dsr.index', compact('totalBillingAmount', 'totalTransactions', 'totalPos', 'wallets', 'userId', 'user_profile'));
     }
 
     public function transaction_details(Request $request, $id)
@@ -78,7 +78,7 @@ class DsrController extends Controller
         $id = decrypt($id);
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $query =  Wallet::where('pos_id', $id)->with('user');
+        $query =  Wallet::where('pos_id', $id)->with('user','userWallets');
         if (!empty($start_date) && !empty($end_date)) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate = Carbon::parse($request->end_date)->endOfDay();

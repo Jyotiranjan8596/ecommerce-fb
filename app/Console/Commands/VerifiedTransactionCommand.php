@@ -7,6 +7,7 @@ use App\Models\PosModel;
 use App\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class VerifiedTransactionCommand extends Command
 {
@@ -33,9 +34,9 @@ class VerifiedTransactionCommand extends Command
         $yesterday = $yesterday->toDateString();
 
         $wallet_data = PosModel::getWalletDetails($yesterday);
-
+        
         if ($wallet_data) {
-            VerifiedTransactionsJob::dispatch($wallet_data)->onQueue('verified_transaction');
+            VerifiedTransactionsJob::dispatch($wallet_data,$yesterday)->onQueue('verified_transaction');
         }
     }
 }
