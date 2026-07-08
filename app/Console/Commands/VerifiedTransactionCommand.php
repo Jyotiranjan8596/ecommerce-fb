@@ -30,13 +30,11 @@ class VerifiedTransactionCommand extends Command
      */
     public function handle()
     {
-        $yesterday = Carbon::now();
-        $yesterday = $yesterday->toDateString();
-
+        $yesterday = Carbon::yesterday()->toDateString();
         $wallet_data = PosModel::getWalletDetails($yesterday);
-        
+
         if ($wallet_data) {
-            VerifiedTransactionsJob::dispatch($wallet_data,$yesterday)->onQueue('verified_transaction');
+            VerifiedTransactionsJob::dispatch($wallet_data, $yesterday)->onQueue('verified_transaction');
         }
     }
 }
