@@ -68,7 +68,7 @@ class VerifiedTransactionsJob implements ShouldQueue
             $pos_filePath = storage_path('app/' . $pos_fileName);
             $trans_date = $this->date;
             Mail::raw('Please find attached payment summary.', function ($msg) use ($pos_filePath, $pos, $trans_date) {
-                $msg->to('sahoorinku63@gmail.com')
+                $msg->to($pos['email'])
                     ->subject('Transactions for ' . $trans_date)
                     ->attach($pos_filePath);
             });
