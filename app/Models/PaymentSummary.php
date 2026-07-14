@@ -116,11 +116,11 @@ class PaymentSummary extends Model
 
     public static function getinvoice($id)
     {
-        $res = self::with('creator')->findOrFail($id);
+        $res = self::with('pos_system')->findOrFail($id);
 
         return [
-            'pos_name'             => $res->creator->name,
-            'pos_user_id'          => $res->creator->user_id,
+            'pos_name'             => $res->pos_system->name,
+            'pos_user_id'          => $res->pos_system->user_id,
             'bill_date'            => Carbon::parse($res->date)->format('d-m-Y'),
             'total_transaction'    => $res->total_transaction,
             'total_billing_amount' => $res->total_billing_amount,

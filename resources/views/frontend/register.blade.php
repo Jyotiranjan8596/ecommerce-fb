@@ -118,7 +118,7 @@
         </div>
         <div class="form">
             <h2>Sign Up</h2>
-            <form action="{{ route('register.store') }}" method="POST">
+            <form action="{{ route('register') }}" method="POST">
                 @csrf
                 <input type="text" name="name" placeholder="UserName">
                 <input type="email" name="email" placeholder="UserEmail">

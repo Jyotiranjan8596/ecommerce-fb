@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Services\AiSensyService;
+use App\Services\WhatsappMessageService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -135,8 +136,8 @@ class RegisterController extends Controller
             $data['name'],
             $data['mobile'],
         ];
-        $whatsapp  = new AiSensyService();
-        $msg_reslt = $whatsapp->send_registration($data['mobile'], $params);
+        $whatsapp  = new WhatsappMessageService();
+        $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
         Log::info('registration Result in Route', [$msg_reslt]);
         return $user;
     }
