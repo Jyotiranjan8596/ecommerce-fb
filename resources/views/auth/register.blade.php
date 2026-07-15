@@ -84,43 +84,50 @@
                         <label for="name" class="formbold-form-label">
                             Name
                         </label>
-                        <input type="text" name="name" id="name" minlength="10" maxlength="30" class="formbold-form-input" />
+                        <input type="text" name="name" id="name" minlength="10" maxlength="30"
+                            class="formbold-form-input is-invalid" />
                         @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div>
                         <label for="mobile" class="formbold-form-label"> Mobile </label>
-                        <input type="text" name="mobile" id="mobile" minlength="10" maxlength="10" class="formbold-form-input" />
+                        <input type="text" name="mobile" id="mobile" minlength="10" maxlength="10"
+                            class="formbold-form-input is-invalid" />
                         @error('mobile')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="formbold-input-flex">
                     <div>
                         <label for="email" class="formbold-form-label"> Email </label>
-                        <input type="email" name="email" id="email" class="formbold-form-input" />
-                         @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                        <input type="email" name="email" id="email" class="formbold-form-input is-invalid" />
+                        @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div>
                         <label for="gender" class="formbold-form-label"> Gender </label>
                         {{-- <input type="text" name="gender" id="gender" class="formbold-form-input" /> --}}
-                        <select name="gender" id="gender" class="formbold-form-input">
+                        <select name="gender" id="gender" class="formbold-form-input is-invalid">
                             <option value="">Select</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
                             <option value="others">Others</option>
                         </select>
+                        @error('gender')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
@@ -128,32 +135,64 @@
                     <label for="address" class="formbold-form-label">
                         Street Address
                     </label>
-                    <input type="text" name="address" id="address" class="formbold-form-input" />
+                    <input type="text" name="address" id="address" class="formbold-form-input is-invalid" />
+                    @error('address')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
                 </div>
                 <div class="formbold-input-flex">
                     <div>
                         <label for="state" class="formbold-form-label"> State </label>
-                        <input type="text" name="state" id="state" class="formbold-form-input" />
+                        <input type="text" name="state" id="state" class="formbold-form-input is-invalid" />
+                        @error('state')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div>
                         <label for="city" class="formbold-form-label"> City </label>
-                        <input type="text" name="city" id="city" class="formbold-form-input" />
+                        <input type="text" name="city" id="city" class="formbold-form-input is-invalid" />
+                        @error('city')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="formbold-input-flex">
                     <div>
                         <label for="post" class="formbold-form-label"> Post/Zip code </label>
-                        <input type="text" name="post" id="post" class="formbold-form-input" />
+                        <input type="text" name="post" id="post" class="formbold-form-input is-invalid" />
+                        @error('post')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                     <div>
                         <label for="image" class="formbold-form-label"> Profile Image </label>
-                        <input type="file" name="image" id="image" class="formbold-form-input" />
+                        <input type="file" name="image" id="image" class="formbold-form-input is-invalid" />
+                        @error('image')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
                 </div>
 
-                <input type="checkbox" id="supportCheckbox" class="formbold-input-checkbox" />
-                 I agree to the <a href="{{route('frontend.termCondition')}}" class="text-blue-600 hover:underline">Terms & Conditions</a>
+                <input type="checkbox" name="terms" id="supportCheckbox" class="formbold-input-checkbox is-invalid" />
+                I agree to the <a href="{{ route('frontend.termCondition') }}"
+                    class="text-blue-600 hover:underline">Terms
+                    & Conditions</a>
+                @error('terms')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
 
 
                 <button type="submit" class="formbold-btn">Register Now</button>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use App\Services\AiSensyService;
 use App\Services\WhatsappMessageService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -100,6 +99,7 @@ class RegisterController extends Controller
                 'mimes:jpeg,png,jpg,gif,webp',
                 'max:2048' // Max 2MB
             ],
+            'terms' => 'accepted',
         ]);
     }
 
@@ -111,7 +111,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        // dd($data);
+        // dd(array_key_exists('terms', $data));
         $imageName = null;
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
@@ -132,10 +132,6 @@ class RegisterController extends Controller
             'state'        => $data['state'],
             'sponsor_id'   => 666666,
         ]);
-        $params = [
-            $data['name'],
-            $data['mobile'],
-        ];
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
         Log::info('registration Result in Route', [$msg_reslt]);
