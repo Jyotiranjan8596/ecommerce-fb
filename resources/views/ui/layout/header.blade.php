@@ -239,11 +239,11 @@
             <div class="col-sm-4 col-lg-2  text-sm-start text-center d-flex gap-3 ">
                 <div class="d-flex align-items-center my-3 my-sm-0">
                     <a href="{{ route('frontend.index') }}">
-                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo" class="img-fluid"
-                              />
+                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo"
+                            class="img-fluid" />
                     </a>
                 </div>
-                <button class="navbar-toggler justify-content-md-end " type="button"  data-bs-toggle="offcanvas"
+                <button class="navbar-toggler justify-content-md-end " type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <use xlink:href="#menu"></use>
@@ -253,7 +253,7 @@
 
             {{-- Search Bar  --}}
             {{-- <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4"> --}}
-                {{-- <div class="search-bar row bg-light p-2 rounded-4">
+            {{-- <div class="search-bar row bg-light p-2 rounded-4">
                     <div class="col-md-4 d-none d-md-block">
                         <select class="form-select border-0 bg-transparent">
                             <option>All Categories</option>
@@ -337,9 +337,15 @@
                             <li><a href="#concept" class="dropdown-item">Concept</a></li>
                         </ul>
                     </li>
-                    @if (auth()->user())
+                    @if (Auth::check())
                         <li class="nav-item active">
-                            <a href="{{ route('user.index') }}" class="nav-link">Dashboard</a>
+                            @if (Auth::user()->role == 1)
+                                <a class="nav-link" href="{{ route('admin.index') }}">Dashboard</a>
+                            @elseif(Auth::user()->role == 3)
+                                <a class="nav-link" href="{{ route('user.index') }}">Dashboard</a>
+                            @elseif(Auth::user()->role == 4)
+                                <a class="nav-link" href="{{ route('pos.index') }}">Dashboard</a>
+                            @endif
                         </li>
                         <li class="nav-item active">
                             <a href="{{ route('logout') }}"
