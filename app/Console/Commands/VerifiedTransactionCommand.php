@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\VerifiedTransactionsJob;
+use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\Wallet;
 use Carbon\Carbon;
@@ -34,7 +35,19 @@ class VerifiedTransactionCommand extends Command
         $wallet_data = PosModel::getWalletDetails($yesterday);
 
         if ($wallet_data) {
+            $res = PaymentSummary::store_summary($wallet_data);
+        } else {
+            $res = null;
+        }
+        if ($res == 1) {
+            Log::info('Store Summary', ['message' => 'already creadted']);
+            return;
+        } elseif ($res == 2) {
+            Log::info('Store Summary', ['message' => 'already creadted']);
             VerifiedTransactionsJob::dispatch($wallet_data, $yesterday)->onQueue('verified_transaction');
+        } elseif ($res == false) {
+            Log::info('Store Summary', ['message' => 'Something went wrong']);
+            return;
         }
     }
 }

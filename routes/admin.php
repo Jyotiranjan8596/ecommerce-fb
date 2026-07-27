@@ -99,7 +99,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     //pos
     Route::resource('pos_system', PosController::class);
     Route::post('pos_system/{id}/update', [PosController::class, 'update'])->name('pos_system.update');
-
+    Route::get('get-all-pos', [PosController::class, 'getAllPos'])->name('get.all.pos');
+    Route::post('get-pos-payment-details', [PosController::class, 'pos_payment_details'])->name('get.pos.payment.details');
     //dsr
     Route::get('dsr', [DsrController::class, 'dsr'])->name('dsr');
     Route::get('export-dsr', [DsrController::class, 'export'])->name('dsr.export');
@@ -123,4 +124,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
     Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
     Route::get('walletmanage', [ControllersWalletController::class, 'walletManage'])->name('wallet.manage');
+
+    Route::get('account/ledger', [PaymentSummaryController::class, 'ledger_index'])->name('ledger.index');
+    Route::get('payment/index', [PaymentSummaryController::class, 'payment_index'])->name('payment.index');
+    Route::post('create/payment', [PaymentSummaryController::class, 'create_payment'])->name('create.payment');
+    Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
 });

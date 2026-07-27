@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PosModel;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Services\QrDecoderService;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
@@ -278,5 +279,33 @@ class PosController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getAllPos()
+    {
+        $data = PosModel::getAll();
+        return response()->json([
+            'data' => $data,
+            'success' => true
+        ]);
+    }
+
+    public function pos_payment_details(Request $request)
+    {
+        $request->validate([
+            'transaction_date' => 'required|date',
+            'pos_id' => 'nullable|integer',
+        ]);
+        $transaction_data = Wallet::pos_transactions($request->transaction_date, $request->pos_id);
+        $payment_data = PosModel::getWalletDetails($request->transaction_date, $request->pos_id);
+        // dd($payment_data);
+        return response()->json([
+            'success' => $transaction_data->isNotEmpty(),
+            'data' => $transaction_data,
+            'payment_data' => $payment_data,
+            'message' => $transaction_data->isNotEmpty()
+                ? 'Data fetched successfully.'
+                : 'No records found.',
+        ]);
     }
 }

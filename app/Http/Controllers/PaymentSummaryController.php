@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Exports\AccountSettlementExport;
+use App\Models\Payment;
 use App\Models\PaymentSummary;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -44,11 +46,12 @@ class PaymentSummaryController extends Controller
         }
     }
 
-    public function export_settlement(){
+    public function export_settlement()
+    {
         try {
             $result = PaymentSummary::fetch_summary_pos();
             if ($result) {
-               return Excel::download(new AccountSettlementExport($result), 'AccountSettlement.csv');
+                return Excel::download(new AccountSettlementExport($result), 'AccountSettlement.csv');
                 // return response()->json([
                 //     'status' => 'success',
                 //     'code'   => 200,
@@ -95,7 +98,6 @@ class PaymentSummaryController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
-
     }
 
     public function sattlement_index()
@@ -173,5 +175,41 @@ class PaymentSummaryController extends Controller
             ->setPaper('a4');
 
         return $pdf->download('Invoice-' . $settlement['pos_name'] . $settlement['pos_user_id'] . '.pdf');
+    }
+
+    public function ledger_index()
+    {
+        return view('admin.payment.account_ledger');
+    }
+
+    public function payment_index()
+    {
+        return view('admin.payment.payment');
+    }
+
+    public function create_payment(Request $request)
+    {
+        $res = Payment::create_payment($request);
+        if ($res) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment Succesfull'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment Failed'
+            ]);
+        }
+    }
+
+    public function getledger(Request $request)
+    {
+        $ledger = Payment::getLedgerData($request);
+        $pagination = $ledger->links()->render();
+        return response()->json([
+            'data' => $ledger,
+            'pagination' => $pagination
+        ]);
     }
 }

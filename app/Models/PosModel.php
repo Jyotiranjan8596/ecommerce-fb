@@ -49,6 +49,11 @@ class PosModel extends Model
         return $this->hasMany(PaymentSummary::class, 'pos_id', 'id');
     }
 
+    public static function getAll()
+    {
+        return self::orderBy('id', 'desc')->get();
+    }
+
     public static function getPosByUpi($name)
     {
         parse_str(parse_url($name, PHP_URL_QUERY), $params);
@@ -56,52 +61,56 @@ class PosModel extends Model
         return self::where('upi_id', $upi_id)->first();
     }
 
-    public static function getWalletDetails($date)
+    public static function getWalletDetails($date, $pos_id = null)
     {
-        $data = self::select(['id', 'name', 'transaction_charge'])->with(['wallet' => function ($qry) use ($date) {
-            $qry->whereDate('transaction_date', $date);
-        }])->whereHas('wallet', function ($qry) use ($date) {
-            $qry->whereDate('transaction_date', $date);
-        })
-            ->get()->map(function ($item) use ($date) {
-                Log::info('single_data', ['pos_data' => $item]);
-                $wallets = $item->wallet;
-                $totalTransactions  = $wallets->count();
-                $totalBillingAmount = $wallets->sum('billing_amount');
-                $payByCashOrUpi     = $wallets->sum('amount');
-                $payByWallet        = $wallets->where('pay_by', 'wallet')->sum('amount_wallet');
-                $payByReward        = $wallets->where('pay_by', 'reward')->sum('reward_amount');
-                // dd($wallets->toArray());
-                $total_reward_wallet_amount = $payByWallet + $payByReward;
-                $transaction_amount         = $totalBillingAmount * ($item->transaction_charge / 100);
-                if ($total_reward_wallet_amount > $transaction_amount) {
-                    $creditAmount = $total_reward_wallet_amount - $transaction_amount;
-                    $debitAmount  = 0;
-                } elseif ($total_reward_wallet_amount == 0) {
-                    $debitAmount  = $transaction_amount;
-                    $creditAmount = 0;
-                } else {
-                    $debitAmount  = $transaction_amount - $total_reward_wallet_amount;
-                    $creditAmount = 0;
-                }
-                $wdata =  [
-                    'pos_id' => $item->id,
-                    'pos_name' => $item->name,
-                    'date' => $date,
-                    'total_transactions' => $totalTransactions,
-                    'billing_amount' => $totalBillingAmount,
-                    'payByCashOrUpi'     => $payByCashOrUpi,
-                    'payByWallet' => $payByWallet,
-                    'payByReward' => $payByReward,
-                    'creditAmount' => $creditAmount,
-                    'debitAmount' => $debitAmount
-                ];
-                Log::info('jyoti');
-                PaymentSummary::store_summary($wdata);
-                return $wdata;
+        $query = self::select(['id', 'name', 'transaction_charge'])
+            ->with(['wallet' => function ($qry) use ($date) {
+                $qry->whereDate('transaction_date', $date);
+            }])
+            ->whereHas('wallet', function ($qry) use ($date) {
+                $qry->whereDate('transaction_date', $date);
             });
-        Log::info('data', ['pos_data' => $data]);
 
+        if ($pos_id) {
+            $query->where('user_id', $pos_id);
+        }
+
+        $data = $query->get()->map(function ($item) use ($date) {
+            Log::info('single_data', ['pos_data' => $item]);
+            $wallets = $item->wallet;
+            $totalTransactions  = $wallets->count();
+            $totalBillingAmount = $wallets->sum('billing_amount');
+            $payByCashOrUpi     = $wallets->sum('amount');
+            $payByWallet        = $wallets->where('pay_by', 'wallet')->sum('amount_wallet');
+            $payByReward        = $wallets->where('pay_by', 'reward')->sum('reward_amount');
+            $total_reward_wallet_amount = $payByWallet + $payByReward;
+            $transaction_amount         = $totalBillingAmount * ($item->transaction_charge / 100);
+            if ($total_reward_wallet_amount > $transaction_amount) {
+                $creditAmount = $total_reward_wallet_amount - $transaction_amount;
+                $debitAmount  = 0;
+            } elseif ($total_reward_wallet_amount == 0) {
+                $debitAmount  = $transaction_amount;
+                $creditAmount = 0;
+            } else {
+                $debitAmount  = $transaction_amount - $total_reward_wallet_amount;
+                $creditAmount = 0;
+            }
+            $wdata =  [
+                'pos_id' => $item->id,
+                'pos_name' => $item->name,
+                'date' => $date,
+                'total_transactions' => $totalTransactions,
+                'billing_amount' => $totalBillingAmount,
+                'payByCashOrUpi'     => $payByCashOrUpi,
+                'payByWallet' => $payByWallet,
+                'payByReward' => $payByReward,
+                'creditAmount' =>20,// the credit amount is the debit amount for admin
+                'debitAmount' => 0 // the debit amount is the credit amount for admin
+            ];
+            Log::info('jyoti');
+            return $wdata;
+        });
+        Log::info('data', ['pos_data' => $data]);
         return $data ?? false;
     }
 }

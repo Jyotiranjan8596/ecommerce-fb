@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Wallet extends Model
@@ -151,6 +152,30 @@ class Wallet extends Model
                 'status' => 'Varified'
             ];
         });
+        return $wallets;
+    }
+
+    public static function pos_transactions($date, $pos_id)
+    {
+        $pos_id = PosModel::where('user_id', $pos_id)->value('id');
+        // dd($pos_id);
+        $wallets =  Wallet::where('pos_id', $pos_id)->whereDate('transaction_date', $date)
+            ->with('user', 'userWallets', 'getPos')
+            ->orderBy('id', 'desc')
+            ->get()->map(function ($item) {
+                return [
+                    'invoice' => $item->invoice,
+                    'mobile' => $item->mobilenumber,
+                    'name' => $item->user ? $item->user->name : '',
+                    'billing_amount' => $item->billing_amount ?? 0,
+                    'wallet_deduct' => $item->amount_wallet ?? 0,
+                    'reward_deduct' =>  $item->reward_amount ?? 0,
+                    'net_pay' =>  $item->amount ?? 0,
+                    'remaining_wallet' =>  $item->userWallets[0]->remaining_amount ?? 0,
+                    'remaining_reward' =>  $item->userWallets[0]->remaining_points ?? 0,
+                    'transaction_date' =>  date('d/m/Y', strtotime($item->transaction_date)),
+                ];
+            });
         return $wallets;
     }
 }

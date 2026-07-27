@@ -52,7 +52,6 @@ class PaymentSummary extends Model
                 ->first();
 
             if ($existing) {
-                // already exists → don't create again
                 return 1;
             }
             $res = self::create([
@@ -72,7 +71,9 @@ class PaymentSummary extends Model
                 // 'updated_by' => auth()->user()->id,
             ]);
             if ($res) {
-                return true;
+                return 2;
+            }else{
+                return 3;
             }
         } catch (\Exception $e) {
             Log::info('Summary Creation Error: ' . $e->getMessage());
