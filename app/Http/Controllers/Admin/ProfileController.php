@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $user->email = $request->email;
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->move(public_path('images'), $imageName);
+                
             $user->image = $imageName;
         }
         if ($user->save()) {

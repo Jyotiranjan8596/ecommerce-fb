@@ -1,25 +1,7 @@
-@extends('layouts.master')
+@extends('pos.layouts.master')
 
 @section('content')
     <style>
-        #form-loader-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.6);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #form-loader-overlay .spinner-border {
-            width: 3rem;
-            height: 3rem;
-        }
-
         #wallet-tbl thead th {
             position: sticky;
             top: 0;
@@ -133,6 +115,24 @@
                 font-size: 0.8rem;
             }
         }
+
+        #form-loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #form-loader-overlay .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
     </style>
     <div id="form-loader-overlay">
         <div class="spinner-border text-primary" role="status">
@@ -182,7 +182,7 @@
 
             {{-- Export --}}
             <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
-                <form method="post" action="{{ route('admin.ledger.export') }}" class="w-100">
+                <form method="post" action="{{ route('pos.ledger.export') }}" class="w-100">
                     @csrf
                     <input id="hidden_search_type" type="hidden" name="hsearch_type">
                     <input id="hidden_value" type="hidden" name="hvalue">
@@ -222,8 +222,6 @@
 
     <script>
         $(document).ready(function() {
-            showFormLoader();
-
             function showFormLoader() {
                 $('#form-loader-overlay').css('display', 'flex');
             }
@@ -233,10 +231,12 @@
             }
             // Initial load
             loadLedger(1);
+
+
             const typeSelect = document.getElementById('search_type');
             const valueInput = document.getElementById('trans_value');
             $('#search_type').on('change', function() {
-                $('#hidden_trans_type').val(this.value);
+                $('#hidden_search_type').val(this.value);
             });
 
             typeSelect.addEventListener('change', function() {
@@ -254,7 +254,7 @@
                 let formData = new FormData(formElement); // Capital 'F'
                 formData.append('page', page);
                 $.ajax({
-                    url: "{{ route('admin.get.ledger') }}",
+                    url: "{{ route('pos.get.ledger') }}",
                     type: "POST",
                     data: formData,
                     processData: false, // Important when using FormData
@@ -284,7 +284,7 @@
                                     `;
                             });
                             $('#pagination-container').html(buildPagination(pagination));
-                            hideFormLoader()
+
                         } else {
 
                             rows = `
@@ -294,18 +294,15 @@
                                         </td>
                                     </tr>
                                 `;
-                            hideFormLoader()
                         }
 
                         $('#ldg-tbl-bdy').html(rows);
 
                         // Pagination HTML
                         $('#pagination-link').html(response.pagination);
-                        hideFormLoader()
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
-                        hideFormLoader()
                         alert('Something went wrong');
                     }
                 });
@@ -314,7 +311,8 @@
             // Filter submit
             $('#ledger-form').on('submit', function(e) {
                 e.preventDefault();
-                showFormLoader();
+                $('#hidden_search_type').val(typeSelect);
+                $('#hidden_value').val(valueInput);
                 loadLedger(1, this);
             });
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->date('transaction_date');
-            $table->string('voucher_number')->unique();
-            $table->string('reference_number')->unique();
+            $table->string('voucher_number');
+            $table->string('reference_number');
             $table->text('account_details')->nullable();
             $table->decimal('due', 15, 2)->default(0);
             $table->decimal('credit', 15, 2)->default(0);

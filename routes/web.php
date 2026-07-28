@@ -125,9 +125,15 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::post('dsr/verify', [PosController::class, 'verifyDsr'])->name('dsr.verify.transaction');
     Route::post('initiate-payment', [PosController::class, 'initiate_payment'])->name('initiate.payment');
     Route::get('sattlement', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
-    Route::post('export-settlement',[PaymentSummaryController::class,'export_settlement'])->name('export.settlement');
+    Route::post('export-settlement', [PaymentSummaryController::class, 'export_settlement'])->name('export.settlement');
     Route::post('/save-modal-data', [PaymentSummaryController::class, 'saveSummaryData'])->name('save.summary.data');
     Route::get('pos/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadPosInvoice'])->name('settlement.invoice');
+    Route::get('payment/index', [PaymentSummaryController::class, 'payment_index_pos'])->name('payment.index');
+    Route::post('get-payment-details', [PosController::class, 'pos_payment_details'])->name('get.payment.details');
+    Route::post('create/payment', [PaymentSummaryController::class, 'create_payment'])->name('create.payment');
+    Route::get('account/ledger', [PaymentSummaryController::class, 'pos_ledger_index'])->name('ledger.index');
+    Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
+    Route::post('ledger/export', [PaymentSummaryController::class, 'ledgerExport'])->name('ledger.export');
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');

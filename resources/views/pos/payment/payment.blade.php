@@ -1,5 +1,11 @@
-@extends('layouts.master')
+@extends('pos.layouts.master')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+@if (session('current_balance'))
+    <div class="alert alert-success text-center" role="alert">
+        Current Wallet Balance: <strong>{{ number_format(session('current_balance'), 2) }} /-</strong>
+    </div>
+@endif
 
 <style>
     .table-responsive::-webkit-scrollbar {
@@ -88,21 +94,17 @@
                 <!-- POS Lookup -->
                 <div class="d-flex align-items-center mb-3">
                     <i class="bi bi-shop text-primary fs-4 me-2"></i>
-                    <h5 class="mb-0 fw-bold text-primary">FIND POS</h5>
+                    <h5 class="mb-0 fw-bold text-primary">FIND TRANSACTIONS</h5>
                 </div>
 
                 <form id="pos_detail_form" class="mb-4">
                     @csrf
                     <div class="row g-2 align-items-end">
                         <div class="col-md-5">
-                            <label for="myid" class="form-label small fw-semibold text-muted">POS ID</label>
-                            <input name="pos_id" type="text" id="myid" class="form-control"
-                                placeholder="Enter POS ID">
-                        </div>
-                        <div class="col-md-5">
                             <label for="trans_date" class="form-label small fw-semibold text-muted">
                                 TRANSACTION DATE
                             </label>
+                            <input type="hidden" name="pos_id" value="{{ $userId }}">
                             <input type="date" name="transaction_date" id="trans_date" class="form-control"
                                 value="{{ old('transaction_date', now()->format('Y-m-d')) }}">
                         </div>
@@ -121,7 +123,8 @@
                     <h4 class="mb-0"><i class="bi bi-wallet2 text-primary me-2"></i><b>MANAGE PAYMENT</b></h4>
                 </div>
                 <p class="text-muted mb-4 d-flex justify-content-between align-items-center">
-                    <span>Payment info for <span class="text-danger fw-semibold" id="pos_name">—</span></span>
+                    <span>Payment info for <span class="text-danger fw-semibold"
+                            id="pos_name">{{ $name }}</span></span>
                     <span id="cradit-amount-span-one" hidden class="fw-semibold">Credit Amount: <span
                             id="cradit-amount-span-two" class="text-success">₹0.00</span></span>
                 </p>
@@ -133,7 +136,7 @@
                     <input id="pos_id" type="hidden" name="pos_id" value="">
                     <input type="hidden" name="mobilenumber" value="">
                     <input type="hidden" name="transaction_date" value="{{ now()->format('Y-m-d') }}">
-
+                    <input type="hidden" name="is_pos" value='true'>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="amount" class="form-label fw-semibold">BILLING AMOUNT</label>
@@ -219,12 +222,6 @@
                             TRANSACTIONS
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="allpos-tab" data-bs-toggle="tab" data-bs-target="#allpos-pane"
-                            type="button" role="tab" aria-controls="allpos-pane" aria-selected="false">
-                            ALL POS
-                        </button>
-                    </li>
                 </ul>
 
                 <!-- Tab Content -->
@@ -241,7 +238,6 @@
                                     <tr>
                                         <th>Sl.No</th>
                                         <th>INVOICE</th>
-                                        <th>MOBILE</th>
                                         <th>NAME</th>
                                         <th>BILLING AMOUNT</th>
                                         <th>Wallet Deduct</th>
@@ -256,33 +252,10 @@
                                     <tr>
                                         <td colspan="6" class="text-center">
                                             <div class="alert alert-danger" role="alert">
-                                                Please Select POS and Date to view transactions
+                                                No Transactions for the Selected date!
                                             </div>
                                         </td>
                                     </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- All POS Tab -->
-                    <div class="tab-pane fade" id="allpos-pane" role="tabpanel" aria-labelledby="allpos-tab">
-
-                        <!-- Demo Table for All POS -->
-                        <div class="scrollable-table">
-                            <table id="all-pos-table" class="table table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Sl No.</th>
-                                        <th>NAME</th>
-                                        <th>POS ID</th>
-                                        <th>City</th>
-                                        <th>Email</th>
-                                        <th>MobileNumber</th>
-                                        <th>Transaction %</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="posTableBody">
                                 </tbody>
                             </table>
                         </div>
@@ -302,8 +275,8 @@
         }
 
         $(document).ready(function() {
-            getAllPos();
-            let check_credit_amount = 0;
+            getPosTransactions();
+            let check_debit_amount = 0;
             // Show loader for the plain GET "Search Transactions" form (page will reload/navigate)
             $('form[method="GET"]').on('submit', function() {
                 showFormLoader();
@@ -311,12 +284,18 @@
 
             $('#pos_detail_form').on('submit', function(event) {
                 event.preventDefault();
-                console.log("pos details form submit");
+                getPosTransactions();
+            });
+
+            // Note: this form had no existing submit handler in the original file,
+            // so we only show the loader here (no new AJAX logic added).
+            function getPosTransactions() {
                 showFormLoader();
-                var formData = new FormData(this);
+                var form = $('#pos_detail_form')[0];
+                var formData = new FormData(form);
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('admin.get.pos.payment.details') }}",
+                    url: "{{ route('pos.get.payment.details') }}",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
@@ -324,71 +303,98 @@
                     processData: false,
                     contentType: false,
                     dataType: "json",
+
                     success: function(res) {
-                        console.log(res.payment_data[0]);
+
                         let trows = '';
+                        $('#amount').val('');
+                        $('#paying_amount').val('');
+                        $('#pos_id').val('');
+                        $('#cradit-amount-span-one').attr('hidden', true);
+                        $('#reference_number').removeAttr('readonly');
+                        $('#remark').removeAttr('readonly');
                         if (res.success) {
-                            let trows = '';
-                            let payment_data = res.payment_data[0];
-                            $.each(res.data, function(index, item) {
-                                trows += `
-                                    <tr>
-                                        <td>${index + 1}</td>
-                                        <td>${item.invoice ?? '-'}</td>
-                                        <td>${item.mobile ?? '-'}</td>
-                                        <td>${item.name ?? '-'}</td>
-                                        <td>${item.billing_amount ?? '-'}</td>
-                                        <td>${item.wallet_deduct ?? '-'}</td>
-                                        <td>${item.reward_deduct ?? '-'}</td>
-                                        <td>${item.net_pay ?? '-'}</td>
-                                        <td>${item.remaining_wallet ?? '-'}</td>
-                                        <td>${item.remaining_reward ?? '-'}</td>    
-                                        <td>${item.transaction_date ?? '-'}</td>
-                                    </tr>
-                                `;
-                                $('#transaction-tbody').html(trows);
-                            });
-                            check_credit_amount = payment_data.creditAmount;
-                            $('#pos_name').text(payment_data.pos_name);
-                            $('#amount').val(payment_data.billing_amount);
-                            $('#paying_amount').val(payment_data.creditAmount);
-                            $('#pos_id').val(payment_data.pos_id);
-                            if (payment_data.debitAmount > 0) {
+
+                            let payment_data = res.payment_data[0] ?? {};
+
+                            if (res.data.length > 0) {
+
+                                $.each(res.data, function(index, item) {
+
+                                    trows += `<tr>
+                                                    <td>${index + 1}</td>
+                                                    <td>${item.invoice ?? '-'}</td>
+                                                    <td>${item.name ?? '-'}</td>
+                                                    <td>${item.billing_amount ?? '-'}</td>
+                                                    <td>${item.wallet_deduct ?? '-'}</td>
+                                                    <td>${item.reward_deduct ?? '-'}</td>
+                                                    <td>${item.net_pay ?? '-'}</td>
+                                                    <td>${item.remaining_wallet ?? '-'}</td>
+                                                    <td>${item.remaining_reward ?? '-'}</td>
+                                                    <td>${item.transaction_date ?? '-'}</td>
+                                                </tr>
+                                            `;
+                                });
+
+                            } else {
+                                trows = `<tr>
+                                                <td colspan="11" class="text-center">
+                                                    No Transaction Found!
+                                                </td>
+                                            </tr>
+                                        `;
+                            }
+
+                            $('#transaction-tbody').html(trows);
+
+                            check_debit_amount = payment_data.debitAmount ?? 0;
+                            $('#amount').val(payment_data.billing_amount ?? '');
+                            $('#paying_amount').val(payment_data.debitAmount ?? '');
+                            $('#pos_id').val(payment_data.pos_id ?? '');
+
+                            if ((payment_data.creditAmount ?? 0) > 0) {
+
                                 $('#cradit-amount-span-one').removeAttr('hidden');
                                 $('#remark').attr('readonly', true);
-                                $('#cradit-amount-span-two').text('₹' + parseFloat(payment_data
-                                    .debitAmount).toFixed(2));
+                                $('#reference_number').attr('readonly', true);
+
+                                $('#cradit-amount-span-two').text(
+                                    '₹' + parseFloat(payment_data.creditAmount).toFixed(2)
+                                );
+
                             } else {
+
                                 $('#cradit-amount-span-one').attr('hidden', true);
                                 $('#reference_number').removeAttr('readonly');
                                 $('#remark').removeAttr('readonly');
                             }
 
                         } else {
-                            trows = `<tr>
-                                        <td colspan="9" class="text-center">
-                                            No POS Found!
-                                        </td>
-                                    </tr>`;
-                            $('#transaction-tbody').html(trows);
+
+                            $('#transaction-tbody').html(`
+                                <tr>
+                                    <td colspan="11" class="text-center">
+                                        No Transaction Found!
+                                    </td>
+                                </tr>
+                                `);
                         }
                     },
+
                     error: function(xhr) {
                         console.log(xhr.responseText);
                     },
+
                     complete: function() {
                         hideFormLoader();
                     }
                 });
-            });
-
-            // Note: this form had no existing submit handler in the original file,
-            // so we only show the loader here (no new AJAX logic added).
+            }
             $('#payment_submit_form').on('submit', function(event) {
                 event.preventDefault();
                 showFormLoader();
-                console.log(check_credit_amount);
-                if (check_credit_amount == 0) {
+                console.log(check_debit_amount);
+                if (check_debit_amount == 0) {
                     hideFormLoader(); // Hide the loader before showing the alert
 
                     Swal.fire({
@@ -403,7 +409,7 @@
                 var formData = new FormData(this);
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('admin.create.payment') }}",
+                    url: "{{ route('pos.create.payment') }}",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
@@ -459,43 +465,7 @@
                 // Continue with your AJAX request or form submission...
             });
 
-            function getAllPos() {
-                $.ajax({
-                    type: 'GET',
-                    url: '{{ route('admin.get.all.pos') }}',
-                    success: function(res) {
-                        let rows = '';
-                        if (res.success) {
 
-                            let rows = '';
-
-                            $.each(res.data, function(index, item) {
-
-                                rows += `
-                                    <tr>
-                                        <td>${index + 1}</td>
-                                        <td>${item.name ?? '-'}</td>
-                                        <td>${item.user_id ?? '-'}</td>
-                                        <td>${item.city ?? '-'}</td>
-                                        <td>${item.email ?? '-'}</td>
-                                        <td>${item.mobilenumber ?? '-'}</td>
-                                        <td>${item.transaction_charge ?? '-'}</td><td>
-                                    </tr>
-                                `;
-                                $('#posTableBody').html(rows);
-                            });
-                        } else {
-                            rows = `<tr>
-                                        <td colspan="9" class="text-center">
-                                            No POS Found!
-                                        </td>
-                                    </tr>`;
-                            $('#posTableBody').html(rows);
-                        }
-
-                    }
-                });
-            }
         });
     </script>
 @endsection

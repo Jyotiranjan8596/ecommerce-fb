@@ -51,21 +51,49 @@ class Payment extends Model
                 return false;
             }
 
+            $voucherNumber = self::generateVoucherNumber();
+            if ($request->is_pos) {
+                $debitTo  = $pos->user_id;
+                $creditTo = 666666;
+            } else {
+                $debitTo  = 666666;
+                $creditTo = $pos->user_id;
+            }
+
             $data = [
-                'transaction_date' => Carbon::today()->toDateString(),
-                'voucher_number'   => self::generateVoucherNumber(),
-                'reference_number' => $request->reference_number,
-                'account_details'  => null,
-                'due'              => 0,
-                'credit'           => 0,
-                'debit'            => $request->paying_amount,
-                'credited_to'      => $pos->user_id,
-                'created_by'       => $user->user_id,
-                'updated_by'       => $user->user_id,
-                'remark'           => $request->remark,
+                [
+                    'transaction_date' => now()->toDateString(),
+                    'voucher_number'   => $voucherNumber,
+                    'reference_number' => $request->reference_number,
+                    'account_details'  => null,
+                    'due'              => 0,
+                    'debit'            => $request->paying_amount,
+                    'credit'           => 0,
+                    'credited_to'      => $debitTo,
+                    'created_by'       => $user->user_id,
+                    'updated_by'       => $user->user_id,
+                    'remark'           => $request->remark,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ],
+                [
+                    'transaction_date' => now()->toDateString(),
+                    'voucher_number'   => $voucherNumber,
+                    'reference_number' => $request->reference_number,
+                    'account_details'  => null,
+                    'due'              => 0,
+                    'debit'            => 0,
+                    'credit'           => $request->paying_amount,
+                    'credited_to'      => $creditTo,
+                    'created_by'       => $user->user_id,
+                    'updated_by'       => $user->user_id,
+                    'remark'           => $request->remark,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]
             ];
 
-            return Payment::create($data) ? true : false;
+            return Payment::insert($data);
         } catch (\Throwable $e) {
             Log::error('Payment creation failed.', [
                 'message' => $e->getMessage(),
@@ -95,52 +123,43 @@ class Payment extends Model
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->user_id;
-        // $year = $request->year;
-        // $month = $request->month;
-        // $type = $request->type;
-        // $pay_by = $request->pay_by;
-        $query = self::where('created_by', $userId)->with('createdBy')->orderBy('id', 'desc');
-        // if ($month && $year) {
-
-        //     $formatted = date('M', mktime(0, 0, 0, $month, 1)) . '-' . substr($year, -2);
-        //     $format2 = substr($year, -2) . '-' . date('M', mktime(0, 0, 0, $month, 1));
-
-        //     $query->where(function ($q) use ($formatted, $format2) {
-        //         $q->where('month', $formatted)
-        //             ->orWhere('month', $format2);
-        //     });
-        // }
-
-        // if ($month && !$year) {
-
-        //     $formatted = date('M', mktime(0, 0, 0, $month, 1));
-
-        //     $query->where('month', 'LIKE', $formatted . '-%');
-        // }
-
-        // if ($year && !$month) {
-
-        //     $shortYear = substr($year, -2);
-
-        //     $query->where('month', 'LIKE', '%-' . $shortYear);
-        // }
-
-        // if ($type && $type != 'all') {
-
-        //     $query->where('trans_type', $type);
-        // }
-
-        // if ($pay_by == 'wallet') {
-
-        //     $query->where('wallet_amount', '!=', '0');
-        // }
-
-        // if ($pay_by == 'reward') {
-
-        //     $query->where('used_points', '>', '0');
-        // }
+        $search_type = $request->search_type;
+        $value = $request->value;
+        $query = self::where('credited_to', $userId)->with('createdBy')->orderBy('id', 'desc');
+        if ($search_type == 'date') {
+            $query->where('transaction_date', $value);
+        }
+        if ($search_type == 'voucher') {
+            $query->where('voucher_number', $value);
+        }
+        if ($search_type == 'ref') {
+            $query->where('reference_number', $value);
+        }
         return $query->paginate(50)->through(function ($item) {
             // dd($wallet->toArray());
+            $item->date = $item->transaction_date
+                ? Carbon::parse($item->transaction_date)->format('d-m-Y')
+                : null;
+            return $item;
+        });
+    }
+    public static function getLedgerDataExport($request)
+    {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->user_id;
+        $search_type = $request->search_type;
+        $value = $request->value;
+        $query = self::where('credited_to', $userId)->with('createdBy')->orderBy('id', 'desc');
+        if ($search_type == 'date') {
+            $query->where('transaction_date', $value);
+        }
+        if ($search_type == 'voucher') {
+            $query->where('voucher_number', $value);
+        }
+        if ($search_type == 'ref') {
+            $query->where('reference_number', $value);
+        }
+        return $query->get()->map(function ($item) {
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;

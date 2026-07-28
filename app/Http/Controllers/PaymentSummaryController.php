@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AccountLedgerExport;
 use App\Exports\AccountSettlementExport;
+use App\Jobs\AccountLedgerJob;
 use App\Models\Payment;
 use App\Models\PaymentSummary;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -211,5 +213,27 @@ class PaymentSummaryController extends Controller
             'data' => $ledger,
             'pagination' => $pagination
         ]);
+    }
+
+    //pos stuffs
+
+    public function payment_index_pos()
+    {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->user_id;
+        $name = $user_profile->name;
+        return view('pos.payment.payment', compact('userId', 'name'));
+    }
+
+    public function pos_ledger_index()
+    {
+        return view('pos.payment.ledger');
+    }
+
+    public function ledgerExport(Request $request)
+    {
+        $data = Payment::getLedgerDataExport($request);
+        // dd($data->toArray());
+        return Excel::download(new AccountLedgerExport($data), 'account_ledger_freebazar.xlsx');
     }
 }
