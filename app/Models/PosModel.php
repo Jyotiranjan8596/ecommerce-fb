@@ -104,8 +104,8 @@ class PosModel extends Model
                 'payByCashOrUpi'     => $payByCashOrUpi,
                 'payByWallet' => $payByWallet,
                 'payByReward' => $payByReward,
-                'creditAmount' =>20,// the credit amount is the debit amount for admin
-                'debitAmount' => 0 // the debit amount is the credit amount for admin
+                'creditAmount' =>$creditAmount,// the credit amount is the debit amount for admin
+                'debitAmount' => $debitAmount // the debit amount is the credit amount for admin
             ];
             Log::info('jyoti');
             return $wdata;
