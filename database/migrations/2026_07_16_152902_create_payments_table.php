@@ -27,21 +27,15 @@ return new class extends Migration
 
             $table->foreign('credited_to')
                 ->references('user_id')
-                ->on('users')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->on('users');
 
             $table->foreign('created_by')
                 ->references('user_id')
-                ->on('users')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->on('users');
 
             $table->foreign('updated_by')
                 ->references('user_id')
-                ->on('users')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+                ->on('users');
 
             $table->text('remark')->nullable();
 
