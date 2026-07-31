@@ -88,7 +88,7 @@ class PaymentSummary extends Model
     {
         $user_id = auth()->user()->user_id;
         $pos_id = Helper::get_pos_id($user_id);
-        $resp = self::where('created_by', auth()->user()->id)->orderBy('id', 'desc')->get()->map(function ($item) {
+        $resp = self::where('pos_id', $pos_id)->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->intiate_date = Carbon::parse($item->date)->format('d-m-Y');
             return $item;
         });
