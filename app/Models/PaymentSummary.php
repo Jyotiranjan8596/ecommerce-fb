@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Helper;
 use App\Helpers\NumberToWordsHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,6 +86,8 @@ class PaymentSummary extends Model
 
     public static function fetch_summary_pos()
     {
+        $user_id = auth()->user()->user_id;
+        $pos_id = Helper::get_pos_id($user_id);
         $resp = self::where('created_by', auth()->user()->id)->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->intiate_date = Carbon::parse($item->date)->format('d-m-Y');
             return $item;

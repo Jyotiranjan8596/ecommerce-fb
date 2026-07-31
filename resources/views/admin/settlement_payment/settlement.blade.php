@@ -61,7 +61,7 @@
                             <th scope="col">Credit</th>
                             <th scope="col">Debit</th>
                             <th scope="col">Status</th>
-                            <th scope="col">Action</th>
+                            {{-- <th scope="col">Action</th> --}}
                     </thead>
                     <tbody>
                         @foreach ($settlements as $key => $settlement)
@@ -109,7 +109,7 @@
                                         </span>
                                     </td>
                                 @endif
-                                <td>
+                                {{-- <td>
                                     <div class="dropdown">
                                         <button class="btn btn-light btn-sm dropdown-toggle" type="button"
                                             id="actionMenu{{ $settlement->id }}" data-bs-toggle="dropdown"
@@ -143,7 +143,7 @@
 
                                         </ul>
                                     </div>
-                                </td>
+                                </td> --}}
 
                             </tr>
                         @endforeach

@@ -100,7 +100,8 @@ class Payment extends Model
                 ->where('pos_id', $pos->id)
                 ->where('status', 'pending')
                 ->update([
-                    'status' => 'approved'
+                    'status' => 'approved',
+                    'reference_number' => $request->reference_number
                 ]);
 
             if ($updated == 0) {
