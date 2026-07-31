@@ -96,7 +96,7 @@
                     <div class="row g-2 align-items-end">
                         <div class="col-md-5">
                             <label for="myid" class="form-label small fw-semibold text-muted">POS ID</label>
-                            <input name="pos_id" type="text" id="myid" class="form-control"
+                            <input required name="pos_id" type="text" id="myid" class="form-control"
                                 placeholder="Enter POS ID">
                         </div>
                         <div class="col-md-5">
@@ -104,7 +104,8 @@
                                 TRANSACTION DATE
                             </label>
                             <input type="date" name="transaction_date" id="trans_date" class="form-control"
-                                value="{{ old('transaction_date', now()->format('Y-m-d')) }}">
+                                value="{{ old('transaction_date', now()->subDay()->format('Y-m-d')) }}"
+                                max="{{ now()->subDay()->format('Y-m-d') }}">
                         </div>
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-outline-primary w-100 hover-blue">
@@ -124,6 +125,7 @@
                     <span>Payment info for <span class="text-danger fw-semibold" id="pos_name">—</span></span>
                     <span id="cradit-amount-span-one" hidden class="fw-semibold">Credit Amount: <span
                             id="cradit-amount-span-two" class="text-success">₹0.00</span></span>
+                    <span id="cradit-amount-span-three" hidden class="fw-semibold text-success">Settled</span>
                 </p>
 
                 <!-- Wallet Form -->
@@ -133,6 +135,7 @@
                     <input id="pos_id" type="hidden" name="pos_id" value="">
                     <input type="hidden" name="mobilenumber" value="">
                     <input type="hidden" name="transaction_date" value="{{ now()->format('Y-m-d') }}">
+                    <input id="summary_date" type="hidden" name="summary_date" value="">
 
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -157,8 +160,8 @@
                             <label for="paying_amount" class="form-label fw-semibold">PAYING AMOUNT</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                                <input readonly name="paying_amount" id="paying_amount" type="number" class="form-control"
-                                    required min="0" placeholder="0.00">
+                                <input readonly name="paying_amount" id="paying_amount" type="number"
+                                    class="form-control" required min="0" placeholder="0.00">
                             </div>
                         </div>
 
@@ -304,6 +307,11 @@
         $(document).ready(function() {
             getAllPos();
             let check_credit_amount = 0;
+            $('#summary_date').val($('#trans_date').val());
+
+            $('#trans_date').on('change', function() {
+                $('#summary_date').val($(this).val());
+            });
             // Show loader for the plain GET "Search Transactions" form (page will reload/navigate)
             $('form[method="GET"]').on('submit', function() {
                 showFormLoader();
@@ -325,11 +333,15 @@
                     contentType: false,
                     dataType: "json",
                     success: function(res) {
-                        console.log(res.payment_data[0]);
                         let trows = '';
+                        $('#amount').val('');
+                        $('#paying_amount').val('');
+                        $('#pos_id').val('');
+                        $('#cradit-amount-span-one').attr('hidden', true);
+                        $('#cradit-amount-span-three').attr('hidden', true);
+                        $('#reference_number').removeAttr('readonly');
+                        $('#remark').removeAttr('readonly');
                         if (res.success) {
-                            let trows = '';
-                            let payment_data = res.payment_data[0];
                             $.each(res.data, function(index, item) {
                                 trows += `
                                     <tr>
@@ -346,8 +358,13 @@
                                         <td>${item.transaction_date ?? '-'}</td>
                                     </tr>
                                 `;
-                                $('#transaction-tbody').html(trows);
                             });
+                            $('#transaction-tbody').html(trows);
+                            if (res.payment_data == null && res.data != []) {
+                                $('#cradit-amount-span-three').removeAttr('hidden');
+                                return;
+                            }
+                            let payment_data = res.payment_data[0];
                             check_credit_amount = payment_data.creditAmount;
                             $('#pos_name').text(payment_data.pos_name);
                             $('#amount').val(payment_data.billing_amount);
@@ -367,10 +384,11 @@
                         } else {
                             trows = `<tr>
                                         <td colspan="9" class="text-center">
-                                            No POS Found!
+                                            No Transactions Found!
                                         </td>
                                     </tr>`;
                             $('#transaction-tbody').html(trows);
+                            hideFormLoader();
                         }
                     },
                     error: function(xhr) {

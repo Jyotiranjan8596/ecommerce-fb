@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Payment extends Model
@@ -42,16 +43,18 @@ class Payment extends Model
 
     public static function create_payment($request)
     {
+        DB::beginTransaction();
+
         try {
             $user = auth()->user();
 
             $pos = PosModel::find($request->pos_id);
-
             if (!$pos) {
                 return false;
             }
 
             $voucherNumber = self::generateVoucherNumber();
+
             if ($request->is_pos) {
                 $debitTo  = $pos->user_id;
                 $creditTo = 666666;
@@ -93,8 +96,30 @@ class Payment extends Model
                 ]
             ];
 
-            return Payment::insert($data);
+            $updated = PaymentSummary::where('date', $request->summary_date)
+                ->where('pos_id', $pos->id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'approved'
+                ]);
+
+            if ($updated == 0) {
+                DB::rollBack();
+                return false;
+            }
+
+            $inserted = Payment::insert($data);
+
+            if (!$inserted) {
+                DB::rollBack();
+                return false;
+            }
+
+            DB::commit();
+            return true;
         } catch (\Throwable $e) {
+            DB::rollBack();
+
             Log::error('Payment creation failed.', [
                 'message' => $e->getMessage(),
                 'line'    => $e->getLine(),

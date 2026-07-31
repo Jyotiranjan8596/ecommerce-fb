@@ -127,6 +127,8 @@
                             id="pos_name">{{ $name }}</span></span>
                     <span id="cradit-amount-span-one" hidden class="fw-semibold">Credit Amount: <span
                             id="cradit-amount-span-two" class="text-success">₹0.00</span></span>
+                    <span id="cradit-amount-span-three" hidden class="fw-semibold text-success">Settled</span>
+
                 </p>
 
                 <!-- Wallet Form -->
@@ -135,6 +137,7 @@
                     <input type="hidden" name="user_id" value="">
                     <input id="pos_id" type="hidden" name="pos_id" value="">
                     <input type="hidden" name="mobilenumber" value="">
+                    <input id="summary_date" type="hidden" name="summary_date" value="">
                     <input type="hidden" name="transaction_date" value="{{ now()->format('Y-m-d') }}">
                     <input type="hidden" name="is_pos" value='true'>
                     <div class="row g-3">
@@ -277,6 +280,11 @@
         $(document).ready(function() {
             getPosTransactions();
             let check_debit_amount = 0;
+            $('#summary_date').val($('#trans_date').val());
+
+            $('#trans_date').on('change', function() {
+                $('#summary_date').val($(this).val());
+            });
             // Show loader for the plain GET "Search Transactions" form (page will reload/navigate)
             $('form[method="GET"]').on('submit', function() {
                 showFormLoader();
@@ -311,12 +319,10 @@
                         $('#paying_amount').val('');
                         $('#pos_id').val('');
                         $('#cradit-amount-span-one').attr('hidden', true);
+                        $('#cradit-amount-span-three').attr('hidden', true);
                         $('#reference_number').removeAttr('readonly');
                         $('#remark').removeAttr('readonly');
                         if (res.success) {
-
-                            let payment_data = res.payment_data[0] ?? {};
-
                             if (res.data.length > 0) {
 
                                 $.each(res.data, function(index, item) {
@@ -346,7 +352,11 @@
                             }
 
                             $('#transaction-tbody').html(trows);
-
+                            if (res.payment_data == null && res.data != []) {
+                                $('#cradit-amount-span-three').removeAttr('hidden');
+                                return;
+                            }
+                            let payment_data = res.payment_data[0] ?? {};
                             check_debit_amount = payment_data.debitAmount ?? 0;
                             $('#amount').val(payment_data.billing_amount ?? '');
                             $('#paying_amount').val(payment_data.debitAmount ?? '');
@@ -378,6 +388,7 @@
                                     </td>
                                 </tr>
                                 `);
+                            hideFormLoader();
                         }
                     },
 
@@ -464,8 +475,6 @@
                 });
                 // Continue with your AJAX request or form submission...
             });
-
-
         });
     </script>
 @endsection
