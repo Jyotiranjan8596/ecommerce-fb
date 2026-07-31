@@ -376,4 +376,60 @@ class WhatsappMessageService
             Log::info('USer Transaction Whatsapp Error' . $e->getMessage());
         }
     }
+
+    public static function settlement_message($mob, $parameters)
+    {
+        try {
+            $token = env('WHATSAPP_TOKEN');
+            $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
+            $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
+            $payload = [
+                "messaging_product" => "whatsapp",
+                "to" => $mob,
+                "type" => "template",
+                "template" => [
+                    "name" => "settlement_message",
+                    "language" => ["code" => "en_US"],
+                    'components' => [
+                        [
+                            "type" => "header",
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['pos_name']   // Jyotiranjan Sahoo
+                                ]
+                            ]
+                        ],
+                        [
+                            "type" => 'body',
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['amount']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['trans_date']
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $parameters['settle_date']
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+
+            $response = Http::withToken($token)
+                ->post($url, $payload)
+                ->json();
+
+            Log::info('Whatsapp Message', ['data' => $response]);
+
+            return $response;
+        } catch (Exception $e) {
+            Log::info('Whatsapp Error' . $e->getMessage());
+        }
+    }
 }

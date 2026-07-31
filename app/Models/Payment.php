@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +48,7 @@ class Payment extends Model
 
         try {
             $user = auth()->user();
-
+            $today = now()->toDateString();
             $pos = PosModel::find($request->pos_id);
             if (!$pos) {
                 return false;
@@ -65,7 +66,7 @@ class Payment extends Model
 
             $data = [
                 [
-                    'transaction_date' => now()->toDateString(),
+                    'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
                     'reference_number' => $request->reference_number,
                     'account_details'  => null,
@@ -80,7 +81,7 @@ class Payment extends Model
                     'updated_at'       => now(),
                 ],
                 [
-                    'transaction_date' => now()->toDateString(),
+                    'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
                     'reference_number' => $request->reference_number,
                     'account_details'  => null,
@@ -115,7 +116,13 @@ class Payment extends Model
                 DB::rollBack();
                 return false;
             }
-
+            $parameters = [
+                'pos_name' => $pos->name,
+                'trans_date' => $request->summary_date,
+                'settle_date' => $today,
+                'amount' => $request->paying_amount
+            ];
+            WhatsappMessageService::settlement_message($pos->mobilenumber, $parameters);
             DB::commit();
             return true;
         } catch (\Throwable $e) {
