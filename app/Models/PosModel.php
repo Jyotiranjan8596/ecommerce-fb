@@ -62,15 +62,18 @@ class PosModel extends Model
         return self::where('upi_id', $upi_id)->first();
     }
 
-    public static function getWalletDetails($date, $pos_id)
+    public static function getWalletDetails($date, $pos_id = null)
     {
-        $pos_pid = Helper::get_pos_id($pos_id);
-        $summary = PaymentSummary::where('pos_id', $pos_pid)
-            ->where('date', $date)
-            ->where('status', 'approved')
-            ->get();
-        if ($summary->isNotEmpty()) {
-            return false;
+
+        if ($pos_id) {
+            $pos_pid = Helper::get_pos_id($pos_id);
+            $summary = PaymentSummary::where('pos_id', $pos_pid)
+                ->where('date', $date)
+                ->where('status', 'approved')
+                ->get();
+            if ($summary->isNotEmpty()) {
+                return false;
+            }
         }
         $query = self::select(['id', 'name', 'transaction_charge'])
             ->with(['wallet' => function ($qry) use ($date) {
