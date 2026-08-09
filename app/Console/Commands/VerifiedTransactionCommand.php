@@ -32,10 +32,9 @@ class VerifiedTransactionCommand extends Command
     public function handle()
     {
         $yesterday = Carbon::yesterday()->toDateString();
-        $wallet_data = PosModel::getWalletDetails($yesterday);
-
+        $wallet_data = PosModel::getWalletDetails('2026-07-08');
         if ($wallet_data) {
-            $res = PaymentSummary::store_summary($wallet_data);
+            $res = PaymentSummary::store_summary($wallet_data[0]);
         } else {
             $res = null;
         }
