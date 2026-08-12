@@ -32,14 +32,14 @@ class VerifiedTransactionCommand extends Command
     public function handle()
     {
         $yesterday = Carbon::yesterday()->toDateString();
-        $wallet_data = PosModel::getWalletDetails('2026-07-08');
+        $wallet_data = PosModel::getWalletDetails($yesterday);
         if ($wallet_data) {
             $res = PaymentSummary::store_summary($wallet_data[0]);
         } else {
             $res = null;
         }
         if ($res == 1) {
-            Log::info('Store Summary', ['message' => 'already creadted']);
+            Log::info('Store Summary', ['message' => 'already created']);
             return;
         } elseif ($res == 2) {
             Log::info('Store Summary', ['message' => 'already creadted']);
