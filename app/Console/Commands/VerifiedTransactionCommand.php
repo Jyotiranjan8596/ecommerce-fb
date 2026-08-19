@@ -33,11 +33,17 @@ class VerifiedTransactionCommand extends Command
     {
         $yesterday = Carbon::yesterday()->toDateString();
         $wallet_data = PosModel::getWalletDetails($yesterday);
-        if ($wallet_data) {
-            $res = PaymentSummary::store_summary($wallet_data[0]);
-        } else {
-            $res = null;
+        if (!$wallet_data || $wallet_data->isEmpty()) {
+            Log::info('Store Summary', [
+                'message' => 'No wallet data found',
+                'date' => $yesterday
+            ]);
+
+            // VerifiedTransactionsJob::dispatch(null, null)->onQueue('verified_transaction');
+            return;
         }
+
+        $res = PaymentSummary::store_summary($wallet_data[0]);
         if ($res == 1) {
             Log::info('Store Summary', ['message' => 'already created']);
             return;
