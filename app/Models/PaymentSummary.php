@@ -45,6 +45,10 @@ class PaymentSummary extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function payment(){
+        return $this->hasMany(Payment::class,'payment_summury_id','id');
+    }
+
     public static function store_summary($data)
     {
         try {
@@ -73,7 +77,7 @@ class PaymentSummary extends Model
             ]);
             if ($res) {
                 return 2;
-            }else{
+            } else {
                 return 3;
             }
         } catch (\Exception $e) {
@@ -156,5 +160,23 @@ class PaymentSummary extends Model
             'status'               => $res->status,
             'in_letter'            => NumberToWordsHelper::convert($res->pos_debit) . ' Rupees Only/-',
         ];
+    }
+
+    public static function getWalletDetails($date, $pos_id = null)
+    {
+
+        // if ($pos_id) {
+        //     $summary = PaymentSummary::where('pos_id', $pos_pid)
+        //         ->where('date', $date)
+        //         ->where('status', 'approved')
+        //         ->get();
+        //     if ($summary->isNotEmpty()) {
+        //         return false;
+        //     }
+        // }
+        $pos_pid = Helper::get_pos_id($pos_id);
+        $data = self::where('pos_id', $pos_pid)->where('date', $date)->with('pos_system','payment')->first();
+        Log::info('data', ['pos_data' => $data]);
+        return $data ?? false;
     }
 }

@@ -14,6 +14,7 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
+        'payment_summury_id',
         'transaction_date',
         'voucher_number',
         'reference_number',
@@ -42,6 +43,11 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function payment_summary()
+    {
+        return $this->belongsTo(PaymentSummary::class, 'payment_summury_id', 'id');
+    }
+
     public static function create_payment($request)
     {
         DB::beginTransaction();
@@ -64,12 +70,18 @@ class Payment extends Model
                 $creditTo = $pos->user_id;
             }
 
+            $payment_smry = PaymentSummary::where('date', $request->summary_date)
+                ->where('pos_id', $pos->id)
+                ->where('status', 'pending')->first();
+
             $data = [
                 [
+                    'payment_summury_id' => $payment_smry->id,
                     'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
                     'reference_number' => $request->reference_number,
                     'account_details'  => null,
+                    'pay_by'           => $request->pay_by,
                     'due'              => 0,
                     'debit'            => $request->paying_amount,
                     'credit'           => 0,
@@ -81,10 +93,12 @@ class Payment extends Model
                     'updated_at'       => now(),
                 ],
                 [
+                    'payment_summury_id' => $payment_smry->id,
                     'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
                     'reference_number' => $request->reference_number,
                     'account_details'  => null,
+                    'pay_by'           => $request->pay_by,
                     'due'              => 0,
                     'debit'            => 0,
                     'credit'           => $request->paying_amount,
@@ -96,18 +110,16 @@ class Payment extends Model
                     'updated_at'       => now(),
                 ]
             ];
-
-            $updated = PaymentSummary::where('date', $request->summary_date)
-                ->where('pos_id', $pos->id)
-                ->where('status', 'pending')
-                ->update([
+            if (!$request->is_pos) {
+                $update_res = $payment_smry->update([
                     'status' => 'approved',
                     'reference_number' => $request->reference_number
                 ]);
 
-            if ($updated == 0) {
-                DB::rollBack();
-                return false;
+                if ($update_res == 0) {
+                    DB::rollBack();
+                    return false;
+                }
             }
 
             $inserted = Payment::insert($data);

@@ -48,7 +48,7 @@ class VerifiedTransactionCommand extends Command
             Log::info('Store Summary', ['message' => 'already created']);
             return;
         } elseif ($res == 2) {
-            Log::info('Store Summary', ['message' => 'already creadted']);
+            Log::info('Store Summary', ['message' => 'Summuary Stored']);
             VerifiedTransactionsJob::dispatch($wallet_data, $yesterday)->onQueue('verified_transaction');
         } elseif ($res == false) {
             Log::info('Store Summary', ['message' => 'Something went wrong']);

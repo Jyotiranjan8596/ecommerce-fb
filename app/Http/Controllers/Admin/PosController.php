@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\User;
 use App\Models\Wallet;
@@ -297,7 +298,7 @@ class PosController extends Controller
             'pos_id' => 'nullable|integer',
         ]);
         $transaction_data = Wallet::pos_transactions($request->transaction_date, $request->pos_id);
-        $payment_data = PosModel::getWalletDetails($request->transaction_date, $request->pos_id);
+        $payment_data = PaymentSummary::getWalletDetails($request->transaction_date, $request->pos_id);
         if ($payment_data) {
             return response()->json([
                 'success' => $transaction_data->isNotEmpty(),

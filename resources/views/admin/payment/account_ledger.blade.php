@@ -203,6 +203,7 @@
                         <th>Sl.No</th>
                         <th>Date</th>
                         <th>Voucher No</th>
+                        <th>Account</th>
                         <th>Ref No</th>
                         {{-- <th>Account</th> --}}
                         <th>Debit</th>
@@ -277,6 +278,7 @@
                                             <td>${index++}</td>
                                             <td>${item.date ?? ''}</td>
                                             <td>${item.voucher_number ?? ''}</td>
+                                            <td>${item.account ?? ''}</td>
                                             <td>${item.reference_number ?? ''}</td>
                                             <td>${item.debit ?? ''}</td>
                                             <td>${item.credit ?? ''}</td>

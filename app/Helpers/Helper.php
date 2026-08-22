@@ -10,4 +10,9 @@ class Helper
     {
         return PosModel::where('user_id', $user_id)->value('id');
     }
+
+    public static function formatAmount($amount): string
+    {
+        return number_format((float) $amount, 2, '.', '');
+    }
 }

@@ -13,17 +13,23 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedBigInteger('payment_summury_id');
             $table->date('transaction_date');
             $table->string('voucher_number');
             $table->string('reference_number');
             $table->text('account_details')->nullable();
+            $table->text('gst_no')->nullable();
+            $table->enum('pay_by', ['0', '1'])->nullable()->default(null)->comment('1=>upi,0=>cash');
             $table->decimal('due', 15, 2)->default(0);
             $table->decimal('credit', 15, 2)->default(0);
             $table->decimal('debit', 15, 2)->default(0);
             $table->string('credited_to');
             $table->string('created_by');
             $table->string('updated_by');
+
+            $table->foreign('payment_summury_id')
+                ->references('id')
+                ->on('payment_summaries');
 
             $table->foreign('credited_to')
                 ->references('user_id')

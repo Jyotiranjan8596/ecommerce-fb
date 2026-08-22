@@ -62,13 +62,14 @@ class VerifiedTransactionsJob implements ShouldQueue
         Log::info($posData);
 
         foreach ($posData as $pos) {
-            $pos_trans = Wallet::export_user_transaction_of_pos('2026-05-20', $pos['pos_id']);
+            $pos_trans = Wallet::export_user_transaction_of_pos($this->date, $pos['pos_id']);
             $pos_fileName = 'paymentsummary/UserTransactions_' . time() . '.xlsx';
             Excel::store(new PaymentSummaryPosExport($pos_trans), $pos_fileName);
             $pos_filePath = storage_path('app/' . $pos_fileName);
             $trans_date = $this->date;
             Mail::raw('Please find attached payment summary.', function ($msg) use ($pos_filePath, $pos, $trans_date) {
                 $msg->to($pos['email'])
+                    // $msg->to('sahoorinku63@gmail.com')
                     ->subject('Transactions for ' . $trans_date)
                     ->attach($pos_filePath);
             });

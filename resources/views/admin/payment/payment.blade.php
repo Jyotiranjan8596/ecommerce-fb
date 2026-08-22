@@ -142,14 +142,14 @@
                             <label for="amount" class="form-label fw-semibold">BILLING AMOUNT</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                                <input readonly name="amount" id="amount" type="number" class="form-control" required
-                                    min="0" step="any" placeholder="0.00" oninput="checkWalletBalance()">
+                                <input name="amount" id="amount" type="number" class="form-control" required
+                                    min="0" step="any" placeholder="0.00">
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <label for="pay_by" class="form-label fw-semibold">PAYMENT BY</label>
-                            <select disabled name="pay_by" id="pay_by" class="form-select" required>
+                            <select name="pay_by" id="pay_by" class="form-select" required>
                                 <option value="wallet">WALLET</option>
                                 <option value="cash">CASH</option>
                                 <option selected value="upi">UPI</option>
@@ -160,8 +160,8 @@
                             <label for="paying_amount" class="form-label fw-semibold">PAYING AMOUNT</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                                <input readonly name="paying_amount" id="paying_amount" type="number"
-                                    class="form-control" required min="0" placeholder="0.00">
+                                <input name="paying_amount" id="paying_amount" type="number" class="form-control" required
+                                    step="0.01" min="0" placeholder="0.00">
                             </div>
                         </div>
 
@@ -175,11 +175,11 @@
                             <input id="due_balance" type="hidden" name="due" value="">
                         </div>
                         <div class="col-md-6">
-                            <label for="paying_amount" class="form-label fw-semibold">Reference Number</label>
+                            <label for="reference_number" class="form-label fw-semibold">Reference Number</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                <input readonly name="reference_number" id="reference_number" type="text"
-                                    class="form-control" required min="0" placeholder="Reference Number">
+                                <input name="reference_number" id="reference_number" type="text" class="form-control"
+                                    required min="0" placeholder="Reference Number">
                             </div>
                         </div>
 
@@ -201,12 +201,10 @@
                             </select>
                         </div>
                     </div> --}}
-
                     <button type="submit" class="btn btn-primary w-100 mt-4 py-2 fw-semibold">
                         <i class="bi bi-check-circle me-1"></i> SUBMIT
                     </button>
                 </form>
-
             </div>
         </div>
 
@@ -342,6 +340,8 @@
                         $('#reference_number').removeAttr('readonly');
                         $('#remark').removeAttr('readonly');
                         if (res.success) {
+                            console.log(res.data == null);
+
                             $.each(res.data, function(index, item) {
                                 trows += `
                                     <tr>
@@ -361,21 +361,31 @@
                             });
                             $('#transaction-tbody').html(trows);
                             if (res.payment_data == null && res.data != []) {
-                                $('#cradit-amount-span-three').removeAttr('hidden');
+                                // $('#cradit-amount-span-three').removeAttr('hidden');
+                                // return;
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Payment Summary Unavailable',
+                                    text: 'The payment summary has not been generated yet. Please try again after some time.',
+                                    confirmButtonText: 'OK'
+                                });
                                 return;
                             }
-                            let payment_data = res.payment_data[0];
-                            check_credit_amount = payment_data.creditAmount;
-                            $('#pos_name').text(payment_data.pos_name);
-                            $('#amount').val(payment_data.billing_amount);
-                            $('#paying_amount').val(payment_data.creditAmount);
+                            let payment_data = res.payment_data;
+                            check_credit_amount = payment_data.admin_credit;
+                            $('#pos_name').text(payment_data.pos_system.name);
+                            $('#amount').val(payment_data.total_billing_amount);
+                            $('#paying_amount').val(payment_data.admin_credit);
                             $('#pos_id').val(payment_data.pos_id);
-                            if (payment_data.debitAmount > 0) {
+                            $('#reference_number').val(payment_data.payment?.[0]
+                                ?.reference_number);
+                            if (payment_data.admin_credit > 0) {
+                                $('#paying_amount').val(payment_data.admin_credit);
                                 $('#cradit-amount-span-one').removeAttr('hidden');
-                                $('#remark').attr('readonly', true);
-                                $('#cradit-amount-span-two').text('₹' + parseFloat(payment_data
-                                    .debitAmount).toFixed(2));
+                                $('#remark').attr('readonly', false);
+                                $('#cradit-amount-span-two').text(payment_data.admin_credit);
                             } else {
+                                $('#paying_amount').val(payment_data.admin_credit);
                                 $('#cradit-amount-span-one').attr('hidden', true);
                                 $('#reference_number').removeAttr('readonly');
                                 $('#remark').removeAttr('readonly');
