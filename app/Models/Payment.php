@@ -20,9 +20,9 @@ class Payment extends Model
         'reference_number',
         'account_details',
         'due',
-        'credit',
-        'debit',
-        'credited_to',
+        'amount',
+        'to',
+        'from',
         'created_by',
         'updated_by',
         'remark',
@@ -30,7 +30,7 @@ class Payment extends Model
 
     public function creditedTo()
     {
-        return $this->belongsTo(User::class, 'credited_to');
+        return $this->belongsTo(User::class, 'to');
     }
 
     public function createdBy()
@@ -83,32 +83,32 @@ class Payment extends Model
                     'account_details'  => null,
                     'pay_by'           => $request->pay_by,
                     'due'              => 0,
-                    'debit'            => $request->paying_amount,
-                    'credit'           => 0,
-                    'credited_to'      => $debitTo,
+                    'amount'           => $request->paying_amount,
+                    'to'               => $creditTo,
+                    'from'             => $debitTo,
                     'created_by'       => $user->user_id,
                     'updated_by'       => $user->user_id,
                     'remark'           => $request->remark,
                     'created_at'       => now(),
                     'updated_at'       => now(),
                 ],
-                [
-                    'payment_summury_id' => $payment_smry->id,
-                    'transaction_date' => $today,
-                    'voucher_number'   => $voucherNumber,
-                    'reference_number' => $request->reference_number,
-                    'account_details'  => null,
-                    'pay_by'           => $request->pay_by,
-                    'due'              => 0,
-                    'debit'            => 0,
-                    'credit'           => $request->paying_amount,
-                    'credited_to'      => $creditTo,
-                    'created_by'       => $user->user_id,
-                    'updated_by'       => $user->user_id,
-                    'remark'           => $request->remark,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
-                ]
+                // [
+                //     'payment_summury_id' => $payment_smry->id,
+                //     'transaction_date' => $today,
+                //     'voucher_number'   => $voucherNumber,
+                //     'reference_number' => $request->reference_number,
+                //     'account_details'  => null,
+                //     'pay_by'           => $request->pay_by,
+                //     'due'              => 0,
+                //     'debit'            => 0,
+                //     'credit'           => $request->paying_amount,
+                //     'credited_to'      => $creditTo,
+                //     'created_by'       => $user->user_id,
+                //     'updated_by'       => $user->user_id,
+                //     'remark'           => $request->remark,
+                //     'created_at'       => now(),
+                //     'updated_at'       => now(),
+                // ]
             ];
             if (!$request->is_pos) {
                 $update_res = $payment_smry->update([
@@ -170,7 +170,8 @@ class Payment extends Model
         $userId       = $user_profile->user_id;
         $search_type = $request->search_type;
         $value = $request->value;
-        $query = self::where('credited_to', $userId)->with('createdBy')->orderBy('id', 'desc');
+        $query = self::where('to', $userId)->orWhere('from', $userId)->with('createdBy')->orderBy('id', 'desc');
+        // dd($query);
         if ($search_type == 'date') {
             $query->where('transaction_date', $value);
         }

@@ -181,7 +181,16 @@ class PaymentSummaryController extends Controller
 
     public function ledger_index()
     {
-        return view('admin.payment.account_ledger');
+        $user_profile = auth()->user();
+        $userId       = $user_profile->user_id;
+        return view('admin.payment.account_ledger', compact('userId'));
+    }
+
+    public function pos_ledger_index()
+    {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->user_id;
+        return view('pos.payment.ledger', compact('userId'));
     }
 
     public function payment_index()
@@ -223,11 +232,6 @@ class PaymentSummaryController extends Controller
         $userId       = $user_profile->user_id;
         $name = $user_profile->name;
         return view('pos.payment.payment', compact('userId', 'name'));
-    }
-
-    public function pos_ledger_index()
-    {
-        return view('pos.payment.ledger');
     }
 
     public function ledgerExport(Request $request)

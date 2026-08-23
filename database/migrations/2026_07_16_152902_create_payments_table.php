@@ -21,9 +21,9 @@ return new class extends Migration
             $table->text('gst_no')->nullable();
             $table->enum('pay_by', ['0', '1'])->nullable()->default(null)->comment('1=>upi,0=>cash');
             $table->decimal('due', 15, 2)->default(0);
-            $table->decimal('credit', 15, 2)->default(0);
-            $table->decimal('debit', 15, 2)->default(0);
-            $table->string('credited_to');
+            $table->decimal('amount', 15, 2)->default(0);
+            $table->string('to');
+            $table->string('from');
             $table->string('created_by');
             $table->string('updated_by');
 
@@ -31,7 +31,10 @@ return new class extends Migration
                 ->references('id')
                 ->on('payment_summaries');
 
-            $table->foreign('credited_to')
+            $table->foreign('to')
+                ->references('user_id')
+                ->on('users');
+            $table->foreign('from')
                 ->references('user_id')
                 ->on('users');
 

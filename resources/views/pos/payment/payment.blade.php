@@ -127,7 +127,7 @@
                             id="pos_name">{{ $name }}</span></span>
                     <span id="cradit-amount-span-one" hidden class="fw-semibold">Credit Amount: <span
                             id="cradit-amount-span-two" class="text-success">₹0.00</span></span>
-                    <span id="cradit-amount-span-three" hidden class="fw-semibold text-success">Settled</span>
+                    <span id="cradit-amount-span-three" hidden>--</span>
 
                 </p>
 
@@ -255,7 +255,7 @@
                                     <tr>
                                         <td colspan="6" class="text-center">
                                             <div class="alert alert-danger" role="alert">
-                                                No Transactions for the Selected date!
+                                                Select a date to view the transactions
                                             </div>
                                         </td>
                                     </tr>
@@ -278,7 +278,7 @@
         }
 
         $(document).ready(function() {
-            getPosTransactions();
+            // getPosTransactions();
             let check_debit_amount = 0;
             $('#summary_date').val($('#trans_date').val());
 
@@ -319,7 +319,7 @@
                         $('#paying_amount').val('');
                         $('#pos_id').val('');
                         $('#cradit-amount-span-one').attr('hidden', true);
-                        $('#cradit-amount-span-three').attr('hidden', true);
+                        $('#cradit-amount-span-three').removeClass();
                         $('#reference_number').removeAttr('readonly');
                         $('#remark').removeAttr('readonly');
                         if (res.success) {
@@ -352,32 +352,51 @@
                             }
 
                             $('#transaction-tbody').html(trows);
+                            console.log(res.payment_data == null && res.data != []);
                             if (res.payment_data == null && res.data != []) {
-                                $('#cradit-amount-span-three').removeAttr('hidden');
+                                // $('#settlement_status').removeAttr('hidden');
+                                // return;
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Payment Summary Unavailable',
+                                    text: 'The payment summary has not been generated yet. Please try again after some time.',
+                                    confirmButtonText: 'OK'
+                                });
                                 return;
                             }
-                            let payment_data = res.payment_data[0] ?? {};
-                            check_debit_amount = payment_data.debitAmount ?? 0;
-                            $('#amount').val(payment_data.billing_amount ?? '');
-                            $('#paying_amount').val(payment_data.debitAmount ?? '');
-                            $('#pos_id').val(payment_data.pos_id ?? '');
-
-                            if ((payment_data.creditAmount ?? 0) > 0) {
-
-                                $('#cradit-amount-span-one').removeAttr('hidden');
-                                $('#remark').attr('readonly', true);
-                                $('#reference_number').attr('readonly', true);
-
-                                $('#cradit-amount-span-two').text(
-                                    '₹' + parseFloat(payment_data.creditAmount).toFixed(2)
-                                );
-
-                            } else {
-
-                                $('#cradit-amount-span-one').attr('hidden', true);
-                                $('#reference_number').removeAttr('readonly');
-                                $('#remark').removeAttr('readonly');
+                            let payment_data = res.payment_data ?? {};
+                            console.log(typeof payment_data);
+                            if (payment_data.status == 'approved') {
+                                $('#cradit-amount-span-three').removeAttr('hidden').text(
+                                        'Settled')
+                                    .addClass('text-success');
+                                return;
                             }
+                            if (Object.keys(payment_data).length > 0) {
+                                let payment = payment_data.payment?.[0];
+                                check_debit_amount = payment_data.pos_debit ?? 0;
+                                $('#amount').val(payment_data.total_billing_amount ?? '');
+                                $('#paying_amount').val(payment_data.pos_debit ?? '');
+                                $('#pos_id').val(payment_data.pos_id ?? '');
+
+                                if ((payment_data.pos_credit ?? 0) > 0) {
+
+                                    $('#cradit-amount-span-one').removeAttr('hidden');
+                                    $('#remark').attr('readonly', true);
+                                    $('#reference_number').attr('readonly', true);
+
+                                    $('#cradit-amount-span-two').text(
+                                        '₹' + parseFloat(payment_data.creditAmount).toFixed(2)
+                                    );
+                                } else {
+                                    $('#cradit-amount-span-one').attr('hidden', true);
+                                    $('#reference_number').removeAttr('readonly');
+                                    $('#remark').removeAttr('readonly');
+                                }
+                            } else {
+                                console.log('Testing');
+                            }
+
 
                         } else {
 

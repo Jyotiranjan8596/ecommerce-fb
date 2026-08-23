@@ -224,6 +224,7 @@
     <script>
         $(document).ready(function() {
             showFormLoader();
+            let user_id = {{ $userId }};
 
             function showFormLoader() {
                 $('#form-loader-overlay').css('display', 'flex');
@@ -280,8 +281,8 @@
                                             <td>${item.voucher_number ?? ''}</td>
                                             <td>${item.account ?? ''}</td>
                                             <td>${item.reference_number ?? ''}</td>
-                                            <td>${item.debit ?? ''}</td>
-                                            <td>${item.credit ?? ''}</td>
+                                            <td>${user_id == item.from ? (item.amount ?? '') : 0}</td>
+                                            <td>${user_id == item.from ? 0 : (item.amount ?? '')}</td>
                                         </tr>
                                     `;
                             });

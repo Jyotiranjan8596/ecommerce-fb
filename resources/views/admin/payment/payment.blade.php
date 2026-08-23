@@ -119,14 +119,43 @@
 
                 <!-- Wallet Header -->
                 <div class="d-flex align-items-center justify-content-between mb-1">
-                    <h4 class="mb-0"><i class="bi bi-wallet2 text-primary me-2"></i><b>MANAGE PAYMENT</b></h4>
+                    <h4 class="mb-0">
+                        <i class="bi bi-wallet2 text-primary me-2"></i>
+                        <b>MANAGE PAYMENT</b>
+                    </h4>
                 </div>
-                <p class="text-muted mb-4 d-flex justify-content-between align-items-center">
-                    <span>Payment info for <span class="text-danger fw-semibold" id="pos_name">—</span></span>
-                    <span id="cradit-amount-span-one" hidden class="fw-semibold">Credit Amount: <span
-                            id="cradit-amount-span-two" class="text-success">₹0.00</span></span>
-                    <span id="cradit-amount-span-three" hidden class="fw-semibold text-success">Settled</span>
-                </p>
+
+                <div class="d-flex mb-4">
+                    <!-- Payment info -->
+                    <div class="text-muted">
+                        Payment info for
+                        <span class="text-danger fw-semibold" id="pos_name">—</span>
+                    </div>
+
+                    <!-- Amount information -->
+                    <div class="ms-auto d-flex flex-column align-items-start">
+                        <span id="cradit-amount-span-one" hidden class="fw-semibold">
+                            Credit Amount:
+                            <span id="cradit-amount-span-two" class="text-success">₹0.00</span>
+                        </span>
+
+                        <span hidden id="debit-amount-span-one" class="fw-semibold">
+                            Debit Amount:
+                            <span id="debit-amount-span-two" class="text-danger">₹0.00</span>
+                        </span>
+                        <span hidden id="settlement_status"
+                            class="fw-semibold text-success d-flex align-items-center gap-2">
+                        </span>
+                        <span hidden id="payment-span" class="fw-semibold">
+                            <span id="payment_status">- -</span>
+                            <button id="reminder-btn" hidden type="button" class="btn btn-sm px-3 py-1 rounded-pill">
+                                <i class="bi bi-bell me-1"></i>
+                            </button>
+                        </span>
+
+
+                    </div>
+                </div>
 
                 <!-- Wallet Form -->
                 <form id="payment_submit_form">
@@ -150,9 +179,9 @@
                         <div class="col-md-6">
                             <label for="pay_by" class="form-label fw-semibold">PAYMENT BY</label>
                             <select name="pay_by" id="pay_by" class="form-select" required>
-                                <option value="wallet">WALLET</option>
-                                <option value="cash">CASH</option>
-                                <option selected value="upi">UPI</option>
+                                {{-- <option value="wallet">WALLET</option> --}}
+                                <option selected value="1">UPI</option>
+                                <option value="0">CASH</option>
                             </select>
                         </div>
 
@@ -160,8 +189,8 @@
                             <label for="paying_amount" class="form-label fw-semibold">PAYING AMOUNT</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                                <input name="paying_amount" id="paying_amount" type="number" class="form-control" required
-                                    step="0.01" min="0" placeholder="0.00">
+                                <input name="paying_amount" id="paying_amount" type="number" class="form-control"
+                                    required step="0.01" min="0" placeholder="0.00">
                             </div>
                         </div>
 
@@ -336,9 +365,12 @@
                         $('#paying_amount').val('');
                         $('#pos_id').val('');
                         $('#cradit-amount-span-one').attr('hidden', true);
-                        $('#cradit-amount-span-three').attr('hidden', true);
+                        $('#payment-span').attr('hidden', true);
+                        $('#reminder-btn').attr('hidden', true);
+                        $('#settlement_status').attr('hidden', true);
                         $('#reference_number').removeAttr('readonly');
                         $('#remark').removeAttr('readonly');
+                        $('#payment_status').removeClass();
                         if (res.success) {
                             console.log(res.data == null);
 
@@ -361,7 +393,7 @@
                             });
                             $('#transaction-tbody').html(trows);
                             if (res.payment_data == null && res.data != []) {
-                                // $('#cradit-amount-span-three').removeAttr('hidden');
+                                // $('#settlement_status').removeAttr('hidden');
                                 // return;
                                 Swal.fire({
                                     icon: 'info',
@@ -379,13 +411,36 @@
                             $('#pos_id').val(payment_data.pos_id);
                             $('#reference_number').val(payment_data.payment?.[0]
                                 ?.reference_number);
+                            if (payment_data.status == 'approved') {
+                                $('#settlement_status').removeAttr('hidden');
+                                $('#settlement_status').text('Settled');
+                                return;
+                            }
                             if (payment_data.admin_credit > 0) {
                                 $('#paying_amount').val(payment_data.admin_credit);
                                 $('#cradit-amount-span-one').removeAttr('hidden');
                                 $('#remark').attr('readonly', false);
                                 $('#cradit-amount-span-two').text(payment_data.admin_credit);
+                                console.log(payment_data.payment);
+
+                                if (payment_data.payment && payment_data.payment.length > 0) {
+                                    console.log('Comming to payment part');
+
+                                    $('#payment-span').removeAttr('hidden');
+                                    $('#payment_status').text('Paid').addClass('text-success');
+                                } else {
+                                    $('#payment-span').removeAttr('hidden');
+                                    $('#payment_status').text('Not Paid').addClass(
+                                        'text-danger');
+                                    $('#payment-span').removeAttr('hidden');
+                                    $('#reminder-btn').removeAttr('hidden');
+                                }
                             } else {
-                                $('#paying_amount').val(payment_data.admin_credit);
+
+                                $('#debit-amount-span-two').text(payment_data.admin_debit);
+                                console.log(payment_data.payment);
+                                $('#debit-amount-span-one').removeAttr('hidden');
+                                $('#paying_amount').val(payment_data.admin_debit);
                                 $('#cradit-amount-span-one').attr('hidden', true);
                                 $('#reference_number').removeAttr('readonly');
                                 $('#remark').removeAttr('readonly');
@@ -416,18 +471,18 @@
                 event.preventDefault();
                 showFormLoader();
                 console.log(check_credit_amount);
-                if (check_credit_amount == 0) {
-                    hideFormLoader(); // Hide the loader before showing the alert
+                // if (check_credit_amount > 0) {
+                //     hideFormLoader(); // Hide the loader before showing the alert
 
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'No Pending Amount',
-                        text: 'There is no pending amount.',
-                        confirmButtonText: 'OK'
-                    });
+                //     Swal.fire({
+                //         icon: 'info',
+                //         title: 'No Pending Amount',
+                //         text: 'There is no pending amount.',
+                //         confirmButtonText: 'OK'
+                //     });
 
-                    return;
-                }
+                //     return;
+                // }
                 var formData = new FormData(this);
                 $.ajax({
                     type: "POST",
