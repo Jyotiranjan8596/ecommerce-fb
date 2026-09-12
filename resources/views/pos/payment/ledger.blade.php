@@ -133,6 +133,19 @@
             width: 3rem;
             height: 3rem;
         }
+
+        .opening-row td,
+        .total-row td {
+            font-weight: bold;
+        }
+
+        .opening-row {
+            border: #000;
+        }
+
+        .closing-row {
+            border: #000;
+        }
     </style>
     <div id="form-loader-overlay">
         <div class="spinner-border text-primary" role="status">
@@ -144,43 +157,91 @@
 
         <div class="row g-3 mb-3">
             {{-- Filters --}}
-            <div class="col-12 col-md-6">
-                <form id="ledger-form">
-                    @csrf
-                    <label class="form-label small text-muted mb-1">Search Types</label>
-                    <div class="row g-2 align-items-center">
-                        <!-- Search Type Dropdown -->
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <select name="search_type" id="search_type" class="form-select form-select-sm w-100">
-                                <option value="voucher">Voucher No</option>
-                                <option value="date">Date</option>
-                                <option value="ref">Ref No</option>
-                            </select>
-                        </div>
+            <div class="col-12">
+                <div class="card shadow-sm border-0 p-3">
 
-                        <!-- Search Value Input -->
-                        <div class="col-8 col-sm-4 col-md-5">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" id="trans_value" name="value" class="form-control"
-                                    placeholder="Search...">
+                    <form id="ledger-form">
+                        @csrf
+
+                        <div class="row g-3 align-items-end">
+
+                            <!-- Voucher Number -->
+                            {{-- <div class="col-12 col-sm-6 col-md-3">
+                                <label for="voucher_no" class="form-label small fw-semibold text-muted">
+                                    Voucher No
+                                </label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-receipt"></i>
+                                    </span>
+
+                                    <input type="text" id="voucher_no" name="voucher_no" class="form-control"
+                                        placeholder="Enter voucher no">
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Filter Button -->
-                        <div class="col-4 col-sm-2 col-md-3 d-grid">
-                            <button type="submit" class="btn btn-primary btn-sm fw-semibold">
-                                <i class="bi bi-funnel me-1"></i> FILTER
-                            </button>
-                        </div>
 
-                    </div>
-                </form>
+                            <!-- Reference Number -->
+                            <div class="col-12 col-sm-6 col-md-3">
+                                <label for="reference_no" class="form-label small fw-semibold text-muted">
+                                    Reference No
+                                </label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-hash"></i>
+                                    </span>
+
+                                    <input type="text" id="reference_no" name="reference_no" class="form-control"
+                                        placeholder="Enter reference no">
+                                </div>
+                            </div> --}}
+
+
+                            <!-- From Date -->
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <label for="from_date" class="form-label small fw-semibold text-muted">
+                                    From Date
+                                </label>
+
+                                <input type="date" id="from_date" name="from_date" class="form-control form-control-sm">
+                            </div>
+
+
+                            <!-- To Date -->
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <label for="to_date" class="form-label small fw-semibold text-muted">
+                                    To Date
+                                </label>
+
+                                <input type="date" id="to_date" name="to_date" class="form-control form-control-sm">
+                            </div>
+
+
+                            <!-- Buttons -->
+                            <div class="col-12 col-md-2">
+                                <div class="d-flex gap-2">
+
+                                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1 fw-semibold">
+                                        <i class="bi bi-funnel me-1"></i>
+                                        View
+                                    </button>
+
+                                    <button type="reset" class="btn btn-outline-secondary btn-sm" title="Reset Filter">
+                                        <i class="bi bi-arrow-counterclockwise">Reset</i>
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
             </div>
 
-            {{-- Export --}}
+            {{-- Export
             <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
                 <form method="post" action="{{ route('pos.ledger.export') }}" class="w-100">
                     @csrf
@@ -190,23 +251,28 @@
                         <i class="bi bi-download me-1"></i> EXPORT
                     </button>
                 </form>
-            </div>
+            </div> --}}
 
         </div>
         <hr class="my-4">
 
         <!-- Data Table -->
-        <div class="table-responsive">
+        <div id="tbl-div" hidden class="table-responsive">
+            <div class="d-flex justify-content-end my-3">
+                <a href="#" id="download-pdf-btn" class="btn btn-primary btn-sm fw-semibold" target="_blank">
+                    <i class="bi bi-download me-1"></i>Download
+                </a>
+            </div>
             <table class="table table-striped" id="wallet-tbl">
                 <thead>
                     <tr>
                         <th>Sl.No</th>
                         <th>Date</th>
                         <th>Voucher No</th>
-                        <th>Ref No</th>
-                        {{-- <th>Account</th> --}}
+                        <th>Account</th>
                         <th>Debit</th>
                         <th>Credit</th>
+                        <th>Balance</th>
                     </tr>
                 </thead>
 
@@ -231,30 +297,13 @@
             function hideFormLoader() {
                 $('#form-loader-overlay').css('display', 'none');
             }
-            // Initial load
-            loadLedger(1);
-
-
-            const typeSelect = document.getElementById('search_type');
-            const valueInput = document.getElementById('trans_value');
-            $('#search_type').on('change', function() {
-                $('#hidden_search_type').val(this.value);
-            });
-
-            typeSelect.addEventListener('change', function() {
-                if (this.value === 'date') {
-                    valueInput.type = 'date';
-                    valueInput.placeholder = '';
-                } else {
-                    valueInput.type = 'text';
-                    valueInput.placeholder = 'Search...';
-                }
-            });
 
             function loadLedger(page = 1, formElement) {
 
                 let formData = new FormData(formElement); // Capital 'F'
                 formData.append('page', page);
+                const fromDate = $('#from_date').val();
+                const toDate = $('#to_date').val();
                 $.ajax({
                     url: "{{ route('pos.get.ledger') }}",
                     type: "POST",
@@ -268,25 +317,52 @@
 
                         let rows = '';
                         let index = response.data.from ?? 1;
+                        $('#tbl-div').attr('hidden', false);
+                        console.log(response.data);
+                            
+                        const openingBalance = response.data.opening_balance;
+                        const openingBalanceType = response.data.opening_balance_type;
 
-                        if (response.data.data.length > 0) {
+                        const transactions = Object.keys(response.data)
+                            .filter(key => !isNaN(key))
+                            .map(key => response.data[key]);
+                        if (Object.keys(response.data).length > 0) {
                             const pagination = response.data;
                             let paginationHtml = '';
-                            response.data.data.forEach(function(item) {
+                            rows += `<tr class="opening-row">
+                                        <td colspan="6" class="text-end">Opening Balance</td>
+                                        <td>
+                                            ${openingBalance} ${openingBalanceType}
+                                        </td>
+                                    </tr>
+                                `;
+                            transactions.forEach(function(item) {
 
                                 rows += `
                                         <tr>
                                             <td>${index++}</td>
                                             <td>${item.date ?? ''}</td>
                                             <td>${item.voucher_number ?? ''}</td>
-                                            <td>${item.reference_number ?? ''}</td>
-                                            <<td>${user_id == item.from ? (item.amount ?? '') : 0}</td>
-                                            <td>${user_id == item.from ? 0 : (item.amount ?? '')}</td>
+                                            <td><span class="voucher-type">{{ $row['voucher_type'] ?? '' }}</span>
+                                                <div class="remarks">ref - ${item.reference_number},${item.remark}
+                                                </div></td>
+                                            <td>${item.debit}</td>
+                                            <td>${item.credit}</td>
+                                            <td>${item.balance} ${item.balance_type}</td>
                                         </tr>
                                     `;
                             });
-                            $('#pagination-container').html(buildPagination(pagination));
-
+                            rows += `<tr>
+                                            <td colspan="4" class="closing-row text-end bold"><strong>Total</strong></td>
+                                            <td><strong>${data.total_debit}</strong></td>
+                                            <td><strong>${data.total_credit}</strong></td>
+                                            <td><strong>${data.total_balance} ${data.total_balance_type}</strong></td>
+                                        </tr>
+                                    `;
+                            // $('#pagination-container').html(buildPagination(pagination));
+                            const pdfUrl =
+                                `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
+                            $('#download-pdf-btn').attr('href', pdfUrl);
                         } else {
 
                             rows = `
@@ -310,11 +386,15 @@
                 });
             }
 
+            $('#download-pdf-btn').on('click', function() {
+                console.log('clicked');
+                let from = $('#from_date').val();
+                let to = $('#to_date').val();
+            });
+
             // Filter submit
             $('#ledger-form').on('submit', function(e) {
                 e.preventDefault();
-                $('#hidden_search_type').val(typeSelect);
-                $('#hidden_value').val(valueInput);
                 loadLedger(1, this);
             });
 

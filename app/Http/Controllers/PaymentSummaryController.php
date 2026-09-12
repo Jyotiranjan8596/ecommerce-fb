@@ -217,10 +217,10 @@ class PaymentSummaryController extends Controller
     public function getledger(Request $request)
     {
         $ledger = Payment::getLedgerData($request);
-        $pagination = $ledger->links()->render();
+        // $pagination = $ledger->links()->render();
         return response()->json([
             'data' => $ledger,
-            'pagination' => $pagination
+            'pagination' => '$pagination'
         ]);
     }
 
@@ -239,5 +239,24 @@ class PaymentSummaryController extends Controller
         $data = Payment::getLedgerDataExport($request);
         // dd($data->toArray());
         return Excel::download(new AccountLedgerExport($data), 'account_ledger_freebazar.xlsx');
+    }
+
+    public  function getReceipt(Request $request)
+    {
+        // dd($request->all());
+        $result = Payment::getReceipt($request);
+        if ($result) {
+            return response()->json([
+                'status' => 'success',
+                'code'   => 200,
+                'data'   => $result,
+            ]);
+        } else {
+            return response()->json([
+                'status'  => 'failed',
+                'code'    => 500,
+                'message' => 'Something Went Wrong!',
+            ]);
+        }
     }
 }

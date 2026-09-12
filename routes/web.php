@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PosController as AdminPosController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\DownloadPdfController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PaymentSummaryController;
 use App\Http\Controllers\PosController;
@@ -124,7 +125,7 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::post('verify-all/user', [PosController::class, 'verifyAllCustomer'])->name('verify.all.user');
     Route::post('dsr/verify', [PosController::class, 'verifyDsr'])->name('dsr.verify.transaction');
     Route::post('initiate-payment', [PosController::class, 'initiate_payment'])->name('initiate.payment');
-    Route::get('sattlement', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
+    Route::get('receipt-journal', [PaymentSummaryController::class, 'sattlement_index'])->name('sattlement');
     Route::post('export-settlement', [PaymentSummaryController::class, 'export_settlement'])->name('export.settlement');
     Route::post('/save-modal-data', [PaymentSummaryController::class, 'saveSummaryData'])->name('save.summary.data');
     Route::get('pos/settlement/invoice/{id}', [PaymentSummaryController::class, 'downloadPosInvoice'])->name('settlement.invoice');
@@ -134,11 +135,12 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('account/ledger', [PaymentSummaryController::class, 'pos_ledger_index'])->name('ledger.index');
     Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
     Route::post('ledger/export', [PaymentSummaryController::class, 'ledgerExport'])->name('ledger.export');
+    Route::post('get/receipt/journal',[PaymentSummaryController::class,'getReceipt'])->name('get.receipt');
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');
 
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');
-
+Route::get('/ledger/download-pdf', [DownloadPdfController::class, 'downloadLedgerPdf'])->name('ledger.download-pdf');
 Route::get('reset-password', [ResetPasswordController::class, 'index'])->name('reset.password');
 Route::post('update-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset.otp');

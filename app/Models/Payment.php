@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Helper;
 use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,7 +31,11 @@ class Payment extends Model
 
     public function creditedTo()
     {
-        return $this->belongsTo(User::class, 'to');
+        return $this->belongsTo(User::class, 'to', 'user_id');
+    }
+    public function creditedFrom()
+    {
+        return $this->belongsTo(User::class, 'from', 'user_id');
     }
 
     public function createdBy()
@@ -60,7 +65,7 @@ class Payment extends Model
                 return false;
             }
 
-            $voucherNumber = self::generateVoucherNumber();
+            $voucherNumber = Helper::generateVoucherNumber();
 
             if ($request->is_pos) {
                 $debitTo  = $pos->user_id;
@@ -82,7 +87,7 @@ class Payment extends Model
                     'reference_number' => $request->reference_number,
                     'account_details'  => null,
                     'pay_by'           => $request->pay_by,
-                    'due'              => 0,
+                    // 'due'              => $request->pay_by ?? 0,
                     'amount'           => $request->paying_amount,
                     'to'               => $creditTo,
                     'from'             => $debitTo,
@@ -151,65 +156,216 @@ class Payment extends Model
         }
     }
 
-    public static function generateVoucherNumber()
-    {
-        $today = Carbon::now()->format('Ymd');
 
-        $lastPayment = Payment::latest('id')->first();
-
-        $sequence = $lastPayment
-            ? ((int) substr($lastPayment->voucher_number, -4)) + 1
-            : 1;
-
-        return 'FBR-' . $today . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
-    }
 
     public static function getLedgerData($request)
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->user_id;
-        $search_type = $request->search_type;
-        $value = $request->value;
-        $query = self::where('to', $userId)->orWhere('from', $userId)->with('createdBy')->orderBy('id', 'desc');
-        // dd($query);
-        if ($search_type == 'date') {
-            $query->where('transaction_date', $value);
+        $opening_balance = 0;
+        // $search_type = $request->search_type;
+        // $value = $request->value;
+        $from = $request->form_date;
+        $to = $request->to_date;
+        $total_debit     = 0;
+        $total_credit    = 0;
+        $base_query = self::where(function ($base_query) use ($userId) {
+            $base_query->where('to', $userId)
+                ->orWhere('from', $userId);
+        })->with('createdBy')
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc');
+        if ($from) {
+            $openingTransactions = (clone $base_query)
+                ->whereDate('transaction_date', '<', $from)
+                ->get();
+            foreach ($openingTransactions as $transaction) {
+                if ($transaction->from == $userId) {
+
+                    $opening_balance -= $transaction->amount;
+                }
+
+                if ($transaction->to == $userId) {
+
+                    $opening_balance += $transaction->amount;
+                }
+            }
         }
-        if ($search_type == 'voucher') {
-            $query->where('voucher_number', $value);
+        $query = (clone $base_query)
+            ->with('createdBy');
+
+        if ($from && $to) {
+            $query->whereBetween(
+                'transaction_date',
+                [$from, $to]
+            )->orderBy('transaction_date', 'asc')
+                ->orderBy('id', 'asc');
         }
-        if ($search_type == 'ref') {
-            $query->where('reference_number', $value);
-        }
-        return $query->paginate(50)->through(function ($item) {
-            // dd($wallet->toArray());
+        $running_balance = $opening_balance;
+        $transactions = $query->get()->map(function ($item) use (
+            $userId,
+            &$running_balance,
+            &$total_debit,
+            &$total_credit
+        ) {
+            $item->debit = 0;
+            $item->credit = 0;
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
+            if ($item->to == $userId) {
+                $item->debit = $item->amount;
+                $total_debit += $item->amount;
+                $item->debit = $item->amount;
+
+                $running_balance += $item->amount;
+            }
+            if ($item->from == $userId) {
+                $item->credit = $item->amount;
+                $total_credit += $item->amount;
+                $item->credit = $item->amount;
+
+                $running_balance -= $item->amount;
+            }
+            $item->balance = number_format(abs($running_balance), 2, '.', '');
+
+            $item->balance_type = $running_balance >= 0
+                ? 'Dr'
+                : 'Cr';
             return $item;
         });
+        $total_balance = $opening_balance + $total_debit - $total_credit;
+        $total_balance_type = $total_balance >= 0
+            ? 'Dr'
+            : 'Cr';
+        $transactions['opening_balance'] = abs($opening_balance);
+        $transactions['opening_balance_type'] = $opening_balance >= 0 ? 'Dr' : 'Cr';
+        $transactions['total_debit'] = number_format(abs($total_debit), 2, '.', '');
+        $transactions['total_credit'] = number_format(abs($total_credit), 2, '.', '');
+        $transactions['total_balance'] = number_format(abs($total_balance), 2, '.', '');
+        $transactions['total_balance_type'] = $total_balance_type;
+        // dd($transactions->toArray());
+        return $transactions;
     }
     public static function getLedgerDataExport($request)
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->user_id;
-        $search_type = $request->search_type;
-        $value = $request->value;
-        $query = self::where('credited_to', $userId)->with('createdBy')->orderBy('id', 'desc');
-        if ($search_type == 'date') {
-            $query->where('transaction_date', $value);
+        $opening_balance = 0;
+        $total_debit     = 0;
+        $total_credit    = 0;
+        // $search_type = $request->search_type;
+        // $value = $request->value;
+        $from = $request->from_date;
+        $to = $request->to_date;
+        $base_query = self::where(function ($base_query) use ($userId) {
+            $base_query->where('to', $userId)
+                ->orWhere('from', $userId);
+        })->with('createdBy')
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc');
+        if ($from) {
+            $openingTransactions = (clone $base_query)
+                ->whereDate('transaction_date', '<', $from)
+                ->get();
+            foreach ($openingTransactions as $transaction) {
+                if ($transaction->from == $userId) {
+
+                    $opening_balance -= $transaction->amount;
+                }
+
+                if ($transaction->to == $userId) {
+
+                    $opening_balance += $transaction->amount;
+                }
+            }
         }
-        if ($search_type == 'voucher') {
-            $query->where('voucher_number', $value);
+        $query = (clone $base_query)
+            ->with('createdBy');
+
+        if ($from && $to) {
+            $query->whereBetween(
+                'transaction_date',
+                [$from, $to]
+            )->orderBy('transaction_date', 'asc')
+                ->orderBy('id', 'asc');
         }
-        if ($search_type == 'ref') {
-            $query->where('reference_number', $value);
-        }
-        return $query->get()->map(function ($item) {
+        $running_balance = $opening_balance;
+        $transactions = $query->get()->map(function ($item) use (
+            $userId,
+            &$running_balance,
+            &$total_debit,
+            &$total_credit
+        ) {
+            $item->debit = 0;
+            $item->credit = 0;
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
+            if ($item->to == $userId) {
+                $item->debit = $item->amount;
+                $total_debit += $item->amount;
+                $item->debit = $item->amount;
+
+                $running_balance += $item->amount;
+            }
+            if ($item->from == $userId) {
+                $item->credit = $item->amount;
+                $total_credit += $item->amount;
+                $item->credit = $item->amount;
+
+                $running_balance -= $item->amount;
+            }
+            $item->balance = abs($running_balance);
+
+            $item->balance_type = $running_balance >= 0
+                ? 'Dr'
+                : 'Cr';
             return $item;
         });
+        $total_balance = $opening_balance + $total_debit - $total_credit;
+        $total_balance_type = $total_balance >= 0
+            ? 'Dr'
+            : 'Cr';
+        return [
+            'rows' => $transactions,
+            'opening_balance' => abs($opening_balance),
+            'opening_balance_type' => $opening_balance >= 0 ? 'Dr' : 'Cr',
+            'from' => Helper::formatDate($from),
+            'to' => Helper::formatDate($to),
+            'name' => $user_profile->name,
+            'total_debit' => number_format(abs($total_debit), 2, '.', ''),
+            'total_credit' => number_format(abs($total_credit), 2, '.', ''),
+            'total_balance' => number_format(abs($total_balance), 2, '.', ''),
+            'total_balance_type' => $total_balance_type
+        ];
+    }
+
+    public static function getReceipt($request)
+    {
+        $user_profile = auth()->user();
+        $userId       = $user_profile->user_id;
+        $from = $request->from_date;
+        $to = $request->to_date;
+
+        $query = self::where('to', $userId)->with('creditedFrom');
+        if ($from && $to) {
+            $query->wwhereBetween(
+                'transaction_date',
+                [$from, $to]
+            );
+        }
+        $data = $query->get()->map(function ($item) {
+            return [
+                'voucher' => $item->voucher_number,
+                'ref_number' => $item->reference_number,
+                'date' => $item->transaction_date,
+                'receive_from' => $item->creditedFrom->name,
+                'receive_by' => $item->pay_by = 1 ? 'Upi' : 'Cash',
+                'amount' => $item->amount,
+                'remark' => $item->remark
+            ];
+        });
+        return $data;
     }
 }

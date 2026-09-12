@@ -7,18 +7,18 @@
         {{-- Header Section --}}
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
-            <h3 class="fw-bold text-primary m-0">Account Settlements
+            <h3 class="fw-bold text-primary m-0">Receipt Journal
             </h3>
 
-            <form method="POST" action="{{ route('pos.export.settlement') }}">
-                @csrf
-                {{-- <input type="hidden" name="start_date" value="{{ request()->start_date }}">
+            {{-- <form method="POST" action="{{ route('pos.export.settlement') }}">
+                @csrf --}}
+            {{-- <input type="hidden" name="start_date" value="{{ request()->start_date }}">
                 <input type="hidden" name="end_date" value="{{ request()->end_date }}"> --}}
 
-                <button id="export-smry" class="btn btn-success px-4 shadow-sm">
+            {{-- <button id="export-smry" class="btn btn-success px-4 shadow-sm">
                     <i class="fas fa-file-export me-1"></i> Export
                 </button>
-            </form>
+            </form> --}}
         </div>
 
         <div class="table-responsive">
@@ -26,53 +26,16 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">Sl.no</th>
+                        <th scope="col">Voucher</th>
                         <th scope="col">Date</th>
-                        <th scope="col">Total Transaction</th>
-                        <th scope="col">Billing Amount</th>
-                        <th scope="col">Cash/UPI</th>
-                        <th scope="col">Wallet</th>
-                        <th scope="col">Reward</th>
-                        <th scope="col">Credit</th>
-                        <th scope="col">Debit</th>
-                        <th scope="col">Status</th>
+                        <th scope="col">Receive From</th>
+                        <th scope="col">Receive By</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Narration</th>
                     </tr>
                 </thead>
 
-                <tbody>
-                    @foreach ($settlements as $key => $settlement)
-                        <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td>{{ $settlement->intiate_date ?? 'N/A' }}</td>
-                            <td>{{ $settlement->total_transaction ?? 'N/A' }}</td>
-                            <td>₹{{ $settlement->total_billing_amount ?? 0 }}/-</td>
-                            <td>₹{{ $settlement->by_cash ?? 0 }}/-</td>
-                            <td>₹{{ $settlement->by_wallet }}</td>
-                            <td>₹{{ $settlement->by_reward ?? 0 }}/-</td>
-                            <td>₹{{ $settlement->pos_credit ?? 0 }}</td>
-                            <td>₹{{ $settlement->pos_debit ?? 0 }}</td>
-
-                            @if ($settlement->status == 'pending')
-                                <td>
-                                    <span data-id="{{ $settlement->id }}" class="badge bg-warning text-dark px-3 py-2">
-                                        Pending
-                                    </span>
-                                </td>
-                            @elseif ($settlement->status == 'rejected')
-                                <td>
-                                    <span class="badge bg-danger px-3 py-2">
-                                        Rejected
-                                    </span>
-                                </td>
-                            @else
-                                <td>
-                                    <a href="{{ route('pos.settlement.invoice', $settlement->id) }}"
-                                        class="badge bg-success text-decoration-none px-3 py-2">
-                                        Settled
-                                    </a>
-                                </td>
-                            @endif
-                        </tr>
-                    @endforeach
+                <tbody id="receipt-tbl-bdy">
                 </tbody>
             </table>
         </div>
@@ -146,6 +109,74 @@
             //         }
             //     });
             // });
+            loadReceipt();
+
+            function loadReceipt(page = 1, formElement) {
+                let formData = new FormData(formElement); // Capital 'F'
+                formData.append('page', page);
+                const fromDate = $('#from_date').val();
+                const toDate = $('#to_date').val();
+                $.ajax({
+                    url: "{{ route('pos.get.receipt') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Important when using FormData
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+
+                        let rows = '';
+                        let index = response.data.from ?? 1;
+                        $('#tbl-div').attr('hidden', false);
+                        console.log(response.data);
+                        let data = response.data;
+
+                        const transactions = Object.keys(response.data)
+                            .filter(key => !isNaN(key))
+                            .map(key => response.data[key]);
+                        if (Object.keys(response.data).length > 0) {
+                            const pagination = response.data;
+                            let paginationHtml = '';
+                            transactions.forEach(function(item) {
+
+                                rows += `
+                                        <tr>
+                                            <td>${index++}</td>
+                                            <td>${item.voucher ?? ''}</td>
+                                            <td>${item.date ?? ''}</td>
+                                            <td>${item.receive_from ?? ''}</td>
+                                            <td>${item.receive_by}</td>
+                                            <td>${item.amount}</td>
+                                            <td>${item.remark}</td>
+                                        </tr>
+                                    `;
+                            });
+                            // $('#pagination-container').html(buildPagination(pagination));
+
+                        } else {
+
+                            rows = `
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            No data found
+                                        </td>
+                                    </tr>
+                                `;
+                        }
+
+                        $('#receipt-tbl-bdy').html(rows);
+
+                        // Pagination HTML
+                        $('#pagination-link').html(response.pagination);
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        alert('Something went wrong');
+                    }
+                });
+            }
         });
     </script>
 @endsection

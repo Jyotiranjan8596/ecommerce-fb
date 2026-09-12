@@ -7,6 +7,7 @@ use App\Helpers\NumberToWordsHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaymentSummary extends Model
@@ -45,12 +46,14 @@ class PaymentSummary extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function payment(){
-        return $this->hasMany(Payment::class,'payment_summury_id','id');
+    public function payment()
+    {
+        return $this->hasMany(Payment::class, 'payment_summury_id', 'id');
     }
 
     public static function store_summary($data)
     {
+        DB::beginTransaction();
         try {
             $existing = self::where('date', $data['date'])
                 ->where('pos_id', $data['pos_id'])
@@ -59,6 +62,7 @@ class PaymentSummary extends Model
             if ($existing) {
                 return 1;
             }
+            $voucherNumber = Helper::generateVoucherNumber();
             $res = self::create([
                 'pos_id' => $data['pos_id'],
                 'date'                 => $data['date'],
@@ -76,8 +80,35 @@ class PaymentSummary extends Model
                 // 'updated_by' => auth()->user()->id,
             ]);
             if ($res) {
+                $amount = $res->admin_credit > 0 ? $res->admin_credit : $res->admin_debit;
+                if ($res->pos_credit > 0) {
+                    $to =  $res->pos_id;
+                    $from = 666666;
+                } else {
+                    $to = 666666;
+                    $from = $res->pos_id;
+                }
+                $payment_data = [
+                    'payment_summury_id' => $res->id,
+                    'transaction_date' => $data['date'],
+                    'voucher_number'   => $voucherNumber,
+                    'reference_number' => 'atcrt' . $voucherNumber,
+                    'account_details'  => null,
+                    'pay_by'           => null,
+                    // 'due'              => $request->pay_by ?? 0,
+                    'amount'           => $amount,
+                    'to'               => $to,
+                    'from'             => $from,
+                    'created_by'       => 666666,
+                    'updated_by'       => 666666,
+                    'remark'           => "Auto Generated",
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ];
+                Payment::insert($payment_data);
                 return 2;
             } else {
+                DB::rollBack();
                 return 3;
             }
         } catch (\Exception $e) {
@@ -175,7 +206,7 @@ class PaymentSummary extends Model
         //     }
         // }
         $pos_pid = Helper::get_pos_id($pos_id);
-        $data = self::where('pos_id', $pos_pid)->where('date', $date)->with('pos_system','payment')->first();
+        $data = self::where('pos_id', $pos_pid)->where('date', $date)->with('pos_system', 'payment')->first();
         Log::info('data', ['pos_data' => $data]);
         return $data ?? false;
     }

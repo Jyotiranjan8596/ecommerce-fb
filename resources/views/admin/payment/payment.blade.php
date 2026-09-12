@@ -195,13 +195,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold d-block">DUE</label>
-                            <div
-                                class="wallet-balance-box p-2 px-3 rounded border bg-light d-flex align-items-center justify-content-between">
-                                <span id="due" class="fw-bold text-danger">₹0.00</span>
-                                <i class="bi bi-wallet-fill text-danger"></i>
+                            <label for="due" class="form-label fw-semibold">DUE</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
+                                <input id="due_balance" type="number" name="due" value="" 
+                                    class="form-control text-danger" step="0.01" min="0" placeholder="0.00">
                             </div>
-                            <input id="due_balance" type="hidden" name="due" value="">
                         </div>
                         <div class="col-md-6">
                             <label for="reference_number" class="form-label fw-semibold">Reference Number</label>
@@ -334,6 +333,7 @@
         $(document).ready(function() {
             getAllPos();
             let check_credit_amount = 0;
+            let paying_amount = 550;
             $('#summary_date').val($('#trans_date').val());
 
             $('#trans_date').on('change', function() {
@@ -404,6 +404,7 @@
                                 return;
                             }
                             let payment_data = res.payment_data;
+                            paying_amount = payment_data.admin_credit;
                             check_credit_amount = payment_data.admin_credit;
                             $('#pos_name').text(payment_data.pos_system.name);
                             $('#amount').val(payment_data.total_billing_amount);
@@ -579,6 +580,17 @@
                     }
                 });
             }
+
+            $('#paying_amount').on('input', function() {
+                console.log($('#paying_amount').val());
+                let amount = $(this).val();
+                if (amount < paying_amount) {
+                    let due = paying_amount - amount;
+                    console.log(due);
+
+                    $('#due_balance').val(due);
+                }
+            });
         });
     </script>
 @endsection

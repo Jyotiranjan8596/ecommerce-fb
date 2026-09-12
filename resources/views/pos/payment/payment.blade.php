@@ -236,7 +236,7 @@
 
                         <!-- Transactions Table with Scrolling -->
                         <div class="scrollable-table">
-                            <table id="tech-companies-1" class="table table-striped table-bordered">
+                            <table id="table-1" class="table table-striped table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Sl.No</th>
@@ -420,6 +420,7 @@
                     }
                 });
             }
+
             $('#payment_submit_form').on('submit', function(event) {
                 event.preventDefault();
                 showFormLoader();

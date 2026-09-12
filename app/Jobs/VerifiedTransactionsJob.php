@@ -58,7 +58,7 @@ class VerifiedTransactionsJob implements ShouldQueue
                     'pos_id' => $wallet->pos_id,
                     'email' => $wallet->getPos->email ?? null
                 ];
-            });
+        });
         Log::info($posData);
 
         foreach ($posData as $pos) {
