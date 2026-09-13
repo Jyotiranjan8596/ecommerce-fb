@@ -34,27 +34,40 @@
     <div class="container my-4">
         {{-- Header Section --}}
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <h3 class="fw-bold text-primary m-0">Receipt Journal</h3>
+        </div>
 
-            <h3 class="fw-bold text-primary m-0">Receipt Journal
-            </h3>
+        {{-- Filter + Add Receipt Section --}}
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
 
-            {{-- <form method="POST" action="{{ route('pos.export.settlement') }}">
-                @csrf --}}
-            {{-- <input type="hidden" name="start_date" value="{{ request()->start_date }}">
-                <input type="hidden" name="end_date" value="{{ request()->end_date }}"> --}}
+            <form id="filter-form" class="row g-2 align-items-end flex-grow-1">
+                <div class="col-6 col-sm-4 col-md-3">
+                    <label for="from_date" class="form-label">From Date</label>
+                    <input type="date" name="from_date" id="from_date" class="form-control">
+                </div>
 
-            {{-- <button id="export-smry" class="btn btn-success px-4 shadow-sm">
-                    <i class="fas fa-file-export me-1"></i> Export
-                </button>
-            </form> --}}
+                <div class="col-6 col-sm-4 col-md-3">
+                    <label for="to_date" class="form-label">To Date</label>
+                    <input type="date" name="to_date" id="to_date" class="form-control">
+                </div>
+
+                <div class="col-12 col-sm-4 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" id="apply-filter">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="reset-filter">
+                        <i class="bi bi-x-circle"></i> Reset
+                    </button>
+                </div>
+            </form>
+
+            <button type="button" class="btn-add-receipt" data-bs-toggle="modal" data-bs-target="#addReceiptModal">
+                <i class="bi bi-plus-circle"></i> Add Receipt
+            </button>
+
         </div>
 
         <div class="table-responsive">
-            <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn-add-receipt">
-                    <i class="bi bi-plus-circle"></i> Add Receipt
-                </button>
-            </div>
             <table class="table table-striped table-bordered align-middle">
                 <thead class="table-dark">
                     <tr>
@@ -73,25 +86,88 @@
             </table>
         </div>
     </div>
-    <div class="modal fade" id="pay-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal fade" id="addReceiptModal" tabindex="-1" aria-labelledby="addReceiptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Initiate Payment</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form id="pay-form" action="{{ route('pos.initiate.payment') }}" method="POST"
-                    enctype="multipart/form-data">
+                <form id="submit-receipt">
                     @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addReceiptModalLabel">Add Receipt</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                     <div class="modal-body">
-                        <input type="file" name="screenshot" id="pay-img">
+
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="number" step="0.01" name="amount" id="amount"
+                                    class="form-control @error('amount') is-invalid @enderror" value="{{ old('amount') }}"
+                                    required>
+                                @error('amount')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label for="pay_by" class="form-label">Pay By</label>
+                                <select name="pay_by" id="pay_by"
+                                    class="form-select @error('pay_by') is-invalid @enderror" required>
+                                    <option value="" disabled {{ old('pay_by') === null ? 'selected' : '' }}>-- Select
+                                        Pay By --</option>
+                                    <option value="1" {{ old('pay_by') == '1' ? 'selected' : '' }}>UPI</option>
+                                    <option value="0"
+                                        {{ old('pay_by') !== null && old('pay_by') == '0' ? 'selected' : '' }}>Cash</option>
+                                </select>
+                                @error('pay_by')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label for="pay_to" class="form-label">Pay To</label>
+                                <select name="pay_to" id="pay_to"
+                                    class="form-select @error('pay_to') is-invalid @enderror" required>
+                                    <option value="" disabled {{ old('pay_to') ? '' : 'selected' }}>-- Select Pay To
+                                        --</option>
+                                    @foreach ($all_pos as $payee)
+                                        <option value="{{ $payee->user_id }}"
+                                            {{ old('pay_to') == $payee->id ? 'selected' : '' }}>
+                                            {{ $payee->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('pay_to')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label for="reference_number" class="form-label">Reference Number</label>
+                                <input type="text" name="reference_number" id="reference_number"
+                                    class="form-control @error('reference_number') is-invalid @enderror"
+                                    value="{{ old('reference_number') }}">
+                                @error('reference_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="remark" class="form-label">Remark</label>
+                                <textarea name="remark" id="remark" rows="3" class="form-control @error('remark') is-invalid @enderror">{{ old('remark') }}</textarea>
+                                @error('remark')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
             </div>
@@ -107,10 +183,50 @@
     </script>
     <script>
         $(document).ready(function() {
-            // $('#pay-form').on('submit',function(e){
-            //     e.prevenetDefault();
-            //     var formData = new FormData(this);
-            // });
+            $('#filter-form').on('submit', function(e) {
+                e.preventDefault();
+                var fromDate = $('#from_date').val();
+                var toDate = $('#to_date').val();
+                loadReceipt(1, this);
+            });
+            $('#submit-receipt').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: "{{ route('admin.store.receipt') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false, // Important when using FormData
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: response.message,
+                                icon: "success"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Something went wrong!",
+                                text: response.message || "Please try again later.",
+                                icon: "error"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        alert('Something went wrong');
+                    }
+                });
+            });
+
+
 
             // $('#export-smry').on('click', function() {
             //     $.ajax({
@@ -210,6 +326,8 @@
                     }
                 });
             }
+
+
         });
     </script>
 @endsection

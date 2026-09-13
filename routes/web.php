@@ -135,7 +135,8 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('account/ledger', [PaymentSummaryController::class, 'pos_ledger_index'])->name('ledger.index');
     Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
     Route::post('ledger/export', [PaymentSummaryController::class, 'ledgerExport'])->name('ledger.export');
-    Route::post('get/receipt/journal',[PaymentSummaryController::class,'getReceipt'])->name('get.receipt');
+    Route::post('get/receipt/journal', [PaymentSummaryController::class, 'getReceipt'])->name('get.receipt');
+    Route::post('store-receipt', [PaymentSummaryController::class, 'store_receipt'])->name('store.receipt');
 });
 Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->name('terms.conditions');
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');

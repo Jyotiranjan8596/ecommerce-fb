@@ -131,4 +131,5 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
     Route::post('ledger/export', [PaymentSummaryController::class, 'ledgerExport'])->name('ledger.export');
     Route::post('get/receipt/journal', [PaymentSummaryController::class, 'getReceipt'])->name('get.receipt');
+    Route::post('store-receipt', [PaymentSummaryController::class, 'store_receipt'])->name('store.receipt');
 });

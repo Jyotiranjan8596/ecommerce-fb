@@ -9,18 +9,31 @@
 
             <h3 class="fw-bold text-primary m-0">Receipt Journal
             </h3>
-
-            {{-- <form method="POST" action="{{ route('pos.export.settlement') }}">
-                @csrf --}}
-            {{-- <input type="hidden" name="start_date" value="{{ request()->start_date }}">
-                <input type="hidden" name="end_date" value="{{ request()->end_date }}"> --}}
-
-            {{-- <button id="export-smry" class="btn btn-success px-4 shadow-sm">
-                    <i class="fas fa-file-export me-1"></i> Export
-                </button>
-            </form> --}}
         </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <form id="filter-form" class="row g-3 align-items-end">
+                    <div class="col-12 col-sm-4 col-md-3">
+                        <label for="from_date" class="form-label">From Date</label>
+                        <input type="date" name="from_date" id="from_date" class="form-control">
+                    </div>
 
+                    <div class="col-12 col-sm-4 col-md-3">
+                        <label for="to_date" class="form-label">To Date</label>
+                        <input type="date" name="to_date" id="to_date" class="form-control">
+                    </div>
+
+                    <div class="col-12 col-sm-4 col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100" id="apply-filter">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary w-100" id="reset-filter">
+                            <i class="bi bi-x-circle"></i> Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered align-middle">
                 <thead class="table-dark">
@@ -74,10 +87,12 @@
     </script>
     <script>
         $(document).ready(function() {
-            // $('#pay-form').on('submit',function(e){
-            //     e.prevenetDefault();
-            //     var formData = new FormData(this);
-            // });
+            $('#filter-form').on('submit', function(e) {
+                e.preventDefault();
+                var fromDate = $('#from_date').val();
+                var toDate = $('#to_date').val();
+                loadReceipt(1, this);
+            });
 
             // $('#export-smry').on('click', function() {
             //     $.ajax({

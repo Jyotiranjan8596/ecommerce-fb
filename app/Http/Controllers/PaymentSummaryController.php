@@ -7,6 +7,7 @@ use App\Exports\AccountSettlementExport;
 use App\Jobs\AccountLedgerJob;
 use App\Models\Payment;
 use App\Models\PaymentSummary;
+use App\Models\PosModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -111,7 +112,8 @@ class PaymentSummaryController extends Controller
     public function admin_settlemt_index()
     {
         $settlements = PaymentSummary::fetch_summary_admin();
-        return view('admin.settlement_payment.settlement', compact('settlements'));
+        $all_pos = PosModel::getAll();
+        return view('admin.settlement_payment.settlement', compact('settlements', 'all_pos'));
     }
 
     public function verify_settlement(Request $request)
@@ -241,7 +243,7 @@ class PaymentSummaryController extends Controller
         return Excel::download(new AccountLedgerExport($data), 'account_ledger_freebazar.xlsx');
     }
 
-    public  function getReceipt(Request $request)
+    public function getReceipt(Request $request)
     {
         // dd($request->all());
         $result = Payment::getReceipt($request);
@@ -254,6 +256,23 @@ class PaymentSummaryController extends Controller
         } else {
             return response()->json([
                 'status'  => 'failed',
+                'code'    => 500,
+                'message' => 'Something Went Wrong!',
+            ]);
+        }
+    }
+
+    public function store_receipt(Request $request)
+    {
+        $res = Payment::store_receipt($request);
+        if ($res) {
+            return response()->json([
+                'success' => 'true',
+                'code'   => 200,
+            ]);
+        } else {
+            return response()->json([
+                'success'  => 'false',
                 'code'    => 500,
                 'message' => 'Something Went Wrong!',
             ]);

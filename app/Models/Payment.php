@@ -156,6 +156,62 @@ class Payment extends Model
         }
     }
 
+    public static function store_receipt($request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = auth()->user();
+            $today = now()->toDateString();
+
+            $voucherNumber = Helper::generateVoucherNumber();
+
+            $data = [
+                [
+                    'transaction_date' => $today,
+                    'voucher_number'   => $voucherNumber,
+                    'reference_number' => $request->reference_number,
+                    'account_details'  => null,
+                    'pay_by'           => $request->pay_by,
+                    // 'due'              => $request->pay_by ?? 0,
+                    'amount'           => $request->amount,
+                    'to'               => $request->pay_to,
+                    'from'             => $user->user_id,
+                    'created_by'       => $user->user_id,
+                    'updated_by'       => $user->user_id,
+                    'remark'           => $request->remark,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
+                ]
+            ];
+
+            $inserted = Payment::insert($data);
+
+            if (!$inserted) {
+                return false;
+            }
+            // $parameters = [
+            //     'pos_name' => $pos->name,
+            //     'trans_date' => $request->summary_date,
+            //     'settle_date' => $today,
+            //     'amount' => $request->paying_amount
+            // ];
+            // WhatsappMessageService::settlement_message($pos->mobilenumber, $parameters);
+            DB::commit();
+            return true;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Payment creation failed.', [
+                'message' => $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile(),
+                'request' => $request->all(),
+            ]);
+
+            return false;
+        }
+    }
 
 
     public static function getLedgerData($request)
@@ -350,7 +406,7 @@ class Payment extends Model
 
         $query = self::where('to', $userId)->with('creditedFrom');
         if ($from && $to) {
-            $query->wwhereBetween(
+            $query->whereBetween(
                 'transaction_date',
                 [$from, $to]
             );
