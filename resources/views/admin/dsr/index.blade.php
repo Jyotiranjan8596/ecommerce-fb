@@ -193,6 +193,7 @@
                                         'id' => encrypt($data->pos_id),
                                         'start_date' => request()->start_date,
                                         'end_date' => request()->end_date,
+                                        'transaction_date' => $data->transaction_date
                                     ]) }}"
                                         class="btn btn-sm btn-primary">
                                         <i class="fa fa-eye"></i>

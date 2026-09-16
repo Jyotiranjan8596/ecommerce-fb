@@ -78,24 +78,25 @@ class DsrController extends Controller
         $id = decrypt($id);
         $start_date = $request->start_date;
         $end_date = $request->end_date;
+        $transaction_date = $request->transaction_date;
         $query =  Wallet::where('pos_id', $id)->with('user', 'userWallets');
-        if (!empty($start_date) && !empty($end_date)) {
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
-            $endDate = Carbon::parse($request->end_date)->endOfDay();
-            $query->whereBetween('transaction_date', [$startDate, $endDate]);
-        } else {
-            $query->whereDate('transaction_date', today());
+        // if (!empty($start_date) && !empty($end_date)) {
+        //     $startDate = Carbon::parse($request->start_date)->startOfDay();
+        //     $endDate = Carbon::parse($request->end_date)->endOfDay();
+        //     $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        // } else {
+        $query->whereDate('transaction_date', $transaction_date);
 
-            if ($query->count() == 0) {
-                $previousDate = DB::table('wallets')
-                    ->whereDate('insert_date', '<', now()->toDateString())
-                    ->max('insert_date');
+        if ($query->count() == 0) {
+            $previousDate = DB::table('wallets')
+                ->whereDate('insert_date', '<', now()->toDateString())
+                ->max('insert_date');
 
-                if ($previousDate) {
-                    $query->whereDate('insert_date', $previousDate);
-                }
+            if ($previousDate) {
+                $query->whereDate('insert_date', $previousDate);
             }
         }
+        // }
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
