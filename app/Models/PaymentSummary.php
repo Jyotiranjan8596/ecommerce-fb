@@ -53,7 +53,7 @@ class PaymentSummary extends Model
 
     public static function store_summary($data)
     {
-        DB::beginTransaction();
+        // DB::beginTransaction();
         try {
             $existing = self::where('date', $data['date'])
                 ->where('pos_id', $data['pos_id'])
@@ -79,14 +79,15 @@ class PaymentSummary extends Model
                 'created_by'           => null,
                 // 'updated_by' => auth()->user()->id,
             ]);
+            // dd($res);
             if ($res) {
                 $amount = $res->admin_credit > 0 ? $res->admin_credit : $res->admin_debit;
                 if ($res->pos_credit > 0) {
-                    $to =  $res->pos_id;
+                    $to = Helper::get_pos_user_id($res->pos_id);
                     $from = 666666;
                 } else {
                     $to = 666666;
-                    $from = $res->pos_id;
+                    $from = Helper::get_pos_user_id($res->pos_id);
                 }
                 $payment_data = [
                     'payment_summury_id' => $res->id,
@@ -105,10 +106,11 @@ class PaymentSummary extends Model
                     'created_at'       => now(),
                     'updated_at'       => now(),
                 ];
-                Payment::insert($payment_data);
+                $check = Payment::insert($payment_data);
+                // dd($check);
                 return 2;
             } else {
-                DB::rollBack();
+                // DB::rollBack();
                 return 3;
             }
         } catch (\Exception $e) {

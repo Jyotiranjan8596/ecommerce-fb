@@ -24,14 +24,15 @@ class VerifiedTransactionCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+protected $description = 'Command description';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $yesterday = Carbon::yesterday()->toDateString();
+        $yesterday = Carbon::yesterday()->toDateString();    
+        // $yesterday = '2026-09-14';
         $wallet_data = PosModel::getWalletDetails($yesterday);
         if (!$wallet_data || $wallet_data->isEmpty()) {
             Log::info('Store Summary', [

@@ -314,12 +314,12 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-
+                        let data = response.data;
                         let rows = '';
                         let index = response.data.from ?? 1;
                         $('#tbl-div').attr('hidden', false);
                         console.log(response.data);
-                            
+
                         const openingBalance = response.data.opening_balance;
                         const openingBalanceType = response.data.opening_balance_type;
 

@@ -12,6 +12,10 @@ class Helper
     {
         return PosModel::where('user_id', $user_id)->value('id');
     }
+    public static function get_pos_user_id($id)
+    {
+        return PosModel::where('id', $id)->value('user_id');
+    }
 
     public static function formatAmount($amount): string
     {

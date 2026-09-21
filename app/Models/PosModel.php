@@ -75,10 +75,12 @@ class PosModel extends Model
         //         return false;
         //     }
         // }
-        $query = self::select(['id', 'name', 'transaction_charge'])
-            ->with(['wallet' => function ($qry) use ($date) {
-                $qry->whereDate('transaction_date', $date)->where('status', '1');
-            }])
+        $wlt_update = Wallet::where('transaction_date', $date)->update([
+            'status' => 1
+        ]);
+        $query = self::with(['wallet' => function ($qry) use ($date) {
+            $qry->whereDate('transaction_date', $date)->where('status', '1');
+        }])
             ->whereHas('wallet', function ($qry) use ($date) {
                 $qry->whereDate('transaction_date', $date);
             });
