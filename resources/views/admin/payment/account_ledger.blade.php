@@ -283,7 +283,6 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-
                         let rows = '';
                         let index = response.data.from ?? 1;
                         $('#tbl-div').attr('hidden', false);
@@ -326,9 +325,11 @@
                                             <td><strong>${data.total_balance} ${data.total_balance_type}</strong></td>
                                         </tr>
                                     `;
-                            // $('#pagination-container').html(buildPagination(pagination));
+                            // // $('#pagination-container').html(buildPagination(pagination));
+                            // const pdfUrl =
+                            //     `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`; (This is for local)
                             const pdfUrl =
-                                `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
+                                `/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
                             $('#download-pdf-btn').attr('href', pdfUrl);
                         } else {
 
