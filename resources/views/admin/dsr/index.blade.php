@@ -66,6 +66,107 @@
             max-height: 500px;
             overflow-y: auto;
         }
+
+        .pagination-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .pagination-info {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-right: 8px;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .pagination-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border: 1.5px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            color: #495057;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-btn:hover:not(.disabled):not(.active) {
+            background: #f0f4ff;
+            border-color: #4f46e5;
+            color: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+        }
+
+        .pagination-btn.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+            cursor: default;
+        }
+
+        .pagination-btn.nav-btn {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-ellipsis {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            color: #6c757d;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 576px) {
+            .pagination-wrapper {
+                justify-content: center;
+            }
+
+            .pagination-info {
+                width: 100%;
+                text-align: center;
+                margin-right: 0;
+            }
+
+            .pagination-buttons {
+                justify-content: center;
+            }
+
+            .pagination-btn {
+                min-width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -217,6 +318,7 @@
     <!-- Your custom script wrapped in DOM ready -->
     <script>
         $(document).ready(function() {
+            getDsr(1)
             $('#exampleModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget); // Button that triggered the modal
                 var walletId = button.data('id'); // Extract wallet_id
@@ -243,7 +345,8 @@
                     data: {
                         search: search,
                         start_date: startDate,
-                        end_date: endDate
+                        end_date: endDate,
+                        page: page
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -284,7 +387,7 @@
 
                                 tbody.append(`
                                             <tr>
-                                                <td>${key + 1}</td>
+                                                <td>${pagination.from + key}</td>
                                                 <td>${posId}</td>
                                                 <td>${posName}</td>
                                                 <td>${mobile}</td>
@@ -301,7 +404,6 @@
                                         `);
                             });
                             $('#pagination-container').html(buildPagination(pagination));
-                            $('#pagination-link').html(response.pagination);
                         }
 
                     }
@@ -310,6 +412,8 @@
 
             $(document).on('click', '.pagination-btn', function() {
                 const page = $(this).data('page');
+                console.log(page);
+
                 getDsr(page); // Reuse the same form
             });
 

@@ -407,7 +407,7 @@
                 class="pagination-btn ${isActive ? 'active' : ''}" 
                 data-page="${i}"
                 ${isActive ? 'aria-current="page"' : ''}
-            >${i}</button>`;
+                >${i}</button>`;
             }
 
         });

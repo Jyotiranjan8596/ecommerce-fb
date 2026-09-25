@@ -183,6 +183,7 @@ class Wallet extends Model
 
     public static function get_dsr_data($request)
     {
+        $page = $request->input('page', 1);
         $query = self::with('getPos')
             ->selectRaw('
                 pos_id,
@@ -231,9 +232,7 @@ class Wallet extends Model
         $totalBillingAmount = $summary->sum('total_billing_amount');
         $totalPos = $summary->pluck('pos_id')->unique()->count();
         $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
-            ->simplePaginate(50);
-        // dd($wallets);
-        $wallets->appends($request->only(['search', 'start_date', 'end_date']));
+            ->paginate(15, ['*'], 'page', $page);
         return [
             'wallet' => $wallets->through(function ($item) {
                 $item->details_url = route('admin.transaction.details', [
