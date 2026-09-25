@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -174,8 +175,78 @@ class Wallet extends Model
                     'remaining_wallet' =>  $item->userWallets[0]->remaining_amount ?? 0,
                     'remaining_reward' =>  $item->userWallets[0]->remaining_points ?? 0,
                     'transaction_date' =>  date('d/m/Y', strtotime($item->transaction_date)),
+                    'transaction_charge' => $item->transaction_amount
                 ];
             });
         return $wallets;
+    }
+
+    public static function get_dsr_data($request)
+    {
+        $query = self::with('getPos')
+            ->selectRaw('
+                pos_id,
+                DATE(transaction_date) as transaction_date,
+                SUM(billing_amount) as total_billing_amount,
+                COUNT(id) as total_transactions
+            ')
+            ->groupBy('pos_id', DB::raw('DATE(transaction_date)'));
+
+        if (
+            $request->has('start_date') && !empty($request->start_date) &&
+            $request->has('end_date') && !empty($request->end_date)
+        ) {
+
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        } else {
+            $query->whereDate('transaction_date', today());
+
+            if ($query->count() == 0) {
+                $previousDate = DB::table('wallets')
+                    ->whereDate('insert_date', '<', now()->toDateString())
+                    ->max('insert_date');
+
+                if ($previousDate) {
+                    $query->whereDate('insert_date', $previousDate);
+                }
+            }
+        }
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->whereHas('getPos', function ($qry) use ($searchTerm) {
+                $qry->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('user_id', 'LIKE', "%{$searchTerm}%");
+                });
+            });
+        }
+
+        // dd($query->get()->toArray());
+        $summary = (clone $query)->get();
+        $totalTransactions = $summary->sum('total_transactions');
+        $totalBillingAmount = $summary->sum('total_billing_amount');
+        $totalPos = $summary->pluck('pos_id')->unique()->count();
+        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
+            ->simplePaginate(50);
+        // dd($wallets);
+        $wallets->appends($request->only(['search', 'start_date', 'end_date']));
+        return [
+            'wallet' => $wallets->through(function ($item) {
+                $item->details_url = route('admin.transaction.details', [
+                    'id' => encrypt($item->pos_id),
+                    'start_date' => request()->start_date,
+                    'end_date' => request()->end_date,
+                    'transaction_date' => $item->transaction_date,
+                ]);
+                return $item;
+            }),
+            'totalTransactions' => $totalTransactions,
+            'totalBillingAmount' => $totalBillingAmount,
+            'totalPos' => $totalPos
+        ];
     }
 }

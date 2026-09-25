@@ -135,7 +135,7 @@
 
     <div class="ledger-title-row">
         <span class="ledger-title">Account Ledger</span>
-        <span class="ledger-account">A/c: {{ strtoupper($name) }}, From {{ $from }} To
+        <span class="ledger-account">A/c: {{ strtoupper($pos_name) }}, From {{ $from }} To
             {{ $to }}</span>
     </div>
 

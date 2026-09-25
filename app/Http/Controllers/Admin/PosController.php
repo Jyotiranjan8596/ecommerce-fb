@@ -30,7 +30,13 @@ class PosController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $pos          = PosModel::orderBy('id', 'desc')->latest()->simplePaginate(15);
+        $pos = PosModel::orderBy('id', 'desc')
+            ->latest()
+            ->simplePaginate(15)
+            ->through(function ($item) {
+                $item->pos_status = $item->status == 1 ? 'Active' : 'Blocked';
+                return $item;
+            });
         return view('admin.pos_system.index', compact('pos', 'userId', 'user_profile'));
     }
 
@@ -227,9 +233,17 @@ class PosController extends Controller
             flash()->addError('POS not found!');
             return redirect()->back();
         }
+        $upi_id = null;
+        if ($request->hasFile('upi')) {
+            $result = QrDecoderService::extractUpiIdFromImage($request->file('upi'));
+            if ($result['upi_id']) {
+                $upi_id = $result['upi_id'];
+            }
+        }
         $pos->name                      = $request->name;
         $pos->email                     = $request->email;
         $pos->mobilenumber              = $request->mobilenumber;
+        $pos->upi_id                    = $upi_id;
         $pos->transaction_charge        = $request->transaction_charge;
         $pos->min_charge                = $request->min_charge;
         $pos->max_charge                = $request->max_charge;

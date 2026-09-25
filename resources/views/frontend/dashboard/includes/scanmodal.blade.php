@@ -233,7 +233,7 @@
                     <!-- Submit Button -->
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" id="submitPaymentButton" class="btn qr-btn-primary w-100">
-                            Submit Payment
+                            Pay
                         </button>
                     </div>
 

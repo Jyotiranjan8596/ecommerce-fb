@@ -46,6 +46,9 @@
                             <th>
                                 STATUS
                             </th>
+                            <th>
+                                Action
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,7 +71,13 @@
                                 <td>
                                     Rs{{ number_format((float) $data->min_charge, 2) }}-Rs{{ number_format((float) $data->max_charge, 2) }}
                                 </td>
-
+                                <td>
+                                    @if ($data->pos_status === 'Active')
+                                        <span class="badge bg-success">Active</span>
+                                    @else
+                                        <span class="badge bg-danger">Blocked</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.pos_system.edit', $data->id) }}"
                                         class="btn btn-sm btn-primary">

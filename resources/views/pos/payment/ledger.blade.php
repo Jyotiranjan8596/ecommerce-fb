@@ -216,6 +216,7 @@
                                 </label>
 
                                 <input type="date" id="to_date" name="to_date" class="form-control form-control-sm">
+                                <input type="hidden" id="pos_id" name="pos_id" value="{{$userId}}">
                             </div>
 
 

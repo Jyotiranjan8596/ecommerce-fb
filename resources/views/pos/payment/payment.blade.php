@@ -163,8 +163,8 @@
                             <label for="paying_amount" class="form-label fw-semibold">PAYING AMOUNT</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
-                                <input readonly name="paying_amount" id="paying_amount" type="number" class="form-control"
-                                    required min="0" placeholder="0.00">
+                                <input name="paying_amount" id="paying_amount" type="number" class="form-control" required
+                                    min="0" placeholder="0.00">
                             </div>
                         </div>
 
@@ -172,8 +172,8 @@
                             <label class="form-label fw-semibold d-block">DUE</label>
                             <div
                                 class="wallet-balance-box p-2 px-3 rounded border bg-light d-flex align-items-center justify-content-between">
-                                <span id="due" class="fw-bold text-danger">₹0.00</span>
-                                <i class="bi bi-wallet-fill text-danger"></i>
+                                <span id="due" class="fw-bold ">₹0.00</span>
+                                <i class="bi" id="due-text"></i>
                             </div>
                             <input id="due_balance" type="hidden" name="due" value="">
                         </div>
@@ -246,8 +246,7 @@
                                         <th>Wallet Deduct</th>
                                         <th>Reward Deduct</th>
                                         <th>Net Pay</th>
-                                        <th>Remaining Wallet</th>
-                                        <th>Remaining Reward</th>
+                                        <th>TC</th>
                                         <th>TRANSACTION DATE</th>
                                     </tr>
                                 </thead>
@@ -331,13 +330,12 @@
                                                     <td>${index + 1}</td>
                                                     <td>${item.invoice ?? '-'}</td>
                                                     <td>${item.name ?? '-'}</td>
-                                                    <td>${item.billing_amount ?? '-'}</td>
-                                                    <td>${item.wallet_deduct ?? '-'}</td>
-                                                    <td>${item.reward_deduct ?? '-'}</td>
-                                                    <td>${item.net_pay ?? '-'}</td>
-                                                    <td>${item.remaining_wallet ?? '-'}</td>
-                                                    <td>${item.remaining_reward ?? '-'}</td>
-                                                    <td>${item.transaction_date ?? '-'}</td>
+                                                    <td>₹${item.billing_amount ?? '-'}</td>
+                                                    <td>₹${item.wallet_deduct ?? '-'}</td>
+                                                    <td>₹${item.reward_deduct ?? '-'}</td>
+                                                    <td>₹${item.net_pay ?? '-'}</td>
+                                                    <td>₹${item.transaction_charge ?? '-'}</td>
+                                                    <td>₹${item.transaction_date ?? '-'}</td>
                                                 </tr>
                                             `;
                                 });
@@ -378,15 +376,15 @@
                                 $('#amount').val(payment_data.total_billing_amount ?? '');
                                 $('#paying_amount').val(payment_data.pos_debit ?? '');
                                 $('#pos_id').val(payment_data.pos_id ?? '');
-
+                                $('#due').text(res.total_credit);
+                                $('#due-text').text(res.balance_type);
                                 if ((payment_data.pos_credit ?? 0) > 0) {
-
                                     $('#cradit-amount-span-one').removeAttr('hidden');
                                     $('#remark').attr('readonly', true);
                                     $('#reference_number').attr('readonly', true);
 
                                     $('#cradit-amount-span-two').text(
-                                        '₹' + parseFloat(payment_data.creditAmount).toFixed(2)
+                                        '₹' + parseFloat(payment_data.pos_credit).toFixed(2)
                                     );
                                 } else {
                                     $('#cradit-amount-span-one').attr('hidden', true);

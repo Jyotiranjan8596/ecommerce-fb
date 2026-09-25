@@ -126,7 +126,7 @@
 
                         <div class="row">
                             <div class="col-12 col-sm-6 mb-3">
-                                <label for="pay_to" class="form-label">Pay To</label>
+                                <label for="pay_to" class="form-label">Received From</label>
                                 <select name="pay_to" id="pay_to"
                                     class="form-select @error('pay_to') is-invalid @enderror" required>
                                     <option value="" disabled {{ old('pay_to') ? '' : 'selected' }}>-- Select Pay To

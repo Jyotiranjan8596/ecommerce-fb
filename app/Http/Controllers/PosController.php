@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\User;
@@ -238,11 +239,15 @@ class PosController extends Controller
         ]);
         $transaction_data = Wallet::pos_transactions($request->transaction_date, $request->pos_id);
         $payment_data = PaymentSummary::getWalletDetails($request->transaction_date, $request->pos_id);
+        $ledger_data = Payment::getLedgerData($request);
+        // dd($ledger_data);
         if ($payment_data) {
             return response()->json([
                 'success' => $transaction_data->isNotEmpty(),
                 'data' => $transaction_data,
                 'payment_data' => $payment_data,
+                'total_credit' => $ledger_data ? $ledger_data['total_balance'] : '',
+                'balance_type' => $ledger_data ? $ledger_data['total_balance_type'] : '',
                 'message' => $transaction_data->isNotEmpty()
                     ? 'Data fetched successfully.'
                     : 'No records found.',

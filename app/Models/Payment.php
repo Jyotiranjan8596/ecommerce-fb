@@ -175,8 +175,8 @@ class Payment extends Model
                     'pay_by'           => $request->pay_by,
                     // 'due'              => $request->pay_by ?? 0,
                     'amount'           => $request->amount,
-                    'to'               => $request->pay_to,
-                    'from'             => $user->user_id,
+                    'to'               => $user->user_id,
+                    'from'             => $request->pay_to,
                     'created_by'       => $user->user_id,
                     'updated_by'       => $user->user_id,
                     'remark'           => $request->remark,
@@ -217,12 +217,14 @@ class Payment extends Model
     public static function getLedgerData($request)
     {
         $user_profile = auth()->user();
-        $userId       = $user_profile->user_id;
+        // $userId       = $user_profile->user_id;
+        $userId = $request->pos_id;
         $opening_balance = 0;
         // $search_type = $request->search_type;
         // $value = $request->value;
-        $from = $request->form_date;
-        $to = $request->to_date;
+        $pos_name = PosModel::where('user_id', $userId)->value('name');
+        $from = $request->from_date ?? $request->transaction_date;
+        $to = $request->to_date ?? $request->transaction_date;
         $total_debit     = 0;
         $total_credit    = 0;
         $base_query = self::where(function ($base_query) use ($userId) {
@@ -294,26 +296,27 @@ class Payment extends Model
         $total_balance_type = $total_balance >= 0
             ? 'Dr'
             : 'Cr';
-        $transactions['opening_balance'] = abs($opening_balance);
+        $transactions['opening_balance'] = number_format(abs($opening_balance), 2);
         $transactions['opening_balance_type'] = $opening_balance >= 0 ? 'Dr' : 'Cr';
         $transactions['total_debit'] = number_format(abs($total_debit), 2, '.', '');
         $transactions['total_credit'] = number_format(abs($total_credit), 2, '.', '');
         $transactions['total_balance'] = number_format(abs($total_balance), 2, '.', '');
         $transactions['total_balance_type'] = $total_balance_type;
-        // dd($transactions->toArray());
+        $transactions['pos_name'] = $pos_name;
         return $transactions;
     }
     public static function getLedgerDataExport($request)
     {
         $user_profile = auth()->user();
-        $userId       = $user_profile->user_id;
+        $userId = $request->pos_id;
         $opening_balance = 0;
         $total_debit     = 0;
         $total_credit    = 0;
         // $search_type = $request->search_type;
         // $value = $request->value;
-        $from = $request->from_date;
-        $to = $request->to_date;
+        $pos_name = PosModel::where('user_id', $userId)->value('name');
+        $from = $request->from_date ?? $request->transaction_date;
+        $to = $request->to_date ?? $request->transaction_date;
         $base_query = self::where(function ($base_query) use ($userId) {
             $base_query->where('to', $userId)
                 ->orWhere('from', $userId);
@@ -393,7 +396,8 @@ class Payment extends Model
             'total_debit' => number_format(abs($total_debit), 2, '.', ''),
             'total_credit' => number_format(abs($total_credit), 2, '.', ''),
             'total_balance' => number_format(abs($total_balance), 2, '.', ''),
-            'total_balance_type' => $total_balance_type
+            'total_balance_type' => $total_balance_type,
+            'pos_name' => $pos_name
         ];
     }
 

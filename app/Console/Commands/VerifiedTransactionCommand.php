@@ -24,7 +24,7 @@ class VerifiedTransactionCommand extends Command
      *
      * @var string
      */
-protected $description = 'Command description';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
@@ -32,7 +32,7 @@ protected $description = 'Command description';
     public function handle()
     {
         $yesterday = Carbon::yesterday()->toDateString();    
-        // $yesterday = '2026-09-14';
+        // $yesterday = '2026-09-24';
         $wallet_data = PosModel::getWalletDetails($yesterday);
         if (!$wallet_data || $wallet_data->isEmpty()) {
             Log::info('Store Summary', [
@@ -43,8 +43,7 @@ protected $description = 'Command description';
             // VerifiedTransactionsJob::dispatch(null, null)->onQueue('verified_transaction');
             return;
         }
-
-        $res = PaymentSummary::store_summary($wallet_data[0]);
+        $res = PaymentSummary::store_summary($wallet_data);
         if ($res == 1) {
             Log::info('Store Summary', ['message' => 'already created']);
             return;

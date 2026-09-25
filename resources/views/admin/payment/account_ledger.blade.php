@@ -164,30 +164,33 @@
                         @csrf
 
                         <div class="row g-3 align-items-end">
-
-
-
-
                             <!-- From Date -->
                             <div class="col-12 col-sm-6 col-md-2">
                                 <label for="from_date" class="form-label small fw-semibold text-muted">
                                     From Date
                                 </label>
-
                                 <input type="date" id="from_date" name="from_date" class="form-control form-control-sm">
                             </div>
-
-
                             <!-- To Date -->
                             <div class="col-12 col-sm-6 col-md-2">
                                 <label for="to_date" class="form-label small fw-semibold text-muted">
                                     To Date
                                 </label>
-
                                 <input type="date" id="to_date" name="to_date" class="form-control form-control-sm">
                             </div>
-
-
+                            <div class="col-12 col-sm-6 col-md-2">
+                                <label for="pos_id" class="form-label small fw-semibold text-muted">
+                                    Select POS
+                                </label>
+                                <select name="pos_id" id="pos" class="form-select form-select-sm w-100">
+                                    <option value="">Select POS</option>
+                                    @foreach ($all_pos as $pos)
+                                        <option value="{{ $pos->user_id }}">
+                                            {{ $pos->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <!-- Buttons -->
                             <div class="col-12 col-md-2">
                                 <div class="d-flex gap-2">
@@ -273,6 +276,7 @@
                 formData.append('page', page);
                 const fromDate = $('#from_date').val();
                 const toDate = $('#to_date').val();
+                const pos_id = $('#pos').val();
                 $.ajax({
                     url: "{{ route('admin.get.ledger') }}",
                     type: "POST",
@@ -290,7 +294,7 @@
                         let data = response.data;
                         const openingBalance = response.data.opening_balance;
                         const openingBalanceType = response.data.opening_balance_type;
-
+                        const pos_name = response.data.pos_name;
                         const transactions = Object.keys(response.data)
                             .filter(key => !isNaN(key))
                             .map(key => response.data[key]);
@@ -298,7 +302,8 @@
                             const pagination = response.data;
                             let paginationHtml = '';
                             rows += `<tr class="opening-row">
-                                        <td colspan="6" class="text-end">Opening Balance</td>
+                                        <td>${pos_name}</td>
+                                        <td colspan="5" class="text-end">Opening Balance</td>
                                         <td>
                                             ${openingBalance} ${openingBalanceType}
                                         </td>
@@ -326,10 +331,11 @@
                                         </tr>
                                     `;
                             // // $('#pagination-container').html(buildPagination(pagination));
-                            // const pdfUrl =
-                            //     `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`; (This is for local)
                             const pdfUrl =
-                                `/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
+                                `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}&pos_id=${pos_id}`; // (This is for local)
+
+                            // const pdfUrl =
+                            //     `/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}&pos_id=${pos_id}`;
                             $('#download-pdf-btn').attr('href', pdfUrl);
                         } else {
 

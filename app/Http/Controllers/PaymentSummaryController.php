@@ -185,7 +185,8 @@ class PaymentSummaryController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->user_id;
-        return view('admin.payment.account_ledger', compact('userId'));
+        $all_pos = PosModel::getAll();
+        return view('admin.payment.account_ledger', compact('userId','all_pos'));
     }
 
     public function pos_ledger_index()

@@ -47,6 +47,16 @@
                                 @enderror
                             </div>
                             <div class="mb-2">
+                                <label for="upi_id">Upload QR*</label>
+                                <input type="file" id="upi_id" name="upi"
+                                    class="form-control @error('Upi Id') is-invalid @enderror">
+                                @error('upi')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="mb-2">
                                 <label for="email">Email Address*</label>
                                 <input type="email" id="email" name="email"
                                     class="form-control @error('email') is-invalid @enderror"

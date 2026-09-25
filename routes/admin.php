@@ -103,6 +103,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('get-pos-payment-details', [PosController::class, 'pos_payment_details'])->name('get.pos.payment.details');
     //dsr
     Route::get('dsr', [DsrController::class, 'dsr'])->name('dsr');
+    Route::post('get-dsr-data', [DsrController::class, 'get_dsr'])->name('get.dsr.data');
     Route::get('export-dsr', [DsrController::class, 'export'])->name('dsr.export');
     Route::post('import-dsr', [DsrController::class, 'import'])->name('dsr.import');
 

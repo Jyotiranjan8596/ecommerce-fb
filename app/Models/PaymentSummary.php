@@ -51,68 +51,89 @@ class PaymentSummary extends Model
         return $this->hasMany(Payment::class, 'payment_summury_id', 'id');
     }
 
-    public static function store_summary($data)
+    public static function store_summary($wallet_data)
     {
         // DB::beginTransaction();
         try {
-            $existing = self::where('date', $data['date'])
-                ->where('pos_id', $data['pos_id'])
-                ->first();
+            foreach ($wallet_data as $data) {
 
-            if ($existing) {
-                return 1;
-            }
-            $voucherNumber = Helper::generateVoucherNumber();
-            $res = self::create([
-                'pos_id' => $data['pos_id'],
-                'date'                 => $data['date'],
-                'total_transaction'    => $data['total_transactions'],
-                'total_billing_amount' => $data['billing_amount'],
-                'by_cash'              => $data['cash_upi'] ?? $data['payByCashOrUpi'],
-                'by_wallet'            => $data['wallet'] ?? $data['payByWallet'],
-                'by_reward'            => $data['reward'] ?? $data['payByReward'],
-                'pos_credit'           => $data['credit_amount'] ?? $data['creditAmount'],
-                'pos_debit'            => $data['debit_amount'] ?? $data['debitAmount'],
-                'admin_credit'         => $data['debit_amount'] ?? $data['debitAmount'],
-                'admin_debit'          => $data['credit_amount'] ?? $data['creditAmount'],
-                'status'               => 'pending',
-                'created_by'           => null,
-                // 'updated_by' => auth()->user()->id,
-            ]);
-            // dd($res);
-            if ($res) {
-                $amount = $res->admin_credit > 0 ? $res->admin_credit : $res->admin_debit;
-                if ($res->pos_credit > 0) {
-                    $to = Helper::get_pos_user_id($res->pos_id);
-                    $from = 666666;
-                } else {
-                    $to = 666666;
-                    $from = Helper::get_pos_user_id($res->pos_id);
+                $existing = self::where('date', $data['date'])
+                    ->where('pos_id', $data['pos_id'])
+                    ->first();
+
+                // Skip if already generated
+                if ($existing) {
+                    continue;
                 }
+
+                $voucherNumber = Helper::generateVoucherNumber();
+
+                $res = self::create([
+                    'pos_id'               => $data['pos_id'],
+                    'date'                 => $data['date'],
+                    'total_transaction'    => $data['total_transactions'],
+                    'total_billing_amount' => $data['billing_amount'],
+                    'by_cash'              => $data['cash_upi'] ?? $data['payByCashOrUpi'],
+                    'by_wallet'            => $data['wallet'] ?? $data['payByWallet'],
+                    'by_reward'            => $data['reward'] ?? $data['payByReward'],
+                    'pos_credit'           => $data['credit_amount'] ?? $data['creditAmount'],
+                    'pos_debit'            => $data['debit_amount'] ?? $data['debitAmount'],
+
+                    // Opposite side for admin
+                    'admin_credit'         => $data['debit_amount'] ?? $data['debitAmount'],
+                    'admin_debit'          => $data['credit_amount'] ?? $data['creditAmount'],
+
+                    'status'               => 'pending',
+                    'created_by'           => null,
+                ]);
+
+                if (!$res) {
+                    return 3;
+                }
+
+                // Determine amount
+                $amount = $res->admin_credit > 0
+                    ? $res->admin_credit
+                    : $res->admin_debit;
+
+                $posUserId = Helper::get_pos_user_id($res->pos_id);
+
+                // Determine transaction direction
+                if ($res->pos_credit > 0) {
+                    // Admin → POS
+                    $from = 666666;
+                    $to   = $posUserId;
+                } else {
+                    // POS → Admin
+                    $from = $posUserId;
+                    $to   = 666666;
+                }
+
                 $payment_data = [
                     'payment_summury_id' => $res->id,
-                    'transaction_date' => $data['date'],
-                    'voucher_number'   => $voucherNumber,
-                    'reference_number' => 'atcrt' . $voucherNumber,
-                    'account_details'  => null,
-                    'pay_by'           => null,
-                    // 'due'              => $request->pay_by ?? 0,
-                    'amount'           => $amount,
-                    'to'               => $to,
-                    'from'             => $from,
-                    'created_by'       => 666666,
-                    'updated_by'       => 666666,
-                    'remark'           => "Auto Generated",
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
+                    'transaction_date'   => $data['date'],
+                    'voucher_number'     => $voucherNumber,
+                    'reference_number'   => 'atcrt' . $voucherNumber,
+                    'account_details'    => null,
+                    'pay_by'             => null,
+                    'amount'             => $amount,
+                    'to'                 => $to,
+                    'from'               => $from,
+                    'created_by'         => 666666,
+                    'updated_by'         => 666666,
+                    'remark'              => 'Auto Generated',
+                    'created_at'         => now(),
+                    'updated_at'         => now(),
                 ];
+
                 $check = Payment::insert($payment_data);
-                // dd($check);
-                return 2;
-            } else {
-                // DB::rollBack();
-                return 3;
+
+                if (!$check) {
+                    return 3;
+                }
             }
+
+            return 2;
         } catch (\Exception $e) {
             Log::info('Summary Creation Error: ' . $e->getMessage());
             Log::info('File: ' . $e->getFile());

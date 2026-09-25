@@ -22,52 +22,21 @@ class DsrController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $query = Wallet::with('getPos')
-            ->selectRaw('
-                pos_id,
-                DATE(transaction_date) as transaction_date,
-                SUM(billing_amount) as total_billing_amount,
-                COUNT(id) as total_transactions
-            ')
-            ->groupBy('pos_id', DB::raw('DATE(transaction_date)'));
-        if (
-            $request->has('start_date') && !empty($request->start_date) &&
-            $request->has('end_date') && !empty($request->end_date)
-        ) {
 
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
-            $endDate = Carbon::parse($request->end_date)->endOfDay();
-            $query->whereBetween('transaction_date', [$startDate, $endDate]);
-        } else {
-            $query->whereDate('transaction_date', today());
+        return view('admin.dsr.index', compact('userId', 'user_profile'));
+        // return view('admin.dsr.index');
+    }
 
-            if ($query->count() == 0) {
-                $previousDate = DB::table('wallets')
-                    ->whereDate('insert_date', '<', now()->toDateString())
-                    ->max('insert_date');
 
-                if ($previousDate) {
-                    $query->whereDate('insert_date', $previousDate);
-                }
-            }
-        }
-        if ($request->has('search') && !empty($request->search)) {
-            $searchTerm = $request->search;
-            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('getPos', function ($qry) use ($searchTerm) {
-                $qry->where('name', 'LIKE', "%{$searchTerm}%")->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
-            });
-        }
-        $summary = (clone $query)->get();
-
-        $totalTransactions = $summary->sum('total_transactions');
-        $totalBillingAmount = $summary->sum('total_billing_amount');
-        $totalPos = $summary->pluck('pos_id')->unique()->count();
-        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
-            ->simplePaginate(15);
-        // dd($wallets);
-        $wallets->appends($request->only(['search', 'start_date', 'end_date']));
-
-        return view('admin.dsr.index', compact('totalBillingAmount', 'totalTransactions', 'totalPos', 'wallets', 'userId', 'user_profile'));
+    public function get_dsr(Request $request)
+    {
+        $data = Wallet::get_dsr_data($request);
+        $pagination = $data['wallet']->links()->render();
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'pagination' => $pagination
+        ]);
     }
 
     public function transaction_details(Request $request, $id)

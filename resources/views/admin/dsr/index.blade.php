@@ -70,7 +70,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">DAILY SALES REPORT</b></h3>
+        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">SALES REPORT</b></h3>
 
 
 
@@ -81,15 +81,15 @@
                     <p class="section-label">Summary of today/selected date</p>
                     <div class="stat-item">
                         <span class="stat-label">Total billing</span>
-                        <span class="stat-value">{{ $totalBillingAmount }}</span>
+                        <span id="total-billing" class="stat-value"></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Total transactions</span>
-                        <span class="stat-value">{{ $totalTransactions }}</span>
+                        <span id="total-transaction" class="stat-value"></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Total active POS</span>
-                        <span class="stat-value">{{ $totalPos }}</span>
+                        <span id="active-pos" class="stat-value"></span>
                     </div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
             <div class="col-md-6 mb-2">
                 <div class="date-card">
                     <p class="section-label">Date filter</p>
-                    <form method="GET" action="{{ route('admin.dsr') }}">
+                    <form id="dateForm">
                         <label for="start_date"><b>From</b></label>
                         <input type="date" class="form-control mb-2" name="start_date" id="start_date">
                         <label for="end_date"><b>To</b></label>
@@ -124,9 +124,9 @@
             <!-- Search -->
             <div class="col-md-4 mb-2">
                 <p class="section-label">Search</p>
-                <form method="GET" action="{{ route('admin.dsr') }}">
+                <form id="searchForm">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="search" placeholder="Search by...">
+                        <input id="search" type="text" class="form-control" name="search" placeholder="Search by...">
                         <button class="btn btn-info" type="submit">Search</button>
                     </div>
                 </form>
@@ -161,55 +161,12 @@
                         {{-- <th>INSERT DATE</th> --}}
                     </tr>
                 </thead>
-                <tbody>
-                    @if ($wallets->isEmpty())
-                        <tr>
-                            <td colspan="8" class="text-center text-danger" style="font-size:22px;">No Data Available
-                            </td>
-                        </tr>
-                    @else
-                        @foreach ($wallets as $key => $data)
-                            {{-- {{ dd($data) }} --}}
-                            <tr>
-                                <td>{{ $wallets->firstItem() + $key }}</td>
-                                {{-- <td>{{ $data->invoice }}</td> --}}
-                                <td>{{ $data->getPos ? $data->getPos->user_id : '' }}</td>
-                                {{-- <td>{{ $data->user_id }}</td> --}}
-                                <td>{{ $data->getPos->name }}</td>
-                                <td>{{ $data->getPos->mobilenumber }}</td>
-                                <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>
-                                <td>{{ $data->total_transactions }}</td>
-                                <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
-                                {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
-                                {{-- <td>
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
-                                        data-id="{{ $data->id }}" data-target="#exampleModal">Edit</button>
+                <tbody id="dsr-table">
 
-                                    <button type="button" id="delete-dsr" data-id="{{ $data->id }}"
-                                        class="btn btn-sm btn-danger">Delete</button>
-                                </td> --}}
-                                <td>
-                                    <a href="{{ route('admin.transaction.details', [
-                                        'id' => encrypt($data->pos_id),
-                                        'start_date' => request()->start_date,
-                                        'end_date' => request()->end_date,
-                                        'transaction_date' => $data->transaction_date
-                                    ]) }}"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination Links -->
-        <div class="d-flex justify-content-center">
-            {{ $wallets->links() }}
-        </div>
+        <div id="pagination-container" class="pagination-wrapper"></div>
     </div>
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -265,6 +222,172 @@
                 var walletId = button.data('id'); // Extract wallet_id
                 $('#wallet_id').val(walletId); // Set to hidden input
             });
+
+            $('#searchForm').on('submit', function(e) {
+                e.preventDefault();
+                getDsr(1);
+            });
+            $('#dateForm').on('submit', function(e) {
+                e.preventDefault();
+                getDsr(1);
+            });
+
+            function getDsr(page = 1) {
+                let search = $('#search').val();
+                let startDate = $('#start_date').val();
+                let endDate = $('#end_date').val();
+
+                $.ajax({
+                    url: "{{ route('admin.get.dsr.data') }}",
+                    type: "post",
+                    data: {
+                        search: search,
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Update your table here
+                        console.log(response);
+                        let tbody = $('#dsr-table');
+                        tbody.empty();
+
+                        if (response.success) {
+                            let wallet = response.data.wallet.data;
+                            const pagination = response.data.wallet;
+                            let paginationHtml = '';
+                            $('#total-billing').text(response.data.totalBillingAmount);
+                            $('#total-transaction').text(response.data.totalTransactions);
+                            $('#active-pos').text(response.data.totalPos);
+                            if (!wallet || wallet.length === 0) {
+                                tbody.html(`
+                                            <tr>
+                                                <td colspan="8"
+                                                    class="text-center text-danger"
+                                                    style="font-size:22px;">
+                                                    No Data Available
+                                                </td>
+                                            </tr>
+                                        `);
+                                return;
+                            }
+                            $.each(wallet, function(key, wdata) {
+
+                                let posId = wdata.get_pos ? wdata.get_pos.user_id : '';
+                                let posName = wdata.get_pos ? wdata.get_pos.name : '';
+                                let mobile = wdata.get_pos ? wdata.get_pos.mobilenumber : '';
+
+                                let transactionDate = new Date(wdata.transaction_date)
+                                    .toLocaleDateString('en-GB');
+
+                                tbody.append(`
+                                            <tr>
+                                                <td>${key + 1}</td>
+                                                <td>${posId}</td>
+                                                <td>${posName}</td>
+                                                <td>${mobile}</td>
+                                                <td>₹${wdata.total_billing_amount ?? 0}/-</td>
+                                                <td>${wdata.total_transactions}</td>
+                                                <td>${transactionDate}</td>
+                                                <td>
+                                                    <a href="${wdata.details_url}" target="_blank" 
+                                                        class="btn btn-sm btn-primary">
+                                                            <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        `);
+                            });
+                            $('#pagination-container').html(buildPagination(pagination));
+                            $('#pagination-link').html(response.pagination);
+                        }
+
+                    }
+                });
+            }
+
+            $(document).on('click', '.pagination-btn', function() {
+                const page = $(this).data('page');
+                getDsr(page); // Reuse the same form
+            });
+
+            function buildPagination(pagination) {
+                const {
+                    current_page,
+                    last_page
+                } = pagination;
+                let paginationHtml = '';
+
+                const maxVisible = 5; // Max page buttons to show
+                let startPage = Math.max(1, current_page - Math.floor(maxVisible / 2));
+                let endPage = Math.min(last_page, startPage + maxVisible - 1);
+
+                // Adjust start if end hits the limit
+                if (endPage - startPage < maxVisible - 1) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                }
+
+                // First + Ellipsis
+                if (startPage > 1) {
+                    paginationHtml += pageBtn(1, current_page);
+                    if (startPage > 2) {
+                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
+                    }
+                }
+
+                // Page Numbers
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHtml += pageBtn(i, current_page);
+                }
+
+                // Ellipsis + Last
+                if (endPage < last_page) {
+                    if (endPage < last_page - 1) {
+                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
+                    }
+                    paginationHtml += pageBtn(last_page, current_page);
+                }
+
+                // Wrap with Prev/Next
+                const prevBtn = current_page > 1 ?
+                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page - 1}" title="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                    </button>` :
+                    `<button class="pagination-btn nav-btn disabled" disabled title="Previous">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>`;
+
+                const nextBtn = current_page < last_page ?
+                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page + 1}" title="Next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>` :
+                    `<button class="pagination-btn nav-btn disabled" disabled title="Next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>`;
+
+                return `
+                    <div class="pagination-info">
+                        Page <strong>${current_page}</strong> of <strong>${last_page}</strong>
+                    </div>
+                    <div class="pagination-buttons">
+                        ${prevBtn}
+                        ${paginationHtml}
+                        ${nextBtn}
+                    </div>
+                `;
+            }
+
+            function pageBtn(i, current) {
+                const isActive = i === current;
+                return `<button 
+                class="pagination-btn ${isActive ? 'active' : ''}" 
+                data-page="${i}"
+                ${isActive ? 'aria-current="page"' : ''}
+                >${i}</button>`;
+            }
+
 
             $('#edit-form').on('submit', function(e) {
                 e.preventDefault();
@@ -345,5 +468,4 @@
             });
         });
     </script>
-
 @endsection
