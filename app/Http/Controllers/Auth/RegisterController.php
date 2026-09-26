@@ -67,7 +67,8 @@ class RegisterController extends Controller
             'mobile' => [
                 'required',
                 'digits_between:10,15',
-                'regex:/^[0-9]+$/'
+                'regex:/^[0-9]+$/',
+                'unique:users,mobilenumber'
             ],
             'gender' => [
                 'required',
@@ -134,6 +135,7 @@ class RegisterController extends Controller
         ]);
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
+        // dd('Comming here');
         Log::info('registration Result in Route', [$msg_reslt]);
         return $user;
     }

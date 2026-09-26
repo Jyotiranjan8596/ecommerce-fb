@@ -60,7 +60,7 @@ class WhatsappMessageService
             $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
             // $to = '7077783948'; // Verified test number
 
-            $url = "https://graph.facebook.com/v22.0/886143784580503/messages";
+            $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
             $template = 'register_user';
             $payload = [
                 "messaging_product" => "whatsapp",

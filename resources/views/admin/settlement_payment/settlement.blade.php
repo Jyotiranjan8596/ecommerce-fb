@@ -55,7 +55,7 @@
                     <button type="submit" class="btn btn-primary" id="apply-filter">
                         <i class="bi bi-funnel"></i> Filter
                     </button>
-                    <button type="button" class="btn btn-outline-secondary" id="reset-filter">
+                    <button type="reset" class="btn btn-outline-secondary" id="reset-filter">
                         <i class="bi bi-x-circle"></i> Reset
                     </button>
                 </div>

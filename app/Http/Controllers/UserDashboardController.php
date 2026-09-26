@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use App\Models\Wallet;
 use App\Services\AiSensyService;
+use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -350,12 +351,12 @@ class UserDashboardController extends Controller
                 $request->name,
                 $request->mobilenumber,
             ];
-            $whatsapp  = new AiSensyService();
-            $msg_reslt = $whatsapp->send_registration($request->mobilenumber, $params);
-            Log::info('registration Result in User', [$msg_reslt]);
+            $whatsapp  = new WhatsappMessageService();
+            $msg_reslt = $whatsapp->user_registration($request->name, $request->mobilenumber);
+            Log::info('USer add Result in Route', [$msg_reslt]);
             if ($sponcer->save()) {
                 flash()->addSuccess('User registered successfully.');
-                return redirect()->route('user.add');
+                return redirect()->route('user.add');   
             }
         }
         flash()->addError('oops! User or Sponsor creation failed!');
