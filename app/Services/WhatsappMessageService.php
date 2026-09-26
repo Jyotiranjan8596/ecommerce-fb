@@ -107,6 +107,51 @@ class WhatsappMessageService
         }
     }
 
+    public static function sponsor_message($mob)
+    {
+        try {
+            $token = env('WHATSAPP_TOKEN');
+            $phoneNumberId = env('WHATSAPP_PHONE_NUMBER_ID');
+            // $to = '7077783948'; // Verified test number
+
+            $url = "https://graph.facebook.com/v22.0/{$phoneNumberId}/messages";
+            $template = 'sponsor_message';
+            $payload = [
+                "messaging_product" => "whatsapp",
+                "to" => $mob,
+                "type" => "template",
+                "template" => [
+                    "name" => $template,
+                    "language" => ["code" => "en"],
+                    'components' => [
+                        [
+                            "type" => "header",
+                            "parameters" => [
+                                [
+                                    "type" => "image",
+                                    "image" => [
+                                        "link" => url('images/whatsapp/freebazarlogo.jpg')
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+
+            ];
+
+            $response = Http::withToken($token)
+                ->post($url, $payload)
+                ->json();
+
+            Log::info('Whatsapp Message for user register', ['data' => $response]);
+
+            return $response;
+        } catch (Exception $e) {
+            Log::info('Whatsapp Error' . $e->getMessage());
+        }
+    }
+
     public static function password_reset($mob, $otp)
     {
         try {

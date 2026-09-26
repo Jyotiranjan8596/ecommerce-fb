@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Observers;
 
 use App\Models\Sponsor;
+use App\Models\User;
 use App\Models\UserWallet;
+use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SponsorObserver
 {
@@ -22,6 +26,11 @@ class SponsorObserver
             'trans_type'       => 'credit',
             'transaction_date' => $transaction_date,
         ]);
+        $id = $sponsor->sponsor_id;
+        $user_mob = User::where('id', $id)->value('mobilenumber');
+        $whatsapp  = new WhatsappMessageService();
+        $msg_reslt = $whatsapp->sponsor_message($user_mob);
+        Log::info('Sponsor message result', [$msg_reslt]);
     }
 
     /**
