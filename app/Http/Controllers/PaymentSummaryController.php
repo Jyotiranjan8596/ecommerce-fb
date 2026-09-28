@@ -284,12 +284,12 @@ class PaymentSummaryController extends Controller
     {
         $request->validate([
             'id'     => 'required|exists:payments,id',
-            'status' => 'required|in:verified,rejected',
+            'status' => 'required|in:approved,rejected',
         ]);
 
         $res = Payment::updateReceipt($request->id, $request->status);
 
-        
+
         if ($res) {
             return response()->json([
                 'success' => true,

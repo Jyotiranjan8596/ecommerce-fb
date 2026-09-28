@@ -27,6 +27,7 @@ class Payment extends Model
         'created_by',
         'updated_by',
         'remark',
+        'status'
     ];
 
     public function creditedTo()
@@ -115,17 +116,6 @@ class Payment extends Model
                 //     'updated_at'       => now(),
                 // ]
             ];
-            if (!$request->is_pos) {
-                $update_res = $payment_smry->update([
-                    'status' => 'approved',
-                    'reference_number' => $request->reference_number
-                ]);
-
-                if ($update_res == 0) {
-                    DB::rollBack();
-                    return false;
-                }
-            }
 
             $inserted = Payment::insert($data);
 
@@ -227,7 +217,7 @@ class Payment extends Model
         $to = $request->to_date ?? $request->transaction_date;
         $total_debit     = 0;
         $total_credit    = 0;
-        $base_query = self::where(function ($base_query) use ($userId) {
+        $base_query = self::where('status', 'approved')->where(function ($base_query) use ($userId) {
             $base_query->where('to', $userId)
                 ->orWhere('from', $userId);
         })->with('createdBy')
@@ -317,7 +307,7 @@ class Payment extends Model
         $pos_name = PosModel::where('user_id', $userId)->value('name');
         $from = $request->from_date ?? $request->transaction_date;
         $to = $request->to_date ?? $request->transaction_date;
-        $base_query = self::where(function ($base_query) use ($userId) {
+        $base_query = self::where('status', 'approved')->where(function ($base_query) use ($userId) {
             $base_query->where('to', $userId)
                 ->orWhere('from', $userId);
         })->with('createdBy')
@@ -329,12 +319,10 @@ class Payment extends Model
                 ->get();
             foreach ($openingTransactions as $transaction) {
                 if ($transaction->from == $userId) {
-
                     $opening_balance -= $transaction->amount;
                 }
 
                 if ($transaction->to == $userId) {
-
                     $opening_balance += $transaction->amount;
                 }
             }
@@ -408,7 +396,7 @@ class Payment extends Model
         $from = $request->from_date;
         $to = $request->to_date;
 
-        $query = self::where('to', $userId)->with('creditedFrom', 'payment_summary');
+        $query = self::where('to', $userId)->where('remark', '!=', 'Auto Generated')->with('creditedFrom', 'payment_summary');
         if ($from && $to) {
             $query->whereBetween(
                 'transaction_date',
@@ -425,7 +413,7 @@ class Payment extends Model
                 'receive_by' => $item->pay_by = 1 ? 'Upi' : 'Cash',
                 'amount' => $item->amount,
                 'remark' => $item->remark,
-                'summary_status' => $item->payment_summary ? $item->payment_summary->status : 'NA'
+                'status' => $item->status ?? 'NA'
             ];
         });
         return $data;
@@ -433,12 +421,17 @@ class Payment extends Model
 
     public static function updateReceipt($id, $status)
     {
-        $pay_data = self::with('payment_summary')->find($id);
+        return DB::transaction(function () use ($id, $status) {
+            $pay_data = self::with('payment_summary')->find($id);
 
-        if (! $pay_data || ! $pay_data->payment_summary) {
-            return false;
-        }
+            if (! $pay_data || ! $pay_data->payment_summary) {
+                return false;
+            }
 
-        return $pay_data->payment_summary->update(['status' => $status]);
+            $pay_data->update(['status' => $status]);                  // payments table
+            $pay_data->payment_summary->update(['status' => $status]); // payment_summaries table
+
+            return true;
+        });
     }
 }

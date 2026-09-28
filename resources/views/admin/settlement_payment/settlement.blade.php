@@ -296,8 +296,8 @@
                                     pending: 'bg-warning text-dark',
                                     approved: 'bg-success',
                                     rejected: 'bg-danger'
-                                } [item.summary_status] ?? 'bg-secondary';
-                                const isPending = item.summary_status == 'pending';
+                                } [item.status] ?? 'bg-secondary';
+                                const isPending = item.status == 'pending';
                                 rows += `
                                         <tr>
                                             <td>${index++}</td>
@@ -309,8 +309,8 @@
                                             <td>${item.remark}</td>
                                             <td>
                                                 <span class="badge ${badgeClass}">
-                                                    ${item.summary_status
-                                                        ? item.summary_status.charAt(0).toUpperCase() + item.summary_status.slice(1).toLowerCase()
+                                                    ${item.status
+                                                        ? item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()
                                                         : ''}
                                                 </span>
                                             </td>
@@ -365,7 +365,7 @@
 
             $(document).on('click', '.action-verify', function(e) {
                 e.preventDefault();
-                updateStatus($(this).data('id'), 'verified');
+                updateStatus($(this).data('id'), 'approved');
             });
 
             $(document).on('click', '.action-reject', function(e) {
@@ -385,8 +385,16 @@
                         status: status
                     },
                     success: function(response) {
-                        alert(response.message ?? 'Updated successfully');
-                        // reload your table here, e.g. loadTransactions();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message ?? 'Updated successfully',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
                     },
                     error: function() {
                         alert('Something went wrong');
