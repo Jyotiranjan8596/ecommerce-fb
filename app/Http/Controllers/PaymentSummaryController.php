@@ -289,6 +289,7 @@ class PaymentSummaryController extends Controller
 
         $res = Payment::updateReceipt($request->id, $request->status);
 
+        
         if ($res) {
             return response()->json([
                 'success' => true,
