@@ -408,7 +408,7 @@ class Payment extends Model
         $from = $request->from_date;
         $to = $request->to_date;
 
-        $query = self::where('to', $userId)->with('creditedFrom');
+        $query = self::where('to', $userId)->with('creditedFrom', 'payment_summary');
         if ($from && $to) {
             $query->whereBetween(
                 'transaction_date',
@@ -417,15 +417,28 @@ class Payment extends Model
         }
         $data = $query->get()->map(function ($item) {
             return [
+                'id' => $item->id,
                 'voucher' => $item->voucher_number,
                 'ref_number' => $item->reference_number,
                 'date' => $item->transaction_date,
                 'receive_from' => $item->creditedFrom->name,
                 'receive_by' => $item->pay_by = 1 ? 'Upi' : 'Cash',
                 'amount' => $item->amount,
-                'remark' => $item->remark
+                'remark' => $item->remark,
+                'summary_status' => $item->payment_summary ? $item->payment_summary->status : 'NA'
             ];
         });
         return $data;
+    }
+
+    public static function updateReceipt($id, $status)
+    {
+        $pay_data = self::with('payment_summary')->find($id);
+
+        if (! $pay_data || ! $pay_data->payment_summary) {
+            return false;
+        }
+
+        return $pay_data->payment_summary->update(['status' => $status]);
     }
 }

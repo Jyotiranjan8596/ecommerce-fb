@@ -78,6 +78,8 @@
                         <th scope="col">Receive By</th>
                         <th scope="col">Amount</th>
                         <th scope="col">Narration</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
                     </tr>
                 </thead>
 
@@ -288,8 +290,14 @@
                         if (Object.keys(response.data).length > 0) {
                             const pagination = response.data;
                             let paginationHtml = '';
-                            transactions.forEach(function(item) {
 
+                            transactions.forEach(function(item) {
+                                const badgeClass = {
+                                    pending: 'bg-warning text-dark',
+                                    approved: 'bg-success',
+                                    rejected: 'bg-danger'
+                                } [item.summary_status] ?? 'bg-secondary';
+                                const isPending = item.summary_status == 'pending';
                                 rows += `
                                         <tr>
                                             <td>${index++}</td>
@@ -299,6 +307,34 @@
                                             <td>${item.receive_by}</td>
                                             <td>${item.amount}</td>
                                             <td>${item.remark}</td>
+                                            <td>
+                                                <span class="badge ${badgeClass}">
+                                                    ${item.summary_status
+                                                        ? item.summary_status.charAt(0).toUpperCase() + item.summary_status.slice(1).toLowerCase()
+                                                        : ''}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-light border" type="button"
+                                                            data-bs-toggle="dropdown" aria-expanded="false"
+                                                            ${isPending ? '' : 'disabled'}>
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item action-verify" href="#" data-id="${item.id}">
+                                                                <i class="fas fa-check text-success me-2"></i>Verify
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item action-reject" href="#" data-id="${item.id}">
+                                                                <i class="fas fa-times text-danger me-2"></i>Reject
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                         </tr>
                                     `;
                             });
@@ -327,6 +363,36 @@
                 });
             }
 
+            $(document).on('click', '.action-verify', function(e) {
+                e.preventDefault();
+                updateStatus($(this).data('id'), 'verified');
+            });
+
+            $(document).on('click', '.action-reject', function(e) {
+                e.preventDefault();
+                updateStatus($(this).data('id'), 'rejected');
+            });
+
+            function updateStatus(id, status) {
+                if (!confirm('Are you sure you want to mark this as ' + status + '?')) return;
+
+                $.ajax({
+                    url: "{{ route('admin.receipt.updateStatus') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: id,
+                        status: status
+                    },
+                    success: function(response) {
+                        alert(response.message ?? 'Updated successfully');
+                        // reload your table here, e.g. loadTransactions();
+                    },
+                    error: function() {
+                        alert('Something went wrong');
+                    }
+                });
+            }
 
         });
     </script>

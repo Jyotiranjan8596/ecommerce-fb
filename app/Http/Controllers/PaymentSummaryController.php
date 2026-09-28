@@ -186,7 +186,7 @@ class PaymentSummaryController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->user_id;
         $all_pos = PosModel::getAll();
-        return view('admin.payment.account_ledger', compact('userId','all_pos'));
+        return view('admin.payment.account_ledger', compact('userId', 'all_pos'));
     }
 
     public function pos_ledger_index()
@@ -276,6 +276,28 @@ class PaymentSummaryController extends Controller
                 'success'  => 'false',
                 'code'    => 500,
                 'message' => 'Something Went Wrong!',
+            ]);
+        }
+    }
+
+    public function updateReceiptStatus(Request $request)
+    {
+        $request->validate([
+            'id'     => 'required|exists:payments,id',
+            'status' => 'required|in:verified,rejected',
+        ]);
+
+        $res = Payment::updateReceipt($request->id, $request->status);
+
+        if ($res) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction ' . $request->status . ' successfully',
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction ' . $request->status . ' falied',
             ]);
         }
     }
