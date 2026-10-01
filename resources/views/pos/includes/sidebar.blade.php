@@ -88,7 +88,7 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="{{ route('pos.unverified.user') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -99,11 +99,10 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                     </span>
-                    {{-- <span class="sidebar-text">Unverified Customer</span> --}}
                     <span class="sidebar-text">Transactions</span>
                 </a>
-            </li>
-            <li class="nav-item">
+            </li> --}}
+            {{-- <li class="nav-item">
                 <a href="{{ route('pos.sattlement') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24"
@@ -115,7 +114,7 @@
                     </span>
                     <span class="sidebar-text">Settlement</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item {{ request()->is('user/management*') ? 'active' : '' }}">
                 <span class="nav-link collapsed d-flex justify-content-between align-items-center"
                     data-bs-toggle="collapse" data-bs-target="#submenu-app-acc">

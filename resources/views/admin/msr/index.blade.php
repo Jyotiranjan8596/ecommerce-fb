@@ -16,7 +16,7 @@
         }
     </style>
     <div class="container mt-4">
-        <h3 class="text-center text-dark font-weight-bold"><b>MONTHLY SALES REPORT</b></h3>
+        <h3 class="text-center text-dark font-weight-bold"><b>MSR Upload</b></h3>
 
         <!-- Filter by POS ID and Month -->
         <form method="GET" action="{{ route('admin.msr') }}" class="row align-items-center mb-3">
@@ -55,7 +55,21 @@
            
         </form> --}}
 
-
+        <div class="col-12 col-md-4">
+            <form action="{{ route('admin.wallet.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <label class="form-label small text-muted mb-1">Upload Wallet</label>
+                <div class="input-group">
+                    <input type="file" class="form-control form-control-sm" name="file" accept=".xlsx" required>
+                    <button class="btn btn-info btn-sm fw-semibold" type="submit">
+                        <i class="bi bi-upload me-1"></i> UPLOAD
+                    </button>
+                </div>
+                @if ($errors->has('file'))
+                    <div class="text-danger mt-1 small">{{ $errors->first('file') }}</div>
+                @endif
+            </form>
+        </div>
         <div class="col-md-12 mb-3 text-end">
             <form method="GET" action="{{ route('admin.msr.export') }}" class="d-inline">
                 <input type="hidden" name="search" value="{{ request('search') }}">

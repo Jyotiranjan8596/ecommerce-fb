@@ -347,13 +347,13 @@ class UserDashboardController extends Controller
             $sponcer             = new Sponsor();
             $sponcer->user_id    = $user_add->id;
             $sponcer->sponsor_id = $request->hidden_user_id;
-            
+
             $whatsapp  = new WhatsappMessageService();
             $msg_reslt = $whatsapp->user_registration($request->name, $request->mobilenumber);
             Log::info('USer add Result in Route', [$msg_reslt]);
             if ($sponcer->save()) {
                 flash()->addSuccess('User registered successfully.');
-                return redirect()->route('user.add');   
+                return redirect()->route('user.add');
             }
         }
         flash()->addError('oops! User or Sponsor creation failed!');

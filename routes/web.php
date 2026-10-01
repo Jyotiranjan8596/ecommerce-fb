@@ -104,7 +104,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
     Route::get('pos/list/index', [UserDashboardController::class, 'pos_list_index'])->name('pos.list.index');
     Route::post('payment', [UserDashboardController::class, 'payment'])->name('payment');
     // Route::post('payment/verify/$id', [UserDashboardController::class, 'verifyPayment'])->name('verify.payment');
-    Route::get('my/wallet', [UserDashboardController::class, 'wallet'])->name('wallet');
+    Route::get('my-pay-back', [UserDashboardController::class, 'wallet'])->name('wallet');
 });
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');

@@ -120,22 +120,6 @@
         <h3 class="text-center"><b style="color: rgb(8, 7, 20)">PAYBACK DETAILS</b></h3>
 
         <div class="row g-3 mb-3">
-            {{-- File Upload --}}
-            <div class="col-12 col-md-4">
-                <form action="{{ route('admin.wallet.upload') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <label class="form-label small text-muted mb-1">Upload Wallet</label>
-                    <div class="input-group">
-                        <input type="file" class="form-control form-control-sm" name="file" accept=".xlsx" required>
-                        <button class="btn btn-info btn-sm fw-semibold" type="submit">
-                            <i class="bi bi-upload me-1"></i> UPLOAD
-                        </button>
-                    </div>
-                    @if ($errors->has('file'))
-                        <div class="text-danger mt-1 small">{{ $errors->first('file') }}</div>
-                    @endif
-                </form>
-            </div>
 
             {{-- Filters --}}
             <div class="col-12 col-md-6">

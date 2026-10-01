@@ -27,18 +27,18 @@
             <span style="font-weight: 600; margin-right: 6px;">Filter by Mode:</span>
 
             <a href="{{ request()->fullUrlWithQuery(['mode_filter' => '']) }}"
-                class="btn btn-sm {{ !request('mode_filter') ? 'btn-primary' : 'btn-outline-primary' }}">
+                class="btn btn-sm {{ request('mode_filter') == 'wallet' || (request('mode_filter') == '' && request('mode_filter') !== null) ? 'btn-outline-primary' : 'btn-outline-primary' }}">
                 All
             </a>
 
             <a href="{{ request()->fullUrlWithQuery(['mode_filter' => 'wallet']) }}"
                 class="btn btn-sm {{ request('mode_filter') == 'wallet' ? 'btn-warning' : 'btn-outline-warning' }}">
-                <i class="fa fa-credit-card" aria-hidden="true"></i> Wallet
+                <i class="fa fa-credit-card"></i> Wallet
             </a>
 
             <a href="{{ request()->fullUrlWithQuery(['mode_filter' => 'reward']) }}"
-                class="btn btn-sm {{ request('mode_filter') == 'reward' ? 'btn-success' : 'btn-outline-success' }}">
-                <i class="fa fa-gift" aria-hidden="true"></i> Reward
+                class="btn btn-sm {{ request('mode_filter', 'reward') == 'reward' ? 'btn-success' : 'btn-outline-success' }}">
+                <i class="fa fa-gift"></i> Reward
             </a>
         </div>
 

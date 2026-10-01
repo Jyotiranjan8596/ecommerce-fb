@@ -58,7 +58,7 @@
                                 </td> --}}
                                 <td>{{ $data->dates }}</td>
                                 <td>₹{{ $data->total_billing_amount  }}</td>
-                                <td>₹{{ $data->total_transactions }}</td>
+                                <td>{{ $data->total_transactions }}</td>
                                 <td>₹{{ $data->credit }}</td>
                                 <td>₹{{ $data->debit }}</td>
                                 <td>{{ $data->status }}</td>

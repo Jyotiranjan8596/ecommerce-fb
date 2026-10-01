@@ -81,6 +81,7 @@ class WalletController extends Controller
 
     public function dsr(Request $request)
     {
+
         $posId = auth()->user()->user_id;
         $pos   = PosModel::where('user_id', $posId)->first();
 
@@ -96,6 +97,7 @@ class WalletController extends Controller
             $request->has('start_date') && ! empty($request->start_date) &&
             $request->has('end_date') && ! empty($request->end_date)
         ) {
+
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate   = Carbon::parse($request->end_date)->endOfDay();
             $query->whereBetween('transaction_date', [$startDate, $endDate]);
@@ -105,9 +107,16 @@ class WalletController extends Controller
         }
 
         // Search by mobile number if search term is provided
-        if ($request->has('search') && ! empty($request->search)) {
+        if ($request->filled('search')) {
             $searchTerm = $request->search;
-            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%");
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('user_id', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('user', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('user_id', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
         }
 
         // Fetch the results
