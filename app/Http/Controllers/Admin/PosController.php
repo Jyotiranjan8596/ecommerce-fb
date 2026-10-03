@@ -7,7 +7,7 @@ use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Services\QrDecoderService;
+use App\Services\QRDecoderService;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -140,7 +140,7 @@ class PosController extends Controller
             // Extract UPI from QR image
             $upi_id = null;
             if ($request->hasFile('upi')) {
-                $result = QrDecoderService::extractUpiIdFromImage($request->file('upi'));
+                $result = QRDecoderService::extractUpiIdFromImage($request->file('upi'));
                 if ($result['upi_id']) {
                     $upi_id = $result['upi_id'];
                 }   
@@ -249,7 +249,7 @@ class PosController extends Controller
         }
         $upi_id = null;
         if ($request->hasFile('upi')) {
-            $result = QrDecoderService::extractUpiIdFromImage($request->file('upi'));
+            $result = QRDecoderService::extractUpiIdFromImage($request->file('upi'));
             if ($result['upi_id']) {
                 $upi_id = $result['upi_id'];
             }

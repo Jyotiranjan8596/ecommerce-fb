@@ -5,7 +5,7 @@ namespace App\Services;
 use Zxing\QrReader;
 use Illuminate\Support\Facades\Storage;
 
-class QrDecoderService
+class QRDecoderService
 {
     /**
      * Decode a QR image and extract UPI ID if available
