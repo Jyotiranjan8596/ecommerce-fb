@@ -21,8 +21,8 @@ class QrDecoderService
 
         // Decode QR
         $qr = new QrReader($fullPath);
-        // dd($qr);
         $text = $qr->text(); // full QR content
+        // dd($text);
 
         // Clean up the file (optional)
         Storage::disk('public')->delete($path);

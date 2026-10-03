@@ -170,9 +170,103 @@
                             </div>
                             <div class="mb-2">
                                 <label for="state">State*</label>
-                                <input type="text" id="state" name="state"
-                                    class="form-control @error('state') is-invalid @enderror"
-                                    value="{{ old('state') }}">
+
+                                <select id="state" name="state"
+                                    class="form-control @error('state') is-invalid @enderror">
+
+                                    <option value="">Select State</option>
+
+                                    <option value="Andhra Pradesh"
+                                        {{ old('state') == 'Andhra Pradesh' ? 'selected' : '' }}>
+                                        Andhra Pradesh
+                                    </option>
+                                    <option value="Arunachal Pradesh"
+                                        {{ old('state') == 'Arunachal Pradesh' ? 'selected' : '' }}>
+                                        Arunachal Pradesh
+                                    </option>
+                                    <option value="Assam" {{ old('state') == 'Assam' ? 'selected' : '' }}>
+                                        Assam
+                                    </option>
+                                    <option value="Bihar" {{ old('state') == 'Bihar' ? 'selected' : '' }}>
+                                        Bihar
+                                    </option>
+                                    <option value="Chhattisgarh" {{ old('state') == 'Chhattisgarh' ? 'selected' : '' }}>
+                                        Chhattisgarh
+                                    </option>
+                                    <option value="Goa" {{ old('state') == 'Goa' ? 'selected' : '' }}>
+                                        Goa
+                                    </option>
+                                    <option value="Gujarat" {{ old('state') == 'Gujarat' ? 'selected' : '' }}>
+                                        Gujarat
+                                    </option>
+                                    <option value="Haryana" {{ old('state') == 'Haryana' ? 'selected' : '' }}>
+                                        Haryana
+                                    </option>
+                                    <option value="Himachal Pradesh"
+                                        {{ old('state') == 'Himachal Pradesh' ? 'selected' : '' }}>
+                                        Himachal Pradesh
+                                    </option>
+                                    <option value="Jharkhand" {{ old('state') == 'Jharkhand' ? 'selected' : '' }}>
+                                        Jharkhand
+                                    </option>
+                                    <option value="Karnataka" {{ old('state') == 'Karnataka' ? 'selected' : '' }}>
+                                        Karnataka
+                                    </option>
+                                    <option value="Kerala" {{ old('state') == 'Kerala' ? 'selected' : '' }}>
+                                        Kerala
+                                    </option>
+                                    <option value="Madhya Pradesh"
+                                        {{ old('state') == 'Madhya Pradesh' ? 'selected' : '' }}>
+                                        Madhya Pradesh
+                                    </option>
+                                    <option value="Maharashtra" {{ old('state') == 'Maharashtra' ? 'selected' : '' }}>
+                                        Maharashtra
+                                    </option>
+                                    <option value="Manipur" {{ old('state') == 'Manipur' ? 'selected' : '' }}>
+                                        Manipur
+                                    </option>
+                                    <option value="Meghalaya" {{ old('state') == 'Meghalaya' ? 'selected' : '' }}>
+                                        Meghalaya
+                                    </option>
+                                    <option value="Mizoram" {{ old('state') == 'Mizoram' ? 'selected' : '' }}>
+                                        Mizoram
+                                    </option>
+                                    <option value="Nagaland" {{ old('state') == 'Nagaland' ? 'selected' : '' }}>
+                                        Nagaland
+                                    </option>
+                                    <option value="Odisha" {{ old('state') == 'Odisha' ? 'selected' : '' }}>
+                                        Odisha
+                                    </option>
+                                    <option value="Punjab" {{ old('state') == 'Punjab' ? 'selected' : '' }}>
+                                        Punjab
+                                    </option>
+                                    <option value="Rajasthan" {{ old('state') == 'Rajasthan' ? 'selected' : '' }}>
+                                        Rajasthan
+                                    </option>
+                                    <option value="Sikkim" {{ old('state') == 'Sikkim' ? 'selected' : '' }}>
+                                        Sikkim
+                                    </option>
+                                    <option value="Tamil Nadu" {{ old('state') == 'Tamil Nadu' ? 'selected' : '' }}>
+                                        Tamil Nadu
+                                    </option>
+                                    <option value="Telangana" {{ old('state') == 'Telangana' ? 'selected' : '' }}>
+                                        Telangana
+                                    </option>
+                                    <option value="Tripura" {{ old('state') == 'Tripura' ? 'selected' : '' }}>
+                                        Tripura
+                                    </option>
+                                    <option value="Uttar Pradesh" {{ old('state') == 'Uttar Pradesh' ? 'selected' : '' }}>
+                                        Uttar Pradesh
+                                    </option>
+                                    <option value="Uttarakhand" {{ old('state') == 'Uttarakhand' ? 'selected' : '' }}>
+                                        Uttarakhand
+                                    </option>
+                                    <option value="West Bengal" {{ old('state') == 'West Bengal' ? 'selected' : '' }}>
+                                        West Bengal
+                                    </option>
+
+                                </select>
+
                                 @error('state')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

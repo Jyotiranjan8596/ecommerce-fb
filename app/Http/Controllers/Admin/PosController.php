@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class PosController extends Controller
 {
@@ -78,10 +79,26 @@ class PosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'                      => 'required|string|max:255',
-            'mobilenumber'              => 'required|unique:users,mobilenumber|regex:/^[0-9]{10}$/',
-            'email'                     => 'required|email|unique:users,email',
-            // 'image'              => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'name' => 'required|string|max:255',
+
+            'mobilenumber' => [
+                'required',
+                'regex:/^[0-9]{10}$/',
+                Rule::unique('users', 'mobilenumber')
+                    ->where(function ($query) {
+                        $query->where('role', 4);
+                    }),
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')
+                    ->where(function ($query) {
+                        $query->where('role', 4);
+                    }),
+            ],
+
             'upi'                       => 'required|image',
             'transaction_charge'        => 'required|numeric|min:0',
             'initial_letter_of_invoice' => 'required|string|max:255',
@@ -95,9 +112,7 @@ class PosController extends Controller
             'city'                      => 'required|string|max:100',
             'state'                     => 'required|string|max:100',
             'zip'                       => 'required|string|max:10',
-            'terms'                     => 'required'
-            // 'latitude'           => 'required|numeric',
-            // 'longitude'          => 'required|numeric',
+            'terms'                     => 'required',
         ]);
 
         DB::beginTransaction();
@@ -128,9 +143,8 @@ class PosController extends Controller
                 $result = QrDecoderService::extractUpiIdFromImage($request->file('upi'));
                 if ($result['upi_id']) {
                     $upi_id = $result['upi_id'];
-                }
+                }   
             }
-
             $pos                            = new PosModel;
             $pos->name                      = $request->name;
             $pos->user_id                   = $rand_user;
