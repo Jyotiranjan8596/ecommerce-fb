@@ -31,8 +31,8 @@ class TestCommands extends Command
         // WhatsappMessageService::promotion_msg('9336801361','Rakesh Mohanty');
 
         $whatsapp  = new WhatsappMessageService();
-        $msg_reslt = $whatsapp->user_registration('Jyotiranjan Sahoo', '7609942076');
-        Log::info($msg_reslt);
+        // $msg_reslt = $whatsapp->user_registration('Jyotiranjan Sahoo', '7609942076');
+        // Log::info($msg_reslt);
         // $parameters = [
         //     'pos_name' => 'Test 9',
         //     'trans_date' => '31-07-2026',
@@ -41,5 +41,6 @@ class TestCommands extends Command
         // ];
         // $msg_res = $whatsapp->settlement_message('9040030361', $parameters);
         // Log::info($msg_res);
+        $whatsapp->pos_registration('Jyoti', '7609942076');
     }
 }

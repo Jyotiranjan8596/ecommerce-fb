@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Observers;
 
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Services\AiSensyService;
+use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class UserObserver
 {
@@ -24,6 +27,13 @@ class UserObserver
             'mobilenumber'     => $user->mobilenumber,
             'transaction_date' => $transaction_date,
         ]);
+        $whatsapp  = new WhatsappMessageService();
+        if ($user->role == 4) {
+            $msg_reslt = $whatsapp->pos_registration($user->name, $user->mobilenumber);
+        } else if ($user->role == 3) {
+            $msg_reslt = $whatsapp->user_registration($user->name, $user->mobilenumber);
+        }
+        Log::info('User POS register message result', [$msg_reslt]);
     }
 
     /**

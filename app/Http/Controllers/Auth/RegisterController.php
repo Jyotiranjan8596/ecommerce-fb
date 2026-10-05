@@ -133,10 +133,10 @@ class RegisterController extends Controller
             'state'        => $data['state'],
             'sponsor_id'   => 666666,
         ]);
-        $whatsapp  = new WhatsappMessageService();
-        $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
+        // $whatsapp  = new WhatsappMessageService();
+        // $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
         // dd('Comming here');
-        Log::info('registration Result in Route', [$msg_reslt]);
+        // Log::info('registration Result in Route', [$msg_reslt]);
         return $user;
     }
 }
