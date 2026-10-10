@@ -2,7 +2,42 @@
 
 @section('content')
     <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">User Transactions</b></h3>
+        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">POS Transaction Details</b></h3>
+
+        <section class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">POS name</small>
+                        <strong>{{ $pos->name }}</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">POS ID</small>
+                        <strong>{{ $pos->user_id ?: $pos->id }}</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">Mobile number</small>
+                        <strong>{{ $pos->mobilenumber ?: 'N/A' }}</strong>
+                    </div>
+                    @if ($pos->email)
+                        <div class="col-12 col-md-4">
+                            <small class="text-muted d-block">Email</small>
+                            <strong>{{ $pos->email }}</strong>
+                        </div>
+                    @endif
+                    @if ($pos->entity_address || $pos->address)
+                        <div class="col-12 col-md-8">
+                            <small class="text-muted d-block">Address</small>
+                            <strong>{{ $pos->entity_address ?: $pos->address }}</strong>
+                        </div>
+                    @endif
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">Transaction charge rate</small>
+                        <strong>{{ number_format((float) ($pos->transaction_charge ?? 0), 2) }}%</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <div class="row">
 

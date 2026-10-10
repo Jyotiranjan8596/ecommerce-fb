@@ -40,7 +40,7 @@ class ProductController extends Controller
         return view('admin.product.create', compact('sector', 'subsector', 'products', 'userId', 'user_profile'));
     }
     public function export(){
-        return Excel::download(new ProductExport,'products.xlsx');
+        return Excel::download(new ProductExport, 'ProductList_' . now()->format('d,m,y') . '.xlsx');
     }
     public function import(Request $request)
     {

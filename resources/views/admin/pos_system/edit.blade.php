@@ -21,6 +21,14 @@
                                     </span>
                                 @enderror
                             </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="delivery_orders_enabled"
+                                    name="delivery_orders_enabled" value="1"
+                                    @checked(old('delivery_orders_enabled', $pos->delivery_orders_enabled))>
+                                <label class="form-check-label" for="delivery_orders_enabled">
+                                    This POS offers customer delivery
+                                </label>
+                            </div>
                             <div class="mb-2">
                                 <label for="image">Image*</label>
                                 <input type="file" id="image" name="image"
@@ -228,6 +236,24 @@
                     </div>
                 </div>
             </div>
+
+            @include('shared.pos-location-map', [
+                'mapId' => 'admin-pos-edit-map',
+                'mapTitle' => 'Update the POS location',
+                'mapDescription' => 'Click the map to move the POS marker. Latitude and longitude update with your selection.',
+                'coordinatePicker' => true,
+                'latitudeInputId' => 'latitude',
+                'longitudeInputId' => 'longitude',
+                'locations' => old('latitude', $pos->latitude) && old('longitude', $pos->longitude) ? [[
+                    'name' => $pos->name,
+                    'address' => $pos->address,
+                    'city' => $pos->city,
+                    'state' => $pos->state,
+                    'zip' => $pos->zip,
+                    'latitude' => old('latitude', $pos->latitude),
+                    'longitude' => old('longitude', $pos->longitude),
+                ]] : [],
+            ])
 
             <div class="card-footer">
                 <button class="btn btn-primary me-2" type="submit">Update</button>

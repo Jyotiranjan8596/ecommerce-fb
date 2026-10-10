@@ -1,11 +1,11 @@
 <!-- footer section  -->
-<footer class="py-5">
+<footer class="py-5 freebazar-site-footer">
     <div class="container-lg">
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer-menu">
-                    <img src="{{ asset('assets/images/logofreebazar3.png') }}" width="240" height="70"
-                        alt="logo" />
+                    <img src="{{ asset('assets/images/freebazar-header-logo.png') }}" width="240" height="70"
+                        alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." />
                     <div class="social-links mt-3">
                         <ul class="d-flex list-unstyled gap-2">
                             <li>
@@ -30,7 +30,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="btn btn-outline-light">
+                                <a href="https://www.instagram.com/freebazaretail/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light" aria-label="Instagram">
                                     <svg width="16" height="16">
                                         <use xlink:href="#instagram"></use>
                                     </svg>
@@ -68,7 +68,7 @@
                     </ul>
                 </div>
             </div> --}}
-            <div class="col-md-2 col-sm-6">
+            <div class="col-lg-2 col-md-6 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Quick Links</h5>
                     <ul class="menu-list list-unstyled">
@@ -76,36 +76,27 @@
                             <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Offers</a>
                         </li>
                         <li class="menu-item">
-                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Discount Coupons</a>
+                            <a href="{{ route('frontend.faq') }}" class="nav-link">FAQs</a>
                         </li>
                         <li class="menu-item">
                             <a href="{{route('frontend.termCondition')}}" class="nav-link">Terms & Conditions</a>
                         </li>
                         <li class="menu-item">
-                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Stores</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Track Order</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Shop</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="javascript:void(0);" onclick="comingSoon()" class="nav-link">Info</a>
+                            <a href="{{ route('frontend.pos.list') }}" class="nav-link">POS List</a>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="col-md-2 col-sm-6">
+            <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Customer Service</h5>
                     <p>
-                        +91 9338301361 <br>
-                        customercare<br>@freebazar.co.in
+                        <a href="tel:9090660606">+91 9090660606</a><br>
+                        <a href="mailto:freebazaretail@gmail.com">freebazaretail@gmail.com</a>
                     </p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="footer-menu">
                     <h5 class="widget-title">Address</h5>
                     <p>
@@ -122,7 +113,7 @@
     <div class="container-lg">
         <div class="row">
             <div class="col-md-6 copyright">
-                <p>©2018 - 2025 FREEBAZAR. All rights reserved.</p>
+                <p>©2018 - 2026 FREEBAZAR. All rights reserved.</p>
             </div>
             {{-- <div class="col-md-6 credit-link text-start text-md-end">
           <p>

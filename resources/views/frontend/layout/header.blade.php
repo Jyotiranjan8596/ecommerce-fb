@@ -34,7 +34,7 @@
         <nav class="navbar  navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ route('frontend.index') }}"><img
-                        src="{{ asset('frontend/img/logo_srdc.png') }}" alt="Logo" /></a>
+                        src="{{ asset('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." /></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,11 @@
                         <li class="nav-item d-flex">
                             @auth
                                 <a href="{{ route('user.index') }}" style="display: inline;">
-                                    <button type="button" class="nav-link btn btn-link">DASHBOARD</button>
+                                    <button type="button" class="nav-link btn btn-link">{{ Auth::user()->is_prime_member ? 'PRIME DASHBOARD' : 'DASHBOARD' }}
+                                        @if (Auth::user()->is_prime_member)
+                                            <span class="badge rounded-pill ms-1" style="background:linear-gradient(135deg,#fff0bd,#e6bd56);color:#5c4108;">PRIME</span>
+                                        @endif
+                                    </button>
                                 </a>
                                 <a href="{{ route('logout') }}" style="display: inline;"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

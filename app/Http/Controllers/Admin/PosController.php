@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentSummary;
 use App\Models\PosModel;
+use App\Support\Notify;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\QrDecoderService;
@@ -31,7 +32,12 @@ class PosController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $pos          = PosModel::orderBy('id', 'desc')->latest()->simplePaginate(15);
-        return view('admin.pos_system.index', compact('pos', 'userId', 'user_profile'));
+        $mapLocations = PosModel::query()
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get(['name', 'address', 'city', 'state', 'zip', 'mobilenumber', 'latitude', 'longitude']);
+
+        return view('admin.pos_system.index', compact('pos', 'userId', 'user_profile', 'mapLocations'));
     }
 
     /**
@@ -147,6 +153,8 @@ class PosController extends Controller
             $pos->latitude       = $request->latitude;
             $pos->longitude      = $request->longitude;
             $pos->image          = $imageName ?? null;
+            $pos->delivery_orders_enabled = $request->boolean('delivery_orders_enabled');
+            $pos->delivery_orders_requested = false;
 
             $pos->save();
 
@@ -245,6 +253,8 @@ class PosController extends Controller
         $pos->zip                       = $request->zip;
         $pos->latitude                  = $request->latitude;
         $pos->longitude                 = $request->longitude;
+        $pos->delivery_orders_enabled   = $request->boolean('delivery_orders_enabled');
+        $pos->delivery_orders_requested = false;
 
         if ($pos->user_id) {
             $user = User::where('user_id', $pos->user_id)->first();
@@ -272,6 +282,36 @@ class PosController extends Controller
 
         flash()->addError('Whoops! POS Update failed!');
         return redirect()->back();
+    }
+
+    public function updateDeliveryOrders(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'decision' => ['required', 'in:approve,reject'],
+        ]);
+
+        $pos = PosModel::findOrFail($id);
+        abort_unless($pos->delivery_orders_requested, 422, 'This POS has no pending delivery request.');
+
+        $pos->delivery_orders_enabled = $validated['decision'] === 'approve';
+        $pos->delivery_orders_requested = false;
+        $pos->save();
+
+        Notify::pos(
+            $pos->user,
+            $validated['decision'] === 'approve' ? 'Delivery orders approved' : 'Delivery order request declined',
+            $validated['decision'] === 'approve'
+                ? 'Your POS can now receive customer delivery orders.'
+                : 'Your request to receive customer delivery orders was declined.',
+            $validated['decision'] === 'approve' ? 'success' : 'warning',
+            route('pos.profile.index')
+        );
+
+        $message = $validated['decision'] === 'approve'
+            ? 'Delivery orders approved for ' . $pos->name . '.'
+            : 'Delivery order request rejected for ' . $pos->name . '.';
+
+        return redirect()->route('admin.pos_system.index')->with('success', $message);
     }
 
     /**

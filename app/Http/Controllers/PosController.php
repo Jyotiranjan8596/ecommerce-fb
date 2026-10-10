@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\User;
+use App\Support\Notify;
 use App\Models\Wallet;
 use Carbon\Carbon;
 use Exception;
@@ -26,7 +27,17 @@ class PosController extends Controller
         $pos = PosModel::where('user_id', $posId)->first();
 
         if (! $pos) {
-            return view('pos.index', compact('userId', 'user_profile'))->withErrors(['POS not found']);
+            return view('pos.index', [
+                'userId' => $userId,
+                'user_profile' => $user_profile,
+                'posLocation' => null,
+                'msales' => 0,
+                'dsales' => 0,
+                'currentMonthWalletCredit' => 0,
+                'salesTrendLabels' => [],
+                'salesTrendValues' => [],
+                'salesSummaryValues' => [0, 0, 0],
+            ])->withErrors(['POS not found']);
         }
 
         $pos_id       = $pos->id;
@@ -50,7 +61,37 @@ class PosController extends Controller
             ->whereYear('transaction_date', $currentYear)
             ->sum('amount_wallet');
 
-        return view('pos.index', compact('userId', 'user_profile', 'msales', 'dsales', 'currentMonthWalletCredit'));
+        $trendStart = Carbon::today()->subDays(6);
+        $todayEnd = Carbon::today()->endOfDay();
+        $dailySales = (clone $walletQuery)
+            ->whereBetween('transaction_date', [$trendStart, $todayEnd])
+            ->selectRaw('DATE(transaction_date) as sale_date, SUM(billing_amount) as total')
+            ->groupByRaw('DATE(transaction_date)')
+            ->pluck('total', 'sale_date');
+
+        $trendDates = collect(range(6, 0))->map(fn ($daysBack) => Carbon::today()->subDays($daysBack));
+        $salesTrendLabels = $trendDates->map(fn ($date) => $date->format('D j'))->all();
+        $salesTrendValues = $trendDates->map(fn ($date) => (float) ($dailySales[$date->toDateString()] ?? 0))->all();
+
+        $salesSummaryValues = [
+            (float) $msales,
+            (float) $dsales,
+            (float) $currentMonthWalletCredit,
+        ];
+
+        $posLocation = $pos->only(['name', 'address', 'city', 'state', 'zip', 'mobilenumber', 'latitude', 'longitude']);
+
+        return view('pos.index', compact(
+            'userId',
+            'user_profile',
+            'posLocation',
+            'msales',
+            'dsales',
+            'currentMonthWalletCredit',
+            'salesTrendLabels',
+            'salesTrendValues',
+            'salesSummaryValues'
+        ));
     }
 
     public function initiate_payment(Request $request)
@@ -85,54 +126,94 @@ class PosController extends Controller
 
     public function updateprofile(Request $request)
     {
-        // dd($request->all());
-        $update_profile = User::find(auth()->id());
-        $pos = PosModel::where('user_id', $update_profile->user_id)->first();
-        if ($request->mobilenumber !== $update_profile->mobilenumber) {
-            $update_profile->requestMobileNumberUpdate($request->mobilenumber);
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:100'],
+            'zip' => ['nullable', 'string', 'max:10'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'upi_id' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'delivery_orders_requested' => ['nullable', 'boolean'],
+        ]);
 
-            flash()->addSuccess('Your mobile number update request has been submitted and is awaiting admin approval.');
-            return redirect()->route('user.index');
-        }
+        $update_profile = User::findOrFail(auth()->id());
+        $pos = PosModel::where('user_id', $update_profile->user_id)->firstOrFail();
+        $hadDeliveryRequest = $pos->delivery_orders_requested;
 
-        $update_profile->email         = $request->email;
-        $update_profile->address       = $request->address;
-        $update_profile->city          = $request->city;
-        $update_profile->state         = $request->state;
-        $update_profile->zip           = $request->zip;
+        $update_profile->email = $validated['email'];
+        $update_profile->address = $validated['address'] ?? null;
+        $update_profile->city = $validated['city'] ?? null;
+        $update_profile->state = $validated['state'] ?? null;
+        $update_profile->zip = $validated['zip'] ?? null;
 
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+            $imageName = uniqid('pos_', true) . '.' . $request->image->getClientOriginalExtension();
             $request->image->move(public_path('images'), $imageName);
             $update_profile->image = $imageName;
             $pos->image = $imageName;
         }
-        $pos->email         = $request->email;
-        $pos->address       = $request->address;
-        $pos->city          = $request->city;
-        $pos->state         = $request->state;
-        $pos->zip           = $request->zip;
-        $pos->upi_id           = $request->upi_id;
-        if ($update_profile->save() && $pos->save()) {
-            flash()->addSuccess('Profile Update successfully.');
-            return redirect()->route('user.index');
+        $pos->email = $validated['email'];
+        $pos->address = $validated['address'] ?? null;
+        $pos->city = $validated['city'] ?? null;
+        $pos->state = $validated['state'] ?? null;
+        $pos->zip = $validated['zip'] ?? null;
+        $pos->latitude = $validated['latitude'] ?? null;
+        $pos->longitude = $validated['longitude'] ?? null;
+        $pos->upi_id = $validated['upi_id'] ?? null;
+        if (! $pos->delivery_orders_enabled) {
+            $pos->delivery_orders_requested = $request->boolean('delivery_orders_requested');
         }
+
+        DB::transaction(function () use ($update_profile, $pos) {
+            $update_profile->save();
+            $pos->save();
+        });
+
+        if (! $pos->delivery_orders_enabled && $pos->delivery_orders_requested && ! $hadDeliveryRequest) {
+            Notify::admins(
+                'POS delivery request submitted',
+                $pos->name . ' requested approval to receive customer orders.',
+                'warning',
+                route('admin.pos_system.index')
+            );
+        } elseif ($hadDeliveryRequest && ! $pos->delivery_orders_requested) {
+            Notify::admins(
+                'POS delivery request cancelled',
+                $pos->name . ' cancelled its delivery order request.',
+                'info',
+                route('admin.pos_system.index')
+            );
+        }
+
+        return redirect()->route('pos.profile.index')->with(
+            'success',
+            $pos->delivery_orders_requested
+                ? 'Profile updated. Your delivery service request is awaiting admin approval.'
+                : 'Profile updated successfully.'
+        );
     }
+
     public function changepassword()
     {
         return view('pos.changepassword');
     }
+
     public function newpassword(Request $request)
     {
-        $request->validate([
-            'password' => 'required|min:5|confirmed',
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'different:current_password'],
         ]);
-        $newpass           = Auth::user();
-        $newpass->password = Hash::make($request->password);
-        if ($newpass->save()) {
-            flash()->addSuccess('Your password has been successfully updated.');
-            return redirect()->route('pos.index');
-        }
+
+        $user = Auth::user();
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        return redirect()->route('pos.change.password')
+            ->with('success', 'Password changed successfully. You are still signed in.');
     }
 
     public function verifyAllCustomer()

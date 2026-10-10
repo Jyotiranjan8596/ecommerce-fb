@@ -28,6 +28,6 @@ class UserAllTransactionController extends Controller
     public function userAllTransactionsExport(Request $request)
     {
         $data =  Wallet::export_user_transaction($request);
-        return Excel::download(new UserAllTransactionExport($data), 'user_all_transaction.xlsx');
+        return Excel::download(new UserAllTransactionExport($data), 'UserTransactions_' . now()->format('d,m,y') . '.xlsx');
     }
 }

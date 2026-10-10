@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SubSectorController;
 use App\Http\Controllers\Admin\UserAllTransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\PaymentSummaryController;
 use App\Http\Controllers\WalletController as ControllersWalletController;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
     Route::get('/offer', [AdminController::class, 'offer'])->name('offer');
 
+    // Customer delivery orders
+    Route::get('customer-orders', [CustomerOrderController::class, 'adminIndex'])->name('customer-orders.index');
+
     // profile
     Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('profile-update', [ProfileController::class, 'update'])->name('profile.update');
@@ -39,8 +43,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::put('update-password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
     //user
+    Route::get('users/{user}/referrals', [UserController::class, 'referrals'])->name('users.referrals');
     Route::resource('users', UserController::class);
-    Route::get('user-ban-unban/{id}/{status}', 'UserController@banUnban')->name('user.banUnban');
+    Route::get('user-ban-unban/{id}/{status}', [UserController::class, 'banUnban'])->name('user.banUnban');
     Route::get('user-customer', [UserController::class, 'customUser'])->name('user.customer');
     Route::get('search-sponsor', [UserController::class, 'searchSponsor'])->name('search.sponsor');
 
@@ -99,6 +104,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     //pos
     Route::resource('pos_system', PosController::class);
     Route::post('pos_system/{id}/update', [PosController::class, 'update'])->name('pos_system.update');
+    Route::post('pos_system/{id}/delivery-orders', [PosController::class, 'updateDeliveryOrders'])->name('pos_system.delivery-orders');
     Route::get('get-all-pos', [PosController::class, 'getAllPos'])->name('get.all.pos');
     Route::post('get-pos-payment-details', [PosController::class, 'pos_payment_details'])->name('get.pos.payment.details');
     //dsr
@@ -107,10 +113,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::post('import-dsr', [DsrController::class, 'import'])->name('dsr.import');
 
     Route::get('msr', [DsrController::class, 'msr'])->name('msr');
+    Route::get('new-msr', [DsrController::class, 'newMsr'])->name('new.msr');
+    Route::get('new-msr/{pos}/details', [DsrController::class, 'newMsrDetails'])->name('new.msr.details');
     Route::get('export-msr', [DsrController::class, 'exportMsr'])->name('msr.export');
     Route::get('/transaction-details/{id}', [DsrController::class, 'transaction_details'])->name('transaction.details');
     Route::get('user-transaction-export-dsr', [DsrController::class, 'userTransactionExport'])->name('dsr.user.transaction.export');
     Route::get('wallet', [WalletController::class, 'wallet'])->name('wallet');
+    Route::get('wallet/upload', [WalletController::class, 'uploadPage'])->name('wallet.upload.page');
+    Route::get('wallet/template', [WalletController::class, 'downloadUploadTemplate'])->name('wallet.upload.template');
     Route::post('wallet', [WalletController::class, 'wallet_load'])->name('wallet.index');
     Route::post('/export-wallet', [WalletController::class, 'exportWallet'])->name('wallet.export');
     Route::post('/upload-wallet', [WalletController::class, 'uploadWallet'])->name('wallet.upload');
@@ -124,6 +134,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
     Route::get('userlist', [PosController::class, 'userList'])->name('user.list');
     Route::get('walletmanage', [ControllersWalletController::class, 'walletManage'])->name('wallet.manage');
+    Route::post('walletmanage/adjust', [ControllersWalletController::class, 'adjustWallet'])->name('wallet.adjust');
 
     Route::get('account/ledger', [PaymentSummaryController::class, 'ledger_index'])->name('ledger.index');
     Route::get('payment/index', [PaymentSummaryController::class, 'payment_index'])->name('payment.index');

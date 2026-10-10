@@ -19,6 +19,34 @@ class WalletController extends Controller
         // return view('admin.wallet.index', compact('walletBalance', 'userId', 'user_profile'));
     }
 
+    public function uploadPage()
+    {
+        return view('admin.wallet.upload');
+    }
+
+    public function downloadUploadTemplate()
+    {
+        $headers = [
+            'MONTH',
+            'MOBILE NUMBER',
+            'USER ID',
+            'SPONSOR ID',
+            'TOTAL BILLING AMOUNT',
+            'REWARD POINT',
+            'WALLET AMOUNT',
+            'TRANSACTION DATE',
+            'PAYMENT MODE',
+        ];
+
+        return response()->streamDownload(function () use ($headers) {
+            $output = fopen('php://output', 'w');
+            fputcsv($output, $headers);
+            fclose($output);
+        }, 'Payback_Upload_Template.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
     public function wallet_load(Request $request)
     {
         $user_profile = auth()->user();
@@ -35,12 +63,12 @@ class WalletController extends Controller
         // dd($request->all());
         $data = UserWallet::getAdminWalletExport($request);
         // dd($data->toArray());
-        return Excel::download(new AdminWalletExport($data), 'admin_wallet_data.xlsx');
+        return Excel::download(new AdminWalletExport($data), 'AdminWalletData_' . now()->format('d,m,y') . '.xlsx');
     }
     public function uploadWallet(Request $request)
     {
         $request->validate([
-            'file' => 'required', // Limit file size for better control
+            'file' => 'required|file|mimes:csv,txt|extensions:csv',
         ]);
 
         try {

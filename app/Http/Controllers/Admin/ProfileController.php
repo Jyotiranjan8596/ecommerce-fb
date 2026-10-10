@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -27,15 +28,16 @@ class ProfileController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-                
+            $image = $request->file('image');
+            $imageName = 'admin-' . $user->id . '-' . Str::uuid() . '.' . $image->extension();
+            $image->move(public_path('images'), $imageName);
             $user->image = $imageName;
         }
         if ($user->save()) {
-            flash()->addSuccess('Profile Updated successfully.');
+            flash()->addSuccess('Profile updated successfully.');
             return redirect()->back();
         }
-        flash()->addError('Password update fail!.');
+        flash()->addError('Profile update failed.');
         return redirect()->back()->with('error', 'Profile update fail!');
     }
 

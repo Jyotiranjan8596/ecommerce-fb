@@ -28,20 +28,58 @@ class UserController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $search       = $request->input('search');
-        $user         = User::query()
+        $membership   = $request->input('membership', 'all');
+        if (! in_array($membership, ['all', 'prime'], true)) {
+            $membership = 'all';
+        }
+
+        $referralCounts = User::query()
+            ->select('sponsor_id')
+            ->selectRaw('COUNT(*) AS referrals_count')
             ->where('role', 3)
+            ->whereNotNull('sponsor_id')
+            ->groupBy('sponsor_id');
+
+        $user = User::query()
+            ->leftJoinSub($referralCounts, 'customer_referral_counts', function ($join) {
+                $join->on('users.id', '=', 'customer_referral_counts.sponsor_id');
+            })
+            ->select('users.*')
+            ->selectRaw('COALESCE(customer_referral_counts.referrals_count, 0) AS referrals_count')
+            ->with('sponsorUser:id,user_id')
+            ->where('users.role', 3)
+            ->when($membership === 'prime', function ($query) {
+                $query->whereRaw('COALESCE(customer_referral_counts.referrals_count, 0) >= ?', [User::PRIME_REFERRAL_THRESHOLD]);
+            })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('user_id', 'LIKE', "%{$search}%")
-                        ->orWhere('name', 'LIKE', "%{$search}%")
-                        ->orWhere('mobilenumber', 'LIKE', "%{$search}%")
-                        ->orWhere('created_at', 'LIKE', "%{$search}%");
+                    $q->where('users.user_id', 'LIKE', "%{$search}%")
+                        ->orWhere('users.name', 'LIKE', "%{$search}%")
+                        ->orWhere('users.mobilenumber', 'LIKE', "%{$search}%")
+                        ->orWhere('users.created_at', 'LIKE', "%{$search}%");
                 });
             })
-            ->latest()
+            ->latest('users.created_at')
             ->simplePaginate(15);
 
-        return view('admin.users.index', compact('user', 'search', 'userId', 'user_profile'));
+        return view('admin.users.index', compact('user', 'search', 'membership', 'userId', 'user_profile'));
+    }
+
+    public function referrals(User $user)
+    {
+        $user->loadCount(['referrals as referrals_count' => function ($query) {
+            $query->where('role', 3);
+        }]);
+        $referrals = User::query()
+            ->where('role', 3)
+            ->where('sponsor_id', $user->id)
+            ->withCount(['referrals as referrals_count' => function ($query) {
+                $query->where('role', 3);
+            }])
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.users.referrals', compact('user', 'referrals'));
     }
 
     /**
@@ -92,7 +130,7 @@ class UserController extends Controller
     }
     public function export()
     {
-        $fileName = 'Format.xlsx';
+        $fileName = 'UserList_' . now()->format('d,m,y') . '.xlsx';
         return Excel::download(new UserExport, $fileName);
     }
 

@@ -3,17 +3,18 @@
 {{-- @include('ui.layout.header') --}}
 <!-- Page Contain -->
 @section('content')
+    <div id="freebazar-home">
     {{-- banner start  --}}
     <div class="p-2">
-        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="0" class="active"
                     aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="1"
                     aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="2"
                     aria-label="Slide 3"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="3"
                     aria-label="Slide 4"></button>
             </div>
             <div class="carousel-inner">
@@ -49,7 +50,7 @@
     {{-- Banner Ends  --}}
 
     {{-- Custom Links just like phonpe  --}}
-    <section class="p-2 text-center">
+    <section class="p-2 text-center freebazar-quick-links" aria-hidden="true">
         <div class=" " style="border-radius: 15px; background-color: #e6e6e6; padding: 10px;">
             <div class="row text-center" style="--bs-gutter-x: -0.5rem !important;">
                 <div class="col">
@@ -224,7 +225,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class=" text-body-emphasis" style="color: white !important; fornt-size: 10px !important;">IPO</h2>
+                    <h2 class="text-body-emphasis">IPO</h2>
                     <p style="color: black !important;">The IPO (Inflation Protection Option) is a movement against
                         inflation and global recession,
                         inviting individuals to a new era of free economy.
@@ -250,10 +251,9 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="fs-2 text-body-emphasis" style="color: #ffffff !important;">SCO</h3>
-                    <p style="color: black !important;">The SCO (Smart Customer Option) is a social support system that
-                        generates income from
-                        expenditure, helping consumers save and earn from their spending.
+                    <h3 class="fs-2 text-body-emphasis">SIP</h3>
+                    <p style="color: black !important;">Savings & Incentive Program: 
+Our profit-sharing model based on two golden rules: "Spend More to Save More & Help More to Earn More.
                     </p>
                 </div>
             </div>
@@ -273,10 +273,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="fs-2 text-body-emphasis" style="color: #ffffff !important;">POS</h3>
-                    <p style="color: black !important;">The POS (Point of Sales) is an employment-generating mission
-                        that empowers small and medium-sized
-                        business houses or individuals to grow through our social network.</p>
+                    <h3 class="fs-2 text-body-emphasis">POS</h3>
+                    <p style="color: black !important;">The POS (Point of Sales): Shopkeepers, small & medium retail stores, and youth. You get access to FreeBazar consumer network, business support, trade support, and digital QR setup.</p>
                 </div>
             </div>
         </div>
@@ -434,11 +432,44 @@
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226);">
-                        FreeBazar is a pioneering initiative by M/S Satshree Marketing Pvt. Ltd., a company founded in 2002
-                        by a team of visionary professionals. We strive to empower consumers worldwide by providing a shield
-                        against inflation, promoting economic stability, and contributing to national progress. Our aim is
-                        to create opportunities for inclusive growth, fostering a free economy that benefits all.
+                    <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8;">
+                        <p><strong>FreeBazar — A Mutual Savings Revolution</strong><br>
+                            <strong>A Free Commerce Initiative by Satshree Marketing Pvt. Ltd.</strong><br>
+                            <em>Since 2016 | Bhubaneswar, Odisha, India</em>
+                        </p>
+
+                        <p><strong>Our Story</strong><br>
+                            FreeBazar began with a simple yet powerful idea: <strong>What if your daily kharcha could create opportunities for savings?</strong></p>
+
+                        <p>Founded by Satshree Marketing Pvt. Ltd., a Bhubaneswar-based company, FreeBazar is building a
+                            community-powered retail network that connects customers and local businesses through technology,
+                            shopping rewards, and mutual growth.</p>
+
+                        <p>Through our FreeBazar POS network, we aim to help families save on everyday purchases and eligible
+                            bill payments while empowering local shopkeepers to attract customers, build loyalty, and grow
+                            their businesses.</p>
+
+                        <p><strong>More Than a Platform — A Movement</strong><br>
+                            FreeBazar is not just about shopping. It's about building a new approach to everyday spending,
+                            supporting local trade, and making savings opportunities accessible to more families.</p>
+
+                        <p>We call this <strong>Free Commerce</strong> — a community-driven model where customers save,
+                            businesses grow, and value circulates within the local economy.</p>
+
+                        <p>Our ambition is to build a lasting legacy of shared growth, connecting communities across India
+                            through smarter spending and mutual savings.</p>
+
+                        <p><strong>Who We Are</strong><br>
+                            <strong>Registered Entity:</strong> Satshree Marketing Pvt. Ltd.<br>
+                            <strong>Location:</strong> Nayapalli, Bhubaneswar, Odisha, India<br>
+                            <strong>Brand:</strong> FreeBazar<br>
+                            <strong>Initiative:</strong> Free Commerce &amp; Consumer Rewards Network</p>
+
+                        <p>FreeBazar is a consumer rewards and referral-based savings platform. It is designed to connect
+                            customers and local businesses through eligible transactions and program benefits.</p>
+
+                        <p><strong>FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations.</strong><br>
+                            <em>Spend Local. Save Together. Grow Together.</em></p>
                     </div>
                 </div>
             </div>
@@ -452,10 +483,23 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
-                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Our mission is to lead a movement against inflation, making a real difference in people's lives.
-                        We're fostering a free economy that empowers consumers worldwide by providing quality products and
-                        services at competitive prices, ensuring savings, security, and scope for huge earnings.
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8;">
+                        <p><strong>Building a Free Economy. Fighting Inflation. Empowering Everyone.</strong></p>
+
+                        <p>At FreeBazar, our mission is to build a <strong>Free-commerce economy</strong> where everyday
+                            spending creates opportunities for savings and a better quality of life.</p>
+
+                        <p>Through our community-powered rewards model, we connect consumers with local businesses, helping
+                            families make their money go further while empowering traders to grow their businesses.</p>
+
+                        <p>We strive to make smart spending, accessible savings, and shopping rewards available to everyone.
+                            By keeping local commerce at the heart of our network, we aim to create a cycle of shared
+                            prosperity where customers save, businesses grow, and communities thrive.</p>
+
+                        <p><strong>We are more than a retail network — we are building a movement against inflation, one
+                                transaction at a time.</strong></p>
+
+                        <p><strong>FreeBazar — Spend Smart. Save More. Grow Together.</strong></p>
                     </div>
                 </div>
             </div>
@@ -469,12 +513,33 @@
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
-                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        We believe everyone deserves a chance to succeed, regardless of socio-economic barriers. Our goal is
-                        to help you beat inflation, build a stronger economy, and create opportunities for everyone to
-                        thrive. We aim to make a positive impact on communities and beyond by bridging gaps and promoting
-                        social interaction.
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8;">
+                        <p><strong>Building a Nation That Spends Smart and Saves More</strong></p>
 
+                        <p>At FreeBazar, we believe every rupee you spend should create more value. Our vision is to build
+                            India's largest <strong>Consumer-to-Trader Network</strong>, where everyday spending creates
+                            savings for customers and growth opportunities for businesses.</p>
+
+                        <p><strong>For Customers — Spend Smart. Save More.</strong><br>
+                            Turn your everyday purchases into opportunities for savings and rewards. With FreeBazar, you can
+                            unlock an opportunity for up to 100% payback on eligible spending, helping you get more value from
+                            your money.</p>
+
+                        <p><strong>For POS Partners — Grow Together.</strong><br>
+                            Connect your business with a growing network of consumers, attract more customers, and build lasting
+                            relationships. We aim to empower local shops and retailers with digital solutions and opportunities
+                            for sustainable business growth.</p>
+
+                        <p><strong>Our Vision — Building a Free Economy</strong><br>
+                            We aim to expand FreeBazar POS terminals across India, making smart savings accessible to more
+                            families while helping local businesses thrive. Through our community-driven rewards model, we want
+                            to transform everyday spending into opportunities for shared prosperity.</p>
+
+                        <p>We envision a future where people don't just earn to spend — they <strong>spend wisely to save,
+                                grow, and build a better future for generations to come.</strong></p>
+
+                        <p><strong>FreeBazar</strong><br>
+                            <strong>Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations.</strong></p>
                     </div>
                 </div>
             </div>
@@ -488,107 +553,70 @@
                 </h2>
                 <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body"
-                        style="color: black; background: rgb(226, 226, 226); text-align: justify;">
-                        Free Bazar's Inflation Protection Option (IPO) is an investment and risk-free saving opportunity.
-                        Our SIP module combines the best of traditional and online marketing systems, offering benefits to
-                        customers and businesses through a well-designed profit-sharing program via POS terminals. We
-                        emphasize quality products with up to 100% payback facilities through SIP. <br>
-                        <strong>1. Spend:</strong> Register as a regular customer, spend ₹500/month, and save 10% on every
-                        spending. <br>
-                        <strong>2. Invite:</strong> Become a smart customer, share your experience, and earn up to 100% (max
-                        ₹10,000) monthly
-                        shopping free. <br>
-                        <strong>3. Partnership:</strong> Join as a POS partner with zero investment and grow your business
-                        with huge
-                        income possibilities.
-
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item" style="border: 1px solid #757575;" id="faq">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseFive" style="color: black; font-weight: bold;" aria-expanded="false"
-                        aria-controls="collapseFive">
-                        FAQs:
-                    </button>
-                </h2>
-                <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body"
-                        style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8; margin-left: 10px;">
-
-                        <p><strong>Q: How can I join Free Bazar?</strong><br>
-                            A: Click on the "Register Now" button, fill the form, and accept our Terms & Conditions.</p>
-
-                        <p><strong>Q: What is the minimum eligibility to join Free Bazar?</strong><br>
-                            A: You must be an adult (above 18 years), have a sound mental condition, and be willing to spend
-                            with Free Bazar's SIP.</p>
-
-                        <p><strong>Q: Are your products priced higher than market rates?</strong><br>
-                            A: No, our prices are reasonable, and you'll get an additional 10% savings through our payback
-                            facility.</p>
-
-                        <p><strong>Q: What is IPO?</strong><br>
-                            A: Inflation Protection Option (IPO) is a risk-free opportunity to invest your expenditure and
-                            create wealth.</p>
-
-                        <p><strong>Q: What is SIP?</strong><br>
-                            A: SIP is a profit-sharing venture that helps protect against inflation, based on the concept of
-                            "spend more to save more" and "help more to earn more."</p>
-
-                        <p><strong>Q: What benefits do I get?</strong><br>
-                            A: You'll save 10% extra on every spending and earn up to 100% of your total expenditure through
-                            SIP.</p>
-
-                        <p><strong>Q: How can I get 10% extra savings?</strong><br>
-                            A: Spend a minimum of ₹500 monthly and get guaranteed 10% extra savings as payback wallet and
-                            reward balance.</p>
-
-                        <p><strong>Q: What is wallet and reward balance?</strong><br>
-                            A: Wallet balance is digital cash for bill payments, and reward balance can be redeemed as
-                            discounts at Free Bazar stores or allied POS.</p>
-
-                        <p><strong>Q: What is POS?</strong><br>
-                            A: Point of Sale (POS) is where you buy products and services.</p>
-
-                        <p><strong>Q: Can I do it properly?</strong><br>
-                            A: Yes, anyone can do it with a smartphone to scan QR codes and complete transactions.</p>
-
-                        <p><strong>Q: What if my transaction isn't verified?</strong><br>
-                            A: Contact the POS or customer care with proof of transaction.</p>
-
-                        <p><strong>Q: How will I receive my income and rewards?</strong><br>
-                            A: Through Free Bazar's payback wallet and reward balance on a monthly basis.</p>
-
-                        <p><strong>Q: What about taxes?</strong><br>
-                            A: Payable as per the prevailing Income Tax Act, GST, VAT, and Cess.</p>
-
-                        <p><strong>Q: How can I introduce this movement to others?</strong><br>
-                            A: Share the link (<a href="https://freebazar.co.in" target="_blank">freebazar.co.in</a>) with
-                            those you trust.</p>
-
-                        <p><strong>Q: What do I explain to those I invite?</strong><br>
-                            A: Share the benefits of mutual expenditure and how it works.</p>
-
-                        <p><strong>Q: What are the liabilities?</strong><br>
-                            A: There are no liabilities if there are no false commitments or manipulations.</p>
-
-                        <p><strong>Q: What more do I have to do?</strong><br>
-                            A: Simply share your experience with friends and help them ride over inflation.</p>
-
-                        <p><strong>Q: If I don't want to continue?</strong><br>
-                            A: You're free to discontinue; we're not binding anyone.</p>
-
-                        <p><strong>Q: If my address changes?</strong><br>
-                            A: Update your profile with the new address.</p>
-
-                        <p><strong>Q: What if my ID validity expires?</strong><br>
-                            A: Renewal is subject to regular monthly spending of ₹500 or ₹6000 yearly purchase through Free
-                            Bazar POS.</p>
-
-                        <p><strong>Q: Who gets the benefits if I pass away?</strong><br>
-                            A: Benefits will be transferred to your legal heir/nominee with sufficient documentary proof.
+                        style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8;">
+                        <p><strong>The Free Economy Loop</strong><br>
+                            <strong>Spend More to Save More. Help More to Earn More.</strong>
                         </p>
+
+                        <p>FreeBazar is a retail savings and rewards network that connects customers and local businesses
+                            through QR-based transactions, attractive prices, and community-driven rewards. Our goal is to
+                            help customers reduce their shopping expenses while helping businesses grow.</p>
+
+                        <p><strong>Two Powerful Ideas</strong><br>
+                            <strong>1. IPO – Inflation Protection Option</strong><br>
+                            A savings and rewards program designed to help customers offset everyday expenses and fight
+                            rising prices. <em>(Mehengai se bachao!)</em>
+                        </p>
+
+                        <p><strong>2. SIP – Savings &amp; Incentive Program</strong><br>
+                            A community-based rewards model built on two principles: <em>Spend More to Save More &amp; Help
+                                More to Earn More.</em>
+                        </p>
+
+                        <p><strong>How It Works in 3 Steps</strong><br>
+                            <strong>STEP 1: SPEND & SAVE — Become a Regular Customer</strong><br>
+                            Shop at any FreeBazar POS using QR scanning. Spend any amount, with a minimum of ₹500 to qualify
+                            for the program. Get an opportunity to receive <strong>10% payback in your Wallet &amp; Reward
+                                Balance</strong>, credited monthly, subject to program terms.
+                        </p>
+
+                        <p><strong>STEP 2: SPEND & EARN — Become a Prime Member</strong><br>
+                            Refer at least 10 friends and grow your savings community. Earn additional shopping rewards
+                            based on eligible transactions within your referral family, with an <strong>opportunity for up
+                                to 100% shopping benefits</strong>. Rewards depend on actual community transactions; no fixed
+                            income is guaranteed.
+                        </p>
+
+                        <p><strong>STEP 3: SPEND FREE &amp; REPEAT</strong><br>
+                            Use your available wallet benefits for eligible purchases, reduce your out-of-pocket expenses,
+                            and continue participating in the rewards program. Spend, earn rewards, shop again, and repeat!
+                        </p>
+
+                        <p><strong>Our 3 Pillars</strong><br>
+                            <strong>1. Regular Customer — 10% Payback Opportunity</strong><br>
+                            Spend a minimum of ₹500 to qualify for the monthly payback opportunity. Receive eligible Reward
+                            Points and wallet benefits for participating bill payments and POS purchases, as per program
+                            terms.
+                        </p>
+
+                        <p><strong>2. Prime Membership — Up to 100% Shopping Benefit Opportunity</strong><br>
+                            Refer at least 10 people and grow your community. Unlock additional shopping benefits based on
+                            eligible network transactions and applicable program rules.
+                        </p>
+
+                        <p><strong>3. POS Partnership — Grow Your Business</strong><br>
+                            Connect your shop with FreeBazar's consumer network. Get digital QR transaction facilities,
+                            business support, and opportunities to build stronger customer relationships, with service
+                            benefits linked to eligible daily transactions.
+                        </p>
+
+                        <p><strong>Why Is It Your Legacy?</strong><br>
+                            Your savings community can grow as your friends introduce others to FreeBazar. Like a banyan
+                            tree, your network can expand across generations, creating opportunities for continued community
+                            shopping rewards.
+                        </p>
+
+                        <p><strong>FreeBazar — Spend Smart. Save More. Grow Together. Build a Legacy.</strong></p>
                     </div>
                 </div>
             </div>
@@ -609,5 +637,971 @@
                 </div>
             </div> --}}
         </div>
+    </div>
+
+    <button type="button" class="freebazar-back-to-top" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 14 6-6 6 6M12 8v12" />
+        </svg>
+    </button>
+
+    <style>
+        body:has(#freebazar-home) {
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        body:has(#freebazar-home) > header {
+            position: relative;
+            z-index: 20;
+            padding: .55rem clamp(.5rem, 2vw, 1.5rem) 0;
+        }
+
+        body:has(#freebazar-home) > header .container-fluid {
+            max-width: 1440px;
+        }
+
+        body:has(#freebazar-home) > header .row.py-3.border-bottom {
+            margin: 0;
+            padding: .65rem 1rem !important;
+            align-items: center;
+            border: 1px solid #e1e8ef !important;
+            border-radius: 1.15rem;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 .45rem 1.5rem rgba(23, 32, 51, .08);
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row {
+            gap: .35rem !important;
+        }
+
+        body:has(#freebazar-home) > header .freebazar-landing-nav {
+            background: linear-gradient(110deg, #0f766e 0%, #087f8c 55%, #145da0 100%) !important;
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link {
+            padding: .65rem .9rem;
+            border-radius: 999px;
+            color: #fff !important;
+            transition: color .2s ease, background-color .2s ease;
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link:hover,
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link:focus-visible {
+            background: rgba(255, 255, 255, .16);
+            color: #fff !important;
+        }
+
+        body:has(#freebazar-home) > header .navbar-toggler {
+            border-color: #cbd5e1;
+            border-radius: .75rem;
+        }
+
+        #freebazar-home {
+            --freebazar-ink: #172033;
+            --freebazar-muted: #526174;
+            --freebazar-teal: #087f8c;
+            --freebazar-blue: #145da0;
+            padding: .5rem clamp(.25rem, 1.4vw, 1.25rem) 3rem;
+            color: var(--freebazar-ink);
+        }
+
+        #freebazar-home > .p-2:first-child {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: .6rem !important;
+        }
+
+        #freebazar-home #carouselExampleAutoplaying {
+            overflow: hidden;
+            border: 1px solid rgba(8, 127, 140, .22);
+            border-radius: 1.25rem;
+            background: #079aad;
+            box-shadow: 0 1rem 2.8rem rgba(22, 60, 87, .17);
+        }
+
+        #freebazar-home #carouselExampleAutoplaying .carousel-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: min(52vw, 560px);
+            object-fit: contain;
+        }
+
+        #freebazar-home .carousel-indicators {
+            margin-bottom: .8rem;
+        }
+
+        #freebazar-home .carousel-indicators [data-bs-target] {
+            width: 2rem;
+            height: .22rem;
+            border: 0;
+            border-radius: 2rem;
+            opacity: .65;
+        }
+
+        #freebazar-home .carousel-indicators .active {
+            width: 2.8rem;
+            opacity: 1;
+        }
+
+        #freebazar-home .carousel-control-prev,
+        #freebazar-home .carousel-control-next {
+            width: 8%;
+        }
+
+        #freebazar-home > section.p-2.text-center {
+            max-width: 1240px;
+            margin: .5rem auto 1.5rem;
+        }
+
+        #freebazar-home .freebazar-quick-links {
+            display: none !important;
+        }
+
+        #freebazar-home > section.p-2.text-center > div {
+            padding: .75rem !important;
+            border: 1px solid #e0e8ef;
+            border-radius: 1.25rem !important;
+            background: #fff !important;
+            box-shadow: 0 .5rem 1.8rem rgba(23, 32, 51, .07);
+        }
+
+        #freebazar-home > section.p-2.text-center > div > .row {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: .55rem;
+            margin: 0 !important;
+        }
+
+        #freebazar-home > section.p-2.text-center .row > .col {
+            width: auto;
+            min-width: 0;
+            padding: .4rem .2rem;
+            border-radius: .9rem;
+            transition: background-color .2s ease, transform .2s ease;
+        }
+
+        #freebazar-home > section.p-2.text-center .row > .col:hover {
+            transform: translateY(-3px);
+            background: #f1f8f7;
+        }
+
+        #freebazar-home > section.p-2.text-center .row > .col svg {
+            width: clamp(2.5rem, 5vw, 3.15rem);
+            height: clamp(2.5rem, 5vw, 3.15rem);
+            transition: transform .2s ease;
+        }
+
+        #freebazar-home > section.p-2.text-center .row > .col:hover svg {
+            transform: scale(1.07);
+        }
+
+        #freebazar-home > section.p-2.text-center .row > .col a:last-child {
+            color: #263449 !important;
+        }
+
+        #freebazar-home > .p-3 {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 {
+            padding: 0 !important;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col {
+            min-height: 100%;
+            padding: 1.25rem !important;
+            border-radius: 1.1rem !important;
+            box-shadow: 0 .65rem 1.8rem rgba(23, 32, 51, .1);
+            transition: transform .22s ease, box-shadow .22s ease;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 1rem 2.3rem rgba(23, 32, 51, .16);
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col:nth-child(1) {
+            background: linear-gradient(135deg, #fff3d6, #ffe1a6) !important;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col:nth-child(2) {
+            background: linear-gradient(135deg, #e5f8ee, #bdebd0) !important;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col:nth-child(3) {
+            background: linear-gradient(135deg, #e2f4ff, #b9e7f3) !important;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col h3 {
+            color: #17324d !important;
+            font-size: clamp(1.25rem, 2vw, 1.65rem);
+            font-weight: 800;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col p {
+            color: #263449 !important;
+            line-height: 1.7;
+        }
+
+        #freebazar-home > section:has(.bg-secondary) {
+            padding: .75rem clamp(.75rem, 2vw, 1.5rem);
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative {
+            min-height: 310px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .3);
+            border-radius: 1.4rem;
+            box-shadow: 0 1rem 2.5rem rgba(23, 32, 51, .2);
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative > div[style*="position: absolute"] {
+            background: linear-gradient(90deg, rgba(11, 29, 48, .86), rgba(11, 29, 48, .32)) !important;
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative h2 {
+            font-weight: 800;
+            line-height: 1.12;
+            text-wrap: balance;
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative p {
+            color: #f2f7fb;
+            font-size: 1.05rem;
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative a .btn {
+            border: 0;
+            padding: .8rem 1.4rem;
+            background: #f5a623;
+            color: #172033;
+            font-weight: 800;
+            box-shadow: 0 .35rem .9rem rgba(0, 0, 0, .2);
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative a .btn:hover {
+            background: #ffc65b;
+            transform: translateY(-1px);
+        }
+
+        #freebazar-home > section.py-5 {
+            padding: 2rem clamp(.75rem, 2vw, 1.5rem) !important;
+        }
+
+        #freebazar-home > section.py-5 .row {
+            row-gap: .75rem;
+        }
+
+        #freebazar-home > section.py-5 .card {
+            height: calc(100% - 1rem);
+            border: 1px solid #e1e8ef !important;
+            border-radius: 1rem;
+            background: #fff;
+            box-shadow: 0 .45rem 1.2rem rgba(23, 32, 51, .06);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        #freebazar-home > section.py-5 .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 .9rem 1.8rem rgba(23, 32, 51, .12);
+        }
+
+        #freebazar-home > section.py-5 .card h5 {
+            color: #17324d;
+            font-weight: 750;
+        }
+
+        #freebazar-home > section.py-5 .card p {
+            color: #526174;
+            line-height: 1.65;
+        }
+
+        #freebazar-home > .p-3:has(#accordionExample) {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 1.5rem clamp(.75rem, 2vw, 1.5rem) !important;
+        }
+
+        #freebazar-home #accordionExample {
+            display: grid;
+            gap: .75rem;
+        }
+
+        #freebazar-home #accordionExample .accordion-item {
+            overflow: hidden;
+            border: 1px solid #dce5ed !important;
+            border-radius: .95rem;
+            background: #fff;
+            box-shadow: 0 .3rem 1rem rgba(23, 32, 51, .05);
+        }
+
+        #freebazar-home #accordionExample .accordion-button {
+            min-height: 3.6rem;
+            background: #fff;
+            color: #17324d !important;
+            font-weight: 750 !important;
+            box-shadow: none;
+        }
+
+        #freebazar-home #accordionExample .accordion-button:not(.collapsed) {
+            background: #eaf6f4;
+            color: #075e59 !important;
+        }
+
+        #freebazar-home #accordionExample .accordion-button:focus-visible {
+            outline: 3px solid rgba(8, 127, 140, .35);
+            outline-offset: -3px;
+        }
+
+        #freebazar-home #accordionExample .accordion-body {
+            background: #f8fafc !important;
+            color: #263449 !important;
+            line-height: 1.8;
+        }
+
+        #freebazar-home #accordionExample .accordion-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .freebazar-back-to-top {
+            position: fixed;
+            right: 1.1rem;
+            bottom: 1.1rem;
+            z-index: 1040;
+            display: grid;
+            width: 2.9rem;
+            height: 2.9rem;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: #087f8c;
+            color: #fff;
+            box-shadow: 0 .4rem 1.1rem rgba(23, 32, 51, .24);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(.5rem);
+            transition: opacity .2s ease, transform .2s ease, background-color .2s ease;
+        }
+
+        .freebazar-back-to-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .freebazar-back-to-top:hover {
+            background: #075e68;
+        }
+
+        .freebazar-back-to-top svg {
+            width: 1.25rem;
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+        }
+
+        #freebazar-home [data-reveal] {
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: opacity .55s ease, transform .55s ease;
+        }
+
+        #freebazar-home [data-reveal].is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 767.98px) {
+            body:has(#freebazar-home) > header {
+                padding-inline: .5rem;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom {
+                padding: .45rem .65rem !important;
+                border-radius: .9rem;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 img {
+                max-width: 190px;
+                max-height: 58px;
+                object-fit: contain;
+            }
+
+            #freebazar-home #carouselExampleAutoplaying {
+                border-radius: .9rem;
+            }
+
+            #freebazar-home #carouselExampleAutoplaying .carousel-item img {
+                max-height: none;
+            }
+
+            #freebazar-home > section.p-2.text-center > div {
+                padding: .55rem !important;
+            }
+
+            #freebazar-home > section.p-2.text-center > div > .row {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: .35rem;
+            }
+
+            #freebazar-home > section.p-2.text-center .row > .col {
+                padding: .55rem .2rem;
+            }
+
+            #freebazar-home > .p-3 > .row.row-cols-lg-3 {
+                row-gap: .8rem;
+            }
+
+            #freebazar-home .bg-secondary.text-light.position-relative {
+                min-height: 270px;
+                margin-block: 1rem !important;
+                background-position: 62% center !important;
+            }
+
+            #freebazar-home .bg-secondary.text-light.position-relative > div[style*="position: absolute"] {
+                background: rgba(11, 29, 48, .69) !important;
+            }
+        }
+
+        @media (max-width: 420px) {
+            #freebazar-home > section.p-2.text-center .row > .col svg {
+                width: 2.25rem;
+                height: 2.25rem;
+            }
+
+            #freebazar-home > section.p-2.text-center .row > .col span {
+                font-size: 12px !important;
+            }
+
+            .freebazar-back-to-top {
+                right: .75rem;
+                bottom: .75rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #freebazar-home *,
+            .freebazar-back-to-top {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+
+            #freebazar-home [data-reveal] {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const backToTop = document.querySelector('.freebazar-back-to-top');
+            const revealItems = document.querySelectorAll(
+                '#freebazar-home > section, #freebazar-home > .p-3 > .row > .col, #freebazar-home .card'
+            );
+
+            revealItems.forEach(function (item) {
+                item.setAttribute('data-reveal', '');
+            });
+
+            if ('IntersectionObserver' in window) {
+                const revealObserver = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+
+                revealItems.forEach(function (item) {
+                    revealObserver.observe(item);
+                });
+            } else {
+                revealItems.forEach(function (item) {
+                    item.classList.add('is-visible');
+                });
+            }
+
+            function updateBackToTop() {
+                backToTop.classList.toggle('is-visible', window.scrollY > 500);
+            }
+
+            window.addEventListener('scroll', updateBackToTop, { passive: true });
+            updateBackToTop();
+
+            backToTop.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+    <style>
+        body:has(#freebazar-home) {
+            overflow-x: clip;
+            background:
+                radial-gradient(ellipse at 8% 12%, rgba(8, 127, 140, .055), transparent 28rem),
+                #f5f8fb;
+            color: #172033;
+            font-family: "Nunito", "Open Sans", sans-serif;
+            line-height: 1.65;
+        }
+
+        body:has(#freebazar-home) > header {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: .5rem clamp(.5rem, 2vw, 1.5rem);
+            background: rgba(245, 248, 251, .92);
+            backdrop-filter: blur(14px);
+        }
+
+        body:has(#freebazar-home) > header .container-fluid {
+            max-width: 1320px;
+            padding-inline: 0;
+        }
+
+        body:has(#freebazar-home) > header .row.py-3.border-bottom {
+            min-height: 76px;
+            padding: .5rem 1rem !important;
+            border: 1px solid #e0e8ef !important;
+            border-radius: 1rem;
+            background: #fff;
+            box-shadow: 0 .3rem 1.2rem rgba(23, 32, 51, .06);
+        }
+
+        body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 img {
+            width: auto;
+            max-width: 210px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        body:has(#freebazar-home) > header .freebazar-landing-nav {
+            width: auto;
+            min-width: 250px;
+            padding: .2rem .55rem;
+            border-radius: 999px !important;
+            box-shadow: 0 .35rem .8rem rgba(8, 70, 105, .15);
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row {
+            justify-content: flex-end !important;
+            gap: .2rem !important;
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link {
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: .55rem 1rem;
+            border: 1px solid transparent;
+            font-size: .88rem;
+            font-weight: 750;
+            letter-spacing: .015em;
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .freebazar-nav-register {
+            border-color: rgba(255, 255, 255, .7);
+            background: #fff;
+            color: #075e59 !important;
+        }
+
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .freebazar-nav-register:hover,
+        body:has(#freebazar-home) > header .navbar-nav.flex-row .freebazar-nav-register:focus-visible {
+            background: #e8f5f2;
+            color: #064b47 !important;
+        }
+
+        body:has(#freebazar-home) > header .navbar-toggler {
+            display: none;
+        }
+
+        #freebazar-home {
+            padding: .4rem clamp(.5rem, 2vw, 1.4rem) 4rem;
+            color: #172033;
+        }
+
+        #freebazar-home > .p-2:first-child {
+            max-width: 1320px;
+            padding: .65rem 0 !important;
+        }
+
+        #freebazar-home #carouselExampleAutoplaying {
+            border-color: #d3e1ea;
+            border-radius: 1.25rem;
+            background: linear-gradient(120deg, #e7f5f7, #f5fafb);
+            box-shadow: 0 1rem 2.5rem rgba(23, 32, 51, .12);
+        }
+
+        #freebazar-home #carouselExampleAutoplaying .carousel-item img {
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+        }
+
+        #freebazar-home .carousel-control-prev,
+        #freebazar-home .carousel-control-next {
+            opacity: .82;
+        }
+
+        #freebazar-home .carousel-control-prev-icon,
+        #freebazar-home .carousel-control-next-icon {
+            width: 2.75rem;
+            height: 2.75rem;
+            border: 1px solid rgba(255, 255, 255, .45);
+            border-radius: 50%;
+            background-color: rgba(16, 35, 53, .52);
+            background-size: 45%;
+            backdrop-filter: blur(5px);
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 {
+            width: auto;
+            margin: 0;
+            padding: 0 !important;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            min-height: 100%;
+            padding: clamp(1.2rem, 2vw, 1.65rem) !important;
+            border: 1px solid rgba(23, 32, 51, .06);
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col h2,
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col h3 {
+            margin-bottom: .45rem;
+            color: #17324d !important;
+            font-size: clamp(1.25rem, 2vw, 1.55rem);
+            font-weight: 850;
+            line-height: 1.2;
+        }
+
+        #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col p {
+            margin-bottom: 0;
+            color: #263449 !important;
+            line-height: 1.7;
+        }
+
+        #freebazar-home > section:has(.bg-secondary) {
+            padding-inline: 0;
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative {
+            max-width: 1280px;
+            margin-inline: auto;
+            min-height: 340px;
+            border: 1px solid rgba(255, 255, 255, .55);
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative .container {
+            width: 100%;
+            max-width: 1180px;
+        }
+
+        #freebazar-home .bg-secondary.text-light.position-relative .section-title {
+            max-width: 13ch;
+            font-size: clamp(2rem, 4.4vw, 3.55rem);
+            line-height: 1.08;
+            letter-spacing: -.035em;
+        }
+
+        #freebazar-home > section.py-5 {
+            padding-block: 3.25rem !important;
+        }
+
+        #freebazar-home > section.py-5 .container-lg {
+            max-width: 1320px;
+        }
+
+        #freebazar-home > section.py-5 .card {
+            padding: 1.35rem !important;
+        }
+
+        #freebazar-home > section.py-5 .card .text-dark {
+            display: inline-grid;
+            width: 3rem;
+            height: 3rem;
+            place-items: center;
+            border-radius: .8rem;
+            background: #eaf6f4;
+            color: #087f8c !important;
+        }
+
+        #freebazar-home > section.py-5 .card h5 {
+            margin-bottom: .65rem;
+            font-size: 1.08rem;
+        }
+
+        #freebazar-home > section.py-5 .card p {
+            margin-bottom: 0;
+            font-size: .94rem;
+        }
+
+        #freebazar-home > .p-3:has(#accordionExample) {
+            max-width: 1120px;
+            padding-top: 2rem !important;
+        }
+
+        #freebazar-home #accordionExample .accordion-button {
+            padding: 1.1rem 1.25rem;
+            font-size: 1.03rem;
+        }
+
+        #freebazar-home #accordionExample .accordion-body {
+            padding: 1.25rem 1.5rem;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer {
+            padding-block: 3.25rem 2.5rem !important;
+            background:
+                radial-gradient(ellipse at 85% 0%, rgba(49, 154, 155, .16), transparent 28rem),
+                linear-gradient(145deg, #142b3d, #102638);
+            color: #e5edf3;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .container-lg {
+            max-width: 1280px;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .container-lg > .row {
+            row-gap: 2.25rem;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .footer-menu {
+            height: 100%;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .footer-menu img {
+            max-width: min(100%, 220px);
+            height: auto;
+            padding: .55rem;
+            border-radius: .75rem;
+            background: #fff;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .widget-title {
+            position: relative;
+            margin-bottom: 1rem;
+            padding-bottom: .7rem;
+            color: #fff;
+            font-weight: 750;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .widget-title::after {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 2rem;
+            height: 2px;
+            border-radius: 2px;
+            background: #48c2b0;
+            content: "";
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer p,
+        body:has(#freebazar-home) .freebazar-site-footer .nav-link {
+            color: #cfdae3 !important;
+            line-height: 1.8;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer p {
+            max-width: 34ch;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer p a {
+            color: #cfdae3;
+            text-decoration-color: rgba(207, 218, 227, .45);
+            text-underline-offset: .2em;
+            transition: color .2s ease;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer p a:hover {
+            color: #fff;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .nav-link {
+            width: fit-content;
+            padding: .15rem 0;
+            transition: color .2s ease, transform .2s ease;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .nav-link:hover {
+            transform: translateX(3px);
+            color: #fff !important;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .social-links .btn {
+            display: grid;
+            width: 2.5rem;
+            height: 2.5rem;
+            place-items: center;
+            padding: 0;
+            border-color: rgba(255, 255, 255, .25);
+            color: #e5edf3;
+        }
+
+        body:has(#freebazar-home) .freebazar-site-footer .social-links .btn:hover {
+            border-color: #fff;
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        body:has(#freebazar-home) #footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .12);
+            background: #0d2130;
+        }
+
+        body:has(#freebazar-home) #footer-bottom .copyright {
+            padding-block: .9rem .35rem;
+        }
+
+        body:has(#freebazar-home) #footer-bottom p {
+            margin-bottom: 0;
+            color: #cfdae3;
+            font-size: .9rem;
+            letter-spacing: .015em;
+        }
+
+        @media (min-width: 768px) {
+            body:has(#freebazar-home) > header .row.py-3.border-bottom {
+                justify-content: space-between;
+            }
+
+            #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col {
+                border-radius: 1rem !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            body:has(#freebazar-home) > header {
+                padding: .4rem .6rem;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom {
+                min-height: 64px;
+            }
+
+            body:has(#freebazar-home) > header .freebazar-landing-nav {
+                min-width: 0;
+                padding: .15rem;
+            }
+
+            body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link {
+                min-height: 36px;
+                padding: .4rem .75rem;
+                font-size: .8rem;
+            }
+
+            #freebazar-home {
+                padding: .25rem .7rem 2.75rem;
+            }
+
+            #freebazar-home > .p-2:first-child {
+                padding-top: .4rem !important;
+            }
+
+            #freebazar-home .bg-secondary.text-light.position-relative {
+                min-height: 290px;
+                border-radius: 1rem;
+            }
+
+            #freebazar-home > section.py-5 {
+                padding-block: 1.8rem !important;
+            }
+
+            #freebazar-home > .p-3:has(#accordionExample) {
+                padding-top: .8rem !important;
+            }
+
+            body:has(#freebazar-home) .freebazar-site-footer {
+                padding-block: 2.25rem 1.5rem !important;
+            }
+
+            body:has(#freebazar-home) .freebazar-site-footer .container-lg > .row {
+                row-gap: 1.75rem;
+            }
+
+            body:has(#freebazar-home) .freebazar-site-footer .footer-menu {
+                padding-left: .85rem;
+                border-left: 2px solid rgba(72, 194, 176, .4);
+            }
+
+            body:has(#freebazar-home) .freebazar-site-footer .footer-menu:has(> img) {
+                padding-left: 0;
+                border-left: 0;
+            }
+
+            body:has(#freebazar-home) #footer-bottom .copyright {
+                padding-block: .85rem .35rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 {
+                width: auto;
+                justify-content: flex-start;
+                gap: .4rem !important;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 img {
+                max-width: 155px;
+                max-height: 48px;
+            }
+
+            body:has(#freebazar-home) > header .navbar-toggler {
+                display: inline-flex;
+                padding: .35rem;
+            }
+
+            body:has(#freebazar-home) > header .freebazar-landing-nav {
+                min-width: 0;
+                margin-left: auto;
+            }
+
+            body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link {
+                min-height: 34px;
+                padding: .3rem .55rem;
+                font-size: .72rem;
+            }
+
+            #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col {
+                padding: 1.1rem !important;
+            }
+
+            #freebazar-home .bg-secondary.text-light.position-relative {
+                min-height: 260px;
+            }
+
+            #freebazar-home .bg-secondary.text-light.position-relative .section-title {
+                font-size: clamp(1.8rem, 9vw, 2.5rem);
+            }
+
+            #freebazar-home #accordionExample .accordion-body {
+                padding: 1rem;
+            }
+
+            .freebazar-back-to-top {
+                bottom: max(.75rem, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
     </div>
 @endsection

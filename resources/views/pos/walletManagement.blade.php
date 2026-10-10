@@ -56,7 +56,7 @@
 
 @section('content')
     <div style="margin-top: 15px;">
-        <h4><b>Wallet Manage</b></h4>
+        <h4><b>Manage User Wallet</b></h4>
         <hr>
     </div>
 
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <h3 class="mt-4 text-primary">WALLET INFO FOR <span class="text-danger">{{ $user->name }}</span></h3>
-                <h4 class="mt-3 mb-4"><b>MANAGE WALLET</b></h4>
+                <h4 class="mt-3 mb-4"><b>MANAGE USER WALLET</b></h4>
                 <form action="{{ route('pos.dsr.list') }}" method="post">
                     @csrf
                     <input type="hidden" name="user_id" value="{{ $user->id }}">

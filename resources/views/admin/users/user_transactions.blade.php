@@ -2,18 +2,27 @@
 
 @section('content')
     <style>
-        #utrans-tbl thead th {
-            position: sticky;
-            top: 0;
-            background-color: #000;
-            color: #fff;
-            z-index: 10;
-        }
-
-        .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
-        }
+        .all-user-transactions { max-width: 1600px; margin: 1.25rem auto; padding: 0 1rem 2rem; }
+        .all-user-transactions__hero { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.15rem; padding:1.45rem 1.65rem; border:1px solid #d7e7f6; border-radius:20px; background:linear-gradient(120deg,#123b72,#1769aa 68%,#2783bd); color:#fff; box-shadow:0 14px 32px rgba(18,59,114,.14); }
+        .all-user-transactions__eyebrow { display:inline-flex; align-items:center; gap:.45rem; color:#c6e4ff; font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        .all-user-transactions__hero h1 { margin:.35rem 0 .2rem; color:#fff; font-size:clamp(1.5rem,2.6vw,2rem); font-weight:850; }
+        .all-user-transactions__hero p { margin:0; color:rgba(255,255,255,.78); font-size:.88rem; }
+        .all-user-transactions__hero-icon { display:grid; width:58px; height:58px; flex:0 0 58px; place-items:center; border:1px solid rgba(255,255,255,.2); border-radius:17px; background:rgba(255,255,255,.12); color:#fff; font-size:1.35rem; }
+        .all-user-transactions__toolbar { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1rem; padding:1.1rem 1.2rem; border:1px solid #e0e8f1; border-radius:16px; background:#fff; box-shadow:0 8px 22px rgba(19,48,79,.055); }
+        .all-user-transactions__filters { display:flex; flex:1 1 auto; align-items:flex-end; gap:.75rem; }
+        .all-user-transactions__field { min-width:150px; }
+        .all-user-transactions__field label { display:block; margin-bottom:.35rem; color:#52657a; font-size:.76rem; font-weight:750; }
+        .all-user-transactions__field input { min-height:42px; border-color:#d9e3ed; border-radius:9px; }
+        .all-user-transactions__filters .btn,.all-user-transactions__export .btn { min-height:42px; border-radius:9px; font-size:.82rem; font-weight:750; }
+        .all-user-transactions__export .btn { min-width:130px; border-color:#1769aa; background:#1769aa; color:#fff; }
+        .all-user-transactions__export .btn:hover { border-color:#123b72; background:#123b72; }
+        .all-user-transactions__table-card { overflow:hidden; border:1px solid #e0e8f1; border-radius:16px; background:#fff; box-shadow:0 8px 22px rgba(19,48,79,.055); }
+        .user-transactions-table-wrap { max-height:620px; overflow:auto; }
+        #utrans-tbl { min-width:1100px; margin:0; }
+        #utrans-tbl thead th { position:sticky; top:0; z-index:2; padding:.85rem .75rem; border:0; background:#123b72; color:#fff; font-size:.7rem; font-weight:800; letter-spacing:.04em; white-space:nowrap; }
+        #utrans-tbl tbody td { padding:.78rem .75rem; border-color:#edf1f6; color:#40546a; font-size:.81rem; vertical-align:middle; white-space:nowrap; }
+        #utrans-tbl tbody tr:nth-child(even) { background:#f8fbff; }
+        #utrans-tbl tbody tr:hover { background:#eef6ff; }
 
         .pagination-wrapper {
             display: flex;
@@ -21,8 +30,9 @@
             justify-content: flex-end;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 1rem;
-            padding: 0.5rem 0;
+            margin: 0;
+            padding: 1rem 1.2rem;
+            border-top: 1px solid #edf1f6;
         }
 
         .pagination-info {
@@ -42,7 +52,7 @@
             min-width: 36px;
             height: 36px;
             padding: 0 10px;
-            border: 1.5px solid #dee2e6;
+            border: 1px solid #d9e3ed;
             border-radius: 8px;
             background: #fff;
             color: #495057;
@@ -56,18 +66,18 @@
         }
 
         .pagination-btn:hover:not(.disabled):not(.active) {
-            background: #f0f4ff;
-            border-color: #4f46e5;
-            color: #4f46e5;
+            background: #eff6ff;
+            border-color: #1769aa;
+            color: #1769aa;
             transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 2px 6px rgba(23, 105, 170, 0.15);
         }
 
         .pagination-btn.active {
-            background: #4f46e5;
-            border-color: #4f46e5;
+            background: #1769aa;
+            border-color: #1769aa;
             color: #fff;
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 2px 8px rgba(23, 105, 170, 0.25);
             cursor: default;
         }
 
@@ -95,6 +105,13 @@
 
         /* Mobile responsive */
         @media (max-width: 576px) {
+            .all-user-transactions { margin:.5rem auto; padding:0 .65rem 1rem; }
+            .all-user-transactions__hero { padding:1.1rem; }
+            .all-user-transactions__hero-icon { display:none; }
+            .all-user-transactions__toolbar { align-items:stretch; flex-direction:column; padding:.9rem; }
+            .all-user-transactions__filters { align-items:stretch; flex-direction:column; }
+            .all-user-transactions__field { min-width:0; }
+            .all-user-transactions__filters .btn,.all-user-transactions__export .btn { width:100%; }
             .pagination-wrapper {
                 justify-content: center;
             }
@@ -116,71 +133,36 @@
             }
         }
     </style>
-    <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">User Transactions</b></h3>
-
-        <div class="row g-3 mb-3">
-            {{-- Filters --}}
-            <div class="col-12 col-md-6">
-                <form id="trans-form">
-                    @csrf
-                    <label class="form-label small text-muted mb-1">Filter Records</label>
-                    <div class="row g-2">
-                        <div class="col-6 col-sm-4 col-md-4">
-                            <input required id="start_date" name="start_date" class="form-select form-select-sm w-100"
-                                type="date">
-                            </input>
-                        </div>
-                        <div class="col-6 col-sm-4 col-md-4">
-                            <input required id="end_date" name="end_date" class="form-select form-select-sm w-100"
-                                type="date">
-                            </input>
-                        </div>
-
-                        {{-- <div class="col-6 col-sm-3 col-md-3">
-                            <select name="type" id="trans_type" class="form-select form-select-sm w-100">
-                                <option value="all">All Types</option>
-                                <option value="credit">Credit</option>
-                                <option value="debit">Debit</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-sm-3 col-md-3">
-                            <select name="pay_by" id="pay_by" class="form-select form-select-sm w-100">
-                                <option value=null>Select</option>
-                                <option value="wallet">Wallet</option>
-                                <option value="reward">Reward</option>
-                            </select>
-                        </div> --}}
-
-                        <div class="col-6 col-sm-2 col-md-2 d-flex gap-1">
-                            <button type="submit" class="btn btn-primary btn-sm fw-semibold flex-fill">
-                                <i class="bi bi-funnel me-1"></i> FILTER
-                            </button>
-                        </div>
-
-                        {{-- <div class="col-12 col-sm-auto">
-                                <a href="" class="btn btn-outline-secondary btn-sm w-100">
-                                    <i class="bi bi-x-circle me-1"></i> RESET
-                                </a>
-                            </div> --}}
-
-                    </div>
-                </form>
+    <main class="all-user-transactions">
+        <header class="all-user-transactions__hero">
+            <div>
+                <span class="all-user-transactions__eyebrow"><i class="fas fa-chart-line" aria-hidden="true"></i> Account reports</span>
+                <h1>All User Transactions</h1>
+                <p>Review customer payment and wallet activity across the platform.</p>
             </div>
+            <span class="all-user-transactions__hero-icon" aria-hidden="true"><i class="fas fa-receipt"></i></span>
+        </header>
 
-            {{-- Export --}}
-            <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
-                <form method="POST" action="{{ route('admin.all.users.transactions.export') }}" class="w-100">
-                    @csrf
-                    <input id="hidden_start_date" type="hidden" name="from_date" value="{{ request()->start_date }}">
-                    <input id="hidden_end_date" type="hidden" name="to_date" value="{{ request()->end_date }}">
-                    <button class="btn btn-danger btn-sm fw-semibold w-100" type="submit">
-                        <i class="bi bi-download me-1"></i> EXPORT
-                    </button>
-                </form>
-            </div>
-        </div>
-        <hr class="my-4">
+        <section class="all-user-transactions__toolbar">
+            <form id="trans-form" class="all-user-transactions__filters">
+                @csrf
+                <div class="all-user-transactions__field">
+                    <label for="start_date">From date</label>
+                    <input required id="start_date" name="start_date" class="form-control" type="date">
+                </div>
+                <div class="all-user-transactions__field">
+                    <label for="end_date">To date</label>
+                    <input required id="end_date" name="end_date" class="form-control" type="date">
+                </div>
+                <button type="submit" class="btn btn-primary px-3"><i class="bi bi-funnel me-1"></i> Filter</button>
+            </form>
+            <form method="POST" action="{{ route('admin.all.users.transactions.export') }}" class="all-user-transactions__export">
+                @csrf
+                <input id="hidden_start_date" type="hidden" name="from_date" value="{{ request()->start_date }}">
+                <input id="hidden_end_date" type="hidden" name="to_date" value="{{ request()->end_date }}">
+                <button class="btn" type="submit"><i class="bi bi-download me-1"></i> Export</button>
+            </form>
+        </section>
 
         <!-- Data Table -->
         <div class="table-responsive">
@@ -214,6 +196,13 @@
 
     <script>
         $(document).ready(function() {
+            const scrollList = window.FreebazarScrollList.mount(
+                document.getElementById('pagination-container'),
+                function(page) {
+                    return transactionsLoad(page, $('#trans-form')[0], true);
+                }
+            );
+
             $('#start_date').on('change', function() {
                 $('#hidden_start_date').val(this.value);
             });
@@ -222,12 +211,12 @@
                 $('#hidden_end_date').val(this.value);
             });
             // Initial load
-            transactionsLoad(1);
+            transactionsLoad(1, $('#trans-form')[0]);
 
-            function transactionsLoad(page = 1, formElement) {
-                let formData = new FormData(formElement)
+            function transactionsLoad(page = 1, formElement, append = false) {
+                let formData = new FormData(formElement || document.createElement('form'));
                 formData.append('page', page);
-                $.ajax({
+                return $.ajax({
                     url: "{{ route('admin.all.users.transactions') }}",
                     type: "POST",
                     data: formData,
@@ -242,8 +231,6 @@
                         let index = response.data.from ?? 1;
 
                         if (response.data.data.length > 0) {
-                            const pagination = response.data;
-                            let paginationHtml = '';
                             response.data.data.forEach(function(item) {
 
                                 rows += `
@@ -263,11 +250,9 @@
                                         </tr>
                                     `;
                             });
-                            $('#pagination-container').html(buildPagination(pagination));
-
                         } else {
 
-                            rows = `
+                            rows = append ? '' : `
                                     <tr>
                                         <td colspan="8" class="text-center">
                                             No data found
@@ -275,14 +260,18 @@
                                     </tr>
                                 `;
 
-                            $('#pagination-container').html('');
-                            $('#pagination-link').html('');
                         }
 
-                        $('#wlt-tbl-bdy').html(rows);
+                        if (append) {
+                            $('#wlt-tbl-bdy').append(rows);
+                        } else {
+                            $('#wlt-tbl-bdy').html(rows);
+                        }
 
-                        // Pagination HTML
-                        $('#pagination-link').html(response.pagination);
+                        scrollList.update(
+                            response.data.current_page ?? page,
+                            response.data.last_page ?? page
+                        );
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
@@ -294,89 +283,10 @@
             // Filter submit
             $('#trans-form').on('submit', function(e) {
                 e.preventDefault();
+                scrollList.reset();
                 transactionsLoad(1, this);
             });
 
-            // Pagination click
-            $(document).on('click', '.pagination-btn', function() {
-                const page = $(this).data('page');
-                transactionsLoad(page, $('#srch-form')[0]); // Reuse the same form
-            });
-
-            function buildPagination(pagination) {
-                const {
-                    current_page,
-                    last_page
-                } = pagination;
-                let paginationHtml = '';
-
-                const maxVisible = 5; // Max page buttons to show
-                let startPage = Math.max(1, current_page - Math.floor(maxVisible / 2));
-                let endPage = Math.min(last_page, startPage + maxVisible - 1);
-
-                // Adjust start if end hits the limit
-                if (endPage - startPage < maxVisible - 1) {
-                    startPage = Math.max(1, endPage - maxVisible + 1);
-                }
-
-                // First + Ellipsis
-                if (startPage > 1) {
-                    paginationHtml += pageBtn(1, current_page);
-                    if (startPage > 2) {
-                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
-                    }
-                }
-
-                // Page Numbers
-                for (let i = startPage; i <= endPage; i++) {
-                    paginationHtml += pageBtn(i, current_page);
-                }
-
-                // Ellipsis + Last
-                if (endPage < last_page) {
-                    if (endPage < last_page - 1) {
-                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
-                    }
-                    paginationHtml += pageBtn(last_page, current_page);
-                }
-
-                // Wrap with Prev/Next
-                const prevBtn = current_page > 1 ?
-                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page - 1}" title="Previous">
-                    <i class="fas fa-chevron-left"></i>
-                    </button>` :
-                    `<button class="pagination-btn nav-btn disabled" disabled title="Previous">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>`;
-
-                const nextBtn = current_page < last_page ?
-                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page + 1}" title="Next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>` :
-                    `<button class="pagination-btn nav-btn disabled" disabled title="Next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>`;
-
-                return `
-                    <div class="pagination-info">
-                        Page <strong>${current_page}</strong> of <strong>${last_page}</strong>
-                    </div>
-                    <div class="pagination-buttons">
-                        ${prevBtn}
-                        ${paginationHtml}
-                        ${nextBtn}
-                    </div>
-                `;
-            }
-
-            function pageBtn(i, current) {
-                const isActive = i === current;
-                return `<button 
-                class="pagination-btn ${isActive ? 'active' : ''}" 
-                data-page="${i}"
-                ${isActive ? 'aria-current="page"' : ''}
-            >${i}</button>`;
-            }
         });
     </script>
 @endsection

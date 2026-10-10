@@ -53,7 +53,7 @@ class LoginController extends Controller
             if ($admin) {
                 $credentials = ['email' => $request->mobile_or_user_id, 'password' => $request->password];
                 if (Auth::attempt($credentials)) {
-                    return redirect('admin')->with('success', 'Admin Login successfully');
+                    return redirect('admin');
                 } else {
                     return redirect()->back()->with('error', 'Invalid Admin Credentials');
                 }
@@ -85,9 +85,9 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = auth()->user();
             if ($user->role == 4) {
-                return redirect('pos')->with('success', 'POS Login successfully');
+                return redirect('pos');
             } elseif ($user->role == 3) {
-                return redirect('user')->with('success', 'Customer Login successfully');
+                return redirect('user');
             }
             Auth::logout();
             return redirect()->back()->with('error', 'Unauthorized access for this login method.');

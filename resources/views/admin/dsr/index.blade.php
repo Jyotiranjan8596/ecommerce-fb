@@ -2,348 +2,171 @@
 
 @section('content')
     <style>
-        .section-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #6c757d;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .stats-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 0.5px solid #dee2e6;
-            padding: 1rem 1.25rem;
-            height: 100%;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding: 0.5rem 0;
-            border-bottom: 0.5px solid #dee2e6;
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .stat-item:first-child {
-            padding-top: 0;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .stat-value {
-            font-size: 15px;
-            font-weight: 500;
-            color: #212529;
-        }
-
-        .date-card {
-            background: #fff;
-            border: 0.5px solid #dee2e6;
-            border-radius: 10px;
-            padding: 1rem 1.25rem;
-        }
-
-        #dsr-tbl thead th {
-            position: sticky;
-            top: 0;
-            background-color: #000;
-            color: #fff;
-            z-index: 10;
-        }
-
-        .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
+        .admin-dsr-page { max-width: 1500px; margin: 0 auto; padding: 1.25rem clamp(.75rem, 2vw, 1.5rem) 2.5rem; color: #172b4d; }
+        .admin-dsr-hero { position: relative; overflow: hidden; margin-bottom: 1.25rem; padding: clamp(1.4rem, 3vw, 2.2rem); border-radius: 24px; color: #fff; background: linear-gradient(120deg, #123b72, #1769aa 62%, #2387bf); box-shadow: 0 16px 34px rgba(18, 59, 114, .18); }
+        .admin-dsr-hero::after { position: absolute; right: -3rem; bottom: -8rem; width: 19rem; height: 19rem; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; box-shadow: 0 0 0 2rem rgba(255,255,255,.035), 0 0 0 4rem rgba(255,255,255,.025); }
+        .admin-dsr-hero > * { position: relative; z-index: 1; }
+        .admin-dsr-eyebrow { color: #c8e6ff; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        .admin-dsr-hero h1 { margin: .35rem 0 .45rem; color: #fff; font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 800; }
+        .admin-dsr-hero p { max-width: 650px; margin: 0; color: rgba(255,255,255,.82); }
+        .admin-dsr-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+        .admin-dsr-stat, .admin-dsr-panel { min-width: 0; border: 1px solid #e6edf5; border-radius: 18px; background: #fff; box-shadow: 0 8px 24px rgba(24,54,91,.06); }
+        .admin-dsr-stat { padding: 1.1rem 1.25rem; }
+        .admin-dsr-stat span { display: block; color: #718198; font-size: .78rem; font-weight: 700; }
+        .admin-dsr-stat strong { display: block; margin-top: .35rem; color: #153e75; font-size: clamp(1.35rem, 2.5vw, 1.85rem); font-weight: 800; overflow-wrap: anywhere; }
+        .admin-dsr-panel { margin-bottom: 1.25rem; padding: clamp(1rem, 2vw, 1.4rem); }
+        .admin-dsr-panel-heading { margin-bottom: 1rem; }
+        .admin-dsr-panel-heading h2 { margin: 0; color: #19385e; font-size: 1.05rem; font-weight: 800; }
+        .admin-dsr-panel-heading p { margin: .25rem 0 0; color: #718198; font-size: .86rem; }
+        .admin-dsr-controls { display: grid; grid-template-columns: minmax(220px, 1.4fr) repeat(2, minmax(145px, .75fr)) auto auto; gap: .75rem; align-items: end; }
+        .admin-dsr-controls label, .admin-dsr-upload label { display: block; margin-bottom: .35rem; color: #52657e; font-size: .76rem; font-weight: 750; }
+        .admin-dsr-controls .form-control, .admin-dsr-upload .form-control { min-height: 42px; border-color: #dce5ef; border-radius: 10px; }
+        .admin-dsr-controls .btn, .admin-dsr-actions .btn { min-height: 42px; border-radius: 10px; font-weight: 700; }
+        .admin-dsr-actions { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #edf1f6; }
+        .admin-dsr-upload { display: flex; align-items: end; gap: .6rem; flex: 1 1 420px; }
+        .admin-dsr-upload > div { flex: 1; min-width: 180px; }
+        .admin-dsr-export { flex: 0 0 auto; }
+        .admin-dsr-table-wrap { overflow: auto; border: 1px solid #e6edf5; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(24,54,91,.06); }
+        .admin-dsr-table { min-width: 760px; margin: 0; }
+        .admin-dsr-table thead th { padding: .9rem 1rem; border: 0; background: #f3f7fb; color: #60738d; font-size: .69rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+        .admin-dsr-table tbody td { padding: .9rem 1rem; border-color: #edf1f6; color: #344761; vertical-align: middle; }
+        .admin-dsr-table tbody tr:hover { background: #f8fbff; }
+        .admin-dsr-amount { color: #153e75 !important; font-weight: 800; }
+        .admin-dsr-pos { color: #183f73; font-weight: 750; }
+        .admin-dsr-detail { border-radius: 9px; font-weight: 700; white-space: nowrap; }
+        .admin-dsr-empty { padding: 2.5rem 1rem !important; color: #728198 !important; text-align: center; }
+        .admin-dsr-pagination { display: flex; justify-content: center; margin-top: 1rem; }
+        @media (max-width: 900px) { .admin-dsr-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-dsr-search { grid-column: 1 / -1; } }
+        @media (max-width: 600px) {
+            .admin-dsr-page { padding: .75rem .5rem 1.5rem; }
+            .admin-dsr-stats { grid-template-columns: 1fr; gap: .65rem; }
+            .admin-dsr-stat { padding: .9rem 1rem; }
+            .admin-dsr-controls { grid-template-columns: 1fr; }
+            .admin-dsr-search { grid-column: auto; }
+            .admin-dsr-actions, .admin-dsr-upload { align-items: stretch; flex-direction: column; }
+            .admin-dsr-upload > div { min-width: 0; }
+            .admin-dsr-upload .btn, .admin-dsr-export, .admin-dsr-export .btn { width: 100%; }
+            .admin-dsr-table-wrap { overflow: visible; border: 0; background: transparent; box-shadow: none; }
+            .admin-dsr-table { display: block; min-width: 0; }
+            .admin-dsr-table thead { display: none; }
+            .admin-dsr-table tbody { display: grid; gap: .75rem; }
+            .admin-dsr-table tbody tr { display: block; overflow: hidden; border: 1px solid #e6edf5; border-radius: 14px; background: #fff; box-shadow: 0 6px 18px rgba(24,54,91,.06); }
+            .admin-dsr-table tbody td { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem .85rem; border-color: #edf1f6; text-align: right; white-space: normal; }
+            .admin-dsr-table tbody td::before { flex: 0 0 auto; color: #718198; content: attr(data-label); font-size: .7rem; font-weight: 800; text-align: left; text-transform: uppercase; }
+            .admin-dsr-table tbody td:last-child { border-bottom: 0; }
+            .admin-dsr-table .admin-dsr-empty { display: block; text-align: center; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">DAILY SALES REPORT</b></h3>
+    <div class="admin-dsr-page">
+        <header class="admin-dsr-hero">
+            <span class="admin-dsr-eyebrow">Admin reports</span>
+            <h1>Daily Sales Report</h1>
+            <p>Review POS billing totals and transaction activity. Filter by date or search by POS name and phone number.</p>
+        </header>
 
-
-
-        <div class="row mb-3 align-items-start">
-            <!-- Stats -->
-            <div class="col-md-6 mb-2">
-                <div class="stats-card">
-                    <p class="section-label">Summary of today/selected date</p>
-                    <div class="stat-item">
-                        <span class="stat-label">Total billing</span>
-                        <span class="stat-value">{{ $totalBillingAmount }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Total transactions</span>
-                        <span class="stat-value">{{ $totalTransactions }}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Total active POS</span>
-                        <span class="stat-value">{{ $totalPos }}</span>
-                    </div>
-                </div>
+        @if (session('success'))
+            <div class="alert alert-success" role="status">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger" role="alert">{{ session('error') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">
+                <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
             </div>
+        @endif
 
-            <!-- Date Filter -->
-            <div class="col-md-6 mb-2">
-                <div class="date-card">
-                    <p class="section-label">Date filter</p>
-                    <form method="GET" action="{{ route('admin.dsr') }}">
-                        <label for="start_date"><b>From</b></label>
-                        <input type="date" class="form-control mb-2" name="start_date" id="start_date">
-                        <label for="end_date"><b>To</b></label>
-                        <input type="date" class="form-control mb-2" name="end_date" id="end_date">
-                        <button class="btn btn-info w-100" type="submit">Filter</button>
-                    </form>
-                </div>
+        <section class="admin-dsr-stats" aria-label="Sales report summary">
+            <article class="admin-dsr-stat"><span>Total billing</span><strong>&#8377;{{ number_format((float) $totalBillingAmount, 2) }}</strong></article>
+            <article class="admin-dsr-stat"><span>Total transactions</span><strong>{{ number_format((int) $totalTransactions) }}</strong></article>
+            <article class="admin-dsr-stat"><span>Active POS locations</span><strong>{{ number_format((int) $totalPos) }}</strong></article>
+        </section>
+
+        <section class="admin-dsr-panel" aria-labelledby="admin-dsr-controls-title">
+            <div class="admin-dsr-panel-heading">
+                <h2 id="admin-dsr-controls-title">Filter and manage report</h2>
+                <p>Leave both dates empty to view the default report.</p>
             </div>
-        </div>
-        <div class="row mb-3">
-            <!-- Upload -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Upload</p>
-                <form action="{{ route('admin.dsr.import') }}" method="POST" enctype="multipart/form-data">
+            <form method="GET" action="{{ route('admin.dsr') }}" class="admin-dsr-controls">
+                <div class="admin-dsr-search">
+                    <label for="dsr-search">Search POS</label>
+                    <input type="search" class="form-control" id="dsr-search" name="search"
+                        value="{{ request('search') }}" placeholder="POS name or phone number">
+                </div>
+                <div>
+                    <label for="start_date">From date</label>
+                    <input type="date" class="form-control" name="start_date" id="start_date"
+                        value="{{ request('start_date') }}" max="{{ today()->toDateString() }}">
+                </div>
+                <div>
+                    <label for="end_date">To date</label>
+                    <input type="date" class="form-control" name="end_date" id="end_date"
+                        value="{{ request('end_date') }}" max="{{ today()->toDateString() }}">
+                </div>
+                <button class="btn btn-primary" type="submit">Apply filters</button>
+                <a class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center" href="{{ route('admin.dsr') }}">Reset</a>
+            </form>
+
+            <div class="admin-dsr-actions">
+                <form class="admin-dsr-upload" action="{{ route('admin.dsr.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="input-group">
-                        <input type="file" class="form-control" name="file" accept=".csv">
-                        <button class="btn btn-info" type="submit">Upload DSR</button>
+                    <div>
+                        <label for="dsr-csv">Import DSR data (CSV)</label>
+                        <input type="file" class="form-control" id="dsr-csv" name="file" accept=".csv,text/csv" required>
                     </div>
+                    <button class="btn btn-outline-primary" type="submit">Upload CSV</button>
+                </form>
+                <form class="admin-dsr-export" method="GET" action="{{ route('admin.dsr.export') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                    <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+                    <button class="btn btn-primary" type="submit">Export report</button>
                 </form>
             </div>
+        </section>
 
-            <!-- Search -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Search</p>
-                <form method="GET" action="{{ route('admin.dsr') }}">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="search" placeholder="Search by...">
-                        <button class="btn btn-info" type="submit">Search</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Export -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Export</p>
-                <form method="GET" action="{{ route('admin.dsr.export') }}">
-                    <input type="hidden" name="start_date" value="{{ request()->start_date }}">
-                    <input type="hidden" name="end_date" value="{{ request()->end_date }}">
-                    <button class="btn btn-danger w-100" type="submit">Export</button>
-                </form>
-            </div>
+        <div class="admin-dsr-panel-heading d-flex flex-wrap align-items-end justify-content-between gap-2">
+            <div><h2>Transactions by POS and date</h2><p>{{ $wallets->count() }} rows on this page</p></div>
         </div>
-        <hr class="my-4">
-
-        <!-- Data Table -->
-        <div class="table-responsive">
-            <table class="table table-striped" id="dsr-tbl">
-                <thead>
-                    <tr>
-                        <th>Sl.No</th>
-                        <th>POS ID</th>
-                        {{-- <th>USER ID</th> --}}
-                        <th>NAME</th>
-                        <th>MOBILE</th>
-                        <th>BILLING AMOUNT</th>
-                        <th>Transactions</th>
-                        <th>TRANSACTION DATE</th>
-                        <th>Action</th>
-                        {{-- <th>INSERT DATE</th> --}}
-                    </tr>
-                </thead>
+        <div class="admin-dsr-table-wrap">
+            <table class="table table-hover align-middle admin-dsr-table" id="dsr-tbl">
+                <thead><tr><th scope="col">No.</th><th scope="col">Transaction date</th><th scope="col">POS ID</th><th scope="col">Billing amount</th><th scope="col">Transactions</th><th scope="col">TC</th><th scope="col">Details</th></tr></thead>
                 <tbody>
-                    @if ($wallets->isEmpty())
+                    @forelse ($wallets as $key => $data)
                         <tr>
-                            <td colspan="8" class="text-center text-danger" style="font-size:22px;">No Data Available
-                            </td>
+                            <td data-label="No.">{{ $wallets->firstItem() + $key }}</td>
+                            <td data-label="Transaction date"><time datetime="{{ \Carbon\Carbon::parse($data->transaction_date)->toDateString() }}">{{ \Carbon\Carbon::parse($data->transaction_date)->format('d M Y') }}</time></td>
+                            <td data-label="POS ID" class="admin-dsr-pos">{{ $data->getPos->user_id ?? $data->pos_id }}</td>
+                            <td data-label="Billing amount" class="admin-dsr-amount">&#8377;{{ number_format((float) ($data->total_billing_amount ?? 0), 2) }}</td>
+                            <td data-label="Transactions">{{ number_format((int) $data->total_transactions) }}</td>
+                            <td data-label="TC">&#8377;{{ number_format((float) ($data->total_transaction_charges ?? 0), 2) }}</td>
+                            <td data-label="Details"><a href="{{ route('admin.transaction.details', ['id' => encrypt($data->pos_id), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'transaction_date' => $data->transaction_date]) }}" class="btn btn-sm btn-primary admin-dsr-detail"><i class="fa fa-eye me-1" aria-hidden="true"></i> View details</a></td>
                         </tr>
-                    @else
-                        @foreach ($wallets as $key => $data)
-                            {{-- {{ dd($data) }} --}}
-                            <tr>
-                                <td>{{ $wallets->firstItem() + $key }}</td>
-                                {{-- <td>{{ $data->invoice }}</td> --}}
-                                <td>{{ $data->getPos ? $data->getPos->user_id : '' }}</td>
-                                {{-- <td>{{ $data->user_id }}</td> --}}
-                                <td>{{ $data->getPos->name }}</td>
-                                <td>{{ $data->getPos->mobilenumber }}</td>
-                                <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>
-                                <td>{{ $data->total_transactions }}</td>
-                                <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
-                                {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
-                                {{-- <td>
-                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
-                                        data-id="{{ $data->id }}" data-target="#exampleModal">Edit</button>
-
-                                    <button type="button" id="delete-dsr" data-id="{{ $data->id }}"
-                                        class="btn btn-sm btn-danger">Delete</button>
-                                </td> --}}
-                                <td>
-                                    <a href="{{ route('admin.transaction.details', [
-                                        'id' => encrypt($data->pos_id),
-                                        'start_date' => request()->start_date,
-                                        'end_date' => request()->end_date,
-                                        'transaction_date' => $data->transaction_date
-                                    ]) }}"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
+                    @empty
+                        <tr><td colspan="7" class="admin-dsr-empty">No sales records match these filters. Try a different date range or search.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination Links -->
-        <div class="d-flex justify-content-center">
-            {{ $wallets->links() }}
-        </div>
+        <div class="admin-dsr-pagination">{{ $wallets->links() }}</div>
     </div>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="edit-form">
-                    <input type="hidden" name="wallet_id" id="wallet_id"> <!-- Hidden input to store ID -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Edit DSR</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="mb-3">
-                            <label for="billing_amount" class="form-label">Billing Amount</label>
-                            <input type="number" class="form-control" id="billing_amount" name="billing_amount"
-                                min="0" step="1">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="transaction_date" class="form-label">Transaction Date</label>
-                            <input type="date" class="form-control" id="transaction_date"
-                                max="{{ \Carbon\Carbon::today()->toDateString() }}" name="transaction_date">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Load jQuery (full version only, not slim) FIRST -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Then Popper.js and Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
-
-    <!-- Your custom script wrapped in DOM ready -->
     <script>
-        $(document).ready(function() {
-            $('#exampleModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var walletId = button.data('id'); // Extract wallet_id
-                $('#wallet_id').val(walletId); // Set to hidden input
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            const startDate = document.getElementById('start_date');
+            const endDate = document.getElementById('end_date');
+            if (!startDate || !endDate) return;
 
-            $('#edit-form').on('submit', function(e) {
-                e.preventDefault();
-                console.log("form submit");
+            const syncDateRange = changedField => {
+                startDate.max = endDate.value || startDate.getAttribute('max');
+                endDate.min = startDate.value || '';
+                if (changedField === startDate && endDate.value && endDate.value < startDate.value) {
+                    endDate.value = startDate.value;
+                }
+            };
 
-                // Create FormData object from form
-                var formData = new FormData(this);
-
-                // Get wallet ID from data-id attribute
-                var walletId = $(this).data('id'); // make sure #edit-form has data-id set
-                formData.append('_token', '{{ csrf_token() }}');
-                $.ajax({
-                    type: "POST",
-                    url: '{{ route('admin.used.wallet.upload') }}',
-                    data: formData,
-                    dataType: "json",
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.code == 200) {
-                            Swal.fire({
-                                title: response.message,
-                                icon: "success"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Something went wrong!",
-                                text: response.message || "Please try again later.",
-                                icon: "error"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        }
-                    }
-                });
-            });
-
-            $(document).on('click', '#delete-dsr', function() {
-                const walletId = $(this).data('id');
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This action cannot be undone.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route('admin.used.wallet.delete') }}', // Replace with your actual route
-                            type: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                wallet_id: walletId
-                            },
-                            success: function(response) {
-                                if (response.code == 200) {
-                                    Swal.fire("Deleted!", response.message, "success")
-                                        .then(() => {
-                                            location.reload();
-                                        });
-                                } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Something went wrong.", "error");
-                                }
-                            },
-                            error: function(xhr) {
-                                Swal.fire("Error!", "Server error occurred.", "error");
-                            }
-                        });
-                    }
-                });
-            });
+            startDate.addEventListener('change', () => syncDateRange(startDate));
+            endDate.addEventListener('change', () => syncDateRange(endDate));
+            syncDateRange();
         });
     </script>
-
 @endsection

@@ -6,13 +6,14 @@
         <div class="row">
             <div class="col-md-12">
                 <h3 class="text-left">About Us</h3>
-                <p>M/S Satshree Marketing Pvt. Ltd. (SMPL) is a Pvt. Ltd. company registered under the Companies Act of
-                    1956, established in February 2002. It was founded by a group of professionals with extensive experience
-                    in marketing stocks, products, services, loans, financial instruments, estates, assets, and insurance
-                    for individuals, companies, and government and non-government bodies. We recognize that limited
-                    education, resources, and a weak background prevent many talented individuals from succeeding. Our
-                    mission is to create lasting opportunities for socially interactive, sustained growth, aiming to provide
-                    support for thousands of customers and contribute to the nation’s economic progress.</p>
+                <p> FreeBazar is a Mutual Savings Revolution | Since 2018 | Bhubaneswar. FreeBazar is not just a grocery store. 
+                    It is a movement. It is a Heritage of Success to establish a Free Economy. In India, every family spends, 
+                    but that money never comes back. FreeBazar asks a simple question: What if your daily kharcha becomes your 
+                    bachat? We started with this thought. We connected local Kirana POS shops into one big family where money 
+                    stays within the community. You buy at your nearby POS, we return it to you as Payback. FreeBazar - Spend 
+                    Local, Save Together, Grow Together.This is not an e-commerce / Quick commerce/ discount. 
+                    It's Free commerce(Where your spend comes back to you).
+                </p>
             </div>
             <div class="col-md-6">
                 <h3 class="text-left">Mission</h3>

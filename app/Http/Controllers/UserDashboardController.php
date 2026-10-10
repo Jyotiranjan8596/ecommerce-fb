@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
+use App\Models\CustomerOrder;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\UserWallet;
@@ -20,8 +21,19 @@ class UserDashboardController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
-        $sponsors_count = count($sponsors);
+        $referralCount = $user_profile->prime_referral_count;
+        $sponsors_count = $referralCount;
+        $primeSince = $user_profile->is_prime_member && $user_profile->primeMemberSince()
+            ? Carbon::parse($user_profile->primeMemberSince())
+            : null;
+        $recentReferrals = $user_profile->referrals()
+            ->where('role', 3)
+            ->withCount(['referrals as referrals_count' => function ($query) {
+                $query->where('role', 3);
+            }])
+            ->latest()
+            ->limit(5)
+            ->get();
         $transactionQuery = Wallet::where('user_id', $userId)->with('userWallets');
 
         $month = Carbon::now()->month;
@@ -45,6 +57,11 @@ class UserDashboardController extends Controller
                 ->whereYear('transaction_date', now()->year);
         }
 
+        $transactionCount = (clone $transactionQuery)->count();
+        $orderCount = CustomerOrder::where('user_id', $userId)
+            ->whereRaw('LOWER(status) <> ?', [CustomerOrder::STATUS_DELIVERED])
+            ->count();
+
         // my code
         $walletList = $transactionQuery->orderBy('id', 'desc')->simplepaginate(50);
 
@@ -64,7 +81,7 @@ class UserDashboardController extends Controller
             ->selectRaw('ROUND(SUM(wallet_amount + reward_points), 0) as total')
             ->value('total');
 
-        return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'sponsors_count', 'sponsors', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList'));
+        return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'referralCount', 'sponsors_count', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList', 'transactionCount', 'orderCount', 'primeSince', 'recentReferrals'));
     }
 
     public function get_total_wallet_amount($userId, $users_id = null)
@@ -282,10 +299,11 @@ class UserDashboardController extends Controller
 
     public function addUser()
     {
-        $user         = auth()->user();
-        $user_id      = $user->user_id;
-        $userId       = $user->id;
-        $user_profile = $user;
+        $user          = auth()->user();
+        $user_id       = $user->user_id;
+        $userId        = $user->id;
+        $user_profile  = $user;
+        $referral_link = url('/register?ref=' . urlencode((string) $user_id));
 
         $query = User::where('role', 3);
 
@@ -301,7 +319,7 @@ class UserDashboardController extends Controller
         //     ->distinct()
         //     ->pluck('relation_user');
 
-        return view('frontend.dashboard.adduser', compact('user_id', 'userId', 'user_profile'));
+        return view('frontend.dashboard.adduser', compact('user_id', 'userId', 'user_profile', 'referral_link'));
     }
 
     public function storeUser(Request $request)
@@ -376,13 +394,14 @@ class UserDashboardController extends Controller
         $balances             = self::get_total_wallet_amount($userId);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
-        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)
+        $userWallet = UserWallet::with('getPos')
+            ->where('user_id', $userId)
+            ->orWhere('user_id', $user_profile->user_id)
             ->orderBy('id', 'desc')
-            ->simplePaginate(10);
+            ->get();
 
-        $collection = $userWallet->getCollection();
         $newCollection = collect();
-        foreach ($collection as $item) {
+        foreach ($userWallet as $item) {
 
             if ($item->trans_type == 'credit' || $item->trans_type == 'Credit') {
 
@@ -408,10 +427,9 @@ class UserDashboardController extends Controller
             }
         }
 
-        $userWallet->setCollection($newCollection);
+        $userWallet = $newCollection;
 
         $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)->sum('used_amount');
-        Log::info($userWallet->toArray());
         $walletBalance = $currentWalletBalance;
         return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
     }
@@ -422,12 +440,44 @@ class UserDashboardController extends Controller
     public function sponsorList()
     {
         $userId  = auth()->user()->id;
-        $sponcer = Sponsor::where('sponsor_id', $userId)->orderBy('id', 'desc')->get()->map(function ($item) {
+        $sponcer = User::where('sponsor_id', $userId)
+            ->where('role', 3)
+            ->withCount(['referrals as referrals_count' => function ($query) {
+                $query->where('role', 3);
+            }])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($item) {
             $item->created_on = Carbon::parse($item->created_at)->format('d-m-Y h:i:s A');
             return $item;
         });
         // dd($sponcer);
         return view('frontend.dashboard.sponser_list', compact('sponcer'));
+    }
+
+    public function primeDashboard()
+    {
+        return redirect()->route('user.index');
+    }
+
+    public function primeProfile()
+    {
+        $user = auth()->user();
+        $user->loadCount(['referrals as referrals_count' => function ($query) {
+            $query->where('role', 3);
+        }]);
+        abort_unless($user->is_prime_member, 403);
+        $user->load('sponsorUser:id,user_id,name');
+
+        $primeSince = $user->primeMemberSince();
+        $primeSince = $primeSince ? Carbon::parse($primeSince) : null;
+        $states = User::select('state')->where('role', 3)->whereNotNull('state')->distinct()->pluck('state');
+
+        return view('frontend.dashboard.editprofile', [
+            'user_profile' => $user,
+            'primeSince' => $primeSince,
+            'states' => $states,
+        ]);
     }
     public function posList(Request $request)
     {
@@ -445,8 +495,11 @@ class UserDashboardController extends Controller
                     'name'         => $item->name ?? "N/A",
                     'mobilenumber' => $item->mobilenumber ?? "N/A",
                     'city'         => $item->city ?? "N/A",
+                    'state'        => $item->state ?? null,
                     'address'      => $item->address ?? "N/A",
                     'zip'          => $item->zip ?? "N/A",
+                    'latitude'     => $item->latitude,
+                    'longitude'    => $item->longitude,
                 ];
             });
             return response()->json([
@@ -469,20 +522,29 @@ class UserDashboardController extends Controller
     public function editprofile()
     {
         $user_profile = auth()->user();
+        if ($user_profile->is_prime_member) {
+            return redirect()->route('user.prime.profile');
+        }
+
         $states       = User::select('state')->where('role', 3)->whereNotNull('state')->distinct()->pluck('state');
         return view('frontend.dashboard.editprofile', compact('user_profile', 'states'));
     }
     public function updateprofile(Request $request)
     {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:30'],
+        ]);
+
         $update_profile = User::find(auth()->id());
 
-        if ($request->mobilenumber !== $update_profile->mobilenumber) {
+        if ($request->filled('mobilenumber') && $request->mobilenumber !== $update_profile->mobilenumber) {
             $update_profile->requestMobileNumberUpdate($request->mobilenumber);
 
             flash()->addSuccess('Your mobile number update request has been submitted and is awaiting admin approval.');
             return redirect()->route('user.index');
         }
 
+        $update_profile->name          = $validated['name'];
         $update_profile->email         = $request->email;
         $update_profile->address       = $request->address;
         $update_profile->city          = $request->city;
@@ -491,16 +553,29 @@ class UserDashboardController extends Controller
         $update_profile->nominee_name  = $request->nominee_name;
         $update_profile->relation_user = $request->relation_user;
 
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->move(public_path('images'), $imageName);
-            $update_profile->image = $imageName;
-        }
         if ($update_profile->save()) {
             flash()->addSuccess('Profile Update successfully.');
             return redirect()->route('user.index');
         }
     }
+
+    public function updateProfileImage(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:40960'],
+        ]);
+
+        $user = User::findOrFail(auth()->id());
+        $imageFile = $validated['image'];
+        $imageName = 'user_' . bin2hex(random_bytes(16)) . '.' . $imageFile->extension();
+        $imageFile->move(public_path('images'), $imageName);
+
+        $user->image = $imageName;
+        $user->save();
+
+        return redirect()->route('user.edit.profile')->with('success', 'Profile photo updated successfully.');
+    }
+
     public function changepassword()
     {
         return view('frontend.dashboard.changepassword');

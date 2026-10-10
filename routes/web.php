@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PosController as AdminPosController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DownloadPdfController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PaymentSummaryController;
@@ -31,9 +32,17 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Shared in-app notification bell endpoints — used by Admin, POS and Customer navbars alike.
+Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+    Route::post('/{id}/read', [App\Http\Controllers\NotificationController::class, 'markRead'])->name('read');
+    Route::post('/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('read-all');
+});
+
 // Route::view('/term-and-conditions', 'frontend.dashboard.termcondition')->name('termCondition');
 
 Route::get('/term-and-conditions', [FrontendController::class, 'termCondition'])->name('frontend.termCondition');
+Route::view('/faqs', 'ui.faq')->name('frontend.faq');
 //frontend
 
 Route::get('/', [FrontendController::class, 'index'])->name('frontend.index');
@@ -90,10 +99,16 @@ Route::group(['middleware' => 'user'], function () {
 // Route::get('/dashboard/cart', [UserDashboardController::class, 'cart'])->name('dashboard.cart');
 // Route::delete('/dashboard/cart/delete/{id}', [UserDashboardController::class, 'delete'])->name('dashboard.deletecart');
 
+Route::get('pos-list', [UserDashboardController::class, 'pos_list_index'])->name('frontend.pos.list');
+Route::get('pos-list/data', [UserDashboardController::class, 'posList'])->name('frontend.pos.list.data');
+
 Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], function () {
     Route::get('/', [UserDashboardController::class, 'index'])->name('index');
+    Route::get('prime-dashboard', [UserDashboardController::class, 'primeDashboard'])->name('prime.dashboard');
+    Route::get('prime-profile', [UserDashboardController::class, 'primeProfile'])->name('prime.profile');
     Route::get('edit/profile', [UserDashboardController::class, 'editprofile'])->name('edit.profile');
     Route::post('update/profile/', [UserDashboardController::class, 'updateprofile'])->name('update.profile');
+    Route::post('profile/image', [UserDashboardController::class, 'updateProfileImage'])->name('profile.image.update');
     Route::get('change/password', [UserDashboardController::class, 'changepassword'])->name('change.password');
     Route::post('new/password', [UserDashboardController::class, 'newpassword'])->name('new.password');
     Route::get('add', [UserDashboardController::class, 'addUser'])->name('add');
@@ -102,12 +117,20 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
     Route::get('sponsor/list', [UserDashboardController::class, 'sponsorList'])->name('sponsor.list');
     Route::post('pos/list', [UserDashboardController::class, 'posList'])->name('pos.list');
     Route::get('pos/list/index', [UserDashboardController::class, 'pos_list_index'])->name('pos.list.index');
+    Route::get('my-order', [CustomerOrderController::class, 'create'])->name('order');
+    Route::post('my-order', [CustomerOrderController::class, 'store'])->name('order.store');
+    Route::get('my-order/{order}/edit', [CustomerOrderController::class, 'edit'])->name('order.edit');
+    Route::put('my-order/{order}', [CustomerOrderController::class, 'update'])->name('order.update');
+    Route::get('my-order/{order}/handwritten-list', [CustomerOrderController::class, 'downloadList'])->name('order.list.download');
     Route::post('payment', [UserDashboardController::class, 'payment'])->name('payment');
     // Route::post('payment/verify/$id', [UserDashboardController::class, 'verifyPayment'])->name('verify.payment');
     Route::get('my/wallet', [UserDashboardController::class, 'wallet'])->name('wallet');
 });
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');
+    Route::get('customer-orders', [CustomerOrderController::class, 'posIndex'])->name('customer-orders.index');
+    Route::patch('customer-orders/{order}/status', [CustomerOrderController::class, 'updateStatus'])->name('customer-orders.status');
+    Route::get('customer-orders/{order}/handwritten-list', [CustomerOrderController::class, 'downloadPosList'])->name('customer-orders.list.download');
     Route::get('profile/index', [PosController::class, 'pos_profile_index'])->name('profile.index');
     Route::post('update/profile/', [PosController::class, 'updateprofile'])->name('update.profile');
     Route::get('change/password', [PosController::class, 'changepassword'])->name('change.password');

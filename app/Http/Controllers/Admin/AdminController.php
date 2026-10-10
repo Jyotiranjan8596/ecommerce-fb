@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PosModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,63 +15,55 @@ class AdminController extends Controller
         $user_profile = auth()->user();
         $userId = $user_profile->id;
 
-        // Initialize defaults to avoid undefined variable errors
-        $count = ['users' => 0, 'posts' => 0, 'posts_read' => 0];
-        $totaluser = 0;
-        $totalpos = 0;
+        $year = now()->year;
+        $months = range(1, (int) now()->month);
+        $userChartLabels = array_slice(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 0, count($months));
+        $salesChartLabels = $userChartLabels;
 
-        // Prepare monthly data (Jan–Dec)
-        $userChartData = array_fill(1, 12, 0);
+        $totaluser = User::where('role', 3)->count();
+        $totalpos = PosModel::count();
+        $count = ['posts_read' => 0, 'comments' => 0];
 
-        // Eloquent-based aggregation
-        $results = User::query()
-            ->selectRaw('
-            COUNT(*) as total,
-            SUM(role = 3) as role_3,
-            SUM(role = 4) as role_4,
-            MONTH(created_at) as month
-        ')
-            // ->whereYear('created_at', now()->year)
-            ->groupByRaw('MONTH(created_at) WITH ROLLUP')
-            ->get();
+        $monthlyUsers = User::query()
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->where('role', 3)
+            ->whereYear('created_at', $year)
+            ->groupByRaw('MONTH(created_at)')
+            ->pluck('total', 'month');
 
-        foreach ($results as $row) {
-            if (is_null($row->month)) {
-                // ROLLUP totals
-                $count['users'] = $row->total;
-                $totaluser = $row->role_3;
-                $totalpos = $row->role_4;
-            } else {
-                $userChartData[(int) $row->month] = $row->total;
-            }
-        }
+        $monthlySalesAndRewards = DB::table('wallets')
+            ->selectRaw("MONTH(transaction_date) as month, SUM(billing_amount) as sales, SUM(CASE WHEN pay_by = 'reward' THEN reward_amount ELSE 0 END) as rewards")
+            ->whereYear('transaction_date', $year)
+            ->groupByRaw('MONTH(transaction_date)')
+            ->get()
+            ->keyBy('month');
 
-        // Chart labels
-        $userChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $userChartData   = array_values($userChartData);
+        $userChartData = array_map(fn ($month) => (int) ($monthlyUsers[$month] ?? 0), $months);
+        $salesChartData = array_map(fn ($month) => round((float) ($monthlySalesAndRewards[$month]->sales ?? 0), 2), $months);
+        $rewardChartData = array_map(fn ($month) => round((float) ($monthlySalesAndRewards[$month]->rewards ?? 0), 2), $months);
 
-        // Static placeholders
+        $todaySales = (float) DB::table('wallets')
+            ->whereDate('transaction_date', today())
+            ->sum('billing_amount');
+
         $newPosts = 0;
         $topPosts = 0;
-        $posChartLabels = ['Jan', 'Feb', 'Mar'];
-        $posChartData = [3, 7, 6];
-        $salesChartLabels = ['Product A', 'Product B', 'Product C'];
-        $salesChartData = [200, 450, 150];
 
         return view('admin.index', compact(
             'count',
             'totaluser',
             'totalpos',
+            'todaySales',
+            'year',
             'userId',
             'user_profile',
             'newPosts',
             'topPosts',
             'userChartLabels',
             'userChartData',
-            'posChartLabels',
-            'posChartData',
             'salesChartLabels',
-            'salesChartData'
+            'salesChartData',
+            'rewardChartData'
         ));
     }
 

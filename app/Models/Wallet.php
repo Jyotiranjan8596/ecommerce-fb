@@ -163,6 +163,7 @@ class Wallet extends Model
             ->with('user', 'userWallets', 'getPos')
             ->orderBy('id', 'desc')
             ->get()->map(function ($item) {
+                $chargeRate = (float) ($item->getPos?->transaction_charge ?? 0);
                 return [
                     'invoice' => $item->invoice,
                     'mobile' => $item->mobilenumber,
@@ -173,6 +174,7 @@ class Wallet extends Model
                     'net_pay' =>  $item->amount ?? 0,
                     'remaining_wallet' =>  $item->userWallets[0]->remaining_amount ?? 0,
                     'remaining_reward' =>  $item->userWallets[0]->remaining_points ?? 0,
+                    'transaction_charge' => round((float) ($item->billing_amount ?? 0) * $chargeRate / 100, 2),
                     'transaction_date' =>  date('d/m/Y', strtotime($item->transaction_date)),
                 ];
             });

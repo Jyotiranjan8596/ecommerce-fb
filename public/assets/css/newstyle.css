@@ -597,3 +597,138 @@ body {
       }
   }
   /* ============ mobile view .end// ============ */
+
+  /* Responsive improvements for mobile compatibility */
+  img,
+  svg,
+  video,
+  canvas {
+      max-width: 100%;
+      height: auto;
+  }
+
+  @media (max-width: 767.98px) {
+      body {
+          overflow-x: hidden;
+      }
+
+      .container,
+      .container-fluid,
+      .container-lg,
+      .container-md,
+      .container-sm,
+      .container-xl,
+      .container-xxl {
+          --bs-gutter-x: 1rem;
+      }
+
+      .freebazar-quick-links {
+          padding: 0.5rem !important;
+      }
+
+      .freebazar-quick-links .row {
+          --bs-gutter-x: 0.5rem;
+      }
+
+      .freebazar-quick-links .col {
+          padding: 0.25rem;
+      }
+
+      .freebazar-quick-links .col span {
+          display: inline-block;
+          font-size: 0.72rem;
+          line-height: 1.3;
+          word-break: break-word;
+      }
+
+      .freebazar-site-footer {
+          padding-top: 2.25rem !important;
+          padding-bottom: 1.5rem !important;
+      }
+
+      .freebazar-site-footer .row > [class*="col-"] {
+          margin-bottom: 1.25rem;
+      }
+
+      .freebazar-site-footer .widget-title {
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+      }
+
+      .freebazar-site-footer img {
+          max-width: 180px;
+          width: 100%;
+          height: auto;
+      }
+
+      .freebazar-site-footer .social-links ul {
+          flex-wrap: wrap;
+          gap: 0.5rem;
+      }
+
+      .freebazar-site-footer .social-links .btn {
+          width: 2.2rem;
+          height: 2.2rem;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      #footer-bottom .row {
+          display: block;
+      }
+
+      #footer-bottom .copyright {
+          text-align: center;
+      }
+
+      .carousel-item img {
+          min-height: 190px;
+          object-fit: cover;
+      }
+
+      .p-5,
+      section.p-5 {
+          padding: 1.25rem !important;
+      }
+
+      .p-2,
+      div.p-2 {
+          padding: 0.5rem !important;
+      }
+  }
+
+  @media (max-width: 575.98px) {
+      .freebazar-site-footer .social-links ul {
+          justify-content: flex-start;
+      }
+
+      .freebazar-site-footer p,
+      .freebazar-site-footer .menu-list a,
+      .freebazar-site-footer .menu-list li {
+          font-size: 0.9rem;
+      }
+
+      .navbar-brand img,
+      .logo img {
+          max-width: 150px;
+      }
+  }
+
+  @media (min-width: 992px) {
+      body > .freebazar-site-footer,
+      body > #footer-bottom {
+          margin-left: 260px;
+          width: calc(100% - 260px);
+          box-sizing: border-box;
+      }
+  }
+
+  @media (max-width: 991.98px) {
+      body > .freebazar-site-footer,
+      body > #footer-bottom {
+          margin-left: 0;
+          width: 100%;
+      }
+  }

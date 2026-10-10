@@ -54,7 +54,7 @@ class PaymentSummaryController extends Controller
         try {
             $result = PaymentSummary::fetch_summary_pos();
             if ($result) {
-                return Excel::download(new AccountSettlementExport($result), 'AccountSettlement.csv');
+                return Excel::download(new AccountSettlementExport($result), 'AccountSettlement_' . now()->format('d,m,y') . '.csv');
                 // return response()->json([
                 //     'status' => 'success',
                 //     'code'   => 200,
@@ -168,7 +168,7 @@ class PaymentSummaryController extends Controller
         $pdf = Pdf::loadView('admin.settlement_payment.invoice', compact('settlement'))
             ->setPaper('a4');
 
-        return $pdf->download('Invoice-' . $settlement['pos_name'] . $settlement['pos_user_id'] . '.pdf');
+        return $pdf->download('Invoice-' . $settlement['pos_name'] . '-' . $settlement['pos_user_id'] . '_' . now()->format('d,m,y') . '.pdf');
     }
 
     public function downloadPosInvoice($id)
@@ -178,7 +178,7 @@ class PaymentSummaryController extends Controller
         $pdf = Pdf::loadView('admin.settlement_payment.invoice', compact('settlement'))
             ->setPaper('a4');
 
-        return $pdf->download('Invoice-' . $settlement['pos_name'] . $settlement['pos_user_id'] . '.pdf');
+        return $pdf->download('Invoice-' . $settlement['pos_name'] . '-' . $settlement['pos_user_id'] . '_' . now()->format('d,m,y') . '.pdf');
     }
 
     public function ledger_index()
@@ -240,7 +240,7 @@ class PaymentSummaryController extends Controller
     {
         $data = Payment::getLedgerDataExport($request);
         // dd($data->toArray());
-        return Excel::download(new AccountLedgerExport($data), 'account_ledger_freebazar.xlsx');
+        return Excel::download(new AccountLedgerExport($data), 'AccountLedger_' . now()->format('d,m,y') . '.xlsx');
     }
 
     public function getReceipt(Request $request)

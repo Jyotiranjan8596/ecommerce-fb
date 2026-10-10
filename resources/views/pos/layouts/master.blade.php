@@ -60,11 +60,11 @@
         content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-pro-bootstrap-5-dashboard/volt-pro-preview.jpg">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazar.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazar.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazar.png') }}">
-    <link rel="icon" href="{{ asset('assets/images/freebazar.png') }}">
-    <link rel="mask-icon" href="{{ asset('assets/images/freebazar.png') }}" color="#ffffff">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3">
+    <link rel="icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3">
+    <link rel="mask-icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
 
@@ -76,6 +76,9 @@
 
     <!-- Volt CSS -->
     <link type="text/css" href="{{ asset('css/volt.css') }}" rel="stylesheet">
+    <link type="text/css" href="{{ asset('css/enterprise-theme.css') }}" rel="stylesheet">
+    <link type="text/css" href="{{ asset('vendor/chartist/dist/chartist.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/scroll-list.js') }}"></script>
 
     {{-- Bottom bar Css  --}}
     {{-- <link type="text/css" href="{{ asset('css/bottombar.css') }}" rel="stylesheet"> --}}
@@ -177,8 +180,8 @@
     <!-- mobile menu  -->
     <nav class="navbar navbar-light  px-4 col-12 d-lg-none" style="border-bottom: 5px solid #fff;">
         <a class="navbar-brand me-lg-5" href="{{ route('frontend.index') }}">
-            <img class="navbar-brand-dark" src="{{ asset('assets/images/logofreebazar3.png') }}" alt="Volt logo" />
-            <img class="navbar-brand-light" src="{{ asset('assets/images/logofreebazar3.png') }}" alt="Volt logo" />
+            <img class="navbar-brand-dark" src="{{ asset('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." style="width:160px;max-width:100%;height:auto;" />
+            <img class="navbar-brand-light" src="{{ asset('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." style="width:160px;max-width:100%;height:auto;" />
         </a>
         <div class="d-flex align-items-center">
             <button class="navbar-toggler d-lg-none collapsed" type="button" data-bs-toggle="collapse"
@@ -201,7 +204,7 @@
         @yield('content')
 
 
-        @include('pos.includes.footer')
+        @include('ui.layout.footer')
     </main>
     {{-- Main Content end  --}}
 
@@ -248,6 +251,7 @@
 
     <!-- Volt JS -->
     <script src="{{ asset('assets/js/volt.js') }}"></script>
+    <script src="{{ asset('assets/js/notifications.js') }}"></script>
 
 
 
@@ -258,6 +262,8 @@
     <script>
         feather.replace()
     </script>
+
+    @stack('scripts')
     
 </body>
 

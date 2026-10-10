@@ -124,7 +124,7 @@
     </div>
 
     <div class="header">
-        <img src="{{ public_path('assets/images/logofreebazar3.png') }}" alt="logo" style="height: 50px;">
+        <img src="{{ public_path('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." style="height: 50px;">
         <div class="company-info">
             (A Unit Of Satshree Marketing Pvt. Ltd.)<br>
             Plot-1625(B), Nilakantha Nagar, Nayapalli, Bhubaneswar<br>

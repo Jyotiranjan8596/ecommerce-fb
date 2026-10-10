@@ -13,11 +13,11 @@
     <meta name="description" content="">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="mask-icon" href="{{ asset('assets/images/faviconfreebazar.png') }}" color="#ffffff" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="mask-icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" color="#ffffff" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="theme-color" content="#ffffff" />
 
@@ -26,6 +26,7 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendor.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/newstyle.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/enterprise-theme.css') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +37,7 @@
 </head>
 
 <body>
+    <script src="{{ asset('assets/js/jquery-3.4.1.min.js') }}"></script>
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
         <defs>
@@ -344,10 +346,73 @@
     @yield('content')
     <!-- Main -->
 
+    <script src="{{ asset('js/scroll-list.js') }}"></script>
+
     {{-- Sweet Alert Js  --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @include('frontend.dashboard.includes.js')
 
+    @if (session('registration_success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Congrats! You\'ve successfully Registered as a FreeBazar Customer',
+                    html: `
+                        <div style="text-align:left; padding:6px 4px;">
+                            <div style="font-size:14px; color:#1b2b41; margin-bottom:10px; font-weight:600;">
+                                Your account is ready. Please keep the below login details safe.
+                            </div>
+                            <div style="background:#f3faf8; border:1px solid #d9efe8; border-radius:10px; padding:12px 14px; line-height:1.9; color:#123a3d;">
+                                <div><strong>User ID:</strong> <span style="color:#0d6e77;">{{ session('registered_user_id') }}</span></div>
+                                <div><strong>Default Password:</strong> <span style="color:#0d6e77;">{{ session('registered_default_password') }}</span></div>
+                            </div>
+                            <div style="margin-top:14px; background:#fff8e6; border:1px solid #f5d38b; color:#8a5b00; border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; text-align:left;">
+                                Warning: Please change your login credentials soon due to safety reasons.
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonText: 'Continue',
+                    confirmButtonColor: '#0d7a8a',
+                    background: '#ffffff',
+                    color: '#1b2b41',
+                    customClass: {
+                        popup: 'freebazar-registration-popup',
+                        title: 'freebazar-registration-title',
+                        confirmButton: 'freebazar-registration-button'
+                    },
+                    width: 480,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+            });
+        </script>
+        <style>
+            .freebazar-registration-popup {
+                border-radius: 18px !important;
+                border: 1px solid rgba(13, 122, 138, 0.16);
+                box-shadow: 0 20px 45px rgba(17, 32, 51, 0.18) !important;
+                overflow: hidden;
+            }
+
+            .freebazar-registration-title {
+                color: #0d7a8a !important;
+                font-size: 1.55rem !important;
+                line-height: 1.4 !important;
+            }
+
+            .freebazar-registration-button {
+                border-radius: 10px !important;
+                font-weight: 700 !important;
+                padding: 0.7rem 1.5rem !important;
+                box-shadow: none !important;
+            }
+        </style>
+    @endif
 
     <!-- Footer -->
     @include('ui.layout.footer')

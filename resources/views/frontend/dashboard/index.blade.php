@@ -2,6 +2,357 @@
 
 
 @section('content')
+    <div class="enterprise-dashboard-shell {{ $user_profile->is_prime_member ? 'prime-member-dashboard' : '' }}">
+        <section class="dashboard-hero">
+            <span class="dashboard-hero__label">Welcome</span>
+            <h1 class="dashboard-hero__title">Welcome back, <span class="dashboard-welcome-name {{ $user_profile->is_prime_member ? 'dashboard-welcome-name--prime' : '' }}">{{ $user_profile->name }}</span></h1>
+            <p class="dashboard-hero__text">Your account, wallet, orders, transactions, and customer family are all here.</p>
+            @if ($user_profile->is_prime_member)
+                <a class="prime-status-panel" href="{{ route('user.prime.profile') }}">
+                    <span class="prime-status-panel__badge"><i class="fas fa-crown" aria-hidden="true"></i> Prime member</span>
+                    <span>You’ve achieved {{ \App\Models\User::PRIME_REFERRAL_THRESHOLD }} direct referrals. View your Prime profile <span aria-hidden="true">&rarr;</span></span>
+                </a>
+            @else
+                <div class="prime-progress-panel">
+                    <div>
+                        <span class="prime-progress-panel__eyebrow">Prime membership</span>
+                        <strong>{{ $referralCount }} / {{ \App\Models\User::PRIME_REFERRAL_THRESHOLD }} direct referrals</strong>
+                        <div class="prime-journey-progress" role="progressbar"
+                            aria-label="Prime membership referral progress"
+                            aria-valuemin="0"
+                            aria-valuemax="{{ \App\Models\User::PRIME_REFERRAL_THRESHOLD }}"
+                            aria-valuenow="{{ min($referralCount, \App\Models\User::PRIME_REFERRAL_THRESHOLD) }}">
+                            <span style="width: {{ min(100, ($referralCount / \App\Models\User::PRIME_REFERRAL_THRESHOLD) * 100) }}%"></span>
+                        </div>
+                        <small class="prime-journey-progress__caption">{{ min(100, (int) round(($referralCount / \App\Models\User::PRIME_REFERRAL_THRESHOLD) * 100)) }}% of your Prime journey</small>
+                    </div>
+                    <a href="{{ route('user.add') }}">Invite your friends <span aria-hidden="true">&rarr;</span></a>
+                </div>
+            @endif
+            <div class="dashboard-hero__stats">
+                <a class="dashboard-hero__stat dashboard-hero__stat-link dashboard-hero__stat-order"
+                    href="{{ route('user.order') }}">
+                    <span><small>My Orders</small><strong>{{ $orderCount ?? 0 }}</strong></span>
+                    <span class="dashboard-hero__stat-order-icon" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="dashboard-hero__stat dashboard-hero__stat-link dashboard-hero__stat-order"
+                    href="#my-transactions">
+                    <span><small>My Transaction</small><strong>{{ $transactionCount ?? 0 }}</strong></span>
+                    <span class="dashboard-hero__stat-order-icon" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="dashboard-hero__stat dashboard-hero__stat-link dashboard-hero__stat-order"
+                    href="{{ route('user.sponsor.list') }}">
+                    <span><small>My Referrals</small><strong>{{ $referralCount }}</strong></span>
+                    <span class="dashboard-hero__stat-order-icon" aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </section>
+    <div class="row user-dashboard-metrics">
+        {{-- <div class="col-12 mb-4">
+            <div class="card bg-yellow-100 border-0 shadow">
+                <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+                    <div class="d-block mb-3 mb-sm-0">
+                        <div class="fs-5 fw-normal mb-2">Sales Value</div>
+                        <h2 class="fs-3 fw-extrabold">₹ 10,567</h2>
+                        <div class="small mt-2">
+                            <span class="fw-normal me-2">Yesterday</span>
+                            <span class="fas fa-angle-up text-success"></span>
+                            <span class="text-success fw-bold">10.57%</span>
+                        </div>
+                    </div>
+                    <div class="d-flex ms-auto">
+                        <a href="#" class="btn btn-secondary text-dark btn-sm me-2">Month</a>
+                        <a href="#" class="btn btn-dark btn-sm me-3">Week</a>
+                    </div>
+                </div>
+                <div class="card-body p-2">
+                    <div class="ct-chart-sales-value ct-double-octave ct-series-g"></div>
+                </div>
+            </div>
+        </div> --}}
+        <div class="col-12 col-sm-6 col-xl-3 mb-4">
+            <div class="card border-0 shadow metric-card user-dashboard-metric user-dashboard-metric--payback">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div
+                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
+                                <svg viewBox="0 0 6.3500002 6.3500002" id="svg1976" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                    xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+                                    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                                    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+                                    xmlns:svg="http://www.w3.org/2000/svg" fill="#000000">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <defs id="defs1970"></defs>
+                                        <g id="layer1" style="display:inline">
+                                            <path
+                                                d="m 0.26485,5.8204456 a 0.2645835,0.2645835 0 0 0 -0.26563,0.26563 0.2645835,0.2645835 0 0 0 0.26563,0.26367 h 5.82031 a 0.2645835,0.2645835 0 0 0 0.26562,-0.26367 0.2645835,0.2645835 0 0 0 -0.26562,-0.26563 z"
+                                                id="path726"
+                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
+                                            </path>
+                                            <path
+                                                d="m 1.16328,3.9688856 c -0.34722,0 -0.63476,0.28754 -0.63476,0.63477 v 1.48242 a 0.26460996,0.26460996 0 0 0 0.26562,0.26367 h 1.0586 a 0.26460996,0.26460996 0 0 0 0.26367,-0.26367 v -1.48242 c 0,-0.34723 -0.28755,-0.63477 -0.63477,-0.63477 z"
+                                                id="path728"
+                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
+                                            </path>
+                                            <path
+                                                d="m 3.0168,3.0684956 c -0.34722,0 -0.63477,0.28753 -0.63477,0.63477 v 2.38281 a 0.26460996,0.26460996 0 0 0 0.26367,0.26367 h 1.0586 a 0.26460996,0.26460996 0 0 0 0.26367,-0.26367 v -2.38281 c 0,-0.34724 -0.28755,-0.63477 -0.63477,-0.63477 z"
+                                                id="path730"
+                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
+                                            </path>
+                                            <path
+                                                d="m 4.86836,2.2755256 c -0.34722,0 -0.63477,0.28754 -0.63477,0.63477 v 3.17578 a 0.26460996,0.26460996 0 0 0 0.26368,0.26367 h 1.05859 a 0.26460996,0.26460996 0 0 0 0.26563,-0.26367 v -3.17578 c 0,-0.34723 -0.2895,-0.63477 -0.63672,-0.63477 z"
+                                                id="path732"
+                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
+                                            </path>
+                                            <path
+                                                d="M 4.6205208,2.5237e-4 A 0.2645835,0.2645835 0 0 0 4.3564534,0.26380219 0.2645835,0.2645835 0 0 0 4.6205208,0.52941905 H 4.8938883 C 3.3974791,1.8159538 1.8306324,2.6151331 0.2161369,2.9142865 A 0.2645835,0.2645835 0 0 0 0.0052984,3.2227949 0.2645835,0.2645835 0 0 0 0.3117388,3.4357016 C 2.050091,3.1136013 3.722697,2.2498105 5.2923138,0.88753671 V 1.1991456 A 0.2645835,0.2645835 0 0 0 5.5558626,1.4647625 0.2645835,0.2645835 0 0 0 5.8214805,1.1991456 V 0.41986501 C 5.8215308,0.19150501 5.62816,2.0237e-4 5.3998008,2.5237e-4 Z"
+                                                id="path734"
+                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
+                                            </path>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="fw-extrabold h5">Total Payback</h2>
+                                <h3 class="mb-1">₹{{ $total_payback ?? 0 }}/-</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Total Payback</h2>
+                                <h3 class="fw-extrabold mb-2">₹{{ $total_payback ?? 0 }}/-</h3>
+                            </div>
+                            {{-- <small class="text-gray-500"> Feb 1 - Apr 1 </small>
+                            <div class="small d-flex mt-1">
+                                <div>
+                                    Since last month
+                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg><span class="text-success fw-bolder">4%</span>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3 mb-4">
+            <div class="card border-0 shadow metric-card user-dashboard-metric user-dashboard-metric--wallet">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div
+                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
+                                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M6.25 14.75C6.25 15.1642 6.58579 15.5 7 15.5C7.41421 15.5 7.75 15.1642 7.75 14.75V8.75C7.75 8.33579 7.41421 8 7 8C6.58579 8 6.25 8.33579 6.25 8.75V14.75Z"
+                                        fill="#1C274C" />
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M21.1884 8.00377C21.1262 7.99995 21.0584 7.99998 20.9881 8L20.9706 8.00001H18.2149C15.9435 8.00001 14 9.73607 14 12C14 14.2639 15.9435 16 18.2149 16H20.9706L20.9881 16C21.0584 16 21.1262 16 21.1884 15.9962C22.111 15.9397 22.927 15.2386 22.9956 14.2594C23.0001 14.1952 23 14.126 23 14.0619L23 14.0444V9.95556L23 9.93815C23 9.874 23.0001 9.80479 22.9956 9.74058C22.927 8.76139 22.111 8.06034 21.1884 8.00377ZM17.9706 13.0667C18.5554 13.0667 19.0294 12.5891 19.0294 12C19.0294 11.4109 18.5554 10.9333 17.9706 10.9333C17.3858 10.9333 16.9118 11.4109 16.9118 12C16.9118 12.5891 17.3858 13.0667 17.9706 13.0667Z"
+                                        fill="#1C274C" />
+                                    <path opacity="0.5"
+                                        d="M21.1394 8.00152C21.1394 6.82091 21.0965 5.55447 20.3418 4.64658C20.2689 4.55894 20.1914 4.47384 20.1088 4.39124C19.3604 3.64288 18.4114 3.31076 17.239 3.15314C16.0998 2.99997 14.6442 2.99999 12.8064 3H10.6936C8.85583 2.99999 7.40019 2.99997 6.26098 3.15314C5.08856 3.31076 4.13961 3.64288 3.39124 4.39124C2.64288 5.13961 2.31076 6.08856 2.15314 7.26098C1.99997 8.40019 1.99999 9.85581 2 11.6936V11.8064C1.99999 13.6442 1.99997 15.0998 2.15314 16.239C2.31076 17.4114 2.64288 18.3604 3.39124 19.1088C4.13961 19.8571 5.08856 20.1892 6.26098 20.3469C7.40018 20.5 8.8558 20.5 10.6935 20.5H12.8064C14.6442 20.5 16.0998 20.5 17.239 20.3469C18.4114 20.1892 19.3604 19.8571 20.1088 19.1088C20.3133 18.9042 20.487 18.6844 20.6346 18.4486C21.0851 17.7291 21.1394 16.8473 21.1394 15.9985C21.0912 16 21.0404 16 20.9882 16L18.2149 16C15.9435 16 14 14.2639 14 12C14 9.73607 15.9435 8.00001 18.2149 8.00001L20.9881 8.00001C21.0403 7.99999 21.0912 7.99997 21.1394 8.00152Z"
+                                        fill="currentColor" />
+                                </svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Wallet Balance</h2>
+                                <h3 class="fw-extrabold mb-1">₹{{ $walletBalance }}/-</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Wallet Balance</h2>
+                                <h3 class="fw-extrabold mb-2">₹{{ $walletBalance }}/-</h3>
+                            </div>
+                            {{-- <small class="d-flex align-items-center text-gray-500">
+                                Feb 1 - Apr 1,
+                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                USA
+                            </small>
+                            <div class="small d-flex mt-1">
+                                <div>
+                                    Since last month
+                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg><span class="text-success fw-bolder">22%</span>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3 mb-4">
+            <div class="card border-0 shadow metric-card user-dashboard-metric user-dashboard-metric--rewards">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div
+                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
+                                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M6.25 14.75C6.25 15.1642 6.58579 15.5 7 15.5C7.41421 15.5 7.75 15.1642 7.75 14.75V8.75C7.75 8.33579 7.41421 8 7 8C6.58579 8 6.25 8.33579 6.25 8.75V14.75Z"
+                                        fill="#1C274C" />
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M21.1884 8.00377C21.1262 7.99995 21.0584 7.99998 20.9881 8L20.9706 8.00001H18.2149C15.9435 8.00001 14 9.73607 14 12C14 14.2639 15.9435 16 18.2149 16H20.9706L20.9881 16C21.0584 16 21.1262 16 21.1884 15.9962C22.111 15.9397 22.927 15.2386 22.9956 14.2594C23.0001 14.1952 23 14.126 23 14.0619L23 14.0444V9.95556L23 9.93815C23 9.874 23.0001 9.80479 22.9956 9.74058C22.927 8.76139 22.111 8.06034 21.1884 8.00377ZM17.9706 13.0667C18.5554 13.0667 19.0294 12.5891 19.0294 12C19.0294 11.4109 18.5554 10.9333 17.9706 10.9333C17.3858 10.9333 16.9118 11.4109 16.9118 12C16.9118 12.5891 17.3858 13.0667 17.9706 13.0667Z"
+                                        fill="#1C274C" />
+                                    <path opacity="0.5"
+                                        d="M21.1394 8.00152C21.1394 6.82091 21.0965 5.55447 20.3418 4.64658C20.2689 4.55894 20.1914 4.47384 20.1088 4.39124C19.3604 3.64288 18.4114 3.31076 17.239 3.15314C16.0998 2.99997 14.6442 2.99999 12.8064 3H10.6936C8.85583 2.99999 7.40019 2.99997 6.26098 3.15314C5.08856 3.31076 4.13961 3.64288 3.39124 4.39124C2.64288 5.13961 2.31076 6.08856 2.15314 7.26098C1.99997 8.40019 1.99999 9.85581 2 11.6936V11.8064C1.99999 13.6442 1.99997 15.0998 2.15314 16.239C2.31076 17.4114 2.64288 18.3604 3.39124 19.1088C4.13961 19.8571 5.08856 20.1892 6.26098 20.3469C7.40018 20.5 8.8558 20.5 10.6935 20.5H12.8064C14.6442 20.5 16.0998 20.5 17.239 20.3469C18.4114 20.1892 19.3604 19.8571 20.1088 19.1088C20.3133 18.9042 20.487 18.6844 20.6346 18.4486C21.0851 17.7291 21.1394 16.8473 21.1394 15.9985C21.0912 16 21.0404 16 20.9882 16L18.2149 16C15.9435 16 14 14.2639 14 12C14 9.73607 15.9435 8.00001 18.2149 8.00001L20.9881 8.00001C21.0403 7.99999 21.0912 7.99997 21.1394 8.00152Z"
+                                        fill="currentColor" />
+                                </svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Reward Points</h2>
+                                <h3 class="fw-extrabold mb-1">₹{{ $rewardBalance }}/-</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Reward Points</h2>
+                                <h3 class="fw-extrabold mb-2">₹{{ $rewardBalance }}/-</h3>
+                            </div>
+                            {{-- <small class="d-flex align-items-center text-gray-500">
+                                Feb 1 - Apr 1,
+                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                USA
+                            </small>
+                            <div class="small d-flex mt-1">
+                                <div>
+                                    Since last month
+                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg><span class="text-success fw-bolder">22%</span>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3 mb-4">
+            <div class="card border-0 shadow metric-card user-dashboard-metric user-dashboard-metric--expenses">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div
+                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path opacity="0.1"
+                                            d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
+                                            fill="#323232"></path>
+                                        <path
+                                            d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
+                                            stroke="#323232" stroke-width="2"></path>
+                                        <path
+                                            d="M12 17L9.12186 14.1219V14.1219C9.07689 14.0769 9.11206 13.9992 9.17562 13.9971C13.9993 13.8351 13.9408 7 9 7H15"
+                                            stroke="#323232" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"></path>
+                                        <path d="M9 10.5H15" stroke="#323232" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="d-sm-none">
+                                <h2 class="fw-extrabold h5">Cur. Month Expenses</h2>
+                                <h3 class="mb-1">₹{{ $monthlyPurchase }}/-</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h6 text-gray-400 mb-0">Cur. Month Expenses</h2>
+                                <h3 class="fw-extrabold mb-2">₹{{ $monthlyPurchase }}/-</h3>
+                            </div>
+                            {{-- <small class="d-flex align-items-center text-gray-500">
+                                Feb 1 - Apr 1,
+                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                GER
+                            </small>
+                            <div class="small d-flex mt-1">
+                                <div>
+                                    Since last month
+                                    <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg><span class="text-danger fw-bolder">2%</span>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <section class="prime-overview" aria-label="Prime membership overview">
+            <div class="prime-overview__heading">
+                <div>
+                    <span class="prime-panel__eyebrow">Membership &amp; family</span>
+                    <h2>{{ $user_profile->is_prime_member ? 'Your Prime overview' : 'Your overview' }}</h2>
+                </div>
+                @if ($user_profile->is_prime_member)
+                    <a href="{{ route('user.add') }}">Invite your friends <span aria-hidden="true">&rarr;</span></a>
+                @else
+                    <a href="{{ route('user.add') }}">Invite your friends <span aria-hidden="true">&rarr;</span></a>
+                @endif
+            </div>
+            <div class="prime-overview__stats">
+                <article><span>Direct referrals</span><strong>{{ number_format($referralCount) }}</strong><small>Prime milestone: {{ \App\Models\User::PRIME_REFERRAL_THRESHOLD }}</small></article>
+                <article><span>Membership status</span><strong>{{ $user_profile->is_prime_member ? 'Prime Member' : 'Growing' }}</strong><small>{{ $user_profile->is_prime_member ? 'Your Prime membership is active' : max(0, \App\Models\User::PRIME_REFERRAL_THRESHOLD - $referralCount) . ' more direct referrals to Prime' }}</small></article>
+                <article><span>Prime since</span><strong>{{ $primeSince?->format('d M Y') ?? '—' }}</strong><small>{{ $primeSince ? 'Date your tenth direct referral joined' : 'Reach the referral milestone to qualify' }}</small></article>
+            </div>
+            <div class="prime-overview__referrals">
+                <div class="prime-overview__referrals-heading"><h3>Recent referrals</h3><a href="{{ route('user.sponsor.list') }}">See all {{ number_format($referralCount) }} <span aria-hidden="true">&rarr;</span></a></div>
+                @forelse ($recentReferrals as $referral)
+                    <div class="prime-overview__referral">
+                        <span class="prime-overview__avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($referral->name ?: '?', 0, 1)) }}</span>
+                        <span class="prime-overview__person"><strong>{{ \Illuminate\Support\Str::title($referral->name ?: 'Name unavailable') }} @if ($referral->is_prime_member)<span class="prime-badge">Prime</span>@endif</strong><small>User ID: {{ $referral->user_id ?: '—' }}</small></span>
+                        <time datetime="{{ optional($referral->created_at)->toDateString() }}">{{ optional($referral->created_at)->format('d M Y') ?: '—' }}</time>
+                    </div>
+                @empty
+                    <p class="prime-overview__empty">Your referral activity will appear here.</p>
+                @endforelse
+            </div>
+        </section>
+        <div class="row g-3">
     <style>
         /* Default styles (light mode) */
         .modal-body {
@@ -99,7 +450,7 @@
     </style>
 
     {{-- banner start  --}}
-    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+    <div id="carouselExampleAutoplaying" class="carousel slide customer-dashboard-banner" data-bs-ride="carousel">
         {{-- <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
                 aria-current="true" aria-label="Slide 1"></button>
@@ -137,369 +488,79 @@
             <span class="visually-hidden">Next</span>
         </button> --}}
     </div>
-    <br>
     {{-- Banner Ends  --}}
     <div class="row">
-        {{-- <div class="col-12 mb-4">
-            <div class="card bg-yellow-100 border-0 shadow">
-                <div class="card-header d-sm-flex flex-row align-items-center flex-0">
-                    <div class="d-block mb-3 mb-sm-0">
-                        <div class="fs-5 fw-normal mb-2">Sales Value</div>
-                        <h2 class="fs-3 fw-extrabold">₹ 10,567</h2>
-                        <div class="small mt-2">
-                            <span class="fw-normal me-2">Yesterday</span>
-                            <span class="fas fa-angle-up text-success"></span>
-                            <span class="text-success fw-bold">10.57%</span>
-                        </div>
-                    </div>
-                    <div class="d-flex ms-auto">
-                        <a href="#" class="btn btn-secondary text-dark btn-sm me-2">Month</a>
-                        <a href="#" class="btn btn-dark btn-sm me-3">Week</a>
-                    </div>
-                </div>
-                <div class="card-body p-2">
-                    <div class="ct-chart-sales-value ct-double-octave ct-series-g"></div>
-                </div>
-            </div>
-        </div> --}}
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                                <svg viewBox="0 0 6.3500002 6.3500002" id="svg1976" version="1.1"
-                                    xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
-                                    xmlns:dc="http://purl.org/dc/elements/1.1/"
-                                    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-                                    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                                    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-                                    xmlns:svg="http://www.w3.org/2000/svg" fill="#000000">
-                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                        <defs id="defs1970"></defs>
-                                        <g id="layer1" style="display:inline">
-                                            <path
-                                                d="m 0.26485,5.8204456 a 0.2645835,0.2645835 0 0 0 -0.26563,0.26563 0.2645835,0.2645835 0 0 0 0.26563,0.26367 h 5.82031 a 0.2645835,0.2645835 0 0 0 0.26562,-0.26367 0.2645835,0.2645835 0 0 0 -0.26562,-0.26563 z"
-                                                id="path726"
-                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
-                                            </path>
-                                            <path
-                                                d="m 1.16328,3.9688856 c -0.34722,0 -0.63476,0.28754 -0.63476,0.63477 v 1.48242 a 0.26460996,0.26460996 0 0 0 0.26562,0.26367 h 1.0586 a 0.26460996,0.26460996 0 0 0 0.26367,-0.26367 v -1.48242 c 0,-0.34723 -0.28755,-0.63477 -0.63477,-0.63477 z"
-                                                id="path728"
-                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
-                                            </path>
-                                            <path
-                                                d="m 3.0168,3.0684956 c -0.34722,0 -0.63477,0.28753 -0.63477,0.63477 v 2.38281 a 0.26460996,0.26460996 0 0 0 0.26367,0.26367 h 1.0586 a 0.26460996,0.26460996 0 0 0 0.26367,-0.26367 v -2.38281 c 0,-0.34724 -0.28755,-0.63477 -0.63477,-0.63477 z"
-                                                id="path730"
-                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
-                                            </path>
-                                            <path
-                                                d="m 4.86836,2.2755256 c -0.34722,0 -0.63477,0.28754 -0.63477,0.63477 v 3.17578 a 0.26460996,0.26460996 0 0 0 0.26368,0.26367 h 1.05859 a 0.26460996,0.26460996 0 0 0 0.26563,-0.26367 v -3.17578 c 0,-0.34723 -0.2895,-0.63477 -0.63672,-0.63477 z"
-                                                id="path732"
-                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
-                                            </path>
-                                            <path
-                                                d="M 4.6205208,2.5237e-4 A 0.2645835,0.2645835 0 0 0 4.3564534,0.26380219 0.2645835,0.2645835 0 0 0 4.6205208,0.52941905 H 4.8938883 C 3.3974791,1.8159538 1.8306324,2.6151331 0.2161369,2.9142865 A 0.2645835,0.2645835 0 0 0 0.0052984,3.2227949 0.2645835,0.2645835 0 0 0 0.3117388,3.4357016 C 2.050091,3.1136013 3.722697,2.2498105 5.2923138,0.88753671 V 1.1991456 A 0.2645835,0.2645835 0 0 0 5.5558626,1.4647625 0.2645835,0.2645835 0 0 0 5.8214805,1.1991456 V 0.41986501 C 5.8215308,0.19150501 5.62816,2.0237e-4 5.3998008,2.5237e-4 Z"
-                                                id="path734"
-                                                style="color:#272626;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#272626;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#272626;solid-opacity:1;vector-effect:none;fill:#272626;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate;stop-color:#272626">
-                                            </path>
-                                        </g>
-                                    </g>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Total Payback</h2>
-                                <h3 class="mb-1">₹{{ $total_payback ?? 0 }}/-</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Total Payback</h2>
-                                <h3 class="fw-extrabold mb-2">₹{{ $total_payback ?? 0 }}/-</h3>
-                            </div>
-                            {{-- <small class="text-gray-500"> Feb 1 - Apr 1 </small>
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Since last month
-                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">4%</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
-                                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M6.25 14.75C6.25 15.1642 6.58579 15.5 7 15.5C7.41421 15.5 7.75 15.1642 7.75 14.75V8.75C7.75 8.33579 7.41421 8 7 8C6.58579 8 6.25 8.33579 6.25 8.75V14.75Z"
-                                        fill="#1C274C" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M21.1884 8.00377C21.1262 7.99995 21.0584 7.99998 20.9881 8L20.9706 8.00001H18.2149C15.9435 8.00001 14 9.73607 14 12C14 14.2639 15.9435 16 18.2149 16H20.9706L20.9881 16C21.0584 16 21.1262 16 21.1884 15.9962C22.111 15.9397 22.927 15.2386 22.9956 14.2594C23.0001 14.1952 23 14.126 23 14.0619L23 14.0444V9.95556L23 9.93815C23 9.874 23.0001 9.80479 22.9956 9.74058C22.927 8.76139 22.111 8.06034 21.1884 8.00377ZM17.9706 13.0667C18.5554 13.0667 19.0294 12.5891 19.0294 12C19.0294 11.4109 18.5554 10.9333 17.9706 10.9333C17.3858 10.9333 16.9118 11.4109 16.9118 12C16.9118 12.5891 17.3858 13.0667 17.9706 13.0667Z"
-                                        fill="#1C274C" />
-                                    <path opacity="0.5"
-                                        d="M21.1394 8.00152C21.1394 6.82091 21.0965 5.55447 20.3418 4.64658C20.2689 4.55894 20.1914 4.47384 20.1088 4.39124C19.3604 3.64288 18.4114 3.31076 17.239 3.15314C16.0998 2.99997 14.6442 2.99999 12.8064 3H10.6936C8.85583 2.99999 7.40019 2.99997 6.26098 3.15314C5.08856 3.31076 4.13961 3.64288 3.39124 4.39124C2.64288 5.13961 2.31076 6.08856 2.15314 7.26098C1.99997 8.40019 1.99999 9.85581 2 11.6936V11.8064C1.99999 13.6442 1.99997 15.0998 2.15314 16.239C2.31076 17.4114 2.64288 18.3604 3.39124 19.1088C4.13961 19.8571 5.08856 20.1892 6.26098 20.3469C7.40018 20.5 8.8558 20.5 10.6935 20.5H12.8064C14.6442 20.5 16.0998 20.5 17.239 20.3469C18.4114 20.1892 19.3604 19.8571 20.1088 19.1088C20.3133 18.9042 20.487 18.6844 20.6346 18.4486C21.0851 17.7291 21.1394 16.8473 21.1394 15.9985C21.0912 16 21.0404 16 20.9882 16L18.2149 16C15.9435 16 14 14.2639 14 12C14 9.73607 15.9435 8.00001 18.2149 8.00001L20.9881 8.00001C21.0403 7.99999 21.0912 7.99997 21.1394 8.00152Z"
-                                        fill="currentColor" />
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="h5">Wallet Balance</h2>
-                                <h3 class="fw-extrabold mb-1">₹{{ $walletBalance }}/-</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Wallet Balance</h2>
-                                <h3 class="fw-extrabold mb-2">₹{{ $walletBalance }}/-</h3>
-                            </div>
-                            {{-- <small class="d-flex align-items-center text-gray-500">
-                                Feb 1 - Apr 1,
-                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                USA
-                            </small>
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Since last month
-                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">22%</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
-                                <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M6.25 14.75C6.25 15.1642 6.58579 15.5 7 15.5C7.41421 15.5 7.75 15.1642 7.75 14.75V8.75C7.75 8.33579 7.41421 8 7 8C6.58579 8 6.25 8.33579 6.25 8.75V14.75Z"
-                                        fill="#1C274C" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M21.1884 8.00377C21.1262 7.99995 21.0584 7.99998 20.9881 8L20.9706 8.00001H18.2149C15.9435 8.00001 14 9.73607 14 12C14 14.2639 15.9435 16 18.2149 16H20.9706L20.9881 16C21.0584 16 21.1262 16 21.1884 15.9962C22.111 15.9397 22.927 15.2386 22.9956 14.2594C23.0001 14.1952 23 14.126 23 14.0619L23 14.0444V9.95556L23 9.93815C23 9.874 23.0001 9.80479 22.9956 9.74058C22.927 8.76139 22.111 8.06034 21.1884 8.00377ZM17.9706 13.0667C18.5554 13.0667 19.0294 12.5891 19.0294 12C19.0294 11.4109 18.5554 10.9333 17.9706 10.9333C17.3858 10.9333 16.9118 11.4109 16.9118 12C16.9118 12.5891 17.3858 13.0667 17.9706 13.0667Z"
-                                        fill="#1C274C" />
-                                    <path opacity="0.5"
-                                        d="M21.1394 8.00152C21.1394 6.82091 21.0965 5.55447 20.3418 4.64658C20.2689 4.55894 20.1914 4.47384 20.1088 4.39124C19.3604 3.64288 18.4114 3.31076 17.239 3.15314C16.0998 2.99997 14.6442 2.99999 12.8064 3H10.6936C8.85583 2.99999 7.40019 2.99997 6.26098 3.15314C5.08856 3.31076 4.13961 3.64288 3.39124 4.39124C2.64288 5.13961 2.31076 6.08856 2.15314 7.26098C1.99997 8.40019 1.99999 9.85581 2 11.6936V11.8064C1.99999 13.6442 1.99997 15.0998 2.15314 16.239C2.31076 17.4114 2.64288 18.3604 3.39124 19.1088C4.13961 19.8571 5.08856 20.1892 6.26098 20.3469C7.40018 20.5 8.8558 20.5 10.6935 20.5H12.8064C14.6442 20.5 16.0998 20.5 17.239 20.3469C18.4114 20.1892 19.3604 19.8571 20.1088 19.1088C20.3133 18.9042 20.487 18.6844 20.6346 18.4486C21.0851 17.7291 21.1394 16.8473 21.1394 15.9985C21.0912 16 21.0404 16 20.9882 16L18.2149 16C15.9435 16 14 14.2639 14 12C14 9.73607 15.9435 8.00001 18.2149 8.00001L20.9881 8.00001C21.0403 7.99999 21.0912 7.99997 21.1394 8.00152Z"
-                                        fill="currentColor" />
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="h5">Reward Points</h2>
-                                <h3 class="fw-extrabold mb-1">₹{{ $rewardBalance }}/-</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Reward Points</h2>
-                                <h3 class="fw-extrabold mb-2">₹{{ $rewardBalance }}/-</h3>
-                            </div>
-                            {{-- <small class="d-flex align-items-center text-gray-500">
-                                Feb 1 - Apr 1,
-                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                USA
-                            </small>
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Since last month
-                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">22%</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                        <path opacity="0.1"
-                                            d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
-                                            fill="#323232"></path>
-                                        <path
-                                            d="M3 12C3 4.5885 4.5885 3 12 3C19.4115 3 21 4.5885 21 12C21 19.4115 19.4115 21 12 21C4.5885 21 3 19.4115 3 12Z"
-                                            stroke="#323232" stroke-width="2"></path>
-                                        <path
-                                            d="M12 17L9.12186 14.1219V14.1219C9.07689 14.0769 9.11206 13.9992 9.17562 13.9971C13.9993 13.8351 13.9408 7 9 7H15"
-                                            stroke="#323232" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round"></path>
-                                        <path d="M9 10.5H15" stroke="#323232" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round"></path>
-                                    </g>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Cur. Month Expenses</h2>
-                                <h3 class="mb-1">₹{{ $monthlyPurchase }}/-</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Cur. Month Expenses</h2>
-                                <h3 class="fw-extrabold mb-2">₹{{ $monthlyPurchase }}/-</h3>
-                            </div>
-                            {{-- <small class="d-flex align-items-center text-gray-500">
-                                Feb 1 - Apr 1,
-                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                GER
-                            </small>
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Since last month
-                                    <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-danger fw-bolder">2%</span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-header">
+        <div class="col-12 mb-4" id="my-transactions">
+            <div class="card border-0 shadow dashboard-transactions-card">
+                <div class="card-header dashboard-transactions-header">
                     <div class="row align-items-center">
                         <div class="col">
                             <h2 class="fs-5 fw-bold mb-0">Transactions</h2>
-                        </div>
-                        <div class="col text-end">
-                            {{-- <a href="#" class="btn btn-sm btn-primary">See all</a> --}}
+                            <p class="mb-0 mt-1">Your latest POS transaction activity</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- POS Transactions Table -->
-                <div class="col-md-6 col-12 mb-4" style="width: 100%">
-                    <div class="card flex-fill">
-                        <div class="card-body py-4">
-                            <h6><b>POS Transaction (Latest 50 Transactions)</b></h6>
-                            <br>
+                <div class="col-12 dashboard-transactions-content">
+                    <div class="card flex-fill border-0 shadow-none">
+                        <div class="card-body dashboard-transactions-body">
                             <!-- Date Filter Form -->
-                            <form action="{{ route('user.index') }}" method="GET" class="form-inline mb-3">
-                                <div class="input-group mb-3"
-                                    style="align-content: center;height: 60px; align-items: normal !important;margin-top: 1.5%">
-                                    <div class="me-2">
-                                        <label for="from_date" class="form-label">From</label>
-                                        <input type="date" class="form-control" name="from_date" id="from_date"
-                                            value="{{ request('from_date') }}" placeholder="From Date">
-                                    </div>
-
-                                    <div class="me-2">
-                                        <label for="to_date" class="form-label">To</label>
-                                        <input type="date" class="form-control" name="to_date" id="to_date"
-                                            value="{{ request('to_date') }}" placeholder="To Date">
-                                    </div>
-
-                                    <button class="btn btn-info btn-sm" type="submit"
-                                        style="height: 38px;margin:2.6%; border-radius: 10px;">Search Transactions</button>
+                            <form action="{{ route('user.index') }}" method="GET" class="dashboard-transaction-filter">
+                                <div>
+                                    <label for="from_date" class="form-label">From</label>
+                                    <input type="date" class="form-control" name="from_date" id="from_date"
+                                        value="{{ request('from_date') }}" placeholder="From Date">
                                 </div>
+
+                                <div>
+                                    <label for="to_date" class="form-label">To</label>
+                                    <input type="date" class="form-control" name="to_date" id="to_date"
+                                        value="{{ request('to_date') }}" placeholder="To Date">
+                                </div>
+
+                                <button class="btn btn-primary" type="submit">Search transactions</button>
                             </form>
-                            <br>
                             <!-- Responsive Table -->
-                            <div class="scrollable-table">
-                                <table cid="tech-companies-1" class="table table-striped table-bordered">
+                            <div class="scrollable-table dashboard-transactions-table-wrap" tabindex="0" aria-label="Scrollable transaction table">
+                                <table class="table dashboard-transactions-table align-middle">
                                     <thead>
                                         <tr>
                                             <th>Sl.No</th>
                                             <th>POS ID</th>
                                             <th>Invoice</th>
-                                            <th>Transaction Date</th>
-                                            <th>Billing Amount</th>
-                                            <th>Wallet Deduct</th>
-                                            <th>Reward Deduct</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Wallet</th>
+                                            <th>Reward</th>
                                             <th>Net Pay</th>
-                                            <th>Remaining Wallet</th>
-                                            <th>Remaining Reward</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse ($walletList as $key => $data)
                                             <tr>
-                                                <td>{{ ($walletList->currentPage() - 1) * $walletList->perPage() + $key + 1 }}
-                                                </td>
+                                                <td>{{ ($walletList->currentPage() - 1) * $walletList->perPage() + $key + 1 }}</td>
                                                 <td>{{ $data->getPos->user_id ?? 'N/A' }}</td>
-                                                <td>{{ $data->invoice }}</td>
+                                                <td>{{ $data->invoice ?? '—' }}</td>
                                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
-                                                <td>₹{{ $data->billing_amount ?? 0 }}/-</td>
-                                                <td>₹{{ $data->amount_wallet ?? 0 }}/-</td>
-                                                <td>₹{{ $data->userWallets[0]->used_points ?? 0 }}/-</td>
-                                                <td>₹{{ $data->amount ?? 0 }}/-</td>
-                                                <td>₹{{ $data->remaining_amount ?? 0 }}/-</td>
-                                                <td>₹{{ $data->remaining_reward ?? 0 }}/-</td>
+                                                <td>₹{{ number_format((float) ($data->billing_amount ?? 0), 2) }}</td>
+                                                <td>₹{{ number_format((float) ($data->amount_wallet ?? 0), 2) }}</td>
+                                                <td>₹{{ number_format((float) ($data->userWallets->first()?->used_points ?? 0), 2) }}</td>
+                                                <td>₹{{ number_format((float) ($data->amount ?? 0), 2) }}</td>
                                                 <td>
                                                     @if ($data->status == 0)
-                                                        <span class="btn btn-danger btn-sm">Unverified</span>
+                                                        <span class="transaction-status transaction-status--pending">Unverified</span>
                                                     @else
-                                                        <span class="btn btn-success btn-sm">Verified</span>
+                                                        <span class="transaction-status transaction-status--verified">Verified</span>
                                                     @endif
                                                 </td>
-
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center">
-                                                    <div class="alert alert-danger" role="alert">
-                                                        No transaction record found.
+                                                <td colspan="9" class="text-center">
+                                                    <div class="transaction-empty-state" role="status">
+                                                        No transactions found for this date range.
                                                     </div>
                                                 </td>
                                             </tr>
@@ -507,7 +568,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
                             {{ $walletList->links() }}
                         </div>
                     </div>

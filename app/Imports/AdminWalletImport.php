@@ -42,7 +42,7 @@ class AdminWalletImport implements ToModel, WithHeadingRow
             'user_id' => $user->id, // Use the id from the Users table
             'month' => $formattedMonth,
             'wallet_amount' => $row['wallet_amount'],
-            'reward_points' => $row['reward_points'],
+            'reward_points' => $row['reward_point'],
             'trans_type' => $row['payment_mode'],
             'mobilenumber' => $row['mobile_number'],
             'transaction_date' => $formattedDate

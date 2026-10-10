@@ -20,6 +20,16 @@ class DsrController extends Controller
 {
     public function dsr(Request $request)
     {
+        $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+        if ($request->filled('start_date') && $request->filled('end_date')
+            && Carbon::parse($request->end_date)->lt(Carbon::parse($request->start_date))) {
+            return back()->withErrors(['end_date' => 'The end date must be the same as or after the start date.'])->withInput();
+        }
+
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $query = Wallet::with('getPos')
@@ -30,14 +40,14 @@ class DsrController extends Controller
                 COUNT(id) as total_transactions
             ')
             ->groupBy('pos_id', DB::raw('DATE(transaction_date)'));
-        if (
-            $request->has('start_date') && !empty($request->start_date) &&
-            $request->has('end_date') && !empty($request->end_date)
-        ) {
-
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
-            $endDate = Carbon::parse($request->end_date)->endOfDay();
-            $query->whereBetween('transaction_date', [$startDate, $endDate]);
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        if ($startDate && $endDate) {
+            $query->whereBetween('transaction_date', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
+        } elseif ($startDate) {
+            $query->whereDate('transaction_date', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('transaction_date', '<=', $endDate);
         } else {
             $query->whereDate('transaction_date', today());
 
@@ -53,8 +63,12 @@ class DsrController extends Controller
         }
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('mobilenumber', 'LIKE', "%{$searchTerm}%")->orWhereHas('getPos', function ($qry) use ($searchTerm) {
-                $qry->where('name', 'LIKE', "%{$searchTerm}%")->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
+            $query->where(function ($searchQuery) use ($searchTerm) {
+                $searchQuery->where('mobilenumber', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('getPos', function ($posQuery) use ($searchTerm) {
+                        $posQuery->where('name', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
+                    });
             });
         }
         $summary = (clone $query)->get();
@@ -62,8 +76,15 @@ class DsrController extends Controller
         $totalTransactions = $summary->sum('total_transactions');
         $totalBillingAmount = $summary->sum('total_billing_amount');
         $totalPos = $summary->pluck('pos_id')->unique()->count();
-        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')
-            ->simplePaginate(15);
+        $wallets = $query->with('user', 'getPos')->orderBy('transaction_date', 'desc')->orderBy('pos_id')
+            ->simplePaginate(15)
+            ->through(function ($wallet) {
+                $chargeRate = (float) ($wallet->getPos->transaction_charge ?? 0);
+                $wallet->total_transaction_charges =
+                    (float) $wallet->total_billing_amount * $chargeRate / 100;
+
+                return $wallet;
+            });
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
@@ -76,6 +97,7 @@ class DsrController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $id = decrypt($id);
+        $pos = PosModel::findOrFail($id);
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $transaction_date = $request->transaction_date;
@@ -110,7 +132,7 @@ class DsrController extends Controller
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
-        return view('admin.dsr.indivisualDsr', compact('wallets', 'userId', 'user_profile', 'id', 'start_date', 'end_date'));
+        return view('admin.dsr.indivisualDsr', compact('wallets', 'userId', 'user_profile', 'id', 'pos', 'start_date', 'end_date'));
     }
 
     public function update_dsr(Request $request)
@@ -182,7 +204,11 @@ class DsrController extends Controller
     {
         $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
         $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
-        return Excel::download(new WalletExport($startDate, $endDate), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        if (! $startDate && ! $endDate) {
+            $startDate = today()->toDateString();
+            $endDate = $startDate;
+        }
+        return Excel::download(new WalletExport($startDate, $endDate, null, $request->input('search')), 'DailySalesReport_' . now()->format('d,m,y') . '.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
     public function userTransactionExport(Request $request)
@@ -191,7 +217,7 @@ class DsrController extends Controller
         $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
         $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
         $pos_id = $request->pos_id;
-        return Excel::download(new WalletExport($startDate, $endDate, $pos_id), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new WalletExport($startDate, $endDate, $pos_id), 'UserDailySalesReport_' . now()->format('d,m,y') . '.csv', \Maatwebsite\Excel\Excel::CSV);
     }
     public function import(Request $request)
     {
@@ -226,6 +252,50 @@ class DsrController extends Controller
         $monthlySales->appends($request->only(['search', 'month', 'filter']));
 
         return view('admin.msr.index', compact('pos', 'monthlySales', 'selectedMonth', 'userId', 'user_profile'));
+    }
+
+    public function newMsr(Request $request)
+    {
+        $validated = $request->validate([
+            'month' => ['nullable', 'date_format:Y-m'],
+        ]);
+
+        $selectedMonth = $validated['month'] ?? now()->format('Y-m');
+        $monthStart = Carbon::createFromFormat('Y-m', $selectedMonth)->startOfMonth();
+        $monthEnd = $monthStart->copy()->endOfMonth();
+        $monthSales = static function ($query) use ($monthStart, $monthEnd) {
+            $query->whereBetween('transaction_date', [$monthStart, $monthEnd]);
+        };
+
+        $posSales = PosModel::query()
+            ->withSum(['wallet as total_billing_amount' => $monthSales], 'billing_amount')
+            ->withCount(['wallet as total_transactions' => $monthSales])
+            ->orderBy('name')
+            ->simplePaginate(15)
+            ->appends(['month' => $selectedMonth]);
+
+        return view('admin.msr.new-index', compact('posSales', 'selectedMonth'));
+    }
+
+    public function newMsrDetails(Request $request, PosModel $pos)
+    {
+        $validated = $request->validate([
+            'month' => ['nullable', 'date_format:Y-m'],
+        ]);
+
+        $selectedMonth = $validated['month'] ?? now()->format('Y-m');
+        $monthStart = Carbon::createFromFormat('Y-m', $selectedMonth)->startOfMonth();
+        $monthEnd = $monthStart->copy()->endOfMonth();
+        $transactions = Wallet::query()
+            ->where('pos_id', $pos->id)
+            ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+            ->with('user')
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('id')
+            ->simplePaginate(15)
+            ->appends(['month' => $selectedMonth]);
+
+        return view('admin.msr.new-details', compact('pos', 'transactions', 'selectedMonth'));
     }
 
     public function msrCalculation($request)
@@ -385,6 +455,6 @@ class DsrController extends Controller
         });
 
         // Log::info($dataWithSponsorExpenditure->toArray());
-        return Excel::download(new MsrExport($dataWithSponsorExpenditure), 'MonthlySalesReport.csv');
+        return Excel::download(new MsrExport($dataWithSponsorExpenditure), 'MonthlySalesReport_' . now()->format('d,m,y') . '.csv');
     }
 }

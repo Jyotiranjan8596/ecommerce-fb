@@ -12,6 +12,6 @@ class DownloadPdfController extends Controller
     {
         $ledger = Payment::getLedgerDataExport($request);
         $pdf = Pdf::loadView('pdf.ledgerpdf', $ledger);
-        return $pdf->download('Account_Ledger.pdf');
+        return $pdf->download('AccountLedger_' . now()->format('d,m,y') . '.pdf');
     }
 }

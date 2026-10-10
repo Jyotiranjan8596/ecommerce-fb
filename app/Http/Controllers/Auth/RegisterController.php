@@ -93,6 +93,11 @@ class RegisterController extends Controller
                 'string',
                 'max:20'
             ],
+            'sponsor_ref' => [
+                'nullable',
+                'string',
+                'max:20'
+            ],
             'image' => [
                 'nullable',
                 'image',
@@ -113,6 +118,13 @@ class RegisterController extends Controller
     {
         // dd(array_key_exists('terms', $data));
         $imageName = null;
+        $referrer = null;
+
+        $defaultSponsorUserId = '9624023';
+        $refCode = $data['sponsor_ref'] ?? $data['ref'] ?? $defaultSponsorUserId;
+        if (! empty($refCode)) {
+            $referrer = User::where('user_id', (string) $refCode)->first();
+        }
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $imageName = time() . '.' . $data['image']->getClientOriginalExtension();
@@ -130,11 +142,20 @@ class RegisterController extends Controller
             'role'         => 3,
             'city'         => $data['city'],
             'state'        => $data['state'],
-            'sponsor_id'   => 666666,
+            'sponsor_id'   => $referrer ? $referrer->id : (User::where('user_id', $defaultSponsorUserId)->value('id') ?? 666666),
         ]);
         $whatsapp  = new WhatsappMessageService();
         $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
         Log::info('registration Result in Route', [$msg_reslt]);
         return $user;
+    }
+
+    protected function registered($request, $user)
+    {
+        session()->flash('registration_success', true);
+        session()->flash('registered_user_id', $user->user_id ?? 'N/A');
+        session()->flash('registered_default_password', '123456');
+
+        return redirect($this->redirectPath());
     }
 }

@@ -69,11 +69,24 @@
                                 clip-rule="evenodd"></path>
                         </svg>
                     </span>
-                    <span class="sidebar-text">DSR</span>
+                    <span class="sidebar-text">Sales Report</span>
                 </a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item {{ request()->is('pos/customer-orders*') ? 'active' : '' }}">
+                <a href="{{ route('pos.customer-orders.index') }}" class="nav-link">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3h14v2H3zM3 8h14v2H3zM3 13h9v2H3z"></path>
+                            <path d="M14 13h3v3h-3z"></path>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">Customer Orders</span>
+                </a>
+            </li>
+
+            <!-- <li class="nav-item">
                 <a href="{{ route('pos.msr') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -86,9 +99,9 @@
                     </span>
                     <span class="sidebar-text">MSR</span>
                 </a>
-            </li>
+            </li> -->
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a href="{{ route('pos.unverified.user') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -98,12 +111,12 @@
                                 d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
                                 clip-rule="evenodd"></path>
                         </svg>
-                    </span>
-                    {{-- <span class="sidebar-text">Unverified Customer</span> --}}
+                    </span>Customer
+                    {{-- <span class="sidebar-text">Unverified </span> --}}
                     <span class="sidebar-text">Transactions</span>
                 </a>
-            </li>
-            <li class="nav-item">
+            </li> -->
+            <!-- <li class="nav-item">
                 <a href="{{ route('pos.sattlement') }}" class="nav-link">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 24 24"
@@ -113,9 +126,9 @@
                             <path d="M12 8a4 4 0 0 0-4 4h2a2 2 0 1 1 2 2 1 1 0 0 0 0 2h2a4 4 0 0 0-2-7.75z" />
                         </svg>
                     </span>
-                    <span class="sidebar-text">Settlement</span>
-                </a>
-            </li>
+                    <span class="sidebar-text">Settlement</span> -->
+                <!-- </a>
+            </li> -->
             <li class="nav-item {{ request()->is('user/management*') ? 'active' : '' }}">
                 <span class="nav-link collapsed d-flex justify-content-between align-items-center"
                     data-bs-toggle="collapse" data-bs-target="#submenu-app-acc">
@@ -204,6 +217,12 @@
                 </div> --}}
                 <div class="multi-level collapse" role="list" id="submenu-app-setting" aria-expanded="false">
                     <ul class="flex-column nav">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('pos/profile/index') ? 'active' : '' }}"
+                                href="{{ route('pos.profile.index') }}">
+                                <span class="sidebar-text">Profile &amp; Delivery Settings</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('pos.change.password') }}">
                                 <span class="sidebar-text">Change Password</span>

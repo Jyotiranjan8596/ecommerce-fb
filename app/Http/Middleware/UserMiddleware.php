@@ -20,6 +20,10 @@ class UserMiddleware
             DB::reconnect();
         }
         if (Auth::check() && Auth::user()->role == 3) {
+            Auth::user()->loadCount(['referrals as referrals_count' => function ($query) {
+                $query->where('role', 3);
+            }]);
+
             return $next($request);
         }
         return redirect()->back();

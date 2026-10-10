@@ -21,8 +21,27 @@ class WalletController extends Controller
 {
     public function walletManage(Request $request)
     {
-        $pos_id = $request->query('user_id');
-        $user   = User::where('user_id', $pos_id)->first();
+        $searchTerm = trim((string) $request->query('user_id', $request->query('search', '')));
+        $user = null;
+
+        if ($searchTerm !== '') {
+            $user = User::where('user_id', $searchTerm)
+                ->orWhere('mobilenumber', $searchTerm)
+                ->first();
+        }
+
+        $walletList = collect();
+        $walletBalance = null;
+        $balanceNotFound = false;
+        $transactionsNotFound = false;
+
+        if (! $user) {
+            return view('pos.wallet_manage', compact(
+                'user', 'walletList', 'walletBalance', 'balanceNotFound',
+                'transactionsNotFound', 'searchTerm'
+            ));
+        }
+
         $userId = Auth::user()->user_id;
         // dd($userId);
         $pos = PosModel::where('user_id', $userId)->first();
@@ -60,7 +79,8 @@ class WalletController extends Controller
             'walletList',
             'walletBalance',
             'balanceNotFound',
-            'transactionsNotFound'
+            'transactionsNotFound',
+            'searchTerm'
         ));
     }
 
@@ -77,6 +97,81 @@ class WalletController extends Controller
         $walletBalance = $walletAmount - $usedAmount;
 
         return $walletBalance > 0 ? $walletBalance : 0;
+    }
+
+    public function adjustWallet(Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'type' => ['required', 'in:credit,debit'],
+            'amount' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
+            'description' => ['nullable', 'string', 'max:200'],
+        ]);
+
+        $amount = round((float) $data['amount'], 2);
+        $result = DB::transaction(function () use ($data, $amount) {
+            $user = User::whereKey($data['user_id'])->lockForUpdate()->firstOrFail();
+            $entries = UserWallet::where('user_id', $user->id)->lockForUpdate()->get();
+            $balance = round((float) $entries->sum('wallet_amount') - (float) $entries->sum('used_amount'), 2);
+
+            if ($data['type'] === 'debit' && $amount > $balance) {
+                return false;
+            }
+
+            $creditAmount = $data['type'] === 'credit' ? $amount : 0;
+            $debitAmount = $data['type'] === 'debit' ? $amount : 0;
+            $newBalance = round($balance + $creditAmount - $debitAmount, 2);
+            $reference = 'ADM-' . now()->format('ymdHis') . '-' . random_int(100, 999);
+            $adminPos = PosModel::where('user_id', Auth::user()->user_id)->first();
+
+            $transaction = new Wallet();
+            $transaction->description = $data['description'] ?: 'Admin wallet ' . $data['type'];
+            $transaction->invoice = $reference;
+            $transaction->amount = $amount;
+            $transaction->pay_by = 'wallet';
+            $transaction->tran_type = $data['type'];
+            $transaction->transaction_amount = 0;
+            $transaction->pay_by_wallet = 'wallet';
+            $transaction->amount_wallet = 0;
+            $transaction->user_id = $user->id;
+            $transaction->pos_id = $adminPos?->id;
+            $transaction->insert_by = Auth::id();
+            $transaction->status = 1;
+            $transaction->insert_date = now();
+            $transaction->transaction_date = now()->toDateString();
+            $transaction->mobilenumber = $user->mobilenumber;
+            Wallet::withoutEvents(function () use ($transaction) {
+                $transaction->save();
+            });
+
+            $rewardBalance = round((float) $entries->sum('reward_points') - (float) $entries->sum('used_points'), 2);
+            $userWalletEntry = new UserWallet();
+            $userWalletEntry->user_id = $user->id;
+            $userWalletEntry->pos_id = $adminPos?->id ?? 0;
+            $userWalletEntry->wallet_id = $transaction->id;
+            $userWalletEntry->invoice = $reference;
+            $userWalletEntry->month = now()->format('M-y');
+            $userWalletEntry->wallet_amount = $creditAmount;
+            $userWalletEntry->used_amount = $debitAmount;
+            $userWalletEntry->remaining_amount = $newBalance;
+            $userWalletEntry->reward_points = 0;
+            $userWalletEntry->used_points = 0;
+            $userWalletEntry->remaining_points = max(0, $rewardBalance);
+            $userWalletEntry->pay_by = 'wallet';
+            $userWalletEntry->trans_type = $data['type'];
+            $userWalletEntry->transaction_date = now()->toDateString();
+            $userWalletEntry->mobilenumber = $user->mobilenumber;
+            $userWalletEntry->save();
+
+            return $user;
+        });
+
+        if (! $result) {
+            return redirect()->back()->withInput()->with('error', 'The debit amount is greater than the available wallet balance.');
+        }
+
+        return redirect()->route('admin.wallet.manage', ['user_id' => $result->user_id])
+            ->with('success', ucfirst($data['type']) . ' of ₹' . number_format($amount, 2) . ' recorded successfully.');
     }
 
     public function dsr(Request $request)
@@ -153,7 +248,7 @@ class WalletController extends Controller
         $endDate   = $request->has('end_date') && ! empty($request->end_date) ? $request->end_date : null;
         $posId = auth()->user()->user_id;
         $pos   = PosModel::where('user_id', $posId)->value('id');
-        return Excel::download(new WalletExport($startDate, $endDate, $pos), 'daily_sales_report.csv', \Maatwebsite\Excel\Excel::CSV);
+        return Excel::download(new WalletExport($startDate, $endDate, $pos), 'PosDailySalesReport_' . now()->format('d,m,y') . '.csv', \Maatwebsite\Excel\Excel::CSV);
     }
 
     public function import(Request $request)
@@ -354,7 +449,7 @@ class WalletController extends Controller
             return $item;
         });
         // dd($filteredData);
-        return Excel::download(new PosMsrExport($filteredData), 'MonthlySalesReport.csv');
+        return Excel::download(new PosMsrExport($filteredData), 'PosMonthlySalesReport_' . now()->format('d,m,y') . '.csv');
     }
 
     public function journal(Request $request)

@@ -37,11 +37,11 @@
         content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/volt-pro-bootstrap-5-dashboard/volt-pro-preview.jpg" />
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="icon" href="{{ asset('assets/images/faviconfreebazar.png') }}" />
-    <link rel="mask-icon" href="{{ asset('assets/images/faviconfreebazar.png') }}" color="#ffffff" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" />
+    <link rel="mask-icon" href="{{ asset('assets/images/freebazarfavicon.png') }}?v=3" color="#ffffff" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="theme-color" content="#ffffff" />
 
@@ -53,6 +53,7 @@
 
     <!-- Volt CSS -->
     <link type="text/css" href="{{ asset('assets/css/volt.css') }}" rel="stylesheet" />
+    <link type="text/css" href="{{ asset('css/enterprise-theme.css') }}" rel="stylesheet" />
 
 </head>
 
@@ -102,6 +103,8 @@
 
     <!-- Volt JS -->
     <script src="{{ asset('assets/js/volt.js') }}"></script>
+
+    @include('ui.layout.footer')
 </body>
 
 </html>
