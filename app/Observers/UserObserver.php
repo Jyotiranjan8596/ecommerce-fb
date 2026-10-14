@@ -29,11 +29,11 @@ class UserObserver
         ]);
         $whatsapp  = new WhatsappMessageService();
         if ($user->role == 4) {
-            $msg_reslt = $whatsapp->pos_registration($user->name, $user->mobilenumber);
+            $msg_result = $whatsapp->pos_registration($user->name, $user->mobilenumber);
         } else if ($user->role == 3) {
-            $msg_reslt = $whatsapp->user_registration($user->name, $user->mobilenumber);
+            $msg_result = $whatsapp->user_registration($user->name, $user->mobilenumber);
         }
-        Log::info('User POS register message result', [$msg_reslt]);
+        Log::info('User POS register message result', [$msg_result]);
     }
 
     /**
