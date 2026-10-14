@@ -31,7 +31,7 @@ class PosController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        $pos          = PosModel::orderBy('id', 'desc')->latest()->simplePaginate(15);
+        $pos          = PosModel::with('user')->orderBy('id', 'desc')->latest()->simplePaginate(15);
         $mapLocations = PosModel::query()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')

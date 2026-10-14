@@ -20,6 +20,10 @@
                     class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Back to MSR Report
                 </a>
+                <a href="{{ route('admin.new.msr.details.export', ['pos' => $pos->id, 'month' => $selectedMonth]) }}"
+                    class="btn btn-outline-success">
+                    <i class="fas fa-download me-1" aria-hidden="true"></i> Export Transactions
+                </a>
             </div>
 
             <div class="scroll-list-section new-msr-table-section">
@@ -143,7 +147,9 @@
 
         .new-msr-detail-toolbar {
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: .75rem;
             padding: 1rem 1.25rem;
             border-bottom: 1px solid rgba(148, 163, 184, 0.18);
             background: rgba(248, 250, 252, 0.72);

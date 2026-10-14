@@ -5,8 +5,10 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DownloadPdfController;
+use App\Http\Controllers\DsrSummaryController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\PaymentSummaryController;
+use App\Http\Controllers\OfferController as AudienceOfferController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\WalletController;
@@ -104,6 +106,7 @@ Route::get('pos-list/data', [UserDashboardController::class, 'posList'])->name('
 
 Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], function () {
     Route::get('/', [UserDashboardController::class, 'index'])->name('index');
+    Route::get('offers', [AudienceOfferController::class, 'index'])->name('offers.index');
     Route::get('prime-dashboard', [UserDashboardController::class, 'primeDashboard'])->name('prime.dashboard');
     Route::get('prime-profile', [UserDashboardController::class, 'primeProfile'])->name('prime.profile');
     Route::get('edit/profile', [UserDashboardController::class, 'editprofile'])->name('edit.profile');
@@ -128,6 +131,8 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['user']], fu
 });
 Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], function () {
     Route::get('/', [PosController::class, 'index'])->name('index');
+    Route::get('dsr-summary', [DsrSummaryController::class, 'posIndex'])->name('dsr-summary.index');
+    Route::get('offers', [AudienceOfferController::class, 'index'])->name('offers.index');
     Route::get('customer-orders', [CustomerOrderController::class, 'posIndex'])->name('customer-orders.index');
     Route::patch('customer-orders/{order}/status', [CustomerOrderController::class, 'updateStatus'])->name('customer-orders.status');
     Route::get('customer-orders/{order}/handwritten-list', [CustomerOrderController::class, 'downloadPosList'])->name('customer-orders.list.download');
@@ -158,6 +163,7 @@ Route::group(['prefix' => 'pos', 'as' => 'pos.', 'middleware' => ['pos']], funct
     Route::get('account/ledger', [PaymentSummaryController::class, 'pos_ledger_index'])->name('ledger.index');
     Route::post('get/ledger/data', [PaymentSummaryController::class, 'getledger'])->name('get.ledger');
     Route::post('ledger/export', [PaymentSummaryController::class, 'ledgerExport'])->name('ledger.export');
+    Route::get('ledger/download-pdf', [DownloadPdfController::class, 'downloadLedgerPdf'])->name('ledger.download-pdf');
     Route::post('get/receipt/journal', [PaymentSummaryController::class, 'getReceipt'])->name('get.receipt');
     Route::post('store-receipt', [PaymentSummaryController::class, 'store_receipt'])->name('store.receipt');
 });
@@ -165,6 +171,5 @@ Route::get('terms-conditions-pos', [PosController::class, 'terms_conditions'])->
 Route::post('verify-pos', [PosController::class, 'verifyAllPos'])->name('verify.all_pos');
 
 Route::get('/admin/pos_system/download/{id}/{name}', [AdminPosController::class, 'download_qr'])->name('admin.pos_system.download');
-Route::get('/ledger/download-pdf', [DownloadPdfController::class, 'downloadLedgerPdf'])->name('ledger.download-pdf');
 Route::get('reset-password', [ResetPasswordController::class, 'index'])->name('reset.password');
 Route::post('update-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset.otp');

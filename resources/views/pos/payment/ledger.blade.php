@@ -402,9 +402,13 @@
 
     <script>
         $(document).ready(function() {
-            let user_id = {{ $userId }};
+        const escapeHtml = value => $('<div>').text(value ?? '').html();
+        const formatAmount = value => Number(value ?? 0).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 
-            function showFormLoader() {
+        function showFormLoader() {
                 $('#form-loader-overlay').css('display', 'flex');
             }
 
@@ -430,9 +434,8 @@
                     success: function(response) {
 
                         let rows = '';
-                        let index = response.data.from ?? 1;
+                        let index = 1;
                         $('#tbl-div').attr('hidden', false);
-                        console.log(response.data);
                             
                         const openingBalance = response.data.opening_balance;
                         const openingBalanceType = response.data.opening_balance_type;
@@ -445,9 +448,7 @@
                             let paginationHtml = '';
                             rows += `<tr class="opening-row">
                                         <td colspan="6" class="text-end">Opening Balance</td>
-                                        <td>
-                                            ${openingBalance} ${openingBalanceType}
-                                        </td>
+                                        <td class="text-end">₹${formatAmount(openingBalance)} ${escapeHtml(openingBalanceType)}</td>
                                     </tr>
                                 `;
                             transactions.forEach(function(item) {
@@ -455,27 +456,27 @@
                                 rows += `
                                         <tr>
                                             <td data-label="Sl.No">${index++}</td>
-                                            <td data-label="Date">${item.date ?? ''}</td>
-                                            <td data-label="Voucher No">${item.voucher_number ?? ''}</td>
-                                            <td data-label="Account"><span class="voucher-type">{{ $row['voucher_type'] ?? '' }}</span>
-                                                <div class="remarks">ref - ${item.reference_number},${item.remark}
+                                            <td data-label="Date">${escapeHtml(item.date)}</td>
+                                            <td data-label="Voucher No">${escapeHtml(item.voucher_number)}</td>
+                                            <td data-label="Account"><span class="voucher-type">${escapeHtml(item.account_name)}</span>
+                                                <div class="remarks">Ref: ${escapeHtml(item.reference_number)}${item.remark ? `, ${escapeHtml(item.remark)}` : ''}
                                                 </div></td>
-                                            <td data-label="Debit">${item.debit}</td>
-                                            <td data-label="Credit">${item.credit}</td>
-                                            <td data-label="Balance">${item.balance} ${item.balance_type}</td>
+                                            <td data-label="Debit" class="text-end">${item.debit > 0 ? `₹${formatAmount(item.debit)}` : '—'}</td>
+                                            <td data-label="Credit" class="text-end">${item.credit > 0 ? `₹${formatAmount(item.credit)}` : '—'}</td>
+                                            <td data-label="Balance" class="text-end">₹${formatAmount(item.balance)} ${escapeHtml(item.balance_type)}</td>
                                         </tr>
                                     `;
                             });
                             rows += `<tr>
                                             <td colspan="4" class="closing-row text-end bold"><strong>Total</strong></td>
-                                            <td><strong>${response.data.total_debit}</strong></td>
-                                            <td><strong>${response.data.total_credit}</strong></td>
-                                            <td><strong>${response.data.total_balance} ${response.data.total_balance_type}</strong></td>
+                                            <td class="text-end"><strong>₹${formatAmount(response.data.total_debit)}</strong></td>
+                                            <td class="text-end"><strong>₹${formatAmount(response.data.total_credit)}</strong></td>
+                                            <td class="text-end"><strong>₹${formatAmount(response.data.total_balance)} ${escapeHtml(response.data.total_balance_type)}</strong></td>
                                         </tr>
                                     `;
                             // $('#pagination-container').html(buildPagination(pagination));
                             const pdfUrl =
-                                `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
+                                `{{ route('pos.ledger.download-pdf') }}?from_date=${encodeURIComponent(fromDate)}&to_date=${encodeURIComponent(toDate)}`;
                             $('#download-pdf-btn').attr('href', pdfUrl);
                         } else {
 

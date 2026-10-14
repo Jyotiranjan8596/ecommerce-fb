@@ -361,14 +361,10 @@
                     html: `
                         <div style="text-align:left; padding:6px 4px;">
                             <div style="font-size:14px; color:#1b2b41; margin-bottom:10px; font-weight:600;">
-                                Your account is ready. Please keep the below login details safe.
+                                Your account is ready. Use your new User ID and the password you chose to sign in.
                             </div>
                             <div style="background:#f3faf8; border:1px solid #d9efe8; border-radius:10px; padding:12px 14px; line-height:1.9; color:#123a3d;">
                                 <div><strong>User ID:</strong> <span style="color:#0d6e77;">{{ session('registered_user_id') }}</span></div>
-                                <div><strong>Default Password:</strong> <span style="color:#0d6e77;">{{ session('registered_default_password') }}</span></div>
-                            </div>
-                            <div style="margin-top:14px; background:#fff8e6; border:1px solid #f5d38b; color:#8a5b00; border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; text-align:left;">
-                                Warning: Please change your login credentials soon due to safety reasons.
                             </div>
                         </div>
                     `,

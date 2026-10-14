@@ -89,7 +89,7 @@
 </head>
 
 
-<body>
+<body class="has-fixed-sidebar">
     {{-- <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
         <symbol id="check2" viewBox="0 0 16 16">
             <path
@@ -202,11 +202,10 @@
         @include('pos.includes.navbar')
         <br>
         @yield('content')
-
-
-        @include('ui.layout.footer')
     </main>
     {{-- Main Content end  --}}
+
+    @include('ui.layout.footer')
 
     <!--coming soon sweet alert Scripts -->
     @include('frontend.dashboard.includes.js')
@@ -264,7 +263,7 @@
     </script>
 
     @stack('scripts')
-    
+
 </body>
 
 </html>

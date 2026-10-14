@@ -2,6 +2,16 @@
 
 @section('content')
     <div class="container" style="margin-top: 20px;">
+        <div class="mb-3">
+            <a class="btn btn-outline-primary"
+                href="{{ route('admin.dsr', array_filter([
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'search' => request('search'),
+                ], fn ($value) => $value !== null && $value !== '')) }}">
+                <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Back to DSR
+            </a>
+        </div>
         <h3 class="text-center"><b style="color: rgb(8, 7, 20)">POS Transaction Details</b></h3>
 
         <section class="card mb-4 border-0 shadow-sm">
@@ -53,12 +63,10 @@
 
             <!-- Export Form -->
             <div class="col-md-8 mb-3 text-end">
-                <form method="GET" action="{{ route('admin.dsr.user.transaction.export') }}">
-                    <input type="hidden" name="start_date" value="{{ $start_date }}">
-                    <input type="hidden" name="end_date" value="{{ $end_date }}">
-                    <input type="hidden" name="pos_id" value="{{ $id }}">
-                    <button class="btn btn-danger" type="submit">EXPORT</button>
-                </form>
+                <a class="btn btn-danger"
+                    href="{{ route('admin.transaction.details.export', ['id' => encrypt($id), 'transaction_date' => $transaction_date]) }}">
+                    <i class="fas fa-download me-1" aria-hidden="true"></i> EXPORT
+                </a>
             </div>
         </div>
         <div class="table-responsive">

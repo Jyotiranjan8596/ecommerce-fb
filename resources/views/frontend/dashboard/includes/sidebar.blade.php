@@ -81,8 +81,11 @@
         </div>
         <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
-                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center">
-                    <span class="mt-1 ms-1 sidebar-text">FREEBAZAR</span>
+                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center sidebar-brand">
+                    <span class="sidebar-brand-mark">
+                        <img src="{{ asset('assets/images/freebazar-sidebar-logo.png') }}" alt="" aria-hidden="true">
+                    </span>
+                    <span class="sidebar-text">FREEBAZAR</span>
                 </a>
             </li>
             <li class="nav-item {{ request()->is('user') ? 'active' : '' }}">
@@ -125,6 +128,22 @@
                         </svg>
                     </span>
                     <span class="sidebar-text">My Order</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('user.offers.index') }}"
+                    class="nav-link {{ request()->is('user/offers*') ? 'active' : '' }}">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M3 8h14v10H3zM2 5h16v3H2zM10 5v13M10 5C7 5 5 4 5 2.8S7.5 1.5 9 3.2L10 5zm0 0c3 0 5-1 5-2.2S12.5 1.5 11 3.2L10 5z">
+                            </path>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">Offers</span>
                 </a>
             </li>
 

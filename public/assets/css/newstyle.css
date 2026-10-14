@@ -717,8 +717,8 @@ body {
   }
 
   @media (min-width: 992px) {
-      body > .freebazar-site-footer,
-      body > #footer-bottom {
+      body.has-fixed-sidebar > .freebazar-site-footer,
+      body.has-fixed-sidebar > #footer-bottom {
           margin-left: 260px;
           width: calc(100% - 260px);
           box-sizing: border-box;
@@ -726,8 +726,8 @@ body {
   }
 
   @media (max-width: 991.98px) {
-      body > .freebazar-site-footer,
-      body > #footer-bottom {
+      body.has-fixed-sidebar > .freebazar-site-footer,
+      body.has-fixed-sidebar > #footer-bottom {
           margin-left: 0;
           width: 100%;
       }

@@ -5,8 +5,8 @@
         #wallet-tbl thead th {
             position: sticky;
             top: 0;
-            background-color: #000;
-            color: #fff;
+            background-color: #edf5f5;
+            color: #174b54;
             z-index: 10;
         }
 
@@ -146,27 +146,99 @@
         .closing-row {
             border: #000;
         }
+
+        .ledger-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .8rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--et-border);
+            background: #f8fbfc;
+        }
+
+        .ledger-summary-item {
+            min-width: 0;
+            padding: .8rem .9rem;
+            border: 1px solid var(--et-border);
+            border-radius: .75rem;
+            background: #fff;
+        }
+
+        .ledger-summary-item span {
+            display: block;
+            color: var(--et-muted);
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .ledger-summary-item strong {
+            display: block;
+            margin-top: .2rem;
+            color: #174b54;
+            font-size: 1.05rem;
+        }
+
+        .ledger-summary-item--closing {
+            border-color: rgba(15, 138, 122, .25);
+            background: #eff9f6;
+        }
+
+        @media (max-width: 767.98px) {
+            .ledger-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 380px) {
+            .ledger-summary-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
     </style>
     <div id="form-loader-overlay">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">Account Ledger</b></h3>
+    <div class="container-fluid py-3 admin-workflow-page">
+        <section class="admin-workflow-hero">
+            <div>
+                <span class="admin-workflow-hero__eyebrow">Financial reporting</span>
+                <h1>Account Ledger</h1>
+                <p>Select a POS to review its opening balance, transaction details, period totals, and closing balance.</p>
+            </div>
+            <span class="admin-workflow-hero__icon" aria-hidden="true"><i class="bi bi-journal-text"></i></span>
+        </section>
 
         <div class="row g-3 mb-3">
             {{-- Filters --}}
             <div class="col-12">
-                <div class="card shadow-sm border-0 p-3">
+                <div class="card admin-workflow-card p-3">
 
                     <form id="ledger-form">
                         @csrf
 
                         <div class="row g-3 align-items-end">
+                            <input type="hidden" id="pos_id" name="pos_id">
 
-
-
+                            <div class="col-12 col-md-5">
+                                <label for="pos-search" class="form-label small fw-semibold text-muted">
+                                    Search and select POS
+                                </label>
+                                <input type="search" id="pos-search" class="form-control form-control-sm"
+                                    list="pos-options" placeholder="Search by POS name or user ID" autocomplete="off"
+                                    aria-describedby="pos-selection-help" required>
+                                <datalist id="pos-options">
+                                    @foreach ($posList as $pos)
+                                        <option value="{{ $pos->name }} ({{ $pos->user_id }})"
+                                            data-pos-id="{{ $pos->id }}"></option>
+                                    @endforeach
+                                </datalist>
+                                <small id="pos-selection-help" class="form-text text-muted">
+                                    Select a POS from the suggestions to view its ledger.
+                                </small>
+                            </div>
 
                             <!-- From Date -->
                             <div class="col-12 col-sm-6 col-md-2">
@@ -189,7 +261,7 @@
 
 
                             <!-- Buttons -->
-                            <div class="col-12 col-md-2">
+                            <div class="col-12 col-md-3">
                                 <div class="d-flex gap-2">
 
                                     <button type="submit" class="btn btn-primary btn-sm flex-grow-1 fw-semibold">
@@ -197,8 +269,9 @@
                                         View
                                     </button>
 
-                                    <button type="reset" class="btn btn-outline-secondary btn-sm" title="Reset Filter">
-                                        <i class="bi bi-arrow-counterclockwise">Reset</i>
+                                    <button type="button" id="reset-ledger-filters" class="btn btn-outline-secondary btn-sm"
+                                        title="Reset date filters">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset dates
                                     </button>
 
                                 </div>
@@ -210,37 +283,61 @@
                 </div>
             </div>
 
-            {{-- Export
-            <div class="col-12 col-md-2 d-flex align-items-end justify-content-md-end">
-                <form method="post" action="{{ route('pos.ledger.export') }}" class="w-100">
+        </div>
+        <!-- Data Table -->
+        <div id="tbl-div" hidden class="card admin-workflow-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 border-bottom">
+            <div>
+                <h2 class="h5 mb-0">Ledger Details — <span id="ledger-pos-name"></span></h2>
+                <p class="text-muted small mb-0 mt-1" id="ledger-period-label">Opening balance, transactions, and period totals.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="#" id="download-pdf-btn" class="btn btn-primary btn-sm fw-semibold" target="_blank" rel="noopener" hidden>
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+                </a>
+                <form method="POST" action="{{ route('admin.ledger.export') }}" id="ledger-export-form" hidden>
                     @csrf
-                    <input id="hidden_search_type" type="hidden" name="hsearch_type">
-                    <input id="hidden_value" type="hidden" name="hvalue">
-                    <button class="btn btn-danger btn-sm fw-semibold w-100" type="submit">
-                        <i class="bi bi-download me-1"></i> EXPORT
+                    <input type="hidden" name="pos_id" id="export-pos-id">
+                    <input type="hidden" name="from_date" id="export-from-date">
+                    <input type="hidden" name="to_date" id="export-to-date">
+                    <button type="submit" class="btn btn-outline-primary btn-sm fw-semibold">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel
                     </button>
                 </form>
-            </div> --}}
-
-        </div>
-        <hr class="my-4">
-
-        <!-- Data Table -->
-        <div id="tbl-div" hidden class="table-responsive">
-            <div class="d-flex justify-content-end my-3">
-                <a href="#" id="download-pdf-btn" class="btn btn-primary btn-sm fw-semibold" target="_blank">
-                    <i class="bi bi-download me-1"></i>Download
-                </a>
             </div>
-            <table class="table table-striped" id="wallet-tbl">
+            </div>
+            <div class="ledger-summary-grid" aria-label="Ledger summary">
+                <div class="ledger-summary-item">
+                    <span>Opening balance</span>
+                    <strong id="summary-opening">—</strong>
+                </div>
+                <div class="ledger-summary-item">
+                    <span>Total debit</span>
+                    <strong id="summary-debit">—</strong>
+                </div>
+                <div class="ledger-summary-item">
+                    <span>Total credit</span>
+                    <strong id="summary-credit">—</strong>
+                </div>
+                <div class="ledger-summary-item ledger-summary-item--closing">
+                    <span>Closing balance</span>
+                    <strong id="summary-closing">—</strong>
+                </div>
+            </div>
+            <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 admin-workflow-table" id="wallet-tbl">
                 <thead>
                     <tr>
-                        <th>Sl.No</th>
                         <th>Date</th>
                         <th>Voucher No</th>
-                        <th>Ref No</th>
+                        <th>Account</th>
+                        <th>Details</th>
+                        <th>Reference No</th>
+                        <th>Payment Method</th>
                         <th>Debit</th>
                         <th>Credit</th>
+                        <th>Due</th>
+                        <th>GST No</th>
                         <th>Balance</th>
                     </tr>
                 </thead>
@@ -248,6 +345,7 @@
                 <tbody id="ldg-tbl-bdy">
                 </tbody>
             </table>
+            </div>
         </div>
 
         <!-- Pagination Links -->
@@ -257,7 +355,30 @@
 
     <script>
         $(document).ready(function() {
-            let user_id = {{ $userId }};
+            const escapeHtml = value => $('<div>').text(value ?? '').html();
+            const formatAmount = value => Number(value ?? 0).toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            const $posSearch = $('#pos-search');
+            const $posId = $('#pos_id');
+            let resolvedPosId = '';
+
+            function resolveSelectedPos() {
+                const selectedOption = Array.from(document.querySelectorAll('#pos-options option'))
+                    .find(option => option.value === $posSearch.val());
+                const posId = selectedOption?.dataset.posId ?? '';
+                $posId.val(posId);
+
+                if (posId !== resolvedPosId) {
+                    $('#tbl-div').prop('hidden', true);
+                    $('#download-pdf-btn').prop('hidden', true);
+                    $('#ledger-export-form').prop('hidden', true);
+                    resolvedPosId = posId;
+                }
+
+                return selectedOption;
+            }
 
             function showFormLoader() {
                 $('#form-loader-overlay').css('display', 'flex');
@@ -271,6 +392,7 @@
 
                 let formData = new FormData(formElement); // Capital 'F'
                 formData.append('page', page);
+                const requestedPosId = $posId.val();
                 const fromDate = $('#from_date').val();
                 const toDate = $('#to_date').val();
                 $.ajax({
@@ -282,87 +404,122 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
+                    beforeSend: function() {
+                        showFormLoader();
+                    },
                     success: function(response) {
+                        if (requestedPosId !== $posId.val()) {
+                            return;
+                        }
 
                         let rows = '';
-                        let index = response.data.from ?? 1;
-                        $('#tbl-div').attr('hidden', false);
-                        console.log(response.data);
+                        $('#tbl-div').prop('hidden', false);
+                        const selectedPos = resolveSelectedPos();
+                        $('#ledger-pos-name').text(selectedPos?.value ?? '');
                         let data = response.data;
                         const openingBalance = response.data.opening_balance;
                         const openingBalanceType = response.data.opening_balance_type;
+                        const openingLabel = `₹${formatAmount(openingBalance)} ${escapeHtml(openingBalanceType)}`;
+                        const closingLabel = `₹${formatAmount(data.total_balance)} ${escapeHtml(data.total_balance_type)}`;
+                        $('#summary-opening').text(openingLabel);
+                        $('#summary-debit').text(`₹${formatAmount(data.total_debit)}`);
+                        $('#summary-credit').text(`₹${formatAmount(data.total_credit)}`);
+                        $('#summary-closing').text(closingLabel);
+                        $('#ledger-period-label').text(
+                            fromDate || toDate
+                                ? `Period: ${fromDate || 'Beginning'} to ${toDate || 'Today'}`
+                                : 'All dates'
+                        );
+
+                        rows += `<tr class="opening-row">
+                                    <td colspan="10" class="text-end">Opening Balance</td>
+                                    <td>${openingLabel}</td>
+                                </tr>`;
 
                         const transactions = Object.keys(response.data)
                             .filter(key => !isNaN(key))
                             .map(key => response.data[key]);
-                        if (Object.keys(response.data).length > 0) {
-                            const pagination = response.data;
-                            let paginationHtml = '';
-                            rows += `<tr class="opening-row">
-                                        <td colspan="6" class="text-end">Opening Balance</td>
-                                        <td>
-                                            ${openingBalance} ${openingBalanceType}
-                                        </td>
-                                    </tr>
-                                `;
+                        if (transactions.length) {
                             transactions.forEach(function(item) {
-
+                                const details = [item.account_details, item.remark]
+                                    .filter(value => value)
+                                    .map(value => escapeHtml(value))
+                                    .join('<br>');
                                 rows += `
                                         <tr>
-                                            <td>${index++}</td>
-                                            <td>${item.date ?? ''}</td>
-                                            <td>${item.voucher_number ?? ''}</td>
-                                            <td>${item.reference_number ?? ''}</td>
-                                            <td>${item.debit}</td>
-                                            <td>${item.credit}</td>
-                                            <td>${item.balance} ${item.balance_type}</td>
+                                            <td>${escapeHtml(item.date)}</td>
+                                            <td>${escapeHtml(item.voucher_number)}</td>
+                                            <td>${escapeHtml(item.account_name)}</td>
+                                            <td>${details || '—'}</td>
+                                            <td>${escapeHtml(item.reference_number)}</td>
+                                            <td>${escapeHtml(item.payment_method)}</td>
+                                            <td class="text-end">${item.debit > 0 ? `₹${formatAmount(item.debit)}` : '—'}</td>
+                                            <td class="text-end">${item.credit > 0 ? `₹${formatAmount(item.credit)}` : '—'}</td>
+                                            <td class="text-end">${item.due > 0 ? `₹${formatAmount(item.due)}` : '—'}</td>
+                                            <td>${escapeHtml(item.gst_no) || '—'}</td>
+                                            <td class="text-end">₹${formatAmount(item.balance)} ${escapeHtml(item.balance_type)}</td>
                                         </tr>
                                     `;
                             });
-                            rows += `<tr>
-                                            <td colspan="4" class="closing-row text-end bold"><strong>Total</strong></td>
-                                            <td><strong>${data.total_debit}</strong></td>
-                                            <td><strong>${data.total_credit}</strong></td>
-                                            <td><strong>${data.total_balance} ${data.total_balance_type}</strong></td>
-                                        </tr>
-                                    `;
-                            // $('#pagination-container').html(buildPagination(pagination));
-                            const pdfUrl =
-                                `/freebazar/public/ledger/download-pdf?from_date=${fromDate}&to_date=${toDate}`;
-                            $('#download-pdf-btn').attr('href', pdfUrl);
                         } else {
-
-                            rows = `
-                                    <tr>
-                                        <td colspan="8" class="text-center">
-                                            No data found
-                                        </td>
-                                    </tr>
-                                `;
+                            rows += `<tr><td colspan="11"><div class="admin-workflow-empty">
+                                <i class="bi bi-inbox" aria-hidden="true"></i>
+                                No ledger transactions match this date range.
+                            </div></td></tr>`;
                         }
 
+                        rows += `<tr class="closing-row">
+                                    <td colspan="6" class="text-end"><strong>Period Total / Closing Balance</strong></td>
+                                    <td class="text-end"><strong>₹${formatAmount(data.total_debit)}</strong></td>
+                                    <td class="text-end"><strong>₹${formatAmount(data.total_credit)}</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end"><strong>${closingLabel}</strong></td>
+                                </tr>`;
+
+                        const pdfUrl =
+                            `{{ route('admin.ledger.download-pdf') }}?pos_id=${encodeURIComponent(requestedPosId)}&from_date=${encodeURIComponent(fromDate)}&to_date=${encodeURIComponent(toDate)}`;
+                        $('#download-pdf-btn').attr('href', pdfUrl).prop('hidden', false);
+                        $('#export-pos-id').val(requestedPosId);
+                        $('#export-from-date').val(fromDate);
+                        $('#export-to-date').val(toDate);
+                        $('#ledger-export-form').prop('hidden', false);
                         $('#ldg-tbl-bdy').html(rows);
 
-                        // Pagination HTML
-                        $('#pagination-link').html(response.pagination);
                     },
                     error: function(xhr) {
-                        console.log(xhr.responseText);
-                        alert('Something went wrong');
+                        $('#tbl-div, #download-pdf-btn, #ledger-export-form').prop('hidden', true);
+                        const message = xhr.responseJSON?.message
+                            || xhr.responseJSON?.errors?.pos_id?.[0]
+                            || 'Unable to load the ledger. Please try again.';
+                        Swal.fire({ icon: 'error', title: 'Ledger unavailable', text: message });
+                    },
+                    complete: function() {
+                        hideFormLoader();
                     }
                 });
             }
 
-            $('#download-pdf-btn').on('click', function() {
-                console.log('clicked');
-                let from = $('#from_date').val();
-                let to = $('#to_date').val();
-            });
-
             // Filter submit
             $('#ledger-form').on('submit', function(e) {
                 e.preventDefault();
+                if (!resolveSelectedPos()) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Select a POS',
+                        text: 'Choose a POS from the search suggestions before viewing its ledger.'
+                    });
+                    $posSearch.trigger('focus');
+                    return;
+                }
                 loadLedger(1, this);
+            });
+            $posSearch.on('input change', resolveSelectedPos);
+            $('#reset-ledger-filters').on('click', function() {
+                $('#from_date, #to_date').val('');
+                if ($posId.val()) {
+                    loadLedger(1, $('#ledger-form')[0]);
+                }
             });
 
         });

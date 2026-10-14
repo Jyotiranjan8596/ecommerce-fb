@@ -66,14 +66,4 @@ class AdminController extends Controller
             'rewardChartData'
         ));
     }
-
-
-
-    public function offer()
-    {
-        $user_profile = auth()->user();
-        $userId       = $user_profile->id;
-
-        return view('admin.offer.index', compact('userId', 'user_profile'));
-    }
 }

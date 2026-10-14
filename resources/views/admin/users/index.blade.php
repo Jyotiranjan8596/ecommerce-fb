@@ -96,6 +96,7 @@
                             <th scope="col">Sponsor</th>
                             <th scope="col">Referrals</th>
                             <th scope="col">Registered</th>
+                            <th scope="col">Account Status</th>
                             <th scope="col" class="text-end">Action</th>
                         </tr>
                     </thead>
@@ -128,20 +129,47 @@
                                     >{{ number_format($data->referrals_count) }}</a>
                                 </td>
                                 <td>{{ optional($data->created_at)->format('d/m/Y') ?: '—' }}</td>
+                                <td>
+                                    @if ((int) $data->status === 1)
+                                        <span class="badge rounded-pill bg-success">Active</span>
+                                    @else
+                                        <span class="badge rounded-pill bg-secondary">Suspended</span>
+                                    @endif
+                                </td>
                                 <td class="text-end">
-                                    <a
-                                        href="{{ route('admin.users.edit', $data->id) }}"
-                                        class="btn btn-outline-primary btn-sm user-list-edit"
-                                        aria-label="Edit {{ $data->name ?: 'user' }}"
-                                        title="Edit user"
-                                    >
-                                        <i class="fas fa-pen" aria-hidden="true"></i>
-                                    </a>
+                                    <div class="d-flex flex-wrap justify-content-end align-items-start gap-2">
+                                        <a
+                                            href="{{ route('admin.users.edit', $data->id) }}"
+                                            class="btn btn-outline-primary btn-sm user-list-edit"
+                                            aria-label="Edit {{ $data->name ?: 'user' }}"
+                                            title="Edit user"
+                                        >
+                                            <i class="fas fa-pen" aria-hidden="true"></i>
+                                        </a>
+                                        <form action="{{ route('admin.users.status', $data->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="status" value="{{ (int) $data->status === 1 ? 0 : 1 }}">
+                                            <button class="btn btn-sm {{ (int) $data->status === 1 ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit">
+                                                {{ (int) $data->status === 1 ? 'Suspend' : 'Activate' }}
+                                            </button>
+                                        </form>
+                                        <details class="user-list-password">
+                                            <summary class="btn btn-outline-secondary btn-sm">Change password</summary>
+                                            <form action="{{ route('admin.users.password', $data->id) }}" method="POST" class="user-list-password__form">
+                                                @csrf
+                                                <label for="customer-password-{{ $data->id }}" class="form-label">New password</label>
+                                                <input id="customer-password-{{ $data->id }}" type="password" name="password" class="form-control form-control-sm" minlength="8" autocomplete="new-password" required>
+                                                <label for="customer-password-confirmation-{{ $data->id }}" class="form-label mt-2">Confirm password</label>
+                                                <input id="customer-password-confirmation-{{ $data->id }}" type="password" name="password_confirmation" class="form-control form-control-sm" minlength="8" autocomplete="new-password" required>
+                                                <button class="btn btn-primary btn-sm mt-2" type="submit">Update password</button>
+                                            </form>
+                                        </details>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="user-list-empty">
                                         <span class="user-list-empty__icon" aria-hidden="true"><i class="fas fa-users"></i></span>
                                         <strong>No users found</strong>
@@ -173,6 +201,30 @@
             display: grid;
             gap: 1.25rem;
             padding-bottom: 1rem;
+        }
+
+        .user-list-password {
+            position: relative;
+            text-align: left;
+        }
+
+        .user-list-password summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .user-list-password summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .user-list-password__form {
+            width: 16rem;
+            margin-top: 0.4rem;
+            padding: 0.85rem;
+            border: 1px solid #dbe3ec;
+            border-radius: 0.75rem;
+            background: #fff;
+            box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.16);
         }
 
         .user-list-page__heading {

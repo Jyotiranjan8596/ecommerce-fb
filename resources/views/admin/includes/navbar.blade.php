@@ -69,7 +69,10 @@ $user_profile = auth()->user();
                 <li class="nav-item dropdown">
                     <a class="nav-link text-dark notification-bell position-relative dropdown-toggle"
                         data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
-                        data-bs-display="static" aria-expanded="false">
+                        data-bs-display="static" aria-expanded="false"
+                        data-notifications-url="{{ route('notifications.index') }}"
+                        data-notification-read-url-template="{{ route('notifications.read', ['id' => '__notification_id__']) }}"
+                        data-notifications-read-all-url="{{ route('notifications.read-all') }}">
                         <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor"
                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path

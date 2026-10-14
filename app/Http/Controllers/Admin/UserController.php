@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,8 +92,8 @@ class UserController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $roles = Role::all();
+        abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $roles = Role::query()->where('guard_name', 'web')->orderBy('name')->get();
         return view('admin.users.create', compact('roles', 'userId', 'user_profile'));
     }
     public function searchSponsor(Request $request)
@@ -136,28 +137,37 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        //
-        $validatedData = $request->validate([
-            'name'     => 'required|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/|max:255',
-            'email'    => 'required',
-            'password' => 'required|string|min:8',
-            'role'     => 'required',
+        abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'mobilenumber' => ['nullable', 'string', 'max:20', 'unique:users,mobilenumber'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'integer', 'exists:roles,id,guard_name,web'],
         ]);
 
-        $user = new User();
+        $role = Role::where('guard_name', 'web')->findOrFail($validated['role']);
+        $user = DB::transaction(function () use ($validated, $role) {
+            do {
+                $userId = (string) mt_rand(1000000, 9999999);
+            } while (User::where('user_id', $userId)->exists());
 
-        $user->name     = $request->name;
-        $user->email    = $request->email;
-        $user->password = $request->password;
-        $user->role     = $request->role;
-        $user->assignRole([$request->role]);
+            $user = User::create([
+                'user_id' => $userId,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'mobilenumber' => $validated['mobilenumber'] ?? null,
+                'password' => $validated['password'],
+                'role' => (string) $role->id,
+            ]);
+            $user->assignRole($role);
 
-        if ($user->save()) {
-            flash()->addSuccess('Customer created successfully.');
-            return redirect()->route('admin.users.index');
-        }
-        flash()->addError('User create fail!');
-        return redirect()->route('admin.users.index');
+            return $user;
+        });
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User ' . $user->name . ' was created successfully.');
     }
 
     /**
@@ -328,18 +338,4 @@ class UserController extends Controller
         //
     }
 
-    public function banUnban($id, $status)
-    {
-        if (auth()->user()->hasRole('Admin')) {
-            $user         = User::findOrFail($id);
-            $user->status = $status;
-            if ($user->save()) {
-                flash()->addSuccess('User status updated successfully.');
-                return redirect()->back();
-            }
-            flash()->addError('User status update fail!');
-            return redirect()->back();
-        }
-        return redirect(Response::HTTP_FORBIDDEN, '403 Forbidden');
-    }
 }

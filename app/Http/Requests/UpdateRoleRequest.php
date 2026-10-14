@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRoleRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateRoleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('role_edit');
     }
 
     /**
@@ -22,7 +24,14 @@ class UpdateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required'
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles')->where('guard_name', 'web')->ignore($this->route('role')?->id),
+            ],
+            'permissions' => ['sometimes', 'array'],
+            'permissions.*' => ['integer', 'distinct', 'exists:permissions,id,guard_name,web'],
         ];
     }
 }

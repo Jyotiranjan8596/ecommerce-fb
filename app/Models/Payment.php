@@ -60,14 +60,16 @@ class Payment extends Model
         try {
             $user = auth()->user();
             $today = now()->toDateString();
+            $isPos = $request->boolean('is_pos');
             $pos = PosModel::find($request->pos_id);
             if (!$pos) {
+                DB::rollBack();
                 return false;
             }
 
             $voucherNumber = Helper::generateVoucherNumber();
 
-            if ($request->is_pos) {
+            if ($isPos) {
                 $debitTo  = $pos->user_id;
                 $creditTo = 666666;
             } else {
@@ -77,17 +79,49 @@ class Payment extends Model
 
             $payment_smry = PaymentSummary::where('date', $request->summary_date)
                 ->where('pos_id', $pos->id)
-                ->where('status', 'pending')->first();
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->first();
+            if (!$payment_smry) {
+                DB::rollBack();
+                return false;
+            }
+
+            $generatedEntry = $isPos
+                ? $payment_smry->ensureGeneratedPaymentEntry()
+                : null;
+            $referenceNumber = $isPos
+                ? $generatedEntry?->reference_number
+                : $request->reference_number;
+
+            if ($isPos && !$referenceNumber) {
+                DB::rollBack();
+                return false;
+            }
+
+            $settlementAmount = $isPos ? $payment_smry->admin_credit : $payment_smry->admin_debit;
+            $remainingCents = self::remainingSettlementCents(
+                $payment_smry,
+                $debitTo,
+                $creditTo,
+                $settlementAmount
+            );
+            $payingCents = (int) round((float) $request->paying_amount * 100);
+            if ($payingCents <= 0 || $payingCents > $remainingCents) {
+                DB::rollBack();
+                return false;
+            }
+            $remainingAfterPayment = $remainingCents - $payingCents;
 
             $data = [
                 [
                     'payment_summury_id' => $payment_smry->id,
                     'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
-                    'reference_number' => $request->reference_number,
+                    'reference_number' => $referenceNumber,
                     'account_details'  => null,
                     'pay_by'           => $request->pay_by,
-                    // 'due'              => $request->pay_by ?? 0,
+                    'due'              => number_format($remainingAfterPayment / 100, 2, '.', ''),
                     'amount'           => $request->paying_amount,
                     'to'               => $creditTo,
                     'from'             => $debitTo,
@@ -96,29 +130,12 @@ class Payment extends Model
                     'remark'           => $request->remark,
                     'created_at'       => now(),
                     'updated_at'       => now(),
-                ],
-                // [
-                //     'payment_summury_id' => $payment_smry->id,
-                //     'transaction_date' => $today,
-                //     'voucher_number'   => $voucherNumber,
-                //     'reference_number' => $request->reference_number,
-                //     'account_details'  => null,
-                //     'pay_by'           => $request->pay_by,
-                //     'due'              => 0,
-                //     'debit'            => 0,
-                //     'credit'           => $request->paying_amount,
-                //     'credited_to'      => $creditTo,
-                //     'created_by'       => $user->user_id,
-                //     'updated_by'       => $user->user_id,
-                //     'remark'           => $request->remark,
-                //     'created_at'       => now(),
-                //     'updated_at'       => now(),
-                // ]
+                ]
             ];
-            if (!$request->is_pos) {
+            if (!$isPos && $remainingAfterPayment === 0) {
                 $update_res = $payment_smry->update([
                     'status' => 'approved',
-                    'reference_number' => $request->reference_number
+                    'reference_number' => $referenceNumber
                 ]);
 
                 if ($update_res == 0) {
@@ -156,6 +173,28 @@ class Payment extends Model
         }
     }
 
+    private static function remainingSettlementCents(
+        PaymentSummary $summary,
+        string $from,
+        string $to,
+        int|float|string|null $settlementAmount
+    ): int {
+        $paidAmount = self::query()
+            ->where('payment_summury_id', $summary->id)
+            ->where('from', $from)
+            ->where('to', $to)
+            ->where(function ($query) {
+                $query->whereNull('remark')
+                    ->orWhere('remark', '!=', 'Auto Generated');
+            })
+            ->sum('amount');
+
+        return max(
+            0,
+            (int) round((float) $settlementAmount * 100) - (int) round((float) $paidAmount * 100)
+        );
+    }
+
     public static function store_receipt($request)
     {
         DB::beginTransaction();
@@ -168,6 +207,7 @@ class Payment extends Model
 
             $data = [
                 [
+                    'payment_summury_id' => null,
                     'transaction_date' => $today,
                     'voucher_number'   => $voucherNumber,
                     'reference_number' => $request->reference_number,
@@ -175,8 +215,8 @@ class Payment extends Model
                     'pay_by'           => $request->pay_by,
                     // 'due'              => $request->pay_by ?? 0,
                     'amount'           => $request->amount,
-                    'to'               => $request->pay_to,
-                    'from'             => $user->user_id,
+                    'to'               => $user->user_id,
+                    'from'             => $request->pay_to,
                     'created_by'       => $user->user_id,
                     'updated_by'       => $user->user_id,
                     'remark'           => $request->remark,
@@ -188,6 +228,7 @@ class Payment extends Model
             $inserted = Payment::insert($data);
 
             if (!$inserted) {
+                DB::rollBack();
                 return false;
             }
             // $parameters = [
@@ -214,21 +255,21 @@ class Payment extends Model
     }
 
 
-    public static function getLedgerData($request)
+    public static function getLedgerData($request, ?string $accountUserId = null)
     {
         $user_profile = auth()->user();
-        $userId       = $user_profile->user_id;
+        $userId       = $accountUserId ?? $user_profile->user_id;
         $opening_balance = 0;
         // $search_type = $request->search_type;
         // $value = $request->value;
-        $from = $request->form_date;
+        $from = $request->from_date;
         $to = $request->to_date;
         $total_debit     = 0;
         $total_credit    = 0;
         $base_query = self::where(function ($base_query) use ($userId) {
             $base_query->where('to', $userId)
                 ->orWhere('from', $userId);
-        })->with('createdBy')
+        })->with(['creditedTo', 'creditedFrom'])
             ->orderBy('transaction_date', 'asc')
             ->orderBy('id', 'asc');
         if ($from) {
@@ -236,26 +277,18 @@ class Payment extends Model
                 ->whereDate('transaction_date', '<', $from)
                 ->get();
             foreach ($openingTransactions as $transaction) {
-                if ($transaction->from == $userId) {
-
-                    $opening_balance -= $transaction->amount;
-                }
-
-                if ($transaction->to == $userId) {
-
-                    $opening_balance += $transaction->amount;
-                }
+                $opening_balance += self::ledgerBalanceDelta($transaction, $userId);
             }
         }
         $query = (clone $base_query)
-            ->with('createdBy');
+            ->with(['creditedTo', 'creditedFrom']);
 
         if ($from && $to) {
-            $query->whereBetween(
-                'transaction_date',
-                [$from, $to]
-            )->orderBy('transaction_date', 'asc')
-                ->orderBy('id', 'asc');
+            $query->whereBetween('transaction_date', [$from, $to]);
+        } elseif ($from) {
+            $query->whereDate('transaction_date', '>=', $from);
+        } elseif ($to) {
+            $query->whereDate('transaction_date', '<=', $to);
         }
         $running_balance = $opening_balance;
         $transactions = $query->get()->map(function ($item) use (
@@ -266,23 +299,26 @@ class Payment extends Model
         ) {
             $item->debit = 0;
             $item->credit = 0;
+            $item->account_name = $item->to == $userId
+                ? ($item->creditedFrom?->name ?? $item->from)
+                : ($item->creditedTo?->name ?? $item->to);
+            $item->payment_method = match ((string) $item->pay_by) {
+                '1' => 'UPI',
+                '0' => 'Cash',
+                default => 'Not specified',
+            };
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
-            if ($item->to == $userId) {
-                $item->debit = $item->amount;
+            $balanceDelta = self::ledgerBalanceDelta($item, $userId);
+            if ($balanceDelta > 0) {
+                $item->debit = abs($balanceDelta);
                 $total_debit += $item->amount;
-                $item->debit = $item->amount;
-
-                $running_balance += $item->amount;
-            }
-            if ($item->from == $userId) {
-                $item->credit = $item->amount;
+            } elseif ($balanceDelta < 0) {
+                $item->credit = abs($balanceDelta);
                 $total_credit += $item->amount;
-                $item->credit = $item->amount;
-
-                $running_balance -= $item->amount;
             }
+            $running_balance += $balanceDelta;
             $item->balance = number_format(abs($running_balance), 2, '.', '');
 
             $item->balance_type = $running_balance >= 0
@@ -303,10 +339,14 @@ class Payment extends Model
         // dd($transactions->toArray());
         return $transactions;
     }
-    public static function getLedgerDataExport($request)
+    public static function getLedgerDataExport(
+        $request,
+        ?string $accountUserId = null,
+        ?string $accountName = null
+    )
     {
         $user_profile = auth()->user();
-        $userId       = $user_profile->user_id;
+        $userId       = $accountUserId ?? $user_profile->user_id;
         $opening_balance = 0;
         $total_debit     = 0;
         $total_credit    = 0;
@@ -317,7 +357,7 @@ class Payment extends Model
         $base_query = self::where(function ($base_query) use ($userId) {
             $base_query->where('to', $userId)
                 ->orWhere('from', $userId);
-        })->with('createdBy')
+        })->with(['creditedTo', 'creditedFrom'])
             ->orderBy('transaction_date', 'asc')
             ->orderBy('id', 'asc');
         if ($from) {
@@ -325,26 +365,18 @@ class Payment extends Model
                 ->whereDate('transaction_date', '<', $from)
                 ->get();
             foreach ($openingTransactions as $transaction) {
-                if ($transaction->from == $userId) {
-
-                    $opening_balance -= $transaction->amount;
-                }
-
-                if ($transaction->to == $userId) {
-
-                    $opening_balance += $transaction->amount;
-                }
+                $opening_balance += self::ledgerBalanceDelta($transaction, $userId);
             }
         }
         $query = (clone $base_query)
-            ->with('createdBy');
+            ->with(['creditedTo', 'creditedFrom']);
 
         if ($from && $to) {
-            $query->whereBetween(
-                'transaction_date',
-                [$from, $to]
-            )->orderBy('transaction_date', 'asc')
-                ->orderBy('id', 'asc');
+            $query->whereBetween('transaction_date', [$from, $to]);
+        } elseif ($from) {
+            $query->whereDate('transaction_date', '>=', $from);
+        } elseif ($to) {
+            $query->whereDate('transaction_date', '<=', $to);
         }
         $running_balance = $opening_balance;
         $transactions = $query->get()->map(function ($item) use (
@@ -355,23 +387,26 @@ class Payment extends Model
         ) {
             $item->debit = 0;
             $item->credit = 0;
+            $item->account_name = $item->to == $userId
+                ? ($item->creditedFrom?->name ?? $item->from)
+                : ($item->creditedTo?->name ?? $item->to);
+            $item->payment_method = match ((string) $item->pay_by) {
+                '1' => 'UPI',
+                '0' => 'Cash',
+                default => 'Not specified',
+            };
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
-            if ($item->to == $userId) {
-                $item->debit = $item->amount;
+            $balanceDelta = self::ledgerBalanceDelta($item, $userId);
+            if ($balanceDelta > 0) {
+                $item->debit = abs($balanceDelta);
                 $total_debit += $item->amount;
-                $item->debit = $item->amount;
-
-                $running_balance += $item->amount;
-            }
-            if ($item->from == $userId) {
-                $item->credit = $item->amount;
+            } elseif ($balanceDelta < 0) {
+                $item->credit = abs($balanceDelta);
                 $total_credit += $item->amount;
-                $item->credit = $item->amount;
-
-                $running_balance -= $item->amount;
             }
+            $running_balance += $balanceDelta;
             $item->balance = abs($running_balance);
 
             $item->balance_type = $running_balance >= 0
@@ -389,12 +424,49 @@ class Payment extends Model
             'opening_balance_type' => $opening_balance >= 0 ? 'Dr' : 'Cr',
             'from' => Helper::formatDate($from),
             'to' => Helper::formatDate($to),
-            'name' => $user_profile->name,
+            'name' => $accountName ?? $user_profile->name,
             'total_debit' => number_format(abs($total_debit), 2, '.', ''),
             'total_credit' => number_format(abs($total_credit), 2, '.', ''),
             'total_balance' => number_format(abs($total_balance), 2, '.', ''),
             'total_balance_type' => $total_balance_type
         ];
+    }
+
+    private static function ledgerBalanceDelta(self $transaction, string $userId): float
+    {
+        $amount = (float) $transaction->amount;
+
+        if ($transaction->remark === 'Auto Generated') {
+            return $userId === '666666' ? -$amount : $amount;
+        }
+
+        if ($transaction->remark === 'DSR Summary Settled' && $transaction->payment_summury_id !== null) {
+            if ($transaction->to === $userId) {
+                return -$amount;
+            }
+
+            if ($transaction->from === $userId) {
+                return $amount;
+            }
+        }
+
+        if (
+            $transaction->payment_summury_id !== null
+            && $transaction->from === '666666'
+            && $transaction->to === $userId
+        ) {
+            return $userId === '666666' ? $amount : -$amount;
+        }
+
+        if ($transaction->to === $userId) {
+            return $amount;
+        }
+
+        if ($transaction->from === $userId) {
+            return -$amount;
+        }
+
+        return 0;
     }
 
     public static function getReceipt($request)
@@ -404,24 +476,115 @@ class Payment extends Model
         $from = $request->from_date;
         $to = $request->to_date;
 
-        $query = self::where('to', $userId)->with('creditedFrom');
+        $query = self::where('to', $userId)
+            ->where(function ($query) {
+                $query->whereNull('remark')
+                    ->orWhere('remark', '!=', 'Auto Generated');
+            })
+            ->with('creditedFrom');
         if ($from && $to) {
-            $query->whereBetween(
-                'transaction_date',
-                [$from, $to]
-            );
+            $query->whereBetween('transaction_date', [$from, $to]);
+        } elseif ($from) {
+            $query->whereDate('transaction_date', '>=', $from);
+        } elseif ($to) {
+            $query->whereDate('transaction_date', '<=', $to);
         }
-        $data = $query->get()->map(function ($item) {
+        $receipts = $query->orderBy('transaction_date')->orderBy('id')->get();
+        $posUserIds = $receipts->pluck('from')->filter()->unique()->values();
+
+        if ($receipts->isEmpty()) {
+            return [
+                'rows' => collect(),
+                'total_debit' => '0.00',
+                'total_credit' => '0.00',
+            ];
+        }
+
+        $history = self::query()
+            ->where(function ($historyQuery) use ($userId, $posUserIds) {
+                $historyQuery->where('to', $userId)
+                    ->orWhere('from', $userId)
+                    ->orWhereIn('to', $posUserIds)
+                    ->orWhereIn('from', $posUserIds);
+            })
+            ->orderBy('transaction_date')
+            ->orderBy('id')
+            ->get();
+
+        $cashBankBalances = [];
+        $posBalances = [];
+        $receiptBalances = [];
+        $receiptIds = $receipts->pluck('id')->flip();
+
+        foreach ($history as $transaction) {
+            $amount = (float) $transaction->amount;
+            $isAutoGenerated = $transaction->remark === 'Auto Generated';
+
+            if (!$isAutoGenerated && ($transaction->to === $userId || $transaction->from === $userId)) {
+                $method = match ((string) $transaction->pay_by) {
+                    '1' => '1',
+                    '0' => '0',
+                    default => 'unspecified',
+                };
+                $cashBankBalances[$method] = ($cashBankBalances[$method] ?? 0)
+                    + ($transaction->to === $userId ? $amount : -$amount);
+            }
+
+            if ($posUserIds->contains($transaction->to)) {
+                $posBalances[$transaction->to] = ($posBalances[$transaction->to] ?? 0) + $amount;
+            }
+            if ($posUserIds->contains($transaction->from)) {
+                $posBalances[$transaction->from] = ($posBalances[$transaction->from] ?? 0) - $amount;
+            }
+
+            if ($receiptIds->has($transaction->id)) {
+                $method = match ((string) $transaction->pay_by) {
+                    '1' => '1',
+                    '0' => '0',
+                    default => 'unspecified',
+                };
+                $receiptBalances[$transaction->id] = [
+                    'cash_bank' => $cashBankBalances[$method] ?? 0,
+                    'pos' => $posBalances[$transaction->from] ?? 0,
+                ];
+            }
+        }
+
+        $rows = $receipts->reverse()->values()->map(function ($item) use ($receiptBalances) {
+            $method = match ((string) $item->pay_by) {
+                '1' => 'UPI',
+                '0' => 'Cash',
+                default => 'Not specified',
+            };
+            $account = match ((string) $item->pay_by) {
+                '1' => 'Bank (UPI)',
+                '0' => 'Cash',
+                default => 'Cash/Bank',
+            };
+            $balances = $receiptBalances[$item->id] ?? ['cash_bank' => 0, 'pos' => 0];
+            $amount = number_format((float) $item->amount, 2, '.', '');
+
             return [
                 'voucher' => $item->voucher_number,
                 'ref_number' => $item->reference_number,
                 'date' => $item->transaction_date,
-                'receive_from' => $item->creditedFrom->name,
-                'receive_by' => $item->pay_by = 1 ? 'Upi' : 'Cash',
-                'amount' => $item->amount,
-                'remark' => $item->remark
+                'receive_from' => $item->creditedFrom?->name ?? $item->from,
+                'receive_by' => $method,
+                'cash_bank_account' => $account,
+                'amount' => $amount,
+                'debit_balance' => number_format(abs($balances['cash_bank']), 2, '.', ''),
+                'debit_balance_type' => $balances['cash_bank'] >= 0 ? 'Dr' : 'Cr',
+                'credit_balance' => number_format(abs($balances['pos']), 2, '.', ''),
+                'credit_balance_type' => $balances['pos'] >= 0 ? 'Dr' : 'Cr',
+                'remark' => $item->remark,
             ];
         });
-        return $data;
+        $totalAmount = number_format((float) $receipts->sum('amount'), 2, '.', '');
+
+        return [
+            'rows' => $rows,
+            'total_debit' => $totalAmount,
+            'total_credit' => $totalAmount,
+        ];
     }
 }

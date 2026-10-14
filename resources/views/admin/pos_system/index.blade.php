@@ -59,6 +59,7 @@
                             <th scope="col">Mobile Number</th>
                             <th scope="col">Transaction %</th>
                             <th scope="col">Min–Max Charge</th>
+                            <th scope="col">Account Status</th>
                             <th scope="col">Actions</th>
                             <th scope="col">Delivery Orders</th>
                         </tr>
@@ -78,7 +79,18 @@
                                     – ₹{{ number_format((float) $data->max_charge, 2) }}
                                 </td>
                                 <td>
-                                    <div class="d-flex gap-2">
+                                    @if ($data->user && (int) $data->user->role === 4)
+                                        @if ((int) $data->user->status === 1)
+                                            <span class="badge rounded-pill bg-success">Active</span>
+                                        @else
+                                            <span class="badge rounded-pill bg-secondary">Suspended</span>
+                                        @endif
+                                    @else
+                                        <span class="badge rounded-pill bg-warning text-dark">Account unavailable</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
                                         <a href="{{ route('admin.pos_system.edit', $data->id) }}"
                                             class="btn btn-sm btn-outline-primary"
                                             aria-label="Edit {{ $data->name ?: 'POS' }}" title="Edit POS">
@@ -89,6 +101,26 @@
                                             aria-label="Download {{ $data->name ?: 'POS' }}" title="Download POS details">
                                             <i class="fas fa-download" aria-hidden="true"></i>
                                         </a>
+                                        @if ($data->user && (int) $data->user->role === 4)
+                                            <form action="{{ route('admin.pos_system.account-status', $data->id) }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="status" value="{{ (int) $data->user->status === 1 ? 0 : 1 }}">
+                                                <button class="btn btn-sm {{ (int) $data->user->status === 1 ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit">
+                                                    {{ (int) $data->user->status === 1 ? 'Suspend' : 'Activate' }}
+                                                </button>
+                                            </form>
+                                            <details class="pos-list-password">
+                                                <summary class="btn btn-outline-secondary btn-sm">Change password</summary>
+                                                <form action="{{ route('admin.pos_system.account-password', $data->id) }}" method="POST" class="pos-list-password__form">
+                                                    @csrf
+                                                    <label for="pos-password-{{ $data->id }}" class="form-label">New password</label>
+                                                    <input id="pos-password-{{ $data->id }}" type="password" name="password" class="form-control form-control-sm" minlength="8" autocomplete="new-password" required>
+                                                    <label for="pos-password-confirmation-{{ $data->id }}" class="form-label mt-2">Confirm password</label>
+                                                    <input id="pos-password-confirmation-{{ $data->id }}" type="password" name="password_confirmation" class="form-control form-control-sm" minlength="8" autocomplete="new-password" required>
+                                                    <button class="btn btn-primary btn-sm mt-2" type="submit">Update password</button>
+                                                </form>
+                                            </details>
+                                        @endif
                                     </div>
                                 </td>
                                 <td>
@@ -117,7 +149,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10">
+                                <td colspan="11">
                                     <div class="pos-list-empty">
                                         <span class="pos-list-empty__icon" aria-hidden="true">
                                             <i class="fas fa-store"></i>
@@ -141,6 +173,30 @@
             display: grid;
             gap: 1.25rem;
             padding-bottom: 1rem;
+        }
+
+        .pos-list-password {
+            position: relative;
+            text-align: left;
+        }
+
+        .pos-list-password summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .pos-list-password summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .pos-list-password__form {
+            width: 16rem;
+            margin-top: 0.4rem;
+            padding: 0.85rem;
+            border: 1px solid #dbe3ec;
+            border-radius: 0.75rem;
+            background: #fff;
+            box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.16);
         }
 
         .pos-list-heading {

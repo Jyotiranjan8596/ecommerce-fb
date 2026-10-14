@@ -1,4 +1,4 @@
-@extends('ui.layout.master')
+@extends(request()->routeIs('user.pos.list.index') ? 'frontend.dashboard.layouts.master' : 'ui.layout.master')
 
 @section('content')
     <div class="container-fluid px-2 px-md-3 py-3 pos-directory">
@@ -13,8 +13,8 @@
                         </span>
                         <div>
                             <div class="text-uppercase small fw-semibold mb-1 pos-directory-eyebrow">FreeBazar network</div>
-                            <h1 class="h4 mb-1 fw-bold pos-directory-title">List of POS</h1>
-                            <p class="mb-0 pos-directory-subtitle">Find a point of sale by city or ZIP code.</p>
+                            <h1 class="h4 mb-1 fw-bold pos-directory-title">Find a POS near you</h1>
+                            <p class="mb-0 pos-directory-subtitle">Explore locations on the map or search by city and ZIP code.</p>
                         </div>
                     </div>
 
@@ -43,9 +43,13 @@
                     'locations' => [],
                 ])
 
-                <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3">
-                    <div class="fw-semibold text-dark">POS locations</div>
-                    <div id="pos-list-summary" class="small text-muted" aria-live="polite"></div>
+                <div class="pos-directory-list-heading">
+                    <div>
+                        <span class="pos-directory-section-kicker">Browse the network</span>
+                        <h2>POS locations</h2>
+                        <p>Contact a location or select a map marker for directions.</p>
+                    </div>
+                    <div id="pos-list-summary" class="pos-directory-summary" aria-live="polite"></div>
                 </div>
 
                 <div class="table-responsive pos-directory-table-wrap">
@@ -85,12 +89,13 @@
             color: #172033;
             background: linear-gradient(180deg, #f3f7fb 0%, #eef8f8 100%);
             min-height: 100vh;
+            padding: 1rem !important;
         }
 
         .pos-directory .card {
             border: 1px solid rgba(14, 52, 84, 0.08);
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(4px);
+            background: #fff;
+            box-shadow: 0 1rem 2.5rem rgba(21, 47, 73, .08) !important;
         }
 
         .pos-directory .pos-directory-header {
@@ -213,6 +218,60 @@
             background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
         }
 
+        .pos-directory .pos-map-panel {
+            margin-bottom: 1.75rem;
+        }
+
+        .pos-directory .pos-map-canvas {
+            height: clamp(250px, 30vw, 360px);
+        }
+
+        .pos-directory-list-heading {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 0 0 .85rem;
+        }
+
+        .pos-directory-section-kicker {
+            display: block;
+            margin-bottom: .2rem;
+            color: #0d7a8a;
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .pos-directory-list-heading h2 {
+            margin: 0;
+            color: #172b3a;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .pos-directory-list-heading p {
+            margin: .25rem 0 0;
+            color: #64748b;
+            font-size: .84rem;
+        }
+
+        .pos-directory-summary {
+            flex: 0 0 auto;
+            padding: .45rem .75rem;
+            border: 1px solid #d5e9e8;
+            border-radius: 999px;
+            background: #f0f9f8;
+            color: #12616a;
+            font-size: .78rem;
+            font-weight: 750;
+        }
+
+        .pos-directory-summary:empty {
+            display: none;
+        }
+
         .pos-directory .pos-directory-table-wrap {
             border: 1px solid #dfeaf2;
             border-radius: 1rem;
@@ -245,6 +304,26 @@
             font-size: .92rem;
             vertical-align: middle;
             color: #2f3d52;
+        }
+
+        .pos-directory .pos-directory-table tbody td[data-label="POS Name"] {
+            color: #17324d;
+            font-weight: 750;
+        }
+
+        .pos-directory .pos-directory-table tbody td[data-label="Phone"] a {
+            display: inline-flex;
+            align-items: center;
+            color: #0d7180;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .pos-directory .pos-directory-table tbody td[data-label="Phone"] a:hover,
+        .pos-directory .pos-directory-table tbody td[data-label="Phone"] a:focus-visible {
+            color: #145da0;
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
 
         .pos-directory .pos-directory-table tbody tr:last-child td {
@@ -311,8 +390,17 @@
         }
 
         @media (max-width: 767.98px) {
+            .pos-directory {
+                padding: .5rem !important;
+            }
+
             .pos-directory .pos-directory-header {
                 padding: 1.15rem !important;
+            }
+
+            .pos-directory-list-heading {
+                align-items: flex-start;
+                flex-direction: column;
             }
 
             .pos-directory .pos-directory-search {
@@ -404,6 +492,11 @@
         @media (max-width: 420px) {
             .pos-directory .card-body {
                 padding: 1rem !important;
+            }
+
+            .pos-directory .pos-directory-summary {
+                max-width: 100%;
+                white-space: normal;
             }
         }
     </style>
@@ -497,7 +590,13 @@
                         addCell($row, 'Address', item.address || 'N/A');
                         addCell($row, 'City', item.city || 'N/A');
                         addCell($row, 'ZIP', item.zip || 'N/A');
-                        addCell($row, 'Phone', item.mobilenumber || 'N/A');
+                        const $phoneCell = $('<td>').attr('data-label', 'Phone');
+                        if (item.mobilenumber) {
+                            $('<a>').attr('href', 'tel:' + item.mobilenumber).text(item.mobilenumber).appendTo($phoneCell);
+                        } else {
+                            $phoneCell.text('N/A');
+                        }
+                        $row.append($phoneCell);
                         $table.append($row);
                     });
 

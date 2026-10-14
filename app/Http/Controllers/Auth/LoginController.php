@@ -84,6 +84,11 @@ class LoginController extends Controller
         }
         if (Auth::attempt($credentials)) {
             $user = auth()->user();
+            if (in_array((int) $user->role, [3, 4], true) && (int) $user->status !== 1) {
+                Auth::logout();
+                return redirect()->back()->with('error', 'Your account is suspended. Contact the administrator.');
+            }
+
             if ($user->role == 4) {
                 return redirect('pos');
             } elseif ($user->role == 3) {

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class Wallet extends Model
 {
@@ -53,23 +55,40 @@ class Wallet extends Model
         return self::with('user')->find($id);
     }
 
-    public static function verifyDsr($wallet_ids)
+    public function scopePendingDsrVerification(Builder $query): Builder
     {
-        try {
-            $wallets = self::whereIn('id', $wallet_ids)->whereNull('status')->get();
-            $count   = 0;
+        return $query->where(function (Builder $query) {
+            $query->whereNull('status')->orWhere('status', 0);
+        });
+    }
 
-            foreach ($wallets as $wallet) {
-                $wallet->status = 1;
-                $wallet->save(); // This triggers the updated() observer
-                $count++;
+    public static function verifyDsr(array $walletIds, int $posId): int
+    {
+        $now = now();
+        $wallets = self::query()
+            ->whereIn('id', $walletIds)
+            ->where('pos_id', $posId)
+            ->whereNotNull('transaction_date')
+            ->pendingDsrVerification()
+            ->get();
+        $count = 0;
+
+        foreach ($wallets as $wallet) {
+            $verificationDeadline = Carbon::parse($wallet->transaction_date)
+                ->startOfDay()
+                ->addDay()
+                ->setTime(12, 0);
+
+            if ($now->greaterThanOrEqualTo($verificationDeadline)) {
+                continue;
             }
 
-            return $count;
-        } catch (\Exception $e) {
-            Log::info($e->getMessage());
-            return 0;
+            $wallet->status = 1;
+            $wallet->save();
+            $count++;
         }
+
+        return $count;
     }
 
     // public static function getWalletDetails($date){
@@ -81,12 +100,24 @@ class Wallet extends Model
         try {
             $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
 
-            if ($req->has('start_date') && $req->has('end_date')) {
-                $transQuery->whereBetween('transaction_date', [$req->start_date, $req->end_date]);
-            } elseif ($req->has('start_date')) {
-                $transQuery->where('transaction_date', '>=', $req->start_date);
-            } elseif ($req->has('end_date')) {
-                $transQuery->where('transaction_date', '<=', $req->end_date);
+            if ($req->filled('transaction_date')) {
+                $transQuery->whereDate('transaction_date', $req->transaction_date);
+            }
+            if ($req->filled('user_search')) {
+                $search = $req->input('user_search');
+                $transQuery->where(function ($query) use ($search) {
+                    $query->whereHas('getPos', function ($posQuery) use ($search) {
+                        $posQuery->where('user_id', 'LIKE', "%{$search}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$search}%")
+                            ->orWhereHas('user', function ($posUserQuery) use ($search) {
+                                $posUserQuery->where('user_id', 'LIKE', "%{$search}%")
+                                    ->orWhere('mobilenumber', 'LIKE', "%{$search}%");
+                            });
+                    })->orWhereHas('user', function ($customerQuery) use ($search) {
+                        $customerQuery->where('user_id', 'LIKE', "%{$search}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$search}%");
+                    });
+                });
             }
             return $transQuery->paginate(50)->through(function ($item) {
                 $user_wallets = $item->userWallets;
@@ -99,6 +130,7 @@ class Wallet extends Model
                 $item->mobile = $user ? $user->mobilenumber : "NA";
                 $item->pos_name = $item->getPos ? $item->getPos->name : "NA";
                 $item->trans_date = $item->transaction_date ? date('d-m-Y', strtotime($item->transaction_date)) : 'Na';
+                $item->status_label = (int) $item->status === 1 ? 'Verified' : 'Pending';
                 return $item;
             });
         } catch (\Exception $e) {
@@ -111,12 +143,24 @@ class Wallet extends Model
         try {
             $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
 
-            if ($req->has('from_date') && $req->has('to_date')) {
-                $transQuery->whereBetween('transaction_date', [$req->from_date, $req->to_date]);
-            } elseif ($req->has('from_date')) {
-                $transQuery->where('transaction_date', '>=', $req->from_date);
-            } elseif ($req->has('to_date')) {
-                $transQuery->where('transaction_date', '<=', $req->to_date);
+            if ($req->filled('transaction_date')) {
+                $transQuery->whereDate('transaction_date', $req->transaction_date);
+            }
+            if ($req->filled('user_search')) {
+                $search = $req->input('user_search');
+                $transQuery->where(function ($query) use ($search) {
+                    $query->whereHas('getPos', function ($posQuery) use ($search) {
+                        $posQuery->where('user_id', 'LIKE', "%{$search}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$search}%")
+                            ->orWhereHas('user', function ($posUserQuery) use ($search) {
+                                $posUserQuery->where('user_id', 'LIKE', "%{$search}%")
+                                    ->orWhere('mobilenumber', 'LIKE', "%{$search}%");
+                            });
+                    })->orWhereHas('user', function ($customerQuery) use ($search) {
+                        $customerQuery->where('user_id', 'LIKE', "%{$search}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$search}%");
+                    });
+                });
             }
             return $transQuery->get()->map(function ($item) {
                 $user_wallets = $item->userWallets;
@@ -129,6 +173,7 @@ class Wallet extends Model
                 $item->mobile = $user ? $user->mobilenumber : "NA";
                 $item->pos_name = $item->getPos ? $item->getPos->name : "NA";
                 $item->trans_date = $item->transaction_date ? date('d-m-Y', strtotime($item->transaction_date)) : 'Na';
+                $item->status_label = (int) $item->status === 1 ? 'Verified' : 'Pending';
                 return $item;
             });
         } catch (\Exception $e) {

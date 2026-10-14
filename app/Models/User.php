@@ -20,6 +20,10 @@ class User extends Authenticatable
 
     public const PRIME_REFERRAL_THRESHOLD = 10;
 
+    protected $attributes = [
+        'status' => 1,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

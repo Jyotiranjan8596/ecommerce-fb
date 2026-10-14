@@ -18,31 +18,17 @@
 
         .header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .logo-text {
-            font-size: 26px;
+        .brand {
+            color: #174b54;
+            font-size: 20px;
             font-weight: bold;
         }
 
-        .logo-text .free {
-            color: #f7941d;
-        }
-
-        .logo-text .bazar {
-            color: #2e3092;
-        }
-
-        .tagline {
-            font-size: 9px;
-            color: #444;
-            letter-spacing: 1px;
-            margin-top: -4px;
-        }
-
         .company-info {
-            font-size: 10px;
+            font-size: 9px;
             margin-top: 4px;
             line-height: 1.4;
         }
@@ -124,7 +110,7 @@
     </div>
 
     <div class="header">
-        <img src="{{ public_path('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." style="height: 50px;">
+        <div class="brand">FREEBAZAR</div>
         <div class="company-info">
             (A Unit Of Satshree Marketing Pvt. Ltd.)<br>
             Plot-1625(B), Nilakantha Nagar, Nayapalli, Bhubaneswar<br>
@@ -134,53 +120,73 @@
     </div>
 
     <div class="ledger-title-row">
-        <span class="ledger-title">Account Ledger</span>
-        <span class="ledger-account">A/c: {{ strtoupper($name) }}, From {{ $from }} To
-            {{ $to }}</span>
+        <span class="ledger-title">Account Ledger Details</span>
+        <span class="ledger-account">Account: {{ strtoupper($name) }} | Period:
+            @if ($from || $to)
+                {{ $from ?: 'Beginning' }} to {{ $to ?: 'Today' }}
+            @else
+                All dates
+            @endif
+        </span>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width:3%">Sl.</th>
-                <th style="width:11%">Date</th>
-                <th style="width:17%">Voucher No</th>
-                <th style="width:38%">Account</th>
-                <th style="width:10%" class="text-right">Debit</th>
-                <th style="width:10%" class="text-right">Credit</th>
-                <th style="width:11%" class="text-right">Balance</th>
+                <th style="width:7%">Date</th>
+                <th style="width:10%">Voucher</th>
+                <th style="width:12%">Account</th>
+                <th style="width:18%">Details</th>
+                <th style="width:9%">Reference</th>
+                <th style="width:8%">Method</th>
+                <th style="width:8%" class="text-right">Debit</th>
+                <th style="width:8%" class="text-right">Credit</th>
+                <th style="width:7%" class="text-right">Due</th>
+                <th style="width:5%">GST No</th>
+                <th style="width:8%" class="text-right">Balance</th>
             </tr>
         </thead>
         <tbody>
             <tr class="opening-row">
-                <td colspan="6" class="text-right">Opening Balance</td>
+                <td colspan="10" class="text-right">Opening Balance</td>
                 <td class="text-right">
                     {{ number_format($opening_balance, 2) }}<br>{{ $opening_balance_type }}
                 </td>
             </tr>
 
-            @foreach ($rows as $index => $row)
+            @forelse ($rows as $index => $row)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
                     <td>{{ $row['date'] }}</td>
                     <td>{{ $row['voucher_number'] }}</td>
+                    <td>{{ $row['account_name'] ?? '' }}</td>
                     <td>
-                        <span class="voucher-type">{{ $row['voucher_type'] ?? '' }}</span>
-                        <div class="remarks">res - {{ $row['reference_number'] ?? '' }},{{ $row['remark'] ?? '' }}
-                        </div>
+                        {{ $row['account_details'] ?? '' }}
+                        @if (!empty($row['remark']))
+                            <div class="remarks">{{ $row['remark'] }}</div>
+                        @endif
                     </td>
+                    <td>{{ $row['reference_number'] ?? '' }}</td>
+                    <td>{{ $row['payment_method'] ?? '' }}</td>
                     <td class="text-right">{{ $row['debit'] > 0 ? number_format($row['debit'], 2) : '' }}</td>
                     <td class="text-right">{{ $row['credit'] > 0 ? number_format($row['credit'], 2) : '' }}</td>
+                    <td class="text-right">{{ number_format((float) $row['due'], 2) }}</td>
+                    <td>{{ $row['gst_no'] ?? '' }}</td>
                     <td class="text-right">
                         {{ number_format($row['balance'], 2) }} {{ $row['balance_type'] }}
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="11" class="text-center">No transactions in the selected period.</td>
+                </tr>
+            @endforelse
 
             <tr class="total-row">
-                <td colspan="4" class="text-right">Total</td>
+                <td colspan="6" class="text-right">Period Total / Closing Balance</td>
                 <td class="text-right">{{ number_format($total_debit, 2) }}</td>
                 <td class="text-right">{{ number_format($total_credit, 2) }}</td>
+                <td></td>
+                <td></td>
                 <td class="text-right">
                     {{ number_format($total_balance, 2) }}<br>{{ $total_balance_type }}
                 </td>

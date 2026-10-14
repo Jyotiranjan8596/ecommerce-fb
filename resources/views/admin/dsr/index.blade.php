@@ -18,10 +18,20 @@
         .admin-dsr-panel-heading { margin-bottom: 1rem; }
         .admin-dsr-panel-heading h2 { margin: 0; color: #19385e; font-size: 1.05rem; font-weight: 800; }
         .admin-dsr-panel-heading p { margin: .25rem 0 0; color: #718198; font-size: .86rem; }
-        .admin-dsr-controls { display: grid; grid-template-columns: minmax(220px, 1.4fr) repeat(2, minmax(145px, .75fr)) auto auto; gap: .75rem; align-items: end; }
+        .admin-dsr-controls { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+        .admin-dsr-search { flex: 1 1 220px; }
+        .admin-dsr-date-field { flex: 1 1 145px; }
         .admin-dsr-controls label, .admin-dsr-upload label { display: block; margin-bottom: .35rem; color: #52657e; font-size: .76rem; font-weight: 750; }
         .admin-dsr-controls .form-control, .admin-dsr-upload .form-control { min-height: 42px; border-color: #dce5ef; border-radius: 10px; }
         .admin-dsr-controls .btn, .admin-dsr-actions .btn { min-height: 42px; border-radius: 10px; font-weight: 700; }
+        .admin-dsr-icon-button { display: inline-grid !important; width: 46px; min-width: 46px; height: 46px; padding: 0 !important; place-items: center; border: 0 !important; border-radius: 14px !important; color: #fff !important; box-shadow: 0 5px 12px rgba(29,57,91,.2); transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+        .admin-dsr-icon-button:hover { color: #fff !important; transform: translateY(-2px); filter: saturate(1.12); box-shadow: 0 8px 16px rgba(29,57,91,.25); }
+        .admin-dsr-icon-button:focus-visible { outline: 3px solid #94c5ff; outline-offset: 3px; }
+        .admin-dsr-icon-button svg { display: block; width: 23px; height: 23px; }
+        .admin-dsr-icon-button--filter { background: linear-gradient(145deg,#3478f6,#1553c7) !important; }
+        .admin-dsr-icon-button--reset { background: linear-gradient(145deg,#8292a8,#596b82) !important; }
+        .admin-dsr-icon-button--upload { background: linear-gradient(145deg,#16b89a,#07846e) !important; }
+        .admin-dsr-icon-button--export { background: linear-gradient(145deg,#9b61ed,#6b36c5) !important; }
         .admin-dsr-actions { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #edf1f6; }
         .admin-dsr-upload { display: flex; align-items: end; gap: .6rem; flex: 1 1 420px; }
         .admin-dsr-upload > div { flex: 1; min-width: 180px; }
@@ -36,16 +46,17 @@
         .admin-dsr-detail { border-radius: 9px; font-weight: 700; white-space: nowrap; }
         .admin-dsr-empty { padding: 2.5rem 1rem !important; color: #728198 !important; text-align: center; }
         .admin-dsr-pagination { display: flex; justify-content: center; margin-top: 1rem; }
-        @media (max-width: 900px) { .admin-dsr-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-dsr-search { grid-column: 1 / -1; } }
         @media (max-width: 600px) {
             .admin-dsr-page { padding: .75rem .5rem 1.5rem; }
             .admin-dsr-stats { grid-template-columns: 1fr; gap: .65rem; }
             .admin-dsr-stat { padding: .9rem 1rem; }
-            .admin-dsr-controls { grid-template-columns: 1fr; }
-            .admin-dsr-search { grid-column: auto; }
+            .admin-dsr-controls { align-items: stretch; flex-direction: column; }
+            .admin-dsr-search, .admin-dsr-date-field { flex-basis: auto; width: 100%; }
+            .admin-dsr-controls .admin-dsr-icon-button { align-self: flex-start; }
             .admin-dsr-actions, .admin-dsr-upload { align-items: stretch; flex-direction: column; }
             .admin-dsr-upload > div { min-width: 0; }
-            .admin-dsr-upload .btn, .admin-dsr-export, .admin-dsr-export .btn { width: 100%; }
+            .admin-dsr-export { width: 100%; }
+            .admin-dsr-icon-button { width: 46px !important; min-width: 46px !important; }
             .admin-dsr-table-wrap { overflow: visible; border: 0; background: transparent; box-shadow: none; }
             .admin-dsr-table { display: block; min-width: 0; }
             .admin-dsr-table thead { display: none; }
@@ -93,18 +104,30 @@
                     <input type="search" class="form-control" id="dsr-search" name="search"
                         value="{{ request('search') }}" placeholder="POS name or phone number">
                 </div>
-                <div>
+                <div class="admin-dsr-date-field">
                     <label for="start_date">From date</label>
                     <input type="date" class="form-control" name="start_date" id="start_date"
                         value="{{ request('start_date') }}" max="{{ today()->toDateString() }}">
                 </div>
-                <div>
+                <div class="admin-dsr-date-field">
                     <label for="end_date">To date</label>
                     <input type="date" class="form-control" name="end_date" id="end_date"
                         value="{{ request('end_date') }}" max="{{ today()->toDateString() }}">
                 </div>
-                <button class="btn btn-primary" type="submit">Apply filters</button>
-                <a class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center" href="{{ route('admin.dsr') }}">Reset</a>
+                <button class="btn admin-dsr-icon-button admin-dsr-icon-button--filter" type="submit"
+                    title="Search POS" aria-label="Search POS">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.3" stroke="currentColor" stroke-width="2"/>
+                        <path d="m15.5 15.5 4.2 4.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <a class="btn admin-dsr-icon-button admin-dsr-icon-button--reset"
+                    href="{{ route('admin.dsr') }}" title="Reset filters" aria-label="Reset filters">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4.5 11a7.5 7.5 0 1 1 .8 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                        <path d="M4.5 5.5V11H10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
             </form>
 
             <div class="admin-dsr-actions">
@@ -114,13 +137,24 @@
                         <label for="dsr-csv">Import DSR data (CSV)</label>
                         <input type="file" class="form-control" id="dsr-csv" name="file" accept=".csv,text/csv" required>
                     </div>
-                    <button class="btn btn-outline-primary" type="submit">Upload CSV</button>
+                    <button class="btn admin-dsr-icon-button admin-dsr-icon-button--upload" type="submit"
+                        title="Upload CSV" aria-label="Upload CSV">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 15V4m0 0L8 8m4-4 4 4M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </form>
                 <form class="admin-dsr-export" method="GET" action="{{ route('admin.dsr.export') }}">
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                     <input type="hidden" name="end_date" value="{{ request('end_date') }}">
-                    <button class="btn btn-primary" type="submit">Export report</button>
+                    <button class="btn admin-dsr-icon-button admin-dsr-icon-button--export" type="submit"
+                        title="Export report" aria-label="Export report">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7 3.5h7l4.5 4.6v11.4a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 19.5v-14A2 2 0 0 1 7.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M14 3.8v4.7h4.2M12 10v6m-2.5-2.5L12 16l2.5-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </form>
             </div>
         </section>
@@ -140,7 +174,19 @@
                             <td data-label="Billing amount" class="admin-dsr-amount">&#8377;{{ number_format((float) ($data->total_billing_amount ?? 0), 2) }}</td>
                             <td data-label="Transactions">{{ number_format((int) $data->total_transactions) }}</td>
                             <td data-label="TC">&#8377;{{ number_format((float) ($data->total_transaction_charges ?? 0), 2) }}</td>
-                            <td data-label="Details"><a href="{{ route('admin.transaction.details', ['id' => encrypt($data->pos_id), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'transaction_date' => $data->transaction_date]) }}" class="btn btn-sm btn-primary admin-dsr-detail"><i class="fa fa-eye me-1" aria-hidden="true"></i> View details</a></td>
+                            <td data-label="Details">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="{{ route('admin.transaction.details', ['id' => encrypt($data->pos_id), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'transaction_date' => $data->transaction_date]) }}"
+                                        class="btn btn-sm btn-primary admin-dsr-detail">
+                                        <i class="fa fa-eye me-1" aria-hidden="true"></i> View details
+                                    </a>
+                                    <a href="{{ route('admin.transaction.details.export', ['id' => encrypt($data->pos_id), 'transaction_date' => \Carbon\Carbon::parse($data->transaction_date)->toDateString()]) }}"
+                                        class="btn btn-sm btn-outline-success admin-dsr-detail" title="Export this POS date"
+                                        aria-label="Export transactions for this POS and date">
+                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="7" class="admin-dsr-empty">No sales records match these filters. Try a different date range or search.</td></tr>

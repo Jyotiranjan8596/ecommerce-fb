@@ -41,8 +41,11 @@
         </div>
         <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
-                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center">
-                    <span class="mt-1 ms-1 sidebar-text">FREEBAZAR</span>
+                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center sidebar-brand">
+                    <span class="sidebar-brand-mark">
+                        <img src="{{ asset('assets/images/freebazar-sidebar-logo.png') }}" alt="" aria-hidden="true">
+                    </span>
+                    <span class="sidebar-text">FREEBAZAR</span>
                 </a>
             </li>
             <li class="nav-item {{ request()->is('pos') ? 'active' : '' }}">
@@ -72,6 +75,14 @@
                     <span class="sidebar-text">Sales Report</span>
                 </a>
             </li>
+            <li class="nav-item {{ request()->is('pos/dsr-summary*') ? 'active' : '' }}">
+                <a href="{{ route('pos.dsr-summary.index') }}" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                    </span>
+                    <span class="sidebar-text">DSR Summary</span>
+                </a>
+            </li>
 
             <li class="nav-item {{ request()->is('pos/customer-orders*') ? 'active' : '' }}">
                 <a href="{{ route('pos.customer-orders.index') }}" class="nav-link">
@@ -83,6 +94,15 @@
                         </svg>
                     </span>
                     <span class="sidebar-text">Customer Orders</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->is('pos/offers*') ? 'active' : '' }}">
+                <a href="{{ route('pos.offers.index') }}" class="nav-link">
+                    <span class="sidebar-icon">
+                        <i class="fas fa-tags" aria-hidden="true"></i>
+                    </span>
+                    <span class="sidebar-text">Offers</span>
                 </a>
             </li>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PaymentSummary;
 use App\Models\PosModel;
 use App\Models\User;
+use App\Services\PaymentSummaryGenerator;
 use App\Support\Notify;
 use App\Models\Wallet;
 use Carbon\Carbon;
@@ -229,15 +230,31 @@ class PosController extends Controller
                 ], 404);
             }
 
+            $datesToGenerate = Wallet::query()
+                ->where('pos_id', $pos->id)
+                ->whereNotNull('transaction_date')
+                ->pendingDsrVerification()
+                ->selectRaw('DATE(transaction_date) as transaction_date')
+                ->distinct()
+                ->pluck('transaction_date');
+
             $updatedRows = Wallet::where('pos_id', $pos->id)->update(['status' => 1]);
+            $summaryGenerationFailures = $this->generateCompletedPaymentSummaries(
+                (int) $pos->id,
+                $datesToGenerate->all()
+            );
 
             $message = $updatedRows > 0
                 ? "Customers have been successfully verified."
                 : "Already Verified";
+            if ($summaryGenerationFailures !== []) {
+                $message .= ' Some payment summaries could not be generated; please retry from Admin DSR Summary.';
+            }
 
             return response()->json([
                 'code'    => 200,
                 'message' => $message,
+                'payment_summary_generation_failures' => $summaryGenerationFailures,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -250,33 +267,74 @@ class PosController extends Controller
 
     public function verifyDsr(Request $request)
     {
-        try {
-            if ($request->wallet_ids) {
-                $res     = Wallet::verifyDsr($request->wallet_ids);
-                $message = $res > 0
-                    ? "Transaction have been successfully verified."
-                    : "No pending transactions to verify.";
+        $validated = $request->validate([
+            'wallet_ids' => ['sometimes', 'array'],
+            'wallet_ids.*' => ['integer', 'min:1'],
+        ]);
 
-                return response()->json([
-                    'count'   => $res,
-                    'success' => true,
-                    'code'    => 200,
-                    'message' => $message,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => true,
-                    'code'    => 200,
-                    'message' => "No transactions found for verification.",
-                ]);
-            }
-        } catch (\Exception $e) {
+        $posId = PosModel::where('user_id', auth()->user()->user_id)->value('id');
+        if (! $posId) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while verifying customers.',
-                'error'   => $e->getMessage(),
-            ], 200);
+                'message' => 'POS not found for the user.',
+            ], 404);
         }
+
+        try {
+            $datesToGenerate = Wallet::query()
+                ->whereIn('id', $validated['wallet_ids'] ?? [])
+                ->where('pos_id', $posId)
+                ->whereNotNull('transaction_date')
+                ->selectRaw('DATE(transaction_date) as transaction_date')
+                ->distinct()
+                ->pluck('transaction_date');
+
+            $count = Wallet::verifyDsr($validated['wallet_ids'] ?? [], (int) $posId);
+            $summaryGenerationFailures = $this->generateCompletedPaymentSummaries(
+                (int) $posId,
+                $datesToGenerate->all()
+            );
+            $message = $count > 0
+                ? 'Transactions have been successfully verified.'
+                : 'No transactions are available to verify. Pending transactions are automatically verified at 12 noon the following day.';
+            if ($summaryGenerationFailures !== []) {
+                $message .= ' Payment summary generation failed for: '
+                    . implode(', ', $summaryGenerationFailures)
+                    . '. Please retry from Admin DSR Summary.';
+            }
+
+            return response()->json([
+                'count' => $count,
+                'success' => true,
+                'code' => 200,
+                'message' => $message,
+                'payment_summary_generation_failures' => $summaryGenerationFailures,
+            ]);
+        } catch (\Exception $e) {
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while verifying transactions.',
+            ], 500);
+        }
+    }
+
+    private function generateCompletedPaymentSummaries(int $posId, array $dates): array
+    {
+        $failures = [];
+        $generator = app(PaymentSummaryGenerator::class);
+
+        foreach (array_unique($dates) as $date) {
+            try {
+                $generator->generateWhenComplete($posId, Carbon::parse($date)->toDateString());
+            } catch (\Throwable $e) {
+                report($e);
+                $failures[] = Carbon::parse($date)->toDateString();
+            }
+        }
+
+        return $failures;
     }
 
     public function verifyAllPos(Request $request)
@@ -320,6 +378,30 @@ class PosController extends Controller
         $transaction_data = Wallet::pos_transactions($request->transaction_date, $request->pos_id);
         $payment_data = PaymentSummary::getWalletDetails($request->transaction_date, $request->pos_id);
         if ($payment_data) {
+            if ($request->routeIs('pos.get.payment.details')) {
+                $pos = PosModel::where('user_id', auth()->user()->user_id)->firstOrFail();
+                abort_unless((string) $request->pos_id === (string) $pos->user_id, 403);
+
+                $generatedEntry = $payment_data->ensureGeneratedPaymentEntry();
+                if (!$generatedEntry) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Unable to prepare the payment reference for this summary.',
+                    ], 500);
+                }
+
+                $payment_data->load('payment');
+                $submittedAmount = $payment_data->payment
+                    ->where('from', $pos->user_id)
+                    ->where('to', '666666')
+                    ->reject(fn ($payment) => $payment->remark === 'Auto Generated')
+                    ->sum('amount');
+                $payment_data->setAttribute(
+                    'pos_payment_remaining',
+                    max(0, round((float) $payment_data->admin_credit - (float) $submittedAmount, 2))
+                );
+            }
+
             return response()->json([
                 'success' => $transaction_data->isNotEmpty(),
                 'data' => $transaction_data,

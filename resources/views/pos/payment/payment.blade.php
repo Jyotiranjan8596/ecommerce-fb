@@ -13,7 +13,9 @@
         <section class="dashboard-hero mb-4">
             <span class="dashboard-hero__label"><i class="fa fa-store me-1" aria-hidden="true"></i> POS overview</span>
             <h1 class="dashboard-hero__title">Payment</h1>
-            <p class="dashboard-hero__text">Look up a day's transactions and settle the pending dues for your store.</p>
+            <p class="dashboard-hero__text">Look up a day's transactions and settle the pending dues for your store.
+                POS dues are automatically submitted at next-day noon after all transactions and payment summaries are
+                complete.</p>
         </section>
 
         @if (session('current_balance'))
@@ -74,7 +76,7 @@
                             <input type="hidden" name="mobilenumber" value="">
                             <input id="summary_date" type="hidden" name="summary_date" value="">
                             <input type="hidden" name="transaction_date" value="{{ now()->format('Y-m-d') }}">
-                            <input type="hidden" name="is_pos" value='true'>
+                            <input type="hidden" name="is_pos" value="1">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="amount" class="pay-field-label">Billing amount</label>
@@ -89,11 +91,12 @@
 
                                 <div class="col-md-6">
                                     <label for="pay_by" class="pay-field-label">Payment by</label>
-                                    <select disabled name="pay_by" id="pay_by" class="form-select" required>
+                                    <select disabled id="pay_by" class="form-select">
                                         <option value="wallet">WALLET</option>
                                         <option value="cash">CASH</option>
                                         <option selected value="upi">UPI</option>
                                     </select>
+                                    <input type="hidden" name="pay_by" value="1">
                                 </div>
 
                                 <div class="col-md-6">
@@ -467,10 +470,12 @@
                         $('#amount').val('');
                         $('#paying_amount').val('');
                         $('#pos_id').val('');
+                        $('#reference_number').val('');
                         $('#cradit-amount-span-one').attr('hidden', true);
-                        $('#cradit-amount-span-three').removeClass();
-                        $('#reference_number').removeAttr('readonly');
+                        $('#cradit-amount-span-three').attr('hidden', true).removeClass();
+                        $('#reference_number').attr('readonly', true);
                         $('#remark').removeAttr('readonly');
+                        $('#payment_submit_form button[type="submit"]').prop('disabled', false);
                         if (res.success) {
                             if (res.data.length > 0) {
 
@@ -514,31 +519,43 @@
                             }
                             let payment_data = res.payment_data ?? {};
                             console.log(typeof payment_data);
+                            const adminLedgerEntry = (payment_data.payment ?? []).find(
+                                item => item.remark === 'Auto Generated'
+                            );
+                            $('#reference_number').val(adminLedgerEntry?.reference_number ?? '');
                             if (payment_data.status == 'approved') {
                                 $('#cradit-amount-span-three').removeAttr('hidden').text(
                                         'Settled')
                                     .addClass('text-success');
+                                $('#payment_submit_form button[type="submit"]').prop('disabled', true);
+                                return;
+                            }
+                            if ((payment_data.admin_credit ?? 0) > 0 &&
+                                (payment_data.pos_payment_remaining ?? payment_data.admin_credit) <= 0) {
+                                $('#cradit-amount-span-three').removeAttr('hidden').text(
+                                    'Submitted — awaiting admin settlement'
+                                ).addClass('text-info');
+                                $('#payment_submit_form button[type="submit"]').prop('disabled', true);
                                 return;
                             }
                             if (Object.keys(payment_data).length > 0) {
                                 let payment = payment_data.payment?.[0];
-                                check_debit_amount = payment_data.pos_debit ?? 0;
+                                check_debit_amount = payment_data.pos_payment_remaining ??
+                                    payment_data.pos_debit ?? 0;
                                 $('#amount').val(payment_data.total_billing_amount ?? '');
-                                $('#paying_amount').val(payment_data.pos_debit ?? '');
+                                $('#paying_amount').val(check_debit_amount);
                                 $('#pos_id').val(payment_data.pos_id ?? '');
 
                                 if ((payment_data.pos_credit ?? 0) > 0) {
 
                                     $('#cradit-amount-span-one').removeAttr('hidden');
                                     $('#remark').attr('readonly', true);
-                                    $('#reference_number').attr('readonly', true);
 
                                     $('#cradit-amount-span-two').text(
                                         '₹' + parseFloat(payment_data.creditAmount).toFixed(2)
                                     );
                                 } else {
                                     $('#cradit-amount-span-one').attr('hidden', true);
-                                    $('#reference_number').removeAttr('readonly');
                                     $('#remark').removeAttr('readonly');
                                 }
                             } else {
@@ -627,15 +644,18 @@
                     error: function(xhr) {
                         hideFormLoader();
 
+                        const response = xhr.responseJSON || {};
+                        const validationMessages = Object.values(response.errors || {}).flat();
+                        const message = validationMessages[0] || response.message ||
+                            (xhr.status >= 500
+                                ? 'The server could not complete the payment. Please try again.'
+                                : 'The payment request was rejected. Please check the payment details and try again.');
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong. Please try again.',
+                            text: message,
                             confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload();
-                            }
                         });
 
                         console.log(xhr.responseText);

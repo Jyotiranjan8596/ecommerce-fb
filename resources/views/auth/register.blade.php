@@ -41,6 +41,16 @@
                     </div>
 
                     <div class="registration-field">
+                        <label for="sponsor_ref">Sponsor ID <span class="registration-optional">Optional</span></label>
+                        <input type="text" name="sponsor_ref" id="sponsor_ref" maxlength="20"
+                            class="form-control @error('sponsor_ref') is-invalid @enderror"
+                            value="{{ old('sponsor_ref', request('ref')) }}" inputmode="numeric" autocomplete="off">
+                        @error('sponsor_ref')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
                         <label for="email">Email address <span>*</span></label>
                         <input type="email" name="email" id="email" maxlength="100"
                             class="form-control @error('email') is-invalid @enderror"
@@ -48,6 +58,22 @@
                         @error('email')
                             <span class="registration-error">{{ $message }}</span>
                         @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="password">Password <span>*</span></label>
+                        <input type="password" name="password" id="password" minlength="8"
+                            class="form-control @error('password') is-invalid @enderror"
+                            autocomplete="new-password" required>
+                        @error('password')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="password_confirmation">Confirm password <span>*</span></label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" minlength="8"
+                            class="form-control" autocomplete="new-password" required>
                     </div>
 
                     <div class="registration-field">

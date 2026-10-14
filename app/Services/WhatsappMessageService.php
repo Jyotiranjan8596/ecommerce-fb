@@ -5,9 +5,66 @@ namespace App\Services;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class WhatsappMessageService
 {
+    public function sendApprovedTemplate(string $phone, string $templateName, string $language, array $bodyParameters = []): void
+    {
+        $token = config('services.whatsapp.token');
+        $phoneNumberId = config('services.whatsapp.phone_number_id');
+        if (! $token || ! $phoneNumberId) {
+            throw new RuntimeException('WhatsApp API credentials are not configured.');
+        }
+
+        $destination = preg_replace('/\D/', '', $phone);
+        if (strlen($destination) === 10) {
+            $destination = '91' . $destination;
+        } elseif (str_starts_with($destination, '0') && strlen($destination) === 11) {
+            $destination = '91' . substr($destination, 1);
+        }
+
+        if (! $destination || strlen($destination) < 11 || strlen($destination) > 15) {
+            throw new RuntimeException('Recipient phone number is not a valid international number.');
+        }
+
+        $template = [
+            'name' => $templateName,
+            'language' => ['code' => $language],
+        ];
+        if ($bodyParameters !== []) {
+            $template['components'] = [[
+                'type' => 'body',
+                'parameters' => array_map(static fn (string $text): array => [
+                    'type' => 'text',
+                    'text' => $text,
+                ], $bodyParameters),
+            ]];
+        }
+
+        $url = sprintf(
+            'https://graph.facebook.com/%s/%s/messages',
+            config('services.whatsapp.graph_version', 'v22.0'),
+            $phoneNumberId
+        );
+        $response = Http::withToken($token)
+            ->timeout(20)
+            ->post($url, [
+                'messaging_product' => 'whatsapp',
+                'to' => $destination,
+                'type' => 'template',
+                'template' => $template,
+            ]);
+
+        if (! $response->successful()) {
+            throw new RuntimeException(
+                $response->json('error.message')
+                    ?? 'WhatsApp rejected the template message (HTTP ' . $response->status() . ').'
+            );
+        }
+
+    }
+
     public static function send($to)
     {
         try {

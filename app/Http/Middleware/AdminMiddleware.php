@@ -19,9 +19,15 @@ class AdminMiddleware
         } catch (\Exception $e) {
             DB::reconnect();
         }
-        if (Auth::check() && Auth::user()->role == 1) {
-            return $next($request);
+
+        if (Auth::guest()) {
+            return redirect()->guest(route('login'));
         }
-        return redirect()->back();
+
+        if ((int) Auth::user()->role !== 1) {
+            return redirect()->route('frontend.index');
+        }
+
+        return $next($request);
     }
 }

@@ -58,7 +58,7 @@
 
 </head>
 
-<body>
+<body class="has-fixed-sidebar">
 
     <!-- mobile menu  -->
     <nav class="navbar navbar-light  px-4 col-12 d-lg-none" style="border-bottom: 5px solid #fff;">
@@ -86,11 +86,10 @@
         @include('frontend.dashboard.includes.navbar')
         <br>
         @yield('content')
-
-
-        @include('ui.layout.footer')
     </main>
     {{-- Main Content end  --}}
+
+    @include('ui.layout.footer')
 
     <!-- Scripts -->
     @include('frontend.dashboard.includes.js')

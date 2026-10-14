@@ -59,12 +59,13 @@
                     <div>
                         <h2 class="h5 mb-1 fw-bold text-dark">Transaction details</h2>
                         <p class="small text-muted mb-0">All billing, wallet & reward transactions for the selected
-                            period.</p>
+                            period. Pending transactions may be verified until 12:00 noon the following day, after
+                            which they are automatically verified.</p>
                     </div>
 
                     <div class="d-flex flex-wrap gap-2 dsr-actions">
-                        <button id="summary-btn" type="button" class="btn dsr-btn-soft" data-bs-toggle="modal"
-                            data-bs-target="#exampleModalCenter">
+                        <button id="summary-btn" type="button" class="btn dsr-btn-soft"
+                            aria-controls="exampleModalCenter" aria-expanded="false">
                             <i class="fa fa-list-alt me-1" aria-hidden="true"></i> Summary
                         </button>
 
@@ -154,71 +155,63 @@
         </section>
     </div>
 
-    {{-- Summary modal --}}
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content shadow-lg rounded-4 overflow-hidden dsr-modal">
-                <div class="modal-header dsr-modal-header text-white">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">DSR Summary</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                @if (request()->start_date == request()->end_date)
-                    @if ($totalTransactions == 0)
-                        <div class="modal-body">
-                            There are no transactions for today!
-                        </div>
-                        <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    @else
-                        <div class="modal-body">
-                            <div class="dsr-summary-list">
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Total transactions</span>
-                                    <span class="dsr-summary-value">{{ $totalTransactions }}</span>
-                                </div>
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Total billing amount</span>
-                                    <span class="dsr-summary-value">₹ {{ $totalBillingAmount }}</span>
-                                </div>
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Pay by Cash/UPI</span>
-                                    <span class="dsr-summary-value">₹ {{ $payByCashOrUpi }}</span>
-                                </div>
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Pay by wallet</span>
-                                    <span class="dsr-summary-value">₹ {{ $payByWallet }}</span>
-                                </div>
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Pay by reward</span>
-                                    <span class="dsr-summary-value">₹ {{ $payByReward }}</span>
-                                </div>
-                                <div class="dsr-summary-row">
-                                    <span class="dsr-summary-label">Receivable amount</span>
-                                    <span class="dsr-summary-value dsr-summary-value--credit">₹
-                                        {{ $creditAmount }}</span>
-                                </div>
-                                <div class="dsr-summary-row dsr-summary-row--last">
-                                    <span class="dsr-summary-label">Payable amount</span>
-                                    <span class="dsr-summary-value dsr-summary-value--debit">₹
-                                        {{ $debitAmount }}</span>
-                                </div>
+    {{-- Modeless summary popup; unlike a Bootstrap modal, this leaves the report usable. --}}
+    <div class="dsr-summary-popup" id="exampleModalCenter" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" hidden>
+        <div class="dsr-summary-popup__content">
+            <div class="dsr-summary-popup__header dsr-modal-header text-white">
+                <h5 class="mb-0" id="exampleModalCenterTitle">DSR Summary</h5>
+                <button type="button" class="btn-close btn-close-white" id="summary-close-btn"
+                    aria-label="Close"></button>
+            </div>
+            @if (request()->start_date == request()->end_date)
+                @if ($totalTransactions == 0)
+                    <div class="dsr-summary-popup__body">
+                        There are no transactions for today!
+                    </div>
+                @else
+                    <div class="dsr-summary-popup__body">
+                        <div class="dsr-summary-list">
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Total transactions</span>
+                                <span class="dsr-summary-value">{{ $totalTransactions }}</span>
+                            </div>
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Total billing amount</span>
+                                <span class="dsr-summary-value">₹ {{ $totalBillingAmount }}</span>
+                            </div>
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Pay by Cash/UPI</span>
+                                <span class="dsr-summary-value">₹ {{ $payByCashOrUpi }}</span>
+                            </div>
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Pay by wallet</span>
+                                <span class="dsr-summary-value">₹ {{ $payByWallet }}</span>
+                            </div>
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Pay by reward</span>
+                                <span class="dsr-summary-value">₹ {{ $payByReward }}</span>
+                            </div>
+                            <div class="dsr-summary-row">
+                                <span class="dsr-summary-label">Receivable amount</span>
+                                <span class="dsr-summary-value dsr-summary-value--credit">₹
+                                    {{ $creditAmount }}</span>
+                            </div>
+                            <div class="dsr-summary-row dsr-summary-row--last">
+                                <span class="dsr-summary-label">Payable amount</span>
+                                <span class="dsr-summary-value dsr-summary-value--debit">₹
+                                    {{ $debitAmount }}</span>
                             </div>
                         </div>
-                        <div class="modal-footer bg-light">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    @endif
-                @else
-                    <div class="modal-body">
-                        Multiple dates cannot be selected for summary!
-                    </div>
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 @endif
+            @else
+                <div class="dsr-summary-popup__body">
+                    Multiple dates cannot be selected for summary!
+                </div>
+            @endif
+            <div class="dsr-summary-popup__footer">
+                <button type="button" class="btn btn-secondary" id="summary-footer-close-btn">Close</button>
             </div>
         </div>
     </div>
@@ -451,8 +444,42 @@
             font-size: 1.1rem;
         }
 
-        .dsr-modal .dsr-modal-header {
+        .dsr-summary-popup__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
             background: linear-gradient(135deg, #1e293b, #1e40af);
+        }
+
+        .dsr-summary-popup {
+            position: fixed;
+            z-index: 1050;
+            top: 50%;
+            left: 50%;
+            width: min(92vw, 680px);
+            max-height: min(85vh, 720px);
+            overflow-y: auto;
+            transform: translate(-50%, -50%);
+            border-radius: 1rem;
+            background: #fff;
+            box-shadow: 0 1rem 3rem rgba(15, 23, 42, .28);
+        }
+
+        .dsr-summary-popup[hidden] {
+            display: none !important;
+        }
+
+        .dsr-summary-popup__body {
+            padding: 1rem 1.25rem;
+        }
+
+        .dsr-summary-popup__footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: .75rem 1.25rem;
+            border-top: 1px solid #eef2f6;
+            background: #f8fafc;
         }
 
         .dsr-summary-list {
@@ -578,6 +605,40 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
+            const summaryButton = $('#summary-btn');
+            const summaryPopup = $('#exampleModalCenter');
+            const closeSummaryPopup = function() {
+                summaryPopup.prop('hidden', true);
+                summaryButton.attr('aria-expanded', 'false').trigger('focus');
+            };
+
+            @if ($totalTransactions == 0)
+                summaryButton.on('click', function() {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'No transactions found for the selected filters.',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                });
+            @else
+                summaryButton.on('click', function() {
+                    summaryPopup.prop('hidden', false);
+                    summaryButton.attr('aria-expanded', 'true');
+                    $('#summary-close-btn').trigger('focus');
+                });
+            @endif
+
+            $('#summary-close-btn, #summary-footer-close-btn').on('click', closeSummaryPopup);
+            $(document).on('keydown', function(event) {
+                if (event.key === 'Escape' && !summaryPopup.prop('hidden')) {
+                    closeSummaryPopup();
+                }
+            });
+
             $('#approve-btn').on('click', function() {
                 Swal.fire({
                     title: 'Verify All Records?',

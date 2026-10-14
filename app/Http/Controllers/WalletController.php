@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use App\Models\Wallet;
 use App\Services\AiSensyService;
+use App\Services\PaymentSummaryGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -525,6 +526,23 @@ class WalletController extends Controller
         Log::info('Message result', [$msg_reslt]);
         $wallet->status = $wallet->status = 1;
         $wallet->save();
+
+        if ($wallet->pos_id && $wallet->transaction_date) {
+            try {
+                app(PaymentSummaryGenerator::class)->generateWhenComplete(
+                    (int) $wallet->pos_id,
+                    Carbon::parse($wallet->transaction_date)->toDateString()
+                );
+            } catch (\Throwable $e) {
+                report($e);
+
+                return redirect()->back()->with(
+                    'warning',
+                    'Transaction verified, but its payment summary could not be generated. Please retry from Admin DSR Summary.'
+                );
+            }
+        }
+
         return redirect()->back()->with('success', 'Verified Successfully!');
     }
     public function update(Request $request, $id)

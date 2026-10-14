@@ -15,6 +15,24 @@
         return meta ? meta.getAttribute('content') : '';
     }
 
+    function notificationEndpoint(attribute) {
+        const bell = document.querySelector('.notification-bell');
+        const endpoint = bell ? safeInternalUrl(bell.getAttribute(attribute)) : '';
+        if (!endpoint) {
+            console.error('Notification endpoint is missing or invalid:', attribute);
+        }
+        return endpoint;
+    }
+
+    function notificationReadEndpoint(id) {
+        const template = notificationEndpoint('data-notification-read-url-template');
+        if (!template || !template.includes('__notification_id__')) {
+            console.error('Notification read URL template is invalid.');
+            return '';
+        }
+        return template.replace('__notification_id__', encodeURIComponent(id));
+    }
+
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.innerText = str ?? '';
@@ -76,9 +94,15 @@
             toast.setAttribute('role', 'link');
             toast.addEventListener('click', function (event) {
                 if (event.target.closest('button')) return;
-                fetch('/notifications/' + encodeURIComponent(notification.id) + '/read', {
+                const readEndpoint = notificationReadEndpoint(notification.id);
+                if (!readEndpoint) return;
+                fetch(readEndpoint, {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': csrfToken(), 'Content-Type': 'application/json' },
+                }).then(function (response) {
+                    if (!response.ok) throw new Error('Unable to mark notification as read.');
+                }).catch(function (error) {
+                    console.error(error);
                 }).finally(function () { window.location.href = url; });
             });
         }
@@ -132,10 +156,15 @@
     }
 
     function fetchNotifications() {
-        fetch('/notifications', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function (res) { return res.ok ? res.json() : null; })
+        const endpoint = notificationEndpoint('data-notifications-url');
+        if (!endpoint) return;
+
+        fetch(endpoint, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) {
+                if (!response.ok) throw new Error('Unable to load notifications.');
+                return response.json();
+            })
             .then(function (data) {
-                if (!data) return;
                 updateBadges(data.unread_count);
                 document.querySelectorAll('.notif-list').forEach(function (container) {
                     renderList(container, data.notifications);
@@ -148,7 +177,9 @@
                 });
                 notificationBaselineLoaded = true;
             })
-            .catch(function () {});
+            .catch(function (error) {
+                console.error(error);
+            });
     }
 
     document.addEventListener('click', function (e) {
@@ -156,21 +187,33 @@
         if (item) {
             const id = item.getAttribute('data-id');
             const url = item.getAttribute('data-url');
-            fetch('/notifications/' + id + '/read', {
+            const endpoint = notificationReadEndpoint(id);
+            if (!endpoint) return;
+            fetch(endpoint, {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': csrfToken(), 'Content-Type': 'application/json' },
-            }).then(function () {
+            }).then(function (response) {
+                if (!response.ok) throw new Error('Unable to mark notification as read.');
                 if (url) window.location.href = safeInternalUrl(url) || '/';
                 else fetchNotifications();
+            }).catch(function (error) {
+                console.error(error);
             });
         }
 
         if (e.target && e.target.id === 'notif-mark-all') {
             e.preventDefault();
-            fetch('/notifications/read-all', {
+            const endpoint = notificationEndpoint('data-notifications-read-all-url');
+            if (!endpoint) return;
+            fetch(endpoint, {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': csrfToken(), 'Content-Type': 'application/json' },
-            }).then(fetchNotifications);
+            }).then(function (response) {
+                if (!response.ok) throw new Error('Unable to mark notifications as read.');
+                fetchNotifications();
+            }).catch(function (error) {
+                console.error(error);
+            });
         }
     });
 

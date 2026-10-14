@@ -4,9 +4,10 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AccountLedgerExport implements FromCollection, WithHeadings
+class AccountLedgerExport implements FromCollection, WithHeadings, WithStyles
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -20,15 +21,71 @@ class AccountLedgerExport implements FromCollection, WithHeadings
     }
     public function collection()
     {
-        return collect($this->data)->map(function ($wallet) {
-            return [
-                $wallet->date,
-                $wallet->voucher_number ?? '',
-                $wallet->reference_number ?? '',
-                $wallet->debit,
-                $wallet->credit
-            ];
-        });
+        $rows = collect([[
+            '',
+            '',
+            'Opening Balance — ' . $this->data['name'],
+            'Period: ' . ($this->data['from'] ?: 'Beginning') . ' to ' . ($this->data['to'] ?: 'Today'),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            number_format($this->data['opening_balance'], 2, '.', '') . ' ' . $this->data['opening_balance_type'],
+        ]]);
+
+        foreach ($this->data['rows'] as $row) {
+            $details = collect([$row->account_details, $row->remark])
+                ->filter()
+                ->implode(' | ');
+
+            $rows->push([
+                $row->date,
+                $row->voucher_number ?? '',
+                $row->account_name ?? '',
+                $details,
+                $row->reference_number ?? '',
+                $row->payment_method ?? '',
+                $row->debit,
+                $row->credit,
+                $row->due,
+                $row->gst_no,
+                number_format($row->balance, 2, '.', '') . ' ' . $row->balance_type,
+            ]);
+        }
+
+        if ($this->data['rows']->isEmpty()) {
+            $rows->push([
+                '',
+                '',
+                'No transactions in selected period',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+            ]);
+        }
+
+        $rows->push([
+            '',
+            '',
+            'Period Total / Closing Balance',
+            '',
+            '',
+            '',
+            $this->data['total_debit'],
+            $this->data['total_credit'],
+            '',
+            '',
+            $this->data['total_balance'] . ' ' . $this->data['total_balance_type'],
+        ]);
+
+        return $rows;
     }
 
     /**
@@ -41,9 +98,15 @@ class AccountLedgerExport implements FromCollection, WithHeadings
         return [
             'Date',
             'Voucher No',
-            'Ref No',
+            'Account',
+            'Details',
+            'Reference No',
+            'Payment Method',
             'Debit',
-            'Credit'
+            'Credit',
+            'Due',
+            'GST No',
+            'Running Balance',
         ];
     }
 

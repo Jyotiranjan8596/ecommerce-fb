@@ -67,7 +67,20 @@ class RegisterController extends Controller
             'mobile' => [
                 'required',
                 'digits_between:10,15',
-                'regex:/^[0-9]+$/'
+                'regex:/^[0-9]+$/',
+                'unique:users,mobilenumber',
+            ],
+            'sponsor_ref' => [
+                'nullable',
+                'string',
+                'max:20',
+                'exists:users,user_id',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
             ],
             'gender' => [
                 'required',
@@ -93,11 +106,6 @@ class RegisterController extends Controller
                 'string',
                 'max:20'
             ],
-            'sponsor_ref' => [
-                'nullable',
-                'string',
-                'max:20'
-            ],
             'image' => [
                 'nullable',
                 'image',
@@ -105,6 +113,9 @@ class RegisterController extends Controller
                 'max:2048' // Max 2MB
             ],
             'terms' => 'accepted',
+        ], [
+            'mobile.unique' => 'This mobile number is already registered.',
+            'sponsor_ref.exists' => 'The Sponsor ID you entered is invalid or does not exist.',
         ]);
     }
 
@@ -121,7 +132,7 @@ class RegisterController extends Controller
         $referrer = null;
 
         $defaultSponsorUserId = '9624023';
-        $refCode = $data['sponsor_ref'] ?? $data['ref'] ?? $defaultSponsorUserId;
+        $refCode = $data['sponsor_ref'] ?? $defaultSponsorUserId;
         if (! empty($refCode)) {
             $referrer = User::where('user_id', (string) $refCode)->first();
         }
@@ -136,7 +147,7 @@ class RegisterController extends Controller
             'name'         => $data['name'],
             'email'        => $data['email'],
             'gender'       => $data['gender'] == 'male' ? "M" : "F",
-            'password'     => Hash::make('123456'),
+            'password'     => Hash::make($data['password']),
             'address'      => $data['address'],
             'mobilenumber' => $data['mobile'],
             'role'         => 3,
@@ -154,7 +165,6 @@ class RegisterController extends Controller
     {
         session()->flash('registration_success', true);
         session()->flash('registered_user_id', $user->user_id ?? 'N/A');
-        session()->flash('registered_default_password', '123456');
 
         return redirect($this->redirectPath());
     }

@@ -50,6 +50,7 @@
     <!-- Volt CSS -->
     <link type="text/css" href="{{ asset('css/volt.css') }}" rel="stylesheet">
     <link type="text/css" href="{{ asset('css/enterprise-theme.css') }}" rel="stylesheet">
+    <link type="text/css" href="{{ asset('assets/css/admin-action-logos.css') }}" rel="stylesheet">
 
     {{-- Bottom bar Css  --}}
     {{-- <link type="text/css" href="{{ asset('css/bottombar.css') }}" rel="stylesheet"> --}}
@@ -60,7 +61,7 @@
 
 </head>
 
-<body>
+<body class="has-fixed-sidebar">
     {{-- <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
         <symbol id="check2" viewBox="0 0 16 16">
             <path
@@ -221,6 +222,7 @@
     <!-- Volt JS -->
     <script src="{{ asset('assets/js/volt.js') }}"></script>
     <script src="{{ asset('assets/js/notifications.js') }}"></script>
+    <script src="{{ asset('assets/js/admin-action-logos.js') }}"></script>
 
     @include('ui.layout.footer')
 
@@ -239,6 +241,8 @@
 
         </div>
     </div> --}}
+
+    @stack('scripts')
 
     <!-- Scripts -->
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}

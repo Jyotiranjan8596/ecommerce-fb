@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\MsrExport;
+use App\Exports\MsrTransactionExport;
+use App\Exports\DsrTransactionExport;
 use App\Exports\WalletExport;
 use App\Http\Controllers\Controller;
 use App\Imports\WalletImport;
@@ -14,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DsrController extends Controller
@@ -61,15 +64,8 @@ class DsrController extends Controller
                 }
             }
         }
-        if ($request->has('search') && !empty($request->search)) {
-            $searchTerm = $request->search;
-            $query->where(function ($searchQuery) use ($searchTerm) {
-                $searchQuery->where('mobilenumber', 'LIKE', "%{$searchTerm}%")
-                    ->orWhereHas('getPos', function ($posQuery) use ($searchTerm) {
-                        $posQuery->where('name', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
-                    });
-            });
+        if ($request->filled('search')) {
+            $this->applyDsrPosSearch($query, $request->input('search'));
         }
         $summary = (clone $query)->get();
 
@@ -132,7 +128,29 @@ class DsrController extends Controller
         // dd($wallets);
         $wallets->appends($request->only(['search', 'start_date', 'end_date']));
 
-        return view('admin.dsr.indivisualDsr', compact('wallets', 'userId', 'user_profile', 'id', 'pos', 'start_date', 'end_date'));
+        return view('admin.dsr.indivisualDsr', compact('wallets', 'userId', 'user_profile', 'id', 'pos', 'start_date', 'end_date', 'transaction_date'));
+    }
+
+    public function exportTransactionDetails(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'transaction_date' => ['required', 'date'],
+        ]);
+
+        $posId = decrypt($id);
+        $pos = PosModel::findOrFail($posId);
+        $transactionDate = Carbon::parse($validated['transaction_date'])->toDateString();
+        $transactions = Wallet::query()
+            ->where('pos_id', $pos->id)
+            ->whereDate('transaction_date', $transactionDate)
+            ->with(['user', 'getPos', 'userWallets'])
+            ->orderByDesc('id')
+            ->get();
+
+        $filename = 'DSR_' . Str::slug($pos->user_id ?: (string) $pos->id, '_')
+            . '_' . Carbon::parse($transactionDate)->format('d,m,Y') . '.xlsx';
+
+        return Excel::download(new DsrTransactionExport($transactions), $filename);
     }
 
     public function update_dsr(Request $request)
@@ -202,13 +220,80 @@ class DsrController extends Controller
     }
     public function export(Request $request)
     {
-        $startDate = $request->has('start_date') && !empty($request->start_date) ? $request->start_date : null;
-        $endDate = $request->has('end_date') && !empty($request->end_date) ? $request->end_date : null;
-        if (! $startDate && ! $endDate) {
+        $validated = $request->validate([
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        if (!$startDate && !$endDate) {
             $startDate = today()->toDateString();
             $endDate = $startDate;
         }
-        return Excel::download(new WalletExport($startDate, $endDate, null, $request->input('search')), 'DailySalesReport_' . now()->format('d,m,y') . '.csv', \Maatwebsite\Excel\Excel::CSV);
+
+        $query = Wallet::query()->with(['user', 'getPos', 'userWallets']);
+        if ($startDate && $endDate) {
+            $query->whereBetween('transaction_date', [
+                Carbon::parse($startDate)->startOfDay(),
+                Carbon::parse($endDate)->endOfDay(),
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('transaction_date', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('transaction_date', '<=', $endDate);
+        }
+
+        $posIds = collect();
+        if (!empty($validated['search'])) {
+            $searchTerm = $validated['search'];
+            $this->applyDsrPosSearch($query, $searchTerm);
+
+            $matchingPosIds = PosModel::query()
+                ->where(function ($posQuery) use ($searchTerm) {
+                    $posQuery->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('user_id', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('pos_code', 'LIKE', "%{$searchTerm}%")
+                        ->orWhereHas('user', function ($posUserQuery) use ($searchTerm) {
+                            $posUserQuery->where('user_id', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
+                        });
+                })
+                ->distinct()
+                ->pluck('user_id');
+            $posIds = $matchingPosIds->filter()->unique()->values();
+        }
+
+        $transactions = $query->orderByDesc('transaction_date')->orderByDesc('id')->get();
+        $posId = match ($posIds->count()) {
+            0 => empty($validated['search']) ? 'All_POS' : 'Multiple_POS',
+            1 => Str::slug($posIds->first(), '_'),
+            default => 'Multiple_POS',
+        };
+        $formattedStartDate = $startDate ? Carbon::parse($startDate)->format('d,m,Y') : 'Start';
+        $formattedEndDate = $endDate ? Carbon::parse($endDate)->format('d,m,Y') : 'End';
+        $rangeLabel = $startDate === $endDate
+            ? $formattedStartDate
+            : $formattedStartDate . '_to_' . $formattedEndDate;
+        $filename = 'DSR_' . $posId . '_' . $rangeLabel . '.xlsx';
+
+        return Excel::download(new DsrTransactionExport($transactions), $filename);
+    }
+
+    private function applyDsrPosSearch($query, string $searchTerm): void
+    {
+        $query->whereHas('getPos', function ($posQuery) use ($searchTerm) {
+            $posQuery->where('name', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('user_id', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('pos_code', 'LIKE', "%{$searchTerm}%")
+                ->orWhereHas('user', function ($posUserQuery) use ($searchTerm) {
+                    $posUserQuery->where('user_id', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
+                });
+        });
     }
 
     public function userTransactionExport(Request $request)
@@ -296,6 +381,30 @@ class DsrController extends Controller
             ->appends(['month' => $selectedMonth]);
 
         return view('admin.msr.new-details', compact('pos', 'transactions', 'selectedMonth'));
+    }
+
+    public function exportNewMsrDetails(Request $request, PosModel $pos)
+    {
+        $validated = $request->validate([
+            'month' => ['nullable', 'date_format:Y-m'],
+        ]);
+
+        $selectedMonth = $validated['month'] ?? now()->format('Y-m');
+        $monthStart = Carbon::createFromFormat('Y-m', $selectedMonth)->startOfMonth();
+        $monthEnd = $monthStart->copy()->endOfMonth();
+        $transactions = Wallet::query()
+            ->where('pos_id', $pos->id)
+            ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+            ->with('user')
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('id')
+            ->get();
+
+        $posIdentifier = $pos->user_id ?: $pos->id;
+        $filename = 'MSR_' . Str::slug((string) $posIdentifier, '_') . '_'
+            . Carbon::createFromFormat('Y-m', $selectedMonth)->format('m_Y') . '.xlsx';
+
+        return Excel::download(new MsrTransactionExport($transactions), $filename);
     }
 
     public function msrCalculation($request)

@@ -13,6 +13,18 @@ The Laravel Admin Dashboard is a web-based application that serves as a starting
 - Enables User Password Changes
 - More features to be added soon
 
+## POS DSR transaction verification
+
+POS users can manually verify pending DSR transactions until 12:00 noon on the day after each transaction. Any remaining pending transactions are automatically verified at that deadline in the application timezone (`Asia/Kolkata` by default). The scheduled command also catches up transactions whose deadline passed while the scheduler was unavailable.
+
+The server must invoke Laravel's scheduler every minute for this to run:
+
+```text
+php artisan schedule:run
+```
+
+Configure that command in the server's cron or Task Scheduler, using the project directory as its working directory.
+
 ## Contributing
 
 Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
