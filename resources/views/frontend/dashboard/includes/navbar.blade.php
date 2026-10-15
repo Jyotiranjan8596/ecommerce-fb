@@ -21,7 +21,7 @@ $user_profile = auth()->user();
                             placeholder="Search" aria-label="Search" aria-describedby="topbar-addon" />
                     </div>
                 </form> --}}
-                <button id="my-qr-reader" class="btn" style="margin-top: 0px !important;">
+                <button id="my-qr-reader" class="btn qr-scanner-trigger {{ $user_profile->is_prime_member ? 'qr-scanner-trigger--prime' : '' }}" aria-label="Scan QR code">
                     <svg width="43px" height="43px" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -65,177 +65,115 @@ $user_profile = auth()->user();
             <!-- Navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
-                    {{-- <a class="nav-link text-dark notification-bell unread dropdown-toggle"
+                    <a class="nav-link text-dark notification-bell position-relative dropdown-toggle"
                         data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
-                        data-bs-display="static" aria-expanded="false">
+                        data-bs-display="static" aria-expanded="false"
+                        data-notifications-url="{{ route('notifications.index') }}"
+                        data-notification-read-url-template="{{ route('notifications.read', ['id' => '__notification_id__']) }}"
+                        data-notifications-read-all-url="{{ route('notifications.read-all') }}">
                         <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor"
                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
                             </path>
                         </svg>
-                    </a> --}}
-                    {{-- <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right mt-2 py-0">
-                        <div class="list-group list-group-flush">
-                            <a href="#"
-                                class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
-                            {{-- <a href="#" class="list-group-item list-group-item-action border-bottom">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <img alt="Image placeholder"
-                                            src="{{ asset('assets/img/team/profile-picture-1.jpg') }}"
-                                            class="avatar-md rounded" />
-                                    </div>
-                                    <div class="col ps-0 ms-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h4 class="h6 mb-0 text-small">Jose Leos</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small class="text-danger">a few moments ago</small>
-                                            </div>
-                                        </div>
-                                        <p class="font-small mt-1 mb-0">
-                                            Added you to an event "Project stand-up" tomorrow at
-                                            12:30 AM.
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-bottom">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <img alt="Image placeholder"
-                                            src="{{ asset('assets/img/team/profile-picture-2.jpg') }}"
-                                            class="avatar-md rounded" />
-                                    </div>
-                                    <div class="col ps-0 ms-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h4 class="h6 mb-0 text-small">Neil Sims</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small class="text-danger">2 hrs ago</small>
-                                            </div>
-                                        </div>
-                                        <p class="font-small mt-1 mb-0">
-                                            You've been assigned a task for "Awesome new
-                                            project".
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-bottom">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <img alt="Image placeholder"
-                                            src="{{ asset('assets/img/team/profile-picture-3.jpg') }}"
-                                            class="avatar-md rounded" />
-                                    </div>
-                                    <div class="col ps-0 m-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h4 class="h6 mb-0 text-small">Roberta Casas</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small>5 hrs ago</small>
-                                            </div>
-                                        </div>
-                                        <p class="font-small mt-1 mb-0">
-                                            Tagged you in a document called "Financial plans",
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-bottom">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <img alt="Image placeholder"
-                                            src="{{ asset('assets/img/team/profile-picture-4.jpg') }}"
-                                            class="avatar-md rounded" />
-                                    </div>
-                                    <div class="col ps-0 ms-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h4 class="h6 mb-0 text-small">Joseph Garth</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small>1 d ago</small>
-                                            </div>
-                                        </div>
-                                        <p class="font-small mt-1 mb-0">
-                                            New message: "Hey, what's up? All set for the
-                                            presentation?"
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-bottom">
-                                <div class="row align-items-center">
-                                    <div class="col-auto">
-                                        <!-- Avatar -->
-                                        <img alt="Image placeholder"
-                                            src="{{ asset('assets/img/team/profile-picture-5.jpg') }}"
-                                            class="avatar-md rounded" />
-                                    </div>
-                                    <div class="col ps-0 ms-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h4 class="h6 mb-0 text-small">Bonnie Green</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small>2 hrs ago</small>
-                                            </div>
-                                        </div>
-                                        <p class="font-small mt-1 mb-0">
-                                            New message: "We need to improve the UI/UX for the
-                                            landing page."
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="#" class="dropdown-item text-center fw-bold rounded-bottom py-3">
-                                <svg class="icon icon-xxs text-gray-400 me-1" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-                                    <path fill-rule="evenodd"
-                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                View all
-                            </a> --}}
-                    {{-- </div>
-                    </div>  --}}
+                        <span
+                            class="notif-badge badge rounded-pill bg-danger d-none position-absolute top-0 start-50"
+                            style="font-size:.55rem;">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end mt-2 py-0">
+                        @include('partials.notification-bell')
+                    </div>
                 </li>
                 <li class="nav-item dropdown ms-lg-3">
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img width="45px" height="45px" class="avatar rounded-circle"
-                                alt="{{ auth()->user()->name }}"
-                                src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
+                            <span class="user-nav-avatar {{ $user_profile->is_prime_member ? 'prime-profile-image-frame' : '' }}" role="img" aria-label="{{ $user_profile->name }}">
+                                @if ($user_profile->image)
+                                    <img src="{{ asset('images/' . $user_profile->image) }}"
+                                        alt="Profile photo of {{ $user_profile->name }}"
+                                        onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                                    <span class="user-nav-avatar__fallback" aria-hidden="true" hidden>
+                                        {{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}
+                                    </span>
+                                @else
+                                    <span class="user-nav-avatar__fallback" aria-hidden="true">
+                                        {{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}
+                                    </span>
+                                @endif
+                            </span>
                             {{-- <p class="text-dark">{{ auth()->user()->name }}</p> --}}
                             <div class=" ms-2 text-dark align-items-center d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">Hello,
                                     {{ auth()->user()->name }}</span>
+                                @if ($user_profile->is_prime_member)
+                                    <span class="prime-badge ms-2"><svg class="prime-badge__crown" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 18h18l1-11-5 4-5-8-5 8-5-4 1 11Zm2 2h14v1H5z" /></svg> Prime</span>
+                                @endif
                             </div>
                         </div>
                     </a>
-                    <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-1">
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('user.edit.profile') }}">
-                            <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            My Profile
+                    <div class="dropdown-menu dashboard-dropdown user-account-menu {{ $user_profile->is_prime_member ? 'user-account-menu--prime' : 'user-account-menu--regular' }} dropdown-menu-end mt-2">
+                        @if ($user_profile->is_prime_member)
+                            <div class="user-account-menu__prime-header">
+                                <span class="user-account-menu__prime-avatar prime-profile-image-frame" aria-hidden="true">
+                                    @if ($user_profile->image)
+                                        <img src="{{ asset('images/' . $user_profile->image) }}" alt=""
+                                            onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                                        <span hidden>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @else
+                                        <span>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @endif
+                                </span>
+                                <div class="user-account-menu__prime-identity">
+                                    <strong>{{ $user_profile->name }}</strong>
+                                    <span><svg class="prime-badge__crown" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 18h18l1-11-5 4-5-8-5 8-5-4 1 11Zm2 2h14v1H5z" /></svg> Prime Member</span>
+                                </div>
+                            </div>
+                        @else
+                            <div class="user-account-menu__regular-header">
+                                <span class="user-account-menu__regular-avatar" aria-hidden="true">
+                                    @if ($user_profile->image)
+                                        <img src="{{ asset('images/' . $user_profile->image) }}" alt=""
+                                            onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                                        <span hidden>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @else
+                                        <span>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @endif
+                                </span>
+                                <div class="user-account-menu__regular-identity">
+                                    <strong>{{ $user_profile->name }}</strong>
+                                    <span>Customer Account</span>
+                                </div>
+                            </div>
+                        @endif
+                        <a class="dropdown-item d-flex align-items-center user-account-menu__item"
+                            href="{{ $user_profile->is_prime_member ? route('user.prime.profile') : route('user.edit.profile') }}">
+                            @if ($user_profile->is_prime_member)
+                                <span class="user-account-menu__profile-avatar prime-profile-image-frame" aria-hidden="true">
+                                    @if ($user_profile->image)
+                                        <img src="{{ asset('images/' . $user_profile->image) }}" alt=""
+                                            onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                                        <span hidden>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @else
+                                        <span>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @endif
+                                </span>
+                                Prime Profile
+                            @else
+                                <span class="user-account-menu__profile-avatar user-account-menu__profile-avatar--regular" aria-hidden="true">
+                                    @if ($user_profile->image)
+                                        <img src="{{ asset('images/' . $user_profile->image) }}" alt=""
+                                            onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                                        <span hidden>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @else
+                                        <span>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                                    @endif
+                                </span>
+                                My Profile
+                            @endif
                         </a>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('user.change.password') }}">
+                        <a class="dropdown-item d-flex align-items-center user-account-menu__item" href="{{ route('user.change.password') }}">
                             <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
@@ -262,8 +200,8 @@ $user_profile = auth()->user();
                             </svg>
                             Support
                         </a> --}}
-                        <div role="separator" class="dropdown-divider my-1"></div>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
+                        <div role="separator" class="dropdown-divider user-account-menu__divider"></div>
+                        <a class="dropdown-item d-flex align-items-center user-account-menu__item user-account-menu__item--logout" href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <svg class="dropdown-icon text-danger me-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

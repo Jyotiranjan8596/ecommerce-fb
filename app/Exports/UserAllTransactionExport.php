@@ -30,7 +30,8 @@ class UserAllTransactionExport implements FromCollection, WithHeadings
                 $item->amount ?? 0,
                 $item->remaining_amount ?? 0,
                 $item->remaining_reward,
-                $item->trans_date
+                $item->trans_date,
+                $item->status_label
             ];
         });
     }
@@ -43,12 +44,13 @@ class UserAllTransactionExport implements FromCollection, WithHeadings
             'POS',
             'Invoice',
             'Billing Amount',
-            'Wallet Deduct',
-            'Reward Deduct',
+            'By Wallet',
+            'By Reward',
             'Net Pay',
-            'Remaining Wallet',
-            'Remaining Reward',
-            'Transaction Date'
+            'Wallet Remain',
+            'Reward Remain',
+            'Transaction Date',
+            'Status'
         ];
     }
 }

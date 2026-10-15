@@ -1,66 +1,102 @@
 @extends('layouts.master')
 @section('content')
-    <div class="card border-0 shadow-sm">
-        <div class="card-header">
-            Create User
+    <div class="container-fluid py-3 admin-workflow-page">
+        <section class="admin-workflow-hero">
+            <div>
+                <span class="admin-workflow-hero__eyebrow">System users</span>
+                <h1>Create User</h1>
+                <p>Add an administrative or business user and assign an access role.</p>
+            </div>
+        </section>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Please correct the following:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $message)
+                        <li>{{ $message }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <div class="card admin-workflow-card">
+            <div class="card-header bg-white py-3">
+                <h2 class="h5 mb-0">User details</h2>
+            </div>
+            <form action="{{ route('admin.users.store') }}" method="POST">
+                @csrf
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" maxlength="255" id="name" name="name"
+                                class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name') }}" autocomplete="name" required>
+                            @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" id="email" name="email"
+                                class="form-control @error('email') is-invalid @enderror"
+                                value="{{ old('email') }}" autocomplete="email" required>
+                            @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="mobilenumber" class="form-label">Mobile number</label>
+                            <input type="tel" id="mobilenumber" name="mobilenumber"
+                                class="form-control @error('mobilenumber') is-invalid @enderror"
+                                value="{{ old('mobilenumber') }}" autocomplete="tel">
+                            @error('mobilenumber')
+                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                            @enderror
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select id="role" name="role" class="form-select @error('role') is-invalid @enderror" required>
+                                <option value="">Select a role</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}" @selected((string) old('role') === (string) $role->id)>
+                                        {{ $role->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('role')
+                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                            @enderror
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" id="password" name="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                autocomplete="new-password" minlength="8" required>
+                            @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="password_confirmation" class="form-label">Confirm password <span class="text-danger">*</span></label>
+                            <input type="password" id="password_confirmation" name="password_confirmation"
+                                class="form-control" autocomplete="new-password" minlength="8" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white p-3 d-flex justify-content-end gap-2">
+                    <a class="btn btn-outline-secondary" href="{{ route('admin.users.index') }}">Cancel</a>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-person-plus me-1"></i> Create user</button>
+                </div>
+            </form>
         </div>
-        <form action="{{ route('admin.users.store') }}" method="POST">
-            @csrf
-            <div class="card-body">
-                <div class="mb-2">
-                    <label for="title">Name*</label>
-                    <input type="text" minlength="5" maxlength="30" id="title" name="name"
-                        class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name', isset($user) ? $user->name : '') }}">
-                    @error('name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-                <div class="mb-2">
-                    <label for="title">Email*</label>
-                    <input type="email" id="email" name="email"
-                        class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('email', isset($email) ? $user->email : '') }}">
-                    @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-                <div class="mb-2">
-                    <label for="title">Password*</label>
-                    <input type="password" id="paasword" name="password"
-                        class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('password', isset($password) ? $user->$password : '') }}">
-                    @error('password')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-                <div class="mb-2">
-                    <label for="title">Role*</label>
-                    <select name="role" class="form-control" @error('role') is-invalid @enderror>
-                        <option value="">Select</option>
-                        @foreach ($roles as $data)
-                            <option value="{{ $data->id }}">{{ $data->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('role')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-primary me-2" type="submit">Save</button>
-                <a class="btn btn-secondary" href="{{ route('admin.users.index') }}">
-                    Back to list
-                </a>
-            </div>
-        </form>
     </div>
 @endsection

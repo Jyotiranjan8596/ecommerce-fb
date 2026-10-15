@@ -1,7 +1,27 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="row">
+    <div class="enterprise-dashboard-shell">
+        <section class="dashboard-hero">
+            <span class="dashboard-hero__label">Operations overview</span>
+            <h1 class="dashboard-hero__title">Welcome back, {{ auth()->user()->name }}</h1>
+            <p class="dashboard-hero__text">Track registrations, sales, wallet movement, and daily performance from a single enterprise dashboard built for operational clarity.</p>
+            <div class="dashboard-hero__stats">
+                <a class="dashboard-hero__stat dashboard-hero__stat-link" href="{{ route('admin.users.index') }}" aria-label="Open user list">
+                    <small>Total users</small>
+                    <strong>{{ $totaluser }}</strong>
+                </a>
+                <a class="dashboard-hero__stat dashboard-hero__stat-link" href="{{ route('admin.pos_system.index') }}" aria-label="Open POS list">
+                    <small>Total POS</small>
+                    <strong>{{ $totalpos }}</strong>
+                </a>
+                <a class="dashboard-hero__stat dashboard-hero__stat-link" href="{{ route('admin.dsr', ['start_date' => today()->toDateString(), 'end_date' => today()->toDateString()]) }}" aria-label="Open today's sales report">
+                    <small>Today's sales</small>
+                    <strong>&#8377;{{ number_format($todaySales, 2) }}</strong>
+                </a>
+            </div>
+        </section>
+        <div class="row g-3">
         {{-- <div class="col-12 mb-4">
         <div class="card bg-yellow-100 border-0 shadow">
             <div class="card-header d-sm-flex flex-row align-items-center flex-0">
@@ -25,40 +45,7 @@
         </div>
     </div> --}}
 
-        @if (auth()->user()->hasRole('Admin'))
-            <div class="col-12 col-sm-6 col-xl-4 mb-4">
-                <div class="card border-0 shadow">
-                    <div class="card-body">
-                        <div class="row d-block d-xl-flex align-items-center">
-                            <div
-                                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
-                                    <svg style="width: 35px; height: 35px;" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-users align-middle text-success">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                </div>
-                                <div class="d-sm-none">
-                                    <h2 class="h5">Total User</h2>
-                                    <h3 class="fw-extrabold mb-1">{{ $totaluser }}</h3>
-                                </div>
-                            </div>
-                            <div class="col-12 col-xl-7 px-xl-0">
-                                <div class="d-none d-sm-block">
-                                    <h2 class="h6 text-gray-400 mb-0">Total User</h2>
-                                    <h3 class="fw-extrabold mb-2">{{ $totaluser }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
+        @unless (auth()->user()->hasRole('Admin'))
             <div class="col-12 col-sm-6 col-xl-4 mb-4">
                 <div class="card border-0 shadow">
                     <div class="card-body">
@@ -89,74 +76,9 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endunless
 
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
-                                <svg style="width: 35px; height: 35px;" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round"
-                                    class="feather feather-bar-chart-2 align-middle text-primary">
-                                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                                    <line x1="6" y1="20" x2="6" y2="14"></line>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">Total POS</h2>
-                                <h3 class="mb-1">{{ $totalpos }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">Total POS</h2>
-                                <h3 class="fw-extrabold mb-2">{{ $totalpos }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @if (auth()->user()->hasRole('Admin'))
-            <div class="col-12 col-sm-6 col-xl-4 mb-4">
-                <div class="card border-0 shadow">
-                    <div class="card-body">
-                        <div class="row d-block d-xl-flex align-items-center">
-                            <div
-                                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                                <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                                    <svg style="width: 35px; height: 35px;" xmlns="http://www.w3.org/2000/svg"
-                                        width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-tag align-middle text-info">
-                                        <path
-                                            d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z">
-                                        </path>
-                                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                                    </svg>
-                                </div>
-                                <div class="d-sm-none">
-                                    <h2 class="fw-extrabold h5">Today's Sales</h2>
-                                    <h3 class="mb-1">{{ $count['tags'] ?? 0 }}</h3>
-                                </div>
-                            </div>
-                            <div class="col-12 col-xl-7 px-xl-0">
-                                <div class="d-none d-sm-block">
-                                    <h2 class="h6 text-gray-400 mb-0">Today's Sales</h2>
-                                    <h3 class="fw-extrabold mb-2">{{ $count['tags'] ?? 0 }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
+        @unless (auth()->user()->hasRole('Admin'))
             <div class="col-12 col-sm-6 col-xl-4 mb-4">
                 <div class="card border-0 shadow">
                     <div class="card-body">
@@ -187,11 +109,11 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endunless
         <div class="row mt-4">
             <div class="col-md-12 col-lg-4 mb-4">
                 <div class="card shadow border-0">
-                    <div class="card-header">User Registrations</div>
+                    <div class="card-header">User Registrations · {{ $year }}</div>
                     <div class="card-body">
                         <canvas id="chart1" style="min-height: 300px;"></canvas>
                     </div>
@@ -199,7 +121,7 @@
             </div>
             <div class="col-md-12 col-lg-4 mb-4">
                 <div class="card shadow border-0">
-                    <div class="card-header">Sale Stats</div>
+                    <div class="card-header">Monthly Sales · {{ $year }}</div>
                     <div class="card-body">
                         <canvas id="chart2" style="min-height: 300px;"></canvas>
                     </div>
@@ -207,7 +129,7 @@
             </div>
             <div class="col-md-12 col-lg-4 mb-4">
                 <div class="card shadow border-0">
-                    <div class="card-header">Reward Stats</div>
+                    <div class="card-header">Rewards Redeemed · {{ $year }}</div>
                     <div class="card-body">
                         <canvas id="chart3" style="min-height: 300px;"></canvas>
                     </div>
@@ -215,20 +137,31 @@
             </div>
         </div>
 
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const chartNumber = new Intl.NumberFormat('en-IN');
+        const chartCurrency = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0
+        });
+
         new Chart(document.getElementById('chart1'), {
             type: 'line',
             data: {
                 labels: {!! json_encode($userChartLabels) !!},
                 datasets: [{
-                        label: 'Users (Actual)',
-                        data: {!! json_encode(array_slice($userChartData, 0, now()->month)) !!},
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        label: 'New users',
+                        data: {!! json_encode($userChartData) !!},
+                        backgroundColor: 'rgba(54, 162, 235, 0.16)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 2,
-                        // tension: 0.4
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        fill: true,
+                        tension: 0.35
                     }
                 ]
             },
@@ -238,12 +171,12 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        min: 0,
-                        max: 100,
-                        ticks: {
-                            stepSize: 10
-                        }
+                        ticks: { precision: 0, callback: value => chartNumber.format(value) }
                     }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => `${context.dataset.label}: ${chartNumber.format(context.parsed.y)}` } }
                 }
             }
         });
@@ -251,33 +184,61 @@
         new Chart(document.getElementById('chart2'), {
             type: 'line',
             data: {
-                labels: {!! json_encode($posChartLabels) !!},
+                labels: {!! json_encode($salesChartLabels) !!},
                 datasets: [{
-                    label: 'Total Sales',
-                    data: {!! json_encode($posChartData) !!},
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    label: 'Sales',
+                    data: {!! json_encode($salesChartData) !!},
+                    borderColor: 'rgba(16, 122, 87, 1)',
+                    backgroundColor: 'rgba(16, 122, 87, 0.14)',
                     borderWidth: 2,
-                    fill: false
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: true,
+                    tension: 0.35
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => chartCurrency.format(context.parsed.y) } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => chartCurrency.format(value) }
+                    }
+                }
             }
         });
 
         new Chart(document.getElementById('chart3'), {
-            type: 'Total Giveaway',
+            type: 'bar',
             data: {
                 labels: {!! json_encode($salesChartLabels) !!},
                 datasets: [{
-                    data: {!! json_encode($salesChartData) !!},
-                    backgroundColor: ['#4bc0c0', '#ffcd56', '#ff6384']
+                    label: 'Rewards redeemed',
+                    data: {!! json_encode($rewardChartData) !!},
+                    backgroundColor: 'rgba(245, 158, 11, 0.72)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => chartCurrency.format(context.parsed.y) } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => chartCurrency.format(value) }
+                    }
+                }
             }
         });
     </script>

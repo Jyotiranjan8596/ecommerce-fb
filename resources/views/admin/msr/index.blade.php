@@ -1,138 +1,328 @@
 @extends('layouts.master')
 
 @section('content')
-    <style>
-        #msr-tbl thead th {
-            position: sticky;
-            top: 0;
-            background-color: #000;
-            color: #fff;
-            z-index: 10;
-        }
-
-        .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-    </style>
-    <div class="container mt-4">
-        <h3 class="text-center text-dark font-weight-bold"><b>MSR Upload</b></h3>
-
-        <!-- Filter by POS ID and Month -->
-        <form method="GET" action="{{ route('admin.msr') }}" class="row align-items-center mb-3">
-            <div class="col-12 col-md-4 mb-2">
-                <select class="form-control" name="search" id="search">
-                    <option value="">Select POS by POS ID...</option>
-                    @foreach ($pos as $data)
-                        <option value="{{ $data['id'] ?? '' }}"
-                            {{ request('search') == ($data['id'] ?? '') ? 'selected' : '' }}>
-                            {{ $data['name'] }} ({{ $data['user_id'] ?? 'N/A' }})
-                        </option>
-                    @endforeach
-                </select>
+    <div class="msr-page">
+        <section class="msr-heading">
+            <div>
+                <span class="msr-heading__eyebrow">Sales performance</span>
+                <h1>Payback Run Data</h1>
+                <p>Review monthly customer billing and sponsor expenditure.</p>
             </div>
-
-            <div class="col-12 col-md-4 mb-2">
-                <input type="month" name="month" id="month" class="form-control" value="{{ request('month') }}">
+            <div class="msr-heading__period">
+                <span>Report period</span>
+                <strong>{{ \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}</strong>
             </div>
+        </section>
 
-            <div class="col-12 col-md-auto mb-2">
-                <button class="btn btn-info btn-block" type="submit">FILTER</button>
-            </div>
-            <div class="col-12 col-md-4 mb-2">
-                <input type="text" name="filter" class="form-control" placeholder="Search Mobile Number"
-                    value="{{ request('filter') }}">
-            </div>
-            <div class="col-12 col-md-auto mb-2">
-                <button class="btn btn-primary btn-block" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </form>
+        <section class="card msr-panel">
+            <div class="msr-tools">
+                <form method="GET" action="{{ route('admin.msr') }}" class="msr-filters">
+                    <div class="msr-filter-field msr-filter-field--pos">
+                        <label for="msr-pos">POS location</label>
+                        <select class="form-select" name="search" id="msr-pos">
+                            <option value="">All POS locations</option>
+                            @foreach ($pos as $data)
+                                <option value="{{ $data['id'] ?? '' }}"
+                                    {{ request('search') == ($data['id'] ?? '') ? 'selected' : '' }}>
+                                    {{ $data['name'] }} ({{ $data['user_id'] ?? 'N/A' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-        {{-- <!-- Filter by Mobile Number -->
-        <form method="GET" action="{{ route('admin.msr') }}" class="row align-items-center mb-3">
-           
-        </form> --}}
+                    <div class="msr-filter-field msr-filter-field--month">
+                        <label for="msr-month">Month</label>
+                        <input type="month" name="month" id="msr-month" class="form-control"
+                            value="{{ $selectedMonth }}">
+                    </div>
 
-        <div class="col-12 col-md-4">
-            <form action="{{ route('admin.wallet.upload') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <label class="form-label small text-muted mb-1">Upload Wallet</label>
-                <div class="input-group">
-                    <input type="file" class="form-control form-control-sm" name="file" accept=".xlsx" required>
-                    <button class="btn btn-info btn-sm fw-semibold" type="submit">
-                        <i class="bi bi-upload me-1"></i> UPLOAD
+                    <div class="msr-filter-field msr-filter-field--mobile">
+                        <label for="msr-mobile">Mobile number</label>
+                        <input type="search" name="filter" id="msr-mobile" class="form-control"
+                            placeholder="Search mobile number" value="{{ request('filter') }}">
+                    </div>
+
+                    <div class="msr-filter-actions">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-filter me-1" aria-hidden="true"></i> Apply filters
+                        </button>
+                        @if (request()->hasAny(['search', 'month', 'filter']))
+                            <a href="{{ route('admin.msr') }}" class="btn btn-outline-secondary">Reset</a>
+                        @endif
+                    </div>
+                </form>
+
+                <form method="GET" action="{{ route('admin.msr.export') }}" class="msr-export">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="month" value="{{ $selectedMonth }}">
+                    <input type="hidden" name="filter" value="{{ request('filter') }}">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-download me-1" aria-hidden="true"></i> Export report
                     </button>
-                </div>
-                @if ($errors->has('file'))
-                    <div class="text-danger mt-1 small">{{ $errors->first('file') }}</div>
-                @endif
-            </form>
-        </div>
-        <div class="col-md-12 mb-3 text-end">
-            <form method="GET" action="{{ route('admin.msr.export') }}" class="d-inline">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <input type="hidden" name="month" value="{{ request('month') }}">
-                <button class="btn btn-danger" type="submit">EXPORT</button>
-            </form>
-        </div>
+                </form>
+            </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped text-center" id="msr-tbl">
-                <thead>
-                    <tr>
-                        <th>Sl.No</th>
-                        <th>MONTH</th>
-                        <th>USER ID</th>
-                        <th>MOBILE NUMBER</th>
-                        <th>SPONSOR ID</th>
-                        <th>TOTAL BILLING AMOUNT</th>
-                        <th>SPONSOR EXPENDITURE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if ($monthlySales->isEmpty())
+            <div class="msr-table-section scroll-list-section">
+                <table class="table table-hover align-middle mb-0 text-nowrap" id="msr-tbl">
+                    <thead>
                         <tr>
-                            <td colspan="8" class="text-center text-danger font-weight-bold">No Data Available</td>
+                            <th scope="col">#</th>
+                            <th scope="col">Month</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Mobile Number</th>
+                            <th scope="col">Sponsor ID</th>
+                            <th scope="col" class="text-end">Total Billing Amount</th>
+                            <th scope="col" class="text-end">Sponsor Expenditure</th>
                         </tr>
-                    @else
-                        @foreach ($monthlySales as $key => $data)
+                    </thead>
+                    <tbody>
+                        @forelse ($monthlySales as $key => $data)
                             <tr>
-                                <td>{{ $monthlySales->firstItem() + $key }}</td>
-                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}
-                                </td>
-                                <td>{{ $data->user->user_id ?? 'N/A' }}</td>
-                                <td>{{ $data->mobilenumber }}</td>
+                                <td class="msr-row-number">{{ $monthlySales->firstItem() + $key }}</td>
+                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m', $data->transaction_month)->format('F Y') }}</td>
+                                <td><span class="msr-user-id">{{ $data->user->user_id ?? 'N/A' }}</span></td>
+                                <td>{{ $data->mobilenumber ?: '—' }}</td>
                                 <td>
-                                    @if ($data->user)
-                                        @if ($data->user->sponsor_id)
-                                            @php
-                                                $sponsorUser = \App\Models\User::where(
-                                                    'id',
-                                                    $data->user->sponsor_id,
-                                                )->first();
-                                            @endphp
-                                            {{ $sponsorUser ? $sponsorUser->user_id : 'N/A' }}
-                                        @else
-                                            N/A
-                                        @endif
+                                    @if ($data->user && $data->user->sponsor_id)
+                                        @php
+                                            $sponsorUser = \App\Models\User::find($data->user->sponsor_id);
+                                        @endphp
+                                        {{ $sponsorUser ? $sponsorUser->user_id : 'N/A' }}
                                     @else
                                         N/A
                                     @endif
                                 </td>
-                                <td>₹{{ $data->total_billing_amount ?? 0 }}/-</td>
-                                <td>₹{{ $data->sponsor_expenditure }}/-</td>
+                                <td class="text-end">₹{{ number_format((float) ($data->total_billing_amount ?? 0), 2) }}</td>
+                                <td class="text-end">₹{{ number_format((float) ($data->sponsor_expenditure ?? 0), 2) }}</td>
                             </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-            </table>
-        </div>
+                        @empty
+                            <tr>
+                                <td colspan="7">
+                                    <div class="msr-empty">
+                                        <span class="msr-empty__icon" aria-hidden="true">
+                                            <i class="fas fa-chart-line"></i>
+                                        </span>
+                                        <strong>No sales records found</strong>
+                                        <span>Try a different month, POS location, or mobile number.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="d-flex justify-content-center mt-3">
             {{ $monthlySales->links() }}
-        </div>
+        </section>
     </div>
 
+    <style>
+        .msr-page {
+            display: grid;
+            gap: 1.25rem;
+            padding-bottom: 1rem;
+        }
+
+        .msr-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.5rem 1.6rem;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 28%),
+                linear-gradient(135deg, #102b2b 0%, #142f43 55%, #1e40af 100%);
+            color: #fff;
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+        }
+
+        .msr-heading__eyebrow {
+            display: inline-block;
+            margin-bottom: 0.45rem;
+            color: #a8e7d2;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .msr-heading h1 {
+            margin: 0;
+            color: #fff;
+            font-size: clamp(1.5rem, 2vw, 2rem);
+            font-weight: 800;
+        }
+
+        .msr-heading p {
+            margin: 0.35rem 0 0;
+            color: rgba(255, 255, 255, 0.76);
+        }
+
+        .msr-heading__period {
+            display: flex;
+            min-width: 150px;
+            flex-direction: column;
+            padding: 0.8rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .msr-heading__period span {
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.72rem;
+        }
+
+        .msr-heading__period strong {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .msr-panel {
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+        }
+
+        .msr-tools {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.1rem 1.25rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(248, 250, 252, 0.72);
+        }
+
+        .msr-filters {
+            display: flex;
+            flex: 1 1 auto;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .msr-filter-field {
+            display: grid;
+            gap: 0.35rem;
+        }
+
+        .msr-filter-field label {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .msr-filter-field--pos {
+            flex: 1 1 235px;
+        }
+
+        .msr-filter-field--month {
+            flex: 0 1 165px;
+        }
+
+        .msr-filter-field--mobile {
+            flex: 1 1 210px;
+        }
+
+        .msr-filter-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .msr-export {
+            flex: 0 0 auto;
+        }
+
+        .msr-table-section {
+            max-height: min(65vh, 600px);
+        }
+
+        #msr-tbl {
+            min-width: 850px;
+        }
+
+        #msr-tbl thead th {
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .msr-row-number {
+            color: #94a3b8 !important;
+        }
+
+        .msr-user-id {
+            display: inline-block;
+            padding: 0.28rem 0.55rem;
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            border-radius: 8px;
+            background: rgba(219, 234, 254, 0.45);
+            color: #1d4ed8;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .msr-empty {
+            display: flex;
+            min-height: 210px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .msr-empty strong {
+            color: #0f172a;
+        }
+
+        .msr-empty__icon {
+            display: grid;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.3rem;
+            place-items: center;
+            border-radius: 16px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .msr-heading,
+            .msr-tools {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .msr-heading {
+                padding: 1.25rem;
+            }
+
+            .msr-filter-field--pos,
+            .msr-filter-field--month,
+            .msr-filter-field--mobile {
+                flex: 1 1 100%;
+            }
+
+            .msr-filter-actions,
+            .msr-export,
+            .msr-filter-actions .btn,
+            .msr-export .btn {
+                width: 100%;
+            }
+
+            .msr-filter-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 @endsection

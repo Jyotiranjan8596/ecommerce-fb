@@ -4,13 +4,17 @@
 
     {{-- page content  --}}
 
-    <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+    <section class="auth-shell">
         <div class="container">
-            <div class="row justify-content-center form-bg-image">
-                <div class="col-12 d-flex align-items-center justify-content-center">
-                    <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-                        <div class="text-center text-md-center mb-4 mt-md-0">
-                            <h1 class="mb-0 h3">Sign in to FreeBazar</h1>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-5 d-flex align-items-center justify-content-center">
+                    <div class="auth-card w-100">
+                        <div class="auth-brand">
+                            <img src="{{ asset('assets/images/freebazar-signin-logo.png') }}" alt="FreeBazar logo" style="width:120px;height:auto;object-fit:contain;" />
+                            <div>
+                                <span>Welcome back</span>
+                                <h1>Sign in to FreeBazar</h1>
+                            </div>
                         </div>
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
@@ -77,8 +81,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-gray-800">
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary w-100">
                                     Sign in
                                 </button>
                             </div>

@@ -1,19 +1,59 @@
 <section>
-    <footer>
-        <div class="container">
-            <div class="foot-inner">
-                <ul>
-                    <li><a href="">Terms of service</a></li>
-                    <li><a href="" class="border-left">Privacy Policy</a></li>
-                    <li><a href="" class="border-left">Refund Policy</a></li>
-                    <li><a href="" class="border-left">Contact</a></li>
-                </ul>
+    <footer class="freebazar-site-footer">
+        <div class="container-lg">
+            <div class="row align-items-start">
+                <div class="col-12 col-sm-6 col-xl-3 order-xl-1">
+                    <div class="footer-menu">
+                        <a href="{{ route('frontend.index') }}" aria-label="FreeBazar home">
+                            <img src="{{ asset('assets/images/freebazar-header-logo.png') }}" width="240" height="70"
+                                alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." />
+                        </a>
+                        @include('partials.social-links')
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3 order-xl-3">
+                    <div class="footer-menu">
+                        <h5 class="widget-title">Quick Links</h5>
+                        <ul class="menu-list list-unstyled">
+                            <li><a href="{{ route('frontend.offer') }}">Offers</a></li>
+                            <li><a href="{{ route('frontend.faq') }}">FAQs</a></li>
+                            <li><a href="{{ route('frontend.termCondition') }}">Terms &amp; Conditions</a></li>
+                            <li><a href="{{ route('frontend.pos.list') }}">POS List</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3 order-xl-2">
+                    <div class="footer-menu">
+                        <h5 class="widget-title">Customer Service</h5>
+                        <p>
+                            <a href="tel:9090660606">+91 9090660606</a><br>
+                            <a href="mailto:freebazaretail@gmail.com">freebazaretail@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3 order-xl-4">
+                    <div class="footer-menu">
+                        <h5 class="widget-title">Address</h5>
+                        <p>
+                            1625(B), Nilakantha Nagar,<br>
+                            Nayapalli, lane no 15, 751012<br>
+                            Near Unit 8, DAV School<br>
+                            Bhubaneswar, Odisha
+                        </p>
+                    </div>
+                </div>
             </div>
-            <p class="copy-right-line">
-                &copy; Copyright SRDC Pvt Ltd. All rights reserved.
-            </p>
         </div>
     </footer>
+    <div id="footer-bottom">
+        <div class="container-lg">
+            <div class="row">
+                <div class="col-12 copyright">
+                    <p>©2018 - 2026 FREEBAZAR. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <script>
@@ -51,9 +91,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

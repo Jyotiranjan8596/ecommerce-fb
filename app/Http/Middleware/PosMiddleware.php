@@ -19,9 +19,18 @@ class PosMiddleware
         } catch (\Exception $e) {
             DB::reconnect();
         }
-        if (Auth::check() && Auth::user()->role == 4) {
+        if (Auth::check() && Auth::user()->role == 4 && (int) Auth::user()->status === 1) {
             return $next($request);
         }
+
+        if (Auth::check() && Auth::user()->role == 4) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('error', 'Your account is suspended. Contact the administrator.');
+        }
+
         return redirect()->back();
     }
 }

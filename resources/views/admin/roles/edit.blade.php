@@ -1,80 +1,74 @@
 @extends('layouts.master')
 
-@section('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-@endsection
-
 @section('content')
-    <div class="card">
-        <div class="card-header">
-            Edit Role
-        </div>
-        <form action="{{ route("admin.roles.update", [$role->id]) }}" method="POST">
+    <div class="container-fluid py-3 admin-workflow-page">
+        <section class="admin-workflow-hero">
+            <div>
+                <span class="admin-workflow-hero__eyebrow">Access control</span>
+                <h1>Edit role</h1>
+                <p>Update <strong>{{ $role->name }}</strong> and its assigned permissions.</p>
+            </div>
+            <a class="btn btn-light" href="{{ route('admin.roles.index') }}">
+                <i class="bi bi-arrow-left me-1"></i> Back to roles
+            </a>
+        </section>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Please correct the following:</strong>
+                <ul class="mb-0 mt-2">@foreach ($errors->all() as $message)<li>{{ $message }}</li>@endforeach</ul>
+            </div>
+        @endif
+
+        <form action="{{ route('admin.roles.update', $role) }}" method="POST" class="card admin-workflow-card">
             @csrf
             @method('PUT')
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="title">Title*</label>
-                    <input type="text" id="title" name="name" class="form-control @error('name') is-invalid @enderror"
-                           value="{{ old('name', isset($role) ? $role->name : '') }}" required>
-                    @error('name')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                    @enderror
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <label for="name" class="form-label">Role name <span class="text-danger">*</span></label>
+                    <input type="text" id="name" name="name" maxlength="255" required
+                        class="form-control @error('name') is-invalid @enderror"
+                        value="{{ old('name', $role->name) }}">
+                    @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-                <div class="mb-3">
-                    <label for="permissions">Permissions*
-                        <span class="btn btn-info btn-sm select-all">Select All</span>
-                        <span class="btn btn-info btn-sm deselect-all">Deselect all</span></label>
-                    <select name="permissions[]" id="permissions"
-                            class="form-control select2 @error('permissions') is-invalid @enderror" multiple="multiple"
-                            required>
-                        @foreach($permissions as $id => $permissions)
-                            <option
-                                value="{{ $id }}" {{ (in_array($id, old('permissions', [])) || isset($role) && $role->permissions->contains($id)) ? 'selected' : '' }}>{{ $permissions }}</option>
-                        @endforeach
-                    </select>
-                    @error('permissions')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                    @enderror
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Permissions</h2>
+                        <p class="text-muted small mb-0">A role may be saved without permissions.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="select-all-permissions">Select all</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-permissions">Clear</button>
+                    </div>
+                </div>
+                @php($selectedPermissions = old('permissions', $role->permissions->pluck('id')->all()))
+                <div class="row g-2">
+                    @forelse ($permissions as $permission)
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <label class="form-check border rounded p-3 h-100 d-flex align-items-start gap-2 role-permission-option">
+                                <input class="form-check-input permission-checkbox mt-1" type="checkbox"
+                                    name="permissions[]" value="{{ $permission->id }}"
+                                    @checked(in_array($permission->id, $selectedPermissions))>
+                                <span class="form-check-label">{{ $permission->name }}</span>
+                            </label>
+                        </div>
+                    @empty
+                        <div class="col-12"><div class="alert alert-info mb-0">No permissions are available to assign.</div></div>
+                    @endforelse
                 </div>
             </div>
-            <div class="card-footer">
-                <button class="btn btn-primary me-2" type="submit">Update</button>
-                <a class="btn btn-secondary" href="{{ route('admin.roles.index') }}">
-                    Back to list
-                </a>
+            <div class="card-footer bg-white p-3 d-flex justify-content-end gap-2">
+                <a class="btn btn-outline-secondary" href="{{ route('admin.roles.index') }}">Cancel</a>
+                <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg me-1"></i> Save changes</button>
             </div>
         </form>
-    </div>
-@endsection
-
-
-@section('scripts')
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-
-        $(document).ready(function () {
-            $('.select-all').click(function () {
-                let $select2 = $(this).parent().siblings('.select2')
-                $select2.find('option').prop('selected', 'selected')
-                $select2.trigger('change')
-            })
-            $('.deselect-all').click(function () {
-                let $select2 = $(this).parent().siblings('.select2')
-                $select2.find('option').prop('selected', '')
-                $select2.trigger('change')
-            })
-
-            $(".select2").select2({
-                tags: true
+        <script>
+            document.getElementById('select-all-permissions')?.addEventListener('click', () => {
+                document.querySelectorAll('.permission-checkbox').forEach((checkbox) => checkbox.checked = true);
             });
-        });
-    </script>
-
+            document.getElementById('clear-permissions')?.addEventListener('click', () => {
+                document.querySelectorAll('.permission-checkbox').forEach((checkbox) => checkbox.checked = false);
+            });
+        </script>
+    </div>
 @endsection

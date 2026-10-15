@@ -221,8 +221,8 @@
             {{-- <div class="grid text-center  gap-3" style="border: solid 1px black; display:flex;">
                 <div class="g-col-6" style="border: solid 1px black;">
                     <a href="{{ route('frontend.index') }}">
-                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo" class="img-fluid"
-                            height="40px" width="136px" />
+                        <img src="{{ asset('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." class="img-fluid"
+                            style="width: 160px; max-width: 100%; height: auto;" />
                     </a>
                 </div>
                 <div class="g-col-6" style="border: solid 1px black;">
@@ -239,8 +239,8 @@
             <div class="col-sm-4 col-lg-2  text-sm-start text-center d-flex gap-3 ">
                 <div class="d-flex align-items-center my-3 my-sm-0">
                     <a href="{{ route('frontend.index') }}">
-                        <img src="{{ asset('assets/images/logofreebazar3.png') }}" alt="logo"
-                            class="img-fluid" />
+                        <img src="{{ asset('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations."
+                            class="img-fluid" style="width: 160px; max-width: 100%; height: auto;" />
                     </a>
                 </div>
                 <button class="navbar-toggler justify-content-md-end " type="button" data-bs-toggle="offcanvas"
@@ -309,62 +309,53 @@
                         </form>
                     @else
                         <li class="nav-item active">
-                            <a href="{{ route('login') }}" class="nav-link">Login In</a>
+                            <a href="{{ route('login') }}" class="nav-link freebazar-nav-login">Login In</a>
                         </li>
                         <li class="nav-item active">
-                            <a href="{{ route('register') }}" class="nav-link">Register</a>
+                            <a href="{{ route('register') }}" class="nav-link freebazar-nav-register">Register</a>
                         </li>
                     @endif
 
                 </ul>
             </div> --}}
 
-            <div class="col-lg-5" style=" background-color: #f3aa4b; border-radius: 10px;">
-                <ul
-                    class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle pe-3" role="button" id="pages"
-                            data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
-                        <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="pages">
-                            <li>
-                                <a href="#aboutus" class="dropdown-item">About Us </a>
+            @if (Auth::check() || !request()->routeIs('frontend.pos.list', 'user.pos.list.index'))
+                <div class="col-lg-5 freebazar-landing-nav" style="border-radius: 10px;">
+                    <ul
+                        class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
+                        @if (Auth::check())
+                            <li class="nav-item active">
+                                @if (Auth::user()->role == 1)
+                                    <a class="nav-link" href="{{ route('admin.index') }}">Dashboard</a>
+                                @elseif(Auth::user()->role == 3)
+                                    <a class="nav-link" href="{{ route('user.index') }}">{{ Auth::user()->is_prime_member ? 'Prime Dashboard' : 'Dashboard' }}
+                                        @if (Auth::user()->is_prime_member)
+                                            <span class="prime-badge ms-1">Prime</span>
+                                        @endif
+                                    </a>
+                                @elseif(Auth::user()->role == 4)
+                                    <a class="nav-link" href="{{ route('pos.index') }}">Dashboard</a>
+                                @endif
                             </li>
-                            <li><a href="#mission" class="dropdown-item">Mission</a></li>
-                            <li>
-                                <a href="#vision" class="dropdown-item">Vision
-                                </a>
+                            <li class="nav-item active">
+                                <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    class="nav-link">Logout</a>
                             </li>
-                            <li><a href="#concept" class="dropdown-item">Concept</a></li>
-                        </ul>
-                    </li>
-                    @if (Auth::check())
-                        <li class="nav-item active">
-                            @if (Auth::user()->role == 1)
-                                <a class="nav-link" href="{{ route('admin.index') }}">Dashboard</a>
-                            @elseif(Auth::user()->role == 3)
-                                <a class="nav-link" href="{{ route('user.index') }}">Dashboard</a>
-                            @elseif(Auth::user()->role == 4)
-                                <a class="nav-link" href="{{ route('pos.index') }}">Dashboard</a>
-                            @endif
-                        </li>
-                        <li class="nav-item active">
-                            <a href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                                class="nav-link">Logout</a>
-                        </li>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    @else
-                        <li class="nav-item active">
-                            <a href="{{ route('login') }}" class="nav-link">Login In</a>
-                        </li>
-                        <li class="nav-item active">
-                            <a href="{{ route('register') }}" class="nav-link">Register</a>
-                        </li>
-                    @endif
-                </ul>
-            </div>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        @else
+                            <li class="nav-item active">
+                                <a href="{{ route('login') }}" class="nav-link freebazar-nav-login">Login In</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a href="{{ route('register') }}" class="nav-link freebazar-nav-register">Register</a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 </header>

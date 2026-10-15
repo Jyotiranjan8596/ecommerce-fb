@@ -14,11 +14,13 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
     protected $endDate;
     protected $serialNumber = 1;
     protected $pos_id;
-    public function __construct($startDate = null, $endDate = null, $posId = null)
+    protected $search;
+    public function __construct($startDate = null, $endDate = null, $posId = null, $search = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->pos_id = $posId;
+        $this->search = $search;
     }
 
     public function collection()
@@ -29,6 +31,20 @@ class WalletExport implements FromCollection, WithHeadings, WithMapping
         }
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('transaction_date', [$this->startDate, $this->endDate]);
+        } elseif ($this->startDate) {
+            $query->whereDate('transaction_date', '>=', $this->startDate);
+        } elseif ($this->endDate) {
+            $query->whereDate('transaction_date', '<=', $this->endDate);
+        }
+        if ($this->search) {
+            $searchTerm = $this->search;
+            $query->where(function ($searchQuery) use ($searchTerm) {
+                $searchQuery->where('mobilenumber', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('getPos', function ($posQuery) use ($searchTerm) {
+                        $posQuery->where('name', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('mobilenumber', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
         }
 
         return $query->get();

@@ -33,11 +33,18 @@ class PosModel extends Model
         'state',
         'zip',
         'latitude',
-        'longitude'
+        'longitude',
+        'delivery_orders_enabled',
+        'delivery_orders_requested',
+    ];
+
+    protected $casts = [
+        'delivery_orders_enabled' => 'boolean',
+        'delivery_orders_requested' => 'boolean',
     ];
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function wallet()

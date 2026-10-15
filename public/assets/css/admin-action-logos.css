@@ -1,0 +1,74 @@
+.content .admin-action-logo-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.content .admin-action-logo-input-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.content .admin-action-logo-input-wrap input {
+    margin: 0;
+}
+
+.content .admin-action-logo-mark {
+    display: inline-grid;
+    width: 1.65rem;
+    height: 1.65rem;
+    flex: 0 0 1.65rem;
+    place-items: center;
+    padding: .28rem;
+    border-radius: .55rem;
+    color: #fff;
+    background: linear-gradient(145deg, #3478f6, #1553c7);
+    box-shadow: 0 3px 8px rgba(29, 57, 91, .2);
+    vertical-align: middle;
+}
+
+.content .admin-action-logo-mark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.content i.admin-action-logo-mark {
+    padding: .36rem;
+    font-size: .88rem;
+    line-height: 1;
+}
+
+.content .admin-action-logo--create,
+.content .admin-action-logo--upload {
+    background: linear-gradient(145deg, #16b89a, #07846e);
+}
+
+.content .admin-action-logo--delete {
+    background: linear-gradient(145deg, #f36c78, #ce334b);
+}
+
+.content .admin-action-logo--search {
+    background: linear-gradient(145deg, #16b89a, #07846e);
+}
+
+.content .admin-action-logo--export {
+    background: linear-gradient(145deg, #9b61ed, #6b36c5);
+}
+
+.content .admin-action-logo--reset,
+.content .admin-action-logo--cancel,
+.content .admin-action-logo--back {
+    background: linear-gradient(145deg, #8292a8, #596b82);
+}
+
+.content .admin-action-logo--view,
+.content .admin-action-logo--verify {
+    background: linear-gradient(145deg, #24a9c2, #147c9b);
+}
+
+.content .admin-action-logo-button:hover .admin-action-logo-mark {
+    filter: saturate(1.12);
+    box-shadow: 0 5px 11px rgba(29, 57, 91, .25);
+}

@@ -92,7 +92,7 @@
                                 <li><a href="#" class="social-link"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
                                 <li><a href="#" class="social-link"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
                                 <li><a href="#" class="social-link"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
-                                <li><a href="#" class="social-link"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.instagram.com/freebazaretail/" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
                             </ul>
                         </div>
                         <div class="acepted-payment-methods">

@@ -68,7 +68,19 @@ class RegisterController extends Controller
                 'required',
                 'digits_between:10,15',
                 'regex:/^[0-9]+$/',
-                'unique:users,mobilenumber'
+                'unique:users,mobilenumber',
+            ],
+            'sponsor_ref' => [
+                'nullable',
+                'string',
+                'max:20',
+                'exists:users,user_id',
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
             ],
             'gender' => [
                 'required',
@@ -101,6 +113,9 @@ class RegisterController extends Controller
                 'max:2048' // Max 2MB
             ],
             'terms' => 'accepted',
+        ], [
+            'mobile.unique' => 'This mobile number is already registered.',
+            'sponsor_ref.exists' => 'The Sponsor ID you entered is invalid or does not exist.',
         ]);
     }
 
@@ -114,6 +129,13 @@ class RegisterController extends Controller
     {
         // dd(array_key_exists('terms', $data));
         $imageName = null;
+        $referrer = null;
+
+        $defaultSponsorUserId = '9624023';
+        $refCode = $data['sponsor_ref'] ?? $defaultSponsorUserId;
+        if (! empty($refCode)) {
+            $referrer = User::where('user_id', (string) $refCode)->first();
+        }
 
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $imageName = time() . '.' . $data['image']->getClientOriginalExtension();
@@ -125,18 +147,26 @@ class RegisterController extends Controller
             'name'         => $data['name'],
             'email'        => $data['email'],
             'gender'       => $data['gender'] == 'male' ? "M" : "F",
-            'password'     => Hash::make('123456'),
+            'password'     => Hash::make($data['password']),
             'address'      => $data['address'],
             'mobilenumber' => $data['mobile'],
             'role'         => 3,
             'city'         => $data['city'],
             'state'        => $data['state'],
-            'sponsor_id'   => 666666,
+            'sponsor_id'   => $referrer ? $referrer->id : (User::where('user_id', $defaultSponsorUserId)->value('id') ?? 666666),
         ]);
         // $whatsapp  = new WhatsappMessageService();
         // $msg_reslt = $whatsapp->user_registration($data['name'], $data['mobile']);
         // dd('Comming here');
         // Log::info('registration Result in Route', [$msg_reslt]);
         return $user;
+    }
+
+    protected function registered($request, $user)
+    {
+        session()->flash('registration_success', true);
+        session()->flash('registered_user_id', $user->user_id ?? 'N/A');
+
+        return redirect($this->redirectPath());
     }
 }

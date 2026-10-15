@@ -1,197 +1,142 @@
-@extends('pos.layouts.master')
+﻿@extends('pos.layouts.master')
 
 @section('content')
-    {{-- <div style="margin-top: 20px;">
-        <h4><b>HI, {{ auth()->user()->name }} <span>Welcome to POS Dashboard</span></b></h4>
-        <hr>
-    </div> --}}
-    {{-- <div class="row" style="margin-top: 20px;">
-        <div class="col-md-12" style="margin-top: 15px;">
-            <div class="card illustration flex-fill">
-                <div class="card-body p-0 d-flex flex-fill">
-                    <div class="row g-0 w-100">
-                        <div class="col-6">
-                            <div class="">
-                                <span><img style="height: 50px; width: 50px;margin-left: 20px;margin-top: 20px;"
-                                        src="{{ asset('images/' . auth()->user()->image) }}" alt=""
-                                        class="thumb-lg rounded-circle"></span>
-                                <h4 class="illustration-text" style="color: #062962;margin-left: 81px;margin-top: -33px;">
-                                    <b>{{ auth()->user()->name }}
-                                        ({{ auth()->user()->user_id }})</b>
-                                </h4>
-                                @php
-                                    $roles = auth()->user()->getRoleNames()->toArray();
-                                @endphp
-                            </div>
-                        </div>
-                        <div class="col-6 align-self-end text-end">
-                            
-                            <img src="{{ asset('images/admin/customer-support.png') }}" alt="Customer Support"
-                                class="img-fluid illustration-img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    <div class="enterprise-dashboard-shell">
+        <section class="dashboard-hero">
+            <span class="dashboard-hero__label">POS overview</span>
+            <h1 class="dashboard-hero__title">Welcome back, {{ auth()->user()->name }}</h1>
+            <p class="dashboard-hero__text">Keep a close view of current sales, wallet credit, and operational performance for your POS network.</p>
+        </section>
 
+        <section class="pos-dashboard-stats" aria-label="POS sales and wallet statistics">
+            <div class="pos-dashboard-stat-card">
+                    <small>CMS</small>
+                    <strong>&#8377;{{ $msales ?? 0 }}</strong>
+                    <span class="pos-dashboard-stat-detail">
+                        Current Month Sales
+                        <span class="pos-dashboard-stat-trend pos-dashboard-stat-trend-up">
+                            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                            <b>2%</b>
+                        </span>
+                    </span>
+                </div>
+            <div class="pos-dashboard-stat-card">
+                    <small>CDS</small>
+                    <strong>&#8377;{{ $dsales ?? 0 }}</strong>
+                    <span class="pos-dashboard-stat-detail">
+                        Current Day Sales
+                        <span class="pos-dashboard-stat-trend pos-dashboard-stat-trend-down">
+                            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            <b>2%</b>
+                        </span>
+                    </span>
+                </div>
+            <div class="pos-dashboard-stat-card">
+                    <small>&#8377;RBW</small>
+                    <strong>&#8377;{{ $currentMonthWalletCredit ?? 0 }}</strong>
+                    <span class="pos-dashboard-stat-detail">
+                        Received By Wallet
+                        <span class="pos-dashboard-stat-trend pos-dashboard-stat-trend-up">
+                            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                            <b>4%</b>
+                        </span>
+                    </span>
+                </div>
+        </section>
 
-    <div class="row">
-        {{-- <div class="col-12 mb-4">
-            <div class="card bg-yellow-100 border-0 shadow">
-                <div class="card-header d-sm-flex flex-row align-items-center flex-0">
-                    <div class="d-block mb-3 mb-sm-0">
-                        <div class="fs-5 fw-normal mb-2">Sales Value</div>
-                        <h2 class="fs-3 fw-extrabold">$10,567</h2>
-                        <div class="small mt-2">
-                            <span class="fw-normal me-2">Yesterday</span>
-                            <span class="fas fa-angle-up text-success"></span>
-                            <span class="text-success fw-bold">10.57%</span>
+        <section class="row g-4 pos-dashboard-charts" aria-label="POS statistics charts">
+            <div class="col-12 col-xl-8">
+                <article class="card border-0 shadow-sm h-100 pos-dashboard-chart-card">
+                    <div class="card-body">
+                        <div class="pos-dashboard-chart-heading">
+                            <div>
+                                <span class="pos-dashboard-chart-eyebrow">Sales activity</span>
+                                <h2>Daily sales trend</h2>
+                            </div>
+                            <span class="pos-dashboard-chart-period">Last 7 days</span>
                         </div>
+                        @if (count($salesTrendLabels ?? []))
+                            <div id="pos-sales-trend" class="pos-sales-trend-chart" role="img" aria-label="Daily POS sales over the last seven days"></div>
+                        @else
+                            <p class="pos-dashboard-chart-empty">Sales trend will appear when POS data is available.</p>
+                        @endif
                     </div>
-                    <div class="d-flex ms-auto">
-                        <a href="#" class="btn btn-secondary text-dark btn-sm me-2">Month</a>
-                        <a href="#" class="btn btn-dark btn-sm me-3">Week</a>
-                    </div>
-                </div>
-                <div class="card-body p-2">
-                    <div class="ct-chart-sales-value ct-double-octave ct-series-g"></div>
-                </div>
+                </article>
             </div>
-        </div> --}}
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-primary rounded me-4 me-sm-0">
-                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="h5">CMS</h2>
-                                <h3 class="fw-extrabold mb-1">₹{{ $msales }}</h3>
+            <div class="col-12 col-xl-4">
+                <article class="card border-0 shadow-sm h-100 pos-dashboard-chart-card">
+                    <div class="card-body">
+                        <div class="pos-dashboard-chart-heading">
+                            <div>
+                                <span class="pos-dashboard-chart-eyebrow">Month to date</span>
+                                <h2>Sales &amp; wallet credit</h2>
                             </div>
                         </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">CMS</h2>
-                                <h3 class="fw-extrabold mb-2">₹{{ $msales }}</h3>
-                            </div>
-                            {{-- <small class="d-flex align-items-center text-gray-500">
-                                Feb 1 - Apr 1
-                            </small> --}}
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Current Month Sales
-                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">2%</span>
-                                </div>
-                            </div>
+                        <div id="pos-sales-summary" class="pos-sales-summary-chart" role="img" aria-label="Current month sales compared with wallet credit"></div>
+                        <div class="pos-dashboard-chart-legend">
+                            <span><i class="pos-chart-legend-sales"></i> CMS</span>
+                            <span><i class="pos-chart-legend-wallet"></i> Received by wallet</span>
                         </div>
                     </div>
-                </div>
+                </article>
             </div>
-        </div>
+        </section>
 
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-secondary rounded me-4 me-sm-0">
-                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">CDS</h2>
-                                <h3 class="mb-1">₹ {{ $dsales }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">CDS</h2>
-                                <h3 class="fw-extrabold mb-2">₹ {{ $dsales }}</h3>
-                            </div>
-                            {{-- <small class="d-flex align-items-center text-gray-500">
-                                Feb 1 - Apr 1,
-                                <svg class="icon icon-xxs text-gray-500 ms-2 me-1" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                GER
-                            </small> --}}
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Current Day Sales
-                                    <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-danger fw-bolder">2%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-4 mb-4">
-            <div class="card border-0 shadow">
-                <div class="card-body">
-                    <div class="row d-block d-xl-flex align-items-center">
-                        <div
-                            class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
-                            <div class="icon-shape icon-shape-tertiary rounded me-4 me-sm-0">
-                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div class="d-sm-none">
-                                <h2 class="fw-extrabold h5">₹RBW</h2>
-                                <h3 class="mb-1">₹ {{ $currentMonthWalletCredit }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-7 px-xl-0">
-                            <div class="d-none d-sm-block">
-                                <h2 class="h6 text-gray-400 mb-0">₹RBW</h2>
-                                <h3 class="fw-extrabold mb-2">₹ {{ $currentMonthWalletCredit }}</h3>
-                            </div>
-                            {{-- <small class="text-gray-500"> Feb 1 - Apr 1 </small> --}}
-                            <div class="small d-flex mt-1">
-                                <div>
-                                    Received By Wallet
-                                    <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg><span class="text-success fw-bolder">4%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @include('shared.pos-location-map', [
+            'mapId' => 'pos-panel-location-map',
+            'mapTitle' => 'Your POS location',
+            'mapDescription' => 'View your business location and open directions.',
+            'locations' => $posLocation ? [$posLocation] : [],
+        ])
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chartist === 'undefined') return;
+
+            var rupees = function (value) {
+                return '\u20b9' + Number(value || 0).toLocaleString('en-IN');
+            };
+
+            var salesTrend = document.getElementById('pos-sales-trend');
+            if (salesTrend) {
+                new Chartist.Line('#pos-sales-trend', {
+                    labels: @json($salesTrendLabels ?? []),
+                    series: [@json($salesTrendValues ?? [])]
+                }, {
+                    low: 0,
+                    fullWidth: true,
+                    showArea: true,
+                    chartPadding: { top: 16, right: 18, bottom: 4, left: 4 },
+                    axisX: { showGrid: false },
+                    axisY: {
+                        offset: 58,
+                        labelInterpolationFnc: function (value) { return rupees(value); }
+                    }
+                });
+            }
+
+            var salesSummary = document.getElementById('pos-sales-summary');
+            if (salesSummary) {
+                new Chartist.Bar('#pos-sales-summary', {
+                    labels: ['CMS', 'RBW'],
+                    series: [
+                        [@json($salesSummaryValues[0] ?? 0), 0],
+                        [0, @json($salesSummaryValues[2] ?? 0)]
+                    ]
+                }, {
+                    low: 0,
+                    seriesBarDistance: 28,
+                    chartPadding: { top: 12, right: 12, bottom: 0, left: 0 },
+                    axisX: { showGrid: false },
+                    axisY: {
+                        offset: 58,
+                        labelInterpolationFnc: function (value) { return rupees(value); }
+                    }
+                });
+            }
+        });
+    </script>
+@endpush

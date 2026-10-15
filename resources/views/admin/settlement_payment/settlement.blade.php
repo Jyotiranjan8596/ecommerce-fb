@@ -1,41 +1,17 @@
 @extends('layouts.master')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @section('content')
-    <style>
-        .btn-add-receipt {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 18px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #fff;
-            background: #353e4b;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(78, 115, 223, 0.35);
-            transition: all 0.2s ease-in-out;
-        }
-
-        .btn-add-receipt:hover {
-            background: #7a8087;
-            box-shadow: 0 5px 12px rgba(78, 115, 223, 0.45);
-            transform: translateY(-2px);
-        }
-
-        .btn-add-receipt:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 6px rgba(78, 115, 223, 0.4);
-        }
-    </style>
-    <div class="container my-4">
+    <div class="container-fluid py-3 admin-workflow-page">
         {{-- Header Section --}}
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <h3 class="fw-bold text-primary m-0">Receipt Journal</h3>
-        </div>
+        <section class="admin-workflow-hero">
+            <div>
+                <span class="admin-workflow-hero__eyebrow">Settlement operations</span>
+                <h1>Receipt Journal</h1>
+                <p>Review incoming POS receipts, filter the journal, or record a payment received.</p>
+            </div>
+            <span class="admin-workflow-hero__icon" aria-hidden="true"><i class="bi bi-journal-check"></i></span>
+        </section>
 
         {{-- Filter + Add Receipt Section --}}
         <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-3">
@@ -61,22 +37,31 @@
                 </div>
             </form>
 
-            <button type="button" class="btn-add-receipt" data-bs-toggle="modal" data-bs-target="#addReceiptModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReceiptModal">
                 <i class="bi bi-plus-circle"></i> Add Receipt
             </button>
 
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered align-middle">
-                <thead class="table-dark">
+        <div class="card admin-workflow-card">
+            <div class="card-header bg-white py-3">
+                <h2 class="h5 mb-0">Received payments</h2>
+                <p class="text-muted small mb-0 mt-1">Receipts recorded from POS accounts to the admin account.</p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 admin-workflow-table">
+                <thead>
                     <tr>
                         <th scope="col">Sl.no</th>
                         <th scope="col">Voucher</th>
                         <th scope="col">Date</th>
-                        <th scope="col">Receive From</th>
-                        <th scope="col">Receive By</th>
-                        <th scope="col">Amount</th>
+                        <th scope="col">Account</th>
+                        <th scope="col">Particulars</th>
+                        <th scope="col" class="text-end">Debit</th>
+                        <th scope="col" class="text-end">Credit</th>
+                        <th scope="col" class="text-end">Balance</th>
+                        <th scope="col">Payment Method</th>
+                        <th scope="col">Reference</th>
                         <th scope="col">Narration</th>
                         <th scope="col">Status</th>
                         <th scope="col">Action</th>
@@ -84,8 +69,13 @@
                 </thead>
 
                 <tbody id="receipt-tbl-bdy">
+                    <tr><td colspan="11"><div class="admin-workflow-empty">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Loading receipts…
+                    </div></td></tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
     <div class="modal fade" id="addReceiptModal" tabindex="-1" aria-labelledby="addReceiptModalLabel" aria-hidden="true">
@@ -102,7 +92,7 @@
                         <div class="row">
                             <div class="col-12 col-sm-6 mb-3">
                                 <label for="amount" class="form-label">Amount</label>
-                                <input type="number" step="0.01" name="amount" id="amount"
+                                <input type="number" step="0.01" min="0.01" max="9999999999999.99" name="amount" id="amount"
                                     class="form-control @error('amount') is-invalid @enderror" value="{{ old('amount') }}"
                                     required>
                                 @error('amount')
@@ -128,14 +118,14 @@
 
                         <div class="row">
                             <div class="col-12 col-sm-6 mb-3">
-                                <label for="pay_to" class="form-label">Received From</label>
+                                <label for="pay_to" class="form-label">Receive From POS</label>
                                 <select name="pay_to" id="pay_to"
                                     class="form-select @error('pay_to') is-invalid @enderror" required>
-                                    <option value="" disabled {{ old('pay_to') ? '' : 'selected' }}>-- Select Pay To
+                                    <option value="" disabled {{ old('pay_to') ? '' : 'selected' }}>-- Select POS
                                         --</option>
                                     @foreach ($all_pos as $payee)
                                         <option value="{{ $payee->user_id }}"
-                                            {{ old('pay_to') == $payee->id ? 'selected' : '' }}>
+                                            {{ old('pay_to') == $payee->user_id ? 'selected' : '' }}>
                                             {{ $payee->name }}
                                         </option>
                                     @endforeach
@@ -176,24 +166,20 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
     <script>
         $(document).ready(function() {
+            const escapeHtml = value => $('<div>').text(value ?? '').html();
+
             $('#filter-form').on('submit', function(e) {
                 e.preventDefault();
-                var fromDate = $('#from_date').val();
-                var toDate = $('#to_date').val();
                 loadReceipt(1, this);
             });
             $('#submit-receipt').on('submit', function(e) {
                 e.preventDefault();
-                var formData = new FormData(this);
+                const receiptForm = this;
+                const submitButton = receiptForm.querySelector('[type="submit"]');
+                submitButton.disabled = true;
+                var formData = new FormData(receiptForm);
                 $.ajax({
                     url: "{{ route('admin.store.receipt') }}",
                     type: "POST",
@@ -205,68 +191,44 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            Swal.fire({
-                                title: response.message,
-                                icon: "success"
-                            }).then(() => {
-                                location.reload();
+                                Swal.fire({ title: response.message, icon: "success" }).then(() => {
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById('addReceiptModal'));
+                                    modal?.hide();
+                                    receiptForm.reset();
+                                    loadReceipt(1, document.getElementById('filter-form'));
                             });
                         } else {
                             Swal.fire({
                                 title: "Something went wrong!",
                                 text: response.message || "Please try again later.",
                                 icon: "error"
-                            }).then(() => {
-                                location.reload();
                             });
                         }
                     },
                     error: function(xhr) {
-                        console.log(xhr.responseText);
-                        alert('Something went wrong');
+                        const validationMessage = Object.values(xhr.responseJSON?.errors || {})
+                            .flat()
+                            .join('\n');
+                        const message = validationMessage || xhr.responseJSON?.message || 'Please check the receipt details and try again.';
+                        Swal.fire({ title: 'Unable to save receipt', text: message, icon: 'error' });
+                    },
+                    complete: function() {
+                        submitButton.disabled = false;
                     }
                 });
             });
 
 
 
-            // $('#export-smry').on('click', function() {
-            //     $.ajax({
-            //         type: 'POST', // HTTP method
-            //         url: '{{ route('pos.export.settlement') }}',
-            //         headers: {
-            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-            //                 'content') // CSRF token for Laravel
-            //         },
-            //         success: function(response) {
-            //             if (response.code == 200) {
-            //                 // Show SweetAlert
-            //                 Swal.fire({
-            //                     title: 'Success',
-            //                     text: response.message,
-            //                     icon: 'success',
-            //                     confirmButtonText: 'Okay'
-            //                 }).then((result) => {
-            //                     if (result.isConfirmed) {
-            //                         // Reload the page after confirmation
-            //                         location.reload();
-            //                     }
-            //                 });
-            //             }
-            //         },
-            //         error: function(xhr, status, error) {
-            //             console.error('Error:', error);
-            //             alert('An error occurred while processing the request.');
-            //         }
-            //     });
-            // });
-            loadReceipt();
+            $('#reset-filter').on('click', function() {
+                $('#from_date, #to_date').val('');
+                loadReceipt(1, document.getElementById('filter-form'));
+            });
+
+            loadReceipt(1, document.getElementById('filter-form'));
 
             function loadReceipt(page = 1, formElement) {
-                let formData = new FormData(formElement); // Capital 'F'
-                formData.append('page', page);
-                const fromDate = $('#from_date').val();
-                const toDate = $('#to_date').val();
+                let formData = new FormData(formElement);
                 $.ajax({
                     url: "{{ route('admin.get.receipt') }}",
                     type: "POST",
@@ -276,85 +238,67 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
+                    beforeSend: function() {
+                        $('#apply-filter').prop('disabled', true);
+                    },
                     success: function(response) {
 
                         let rows = '';
-                        let index = response.data.from ?? 1;
-                        $('#tbl-div').attr('hidden', false);
-                        console.log(response.data);
-                        let data = response.data;
+                        let index = 1;
 
-                        const transactions = Object.keys(response.data)
-                            .filter(key => !isNaN(key))
-                            .map(key => response.data[key]);
-                        if (Object.keys(response.data).length > 0) {
-                            const pagination = response.data;
-                            let paginationHtml = '';
-
+                        const transactions = response.data.rows ?? [];
+                        if (transactions.length > 0) {
                             transactions.forEach(function(item) {
-                                const badgeClass = {
-                                    pending: 'bg-warning text-dark',
-                                    approved: 'bg-success',
-                                    rejected: 'bg-danger'
-                                } [item.status] ?? 'bg-secondary';
-                                const isPending = item.status == 'pending';
+                                const amount = `₹${Number(item.amount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                const debitBalance = `₹${Number(item.debit_balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${escapeHtml(item.debit_balance_type)}`;
+                                const creditBalance = `₹${Number(item.credit_balance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${escapeHtml(item.credit_balance_type)}`;
+                                const posName = escapeHtml(item.receive_from);
+                                const method = escapeHtml(item.receive_by);
+                                const bankAccount = escapeHtml(item.cash_bank_account);
                                 rows += `
                                         <tr>
-                                            <td>${index++}</td>
-                                            <td>${item.voucher ?? ''}</td>
-                                            <td>${item.date ?? ''}</td>
-                                            <td>${item.receive_from ?? ''}</td>
-                                            <td>${item.receive_by}</td>
-                                            <td>${item.amount}</td>
-                                            <td>${item.remark}</td>
-                                            <td>
-                                                <span class="badge ${badgeClass}">
-                                                    ${item.status
-                                                        ? item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()
-                                                        : ''}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-light border" type="button"
-                                                            data-bs-toggle="dropdown" aria-expanded="false"
-                                                            ${isPending ? '' : 'disabled'}>
-                                                        <i class="fas fa-ellipsis-v"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item action-verify" href="#" data-id="${item.id}">
-                                                                <i class="fas fa-check text-success me-2"></i>Verify
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item action-reject" href="#" data-id="${item.id}">
-                                                                <i class="fas fa-times text-danger me-2"></i>Reject
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
+                                            <td rowspan="2">${index++}</td>
+                                            <td rowspan="2">${escapeHtml(item.voucher)}</td>
+                                            <td rowspan="2">${escapeHtml(item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString() : '—')}</td>
+                                            <td>${bankAccount}</td>
+                                            <td>Receipt from ${posName}</td>
+                                            <td class="text-end">${amount}</td>
+                                            <td class="text-end">—</td>
+                                            <td class="text-end">${debitBalance}</td>
+                                            <td rowspan="2">${method}</td>
+                                            <td rowspan="2">${escapeHtml(item.ref_number) || '—'}</td>
+                                            <td rowspan="2">${escapeHtml(item.remark) || '—'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>POS Account — ${posName}</td>
+                                            <td>Received through ${bankAccount}</td>
+                                            <td class="text-end">—</td>
+                                            <td class="text-end">${amount}</td>
+                                            <td class="text-end">${creditBalance}</td>
                                         </tr>
                                     `;
                             });
-                            // $('#pagination-container').html(buildPagination(pagination));
-
+                            rows += `
+                                <tr class="table-light fw-bold">
+                                    <td colspan="5" class="text-end">Total</td>
+                                    <td class="text-end">₹${Number(response.data.total_debit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td class="text-end">₹${Number(response.data.total_credit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td colspan="4"></td>
+                                </tr>
+                            `;
                         } else {
 
                             rows = `
                                     <tr>
-                                        <td colspan="8" class="text-center">
-                                            No data found
-                                        </td>
+                                        <td colspan="11"><div class="admin-workflow-empty">
+                                            <i class="bi bi-inbox" aria-hidden="true"></i>
+                                            No receipts match this date range.
+                                        </div></td>
                                     </tr>
                                 `;
                         }
 
                         $('#receipt-tbl-bdy').html(rows);
-
-                        // Pagination HTML
-                        $('#pagination-link').html(response.pagination);
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
@@ -363,44 +307,6 @@
                 });
             }
 
-            $(document).on('click', '.action-verify', function(e) {
-                e.preventDefault();
-                updateStatus($(this).data('id'), 'approved');
-            });
-
-            $(document).on('click', '.action-reject', function(e) {
-                e.preventDefault();
-                updateStatus($(this).data('id'), 'rejected');
-            });
-
-            function updateStatus(id, status) {
-                if (!confirm('Are you sure you want to mark this as ' + status + '?')) return;
-
-                $.ajax({
-                    url: "{{ route('admin.receipt.updateStatus') }}",
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: id,
-                        status: status
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message ?? 'Updated successfully',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload();
-                            }
-                        });
-                    },
-                    error: function() {
-                        alert('Something went wrong');
-                    }
-                });
-            }
 
         });
     </script>

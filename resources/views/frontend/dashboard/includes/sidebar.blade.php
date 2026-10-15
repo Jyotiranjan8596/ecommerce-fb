@@ -34,20 +34,23 @@
         <div
             class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
             <div class="d-flex align-items-center">
-                @if ($user_profile->image)
-                    <div class="avatar-lg me-4">
+                <span class="dashboard-sidebar-avatar me-3 {{ $user_profile->is_prime_member ? 'prime-profile-image-frame' : '' }}" role="img" aria-label="{{ $user_profile->name }}">
+                    @if ($user_profile->image)
                         <img src="{{ asset('images/' . $user_profile->image) }}"
-                            class="card-img-top rounded-circle border-white" alt="Freebazar" />
-                    </div>
-                @else
-                    <div class="avatar-lg me-4">
-                        <img src="{{ asset('assets/images/faviconfreebazar.png') }} "
-                            class="card-img-top rounded-circle border-white" alt="Freebazar" />
-                    </div>
-                @endif
+                            alt="Profile photo of {{ $user_profile->name }}"
+                            onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                        <span aria-hidden="true" hidden>{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                    @else
+                        <span aria-hidden="true">{{ strtoupper(substr($user_profile->name ?? '?', 0, 1)) }}</span>
+                    @endif
+                </span>
 
                 <div class="d-block">
-                    <h2 class="h5 mb-3">Hi, {{ auth()->user()->name }}</h2>
+                    <h2 class="h5 mb-3">Hi, {{ auth()->user()->name }}
+                        @if ($user_profile->is_prime_member)
+                            <span class="prime-badge ms-1">Prime</span>
+                        @endif
+                    </h2>
                     <a href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                         class="btn btn-secondary btn-sm d-inline-flex align-items-center">
@@ -78,8 +81,11 @@
         </div>
         <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
-                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center">
-                    <span class="mt-1 ms-1 sidebar-text">FREEBAZAR</span>
+                <a href="{{ route('frontend.index') }}" class="nav-link d-flex align-items-center sidebar-brand">
+                    <span class="sidebar-brand-mark">
+                        <img src="{{ asset('assets/images/freebazar-sidebar-logo.png') }}" alt="" aria-hidden="true">
+                    </span>
+                    <span class="sidebar-text">FREEBAZAR</span>
                 </a>
             </li>
             <li class="nav-item {{ request()->is('user') ? 'active' : '' }}">
@@ -91,7 +97,7 @@
                             <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                         </svg>
                     </span>
-                    <span class="sidebar-text">Dashboard</span>
+                    <span class="sidebar-text">{{ $user_profile->is_prime_member ? 'Prime Dashboard' : 'Dashboard' }}</span>
                 </a>
             </li>
 
@@ -108,6 +114,36 @@
                         </svg>
                     </span>
                     <span class="sidebar-text">POS LIST</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('user.order') }}"
+                    class="nav-link {{ request()->is('user/my-order') ? 'active' : '' }}">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3h14v2H3zM3 8h14v2H3zM3 13h9v2H3z"></path>
+                            <path d="M14 13h3v3h-3z"></path>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">My Order</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('user.offers.index') }}"
+                    class="nav-link {{ request()->is('user/offers*') ? 'active' : '' }}">
+                    <span class="sidebar-icon">
+                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M3 8h14v10H3zM2 5h16v3H2zM10 5v13M10 5C7 5 5 4 5 2.8S7.5 1.5 9 3.2L10 5zm0 0c3 0 5-1 5-2.2S12.5 1.5 11 3.2L10 5z">
+                            </path>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text">Offers</span>
                 </a>
             </li>
 
@@ -147,9 +183,9 @@
                 <div class="multi-level collapse" role="list" id="submenu-app" aria-expanded="false">
                     <ul class="flex-column nav">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('user/management/list') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->is('user/sponsor/list') ? 'active' : '' }}"
                                 href="{{ route('user.sponsor.list') }}">
-                                <span class="sidebar-text">My Sponsor List</span>
+                                <span class="sidebar-text">My Referrals</span>
                             </a>
                         </li>
                     </ul>

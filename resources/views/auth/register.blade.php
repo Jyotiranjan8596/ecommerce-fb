@@ -1,364 +1,373 @@
 @extends('layouts.app')
 @section('title', 'Register')
 @section('content')
+    <div class="registration-page">
+        <section class="registration-card" aria-labelledby="registration-title">
+            <header class="registration-header">
+                <span class="registration-eyebrow">Welcome to Freebazar</span>
+                <h1 id="registration-title">Create your account</h1>
+                <p>Join us for a better everyday shopping experience.</p>
+            </header>
 
-    <div class="formbold-main-wrapper">
-        <!-- Author: FormBold Team -->
-        <!-- Learn More: https://formbold.com -->
-        <div class="formbold-form-wrapper">
-
-            <svg class="formbold-img" width="490" height="202" viewBox="0 0 490 202" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M382.76 2.47283H262.606C262.606 1.10712 261.499 0 260.133 0H210.597C209.231 0 208.124 1.10712 208.124 2.47283H87.4749C85.3191 2.47283 83.2517 3.32799 81.7274 4.85017C80.203 6.37235 79.3467 8.43686 79.3467 10.5896V174.884C79.3467 177.037 80.203 179.101 81.7274 180.623C83.2517 182.146 85.3191 183.001 87.4749 183.001H382.76C384.916 183.001 386.983 182.146 388.508 180.623C390.032 179.101 390.888 177.037 390.888 174.884V10.5886C390.888 8.43611 390.032 6.37183 388.507 4.84985C386.983 3.32787 384.916 2.47283 382.76 2.47283Z"
-                    fill="#3F3D56"></path>
-                <path d="M379.991 16.8164H90.2441V180.033H379.991V16.8164Z" fill="#E6E6E6"></path>
-                <path d="M368.27 25.3164H103V166.396H368.27V25.3164Z" fill="white"></path>
-                <path
-                    d="M228.237 61.1693C228.237 59.9971 228.546 58.8455 229.132 57.8305C229.718 56.8154 230.562 55.9727 231.577 55.3872C230.562 54.801 229.411 54.4923 228.239 54.4922C227.067 54.4921 225.915 54.8005 224.9 55.3864C223.885 55.9724 223.042 56.8153 222.456 57.8303C221.87 58.8453 221.561 59.9968 221.561 61.1689C221.561 62.341 221.87 63.4924 222.456 64.5074C223.042 65.5225 223.885 66.3653 224.9 66.9513C225.915 67.5373 227.067 67.8457 228.239 67.8456C229.411 67.8454 230.562 67.5367 231.577 66.9505C230.562 66.3651 229.718 65.5226 229.132 64.5077C228.546 63.4928 228.237 62.3414 228.237 61.1693Z"
-                    fill="#CCCCCC"></path>
-                <path
-                    d="M236.631 61.1693C236.631 59.9971 236.939 58.8455 237.526 57.8305C238.112 56.8154 238.955 55.9727 239.971 55.3872C238.956 54.801 237.804 54.4923 236.632 54.4922C235.46 54.4921 234.309 54.8005 233.294 55.3864C232.279 55.9724 231.436 56.8153 230.849 57.8303C230.263 58.8453 229.955 59.9968 229.955 61.1689C229.955 62.341 230.263 63.4924 230.849 64.5074C231.436 65.5225 232.279 66.3653 233.294 66.9513C234.309 67.5373 235.46 67.8457 236.632 67.8456C237.804 67.8454 238.956 67.5367 239.971 66.9505C238.955 66.3651 238.112 65.5226 237.526 64.5077C236.939 63.4928 236.631 62.3414 236.631 61.1693Z"
-                    fill="#CCCCCC"></path>
-                <path
-                    d="M244.834 67.8475C248.521 67.8475 251.511 64.8583 251.511 61.1708C251.511 57.4834 248.521 54.4941 244.834 54.4941C241.146 54.4941 238.157 57.4834 238.157 61.1708C238.157 64.8583 241.146 67.8475 244.834 67.8475Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M255.992 82.0242H217.079C216.709 82.0238 216.354 81.8764 216.092 81.6145C215.83 81.3525 215.682 80.9974 215.682 80.6269V41.7137C215.682 41.3433 215.83 40.9881 216.092 40.7262C216.354 40.4642 216.709 40.3168 217.079 40.3164H255.992C256.363 40.3168 256.718 40.4642 256.98 40.7262C257.242 40.9881 257.389 41.3433 257.39 41.7137V80.6269C257.389 80.9974 257.242 81.3525 256.98 81.6145C256.718 81.8764 256.363 82.0238 255.992 82.0242ZM217.079 40.8757C216.857 40.8759 216.644 40.9643 216.487 41.1214C216.329 41.2786 216.241 41.4917 216.241 41.714V80.6272C216.241 80.8495 216.329 81.0626 216.487 81.2197C216.644 81.3769 216.857 81.4653 217.079 81.4655H255.992C256.215 81.4653 256.428 81.3769 256.585 81.2197C256.742 81.0626 256.831 80.8495 256.831 80.6272V41.714C256.831 41.4917 256.742 41.2786 256.585 41.1214C256.428 40.9643 256.215 40.8759 255.992 40.8757H217.079Z"
-                    fill="#CCCCCC"></path>
-                <path d="M264.681 111.854H205V112.412H264.681V111.854Z" fill="#CCCCCC"></path>
-                <path
-                    d="M206.885 108.363C207.926 108.363 208.77 107.519 208.77 106.479C208.77 105.438 207.926 104.594 206.885 104.594C205.844 104.594 205 105.438 205 106.479C205 107.519 205.844 108.363 206.885 108.363Z"
-                    fill="#6A64F1"></path>
-                <path d="M264.681 130.699H205V131.258H264.681V130.699Z" fill="#CCCCCC"></path>
-                <path
-                    d="M206.885 127.209C207.926 127.209 208.77 126.365 208.77 125.324C208.77 124.283 207.926 123.439 206.885 123.439C205.844 123.439 205 124.283 205 125.324C205 126.365 205.844 127.209 206.885 127.209Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M263.589 152.16H244.728C244.402 152.16 244.09 152.03 243.86 151.8C243.629 151.569 243.5 151.257 243.499 150.931V144.321C243.5 143.995 243.629 143.682 243.86 143.452C244.09 143.222 244.402 143.092 244.728 143.092H263.589C263.915 143.092 264.227 143.222 264.457 143.452C264.688 143.682 264.817 143.995 264.818 144.321V150.931C264.817 151.257 264.688 151.569 264.457 151.8C264.227 152.03 263.915 152.16 263.589 152.16Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M213.033 108.363C214.074 108.363 214.917 107.519 214.917 106.479C214.917 105.438 214.074 104.594 213.033 104.594C211.992 104.594 211.148 105.438 211.148 106.479C211.148 107.519 211.992 108.363 213.033 108.363Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M219.181 108.363C220.222 108.363 221.066 107.519 221.066 106.479C221.066 105.438 220.222 104.594 219.181 104.594C218.14 104.594 217.296 105.438 217.296 106.479C217.296 107.519 218.14 108.363 219.181 108.363Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M213.033 127.209C214.074 127.209 214.917 126.365 214.917 125.324C214.917 124.283 214.074 123.439 213.033 123.439C211.992 123.439 211.148 124.283 211.148 125.324C211.148 126.365 211.992 127.209 213.033 127.209Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M219.181 127.209C220.222 127.209 221.066 126.365 221.066 125.324C221.066 124.283 220.222 123.439 219.181 123.439C218.14 123.439 217.296 124.283 217.296 125.324C217.296 126.365 218.14 127.209 219.181 127.209Z"
-                    fill="#6A64F1"></path>
-                <path opacity="0.5"
-                    d="M234.87 12.365C236.511 12.365 237.842 11.0364 237.842 9.39736C237.842 7.75836 236.511 6.42969 234.87 6.42969C233.228 6.42969 231.898 7.75836 231.898 9.39736C231.898 11.0364 233.228 12.365 234.87 12.365Z"
-                    fill="white"></path>
-                <path
-                    d="M399.023 177.065H370.746V175.03C370.746 174.923 370.703 174.821 370.627 174.745C370.552 174.669 370.449 174.627 370.342 174.627H360.646C360.539 174.627 360.436 174.669 360.361 174.745C360.285 174.821 360.242 174.923 360.242 175.03V177.065H354.183V175.03C354.183 174.923 354.141 174.821 354.065 174.745C353.989 174.669 353.886 174.627 353.779 174.627H344.084C343.977 174.627 343.874 174.669 343.798 174.745C343.722 174.821 343.68 174.923 343.68 175.03V177.065H337.621V175.03C337.621 174.923 337.578 174.821 337.502 174.745C337.426 174.669 337.324 174.627 337.216 174.627H327.521C327.414 174.627 327.311 174.669 327.236 174.745C327.16 174.821 327.117 174.923 327.117 175.03V177.065H321.058V175.03C321.058 174.923 321.015 174.821 320.94 174.745C320.864 174.669 320.761 174.627 320.654 174.627H310.959C310.852 174.627 310.749 174.669 310.673 174.745C310.598 174.821 310.555 174.923 310.555 175.03V177.065H304.495V175.03C304.495 174.923 304.453 174.821 304.377 174.745C304.301 174.669 304.199 174.627 304.091 174.627H294.397C294.289 174.627 294.187 174.669 294.111 174.745C294.035 174.821 293.993 174.923 293.993 175.03V177.065H287.933V175.03C287.933 174.923 287.89 174.821 287.815 174.745C287.739 174.669 287.636 174.627 287.529 174.627H277.836C277.729 174.627 277.626 174.669 277.55 174.745C277.474 174.821 277.432 174.923 277.432 175.03V177.065H271.37V175.03C271.37 174.923 271.328 174.821 271.252 174.745C271.176 174.669 271.073 174.627 270.966 174.627H195.021C194.914 174.627 194.811 174.669 194.736 174.745C194.66 174.821 194.617 174.923 194.617 175.03V177.065H188.558V175.03C188.558 174.923 188.515 174.821 188.44 174.745C188.364 174.669 188.261 174.627 188.154 174.627H178.459C178.352 174.627 178.249 174.669 178.173 174.745C178.097 174.821 178.055 174.923 178.055 175.03V177.065H171.995V175.03C171.995 174.923 171.953 174.821 171.877 174.745C171.801 174.669 171.699 174.627 171.591 174.627H161.897C161.79 174.627 161.687 174.669 161.611 174.745C161.535 174.821 161.493 174.923 161.493 175.03V177.065H155.433V175.03C155.433 174.923 155.39 174.821 155.315 174.745C155.239 174.669 155.136 174.627 155.029 174.627H145.334C145.227 174.627 145.124 174.669 145.048 174.745C144.973 174.821 144.93 174.923 144.93 175.03V177.065H138.872V175.03C138.872 174.923 138.829 174.821 138.753 174.745C138.678 174.669 138.575 174.627 138.468 174.627H128.772C128.664 174.627 128.562 174.669 128.486 174.745C128.41 174.821 128.367 174.923 128.367 175.03V177.065H122.308V175.03C122.308 174.923 122.266 174.821 122.19 174.745C122.114 174.669 122.011 174.627 121.904 174.627H112.209C112.102 174.627 111.999 174.669 111.923 174.745C111.848 174.821 111.805 174.923 111.805 175.03V177.065H105.746V175.03C105.746 174.923 105.703 174.821 105.627 174.745C105.552 174.669 105.449 174.627 105.342 174.627H95.6446C95.5375 174.627 95.4347 174.669 95.3589 174.745C95.2831 174.821 95.2405 174.923 95.2405 175.03V177.065H76.6603C74.0889 177.065 71.6229 178.085 69.8047 179.901C67.9865 181.716 66.9651 184.179 66.9651 186.747V191.124C66.9651 193.692 67.9865 196.154 69.8047 197.97C71.6229 199.786 74.0889 200.806 76.6603 200.806H399.023C401.594 200.806 404.06 199.786 405.878 197.97C407.697 196.155 408.718 193.692 408.718 191.125V186.747C408.718 184.179 407.697 181.717 405.879 179.901C404.06 178.086 401.594 177.066 399.023 177.066V177.065Z"
-                    fill="#3F3D56"></path>
-                <path d="M490 200.395H0V201.317H490V200.395Z" fill="#E6E6E6"></path>
-                <path
-                    d="M442.412 168.175C449.051 175.289 449.394 185.746 449.394 185.746C449.394 185.746 438.973 184.667 432.334 177.553C425.694 170.439 425.351 159.982 425.351 159.982C425.351 159.982 435.772 161.061 442.412 168.175Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M463.313 179.279C456.189 185.908 445.717 186.251 445.717 186.251C445.717 186.251 446.797 175.845 453.921 169.215C461.045 162.585 471.517 162.242 471.517 162.242C471.517 162.242 470.437 172.649 463.313 179.279Z"
-                    fill="#6A64F1"></path>
-                <path
-                    d="M461.542 200.394H435.338C434.836 200.394 434.343 200.253 433.917 199.986C433.49 199.72 433.148 199.339 432.928 198.888L427.223 187.177C427.024 186.769 426.932 186.317 426.956 185.864C426.98 185.411 427.119 184.971 427.36 184.586C427.601 184.201 427.936 183.884 428.334 183.664C428.732 183.445 429.179 183.33 429.633 183.33H467.247C467.702 183.33 468.149 183.445 468.547 183.664C468.945 183.884 469.28 184.201 469.521 184.586C469.762 184.971 469.901 185.411 469.925 185.864C469.949 186.317 469.857 186.769 469.658 187.177L463.953 198.888C463.733 199.34 463.39 199.721 462.964 199.987C462.538 200.253 462.045 200.394 461.543 200.394L461.542 200.394Z"
-                    fill="#E5E5E5"></path>
-                <path
-                    d="M28.1517 168.175C34.791 175.289 35.1341 185.746 35.1341 185.746C35.1341 185.746 24.7129 184.667 18.0737 177.553C11.4344 170.439 11.0913 159.982 11.0913 159.982C11.0913 159.982 21.5125 161.061 28.1517 168.175Z"
-                    fill="#E5E5E5"></path>
-                <path
-                    d="M43.1255 200.394H16.9219C16.4191 200.394 15.9264 200.253 15.5002 199.986C15.0739 199.72 14.7313 199.339 14.5116 198.888L8.80661 187.177C8.6074 186.769 8.51542 186.317 8.53936 185.864C8.5633 185.411 8.70236 184.971 8.94344 184.586C9.18453 184.201 9.51971 183.884 9.91743 183.664C10.3152 183.445 10.7623 183.33 11.2169 183.33H48.831C49.2855 183.33 49.7327 183.445 50.1304 183.664C50.5282 183.884 50.8633 184.201 51.1044 184.586C51.3455 184.971 51.4846 185.411 51.5085 185.864C51.5324 186.317 51.4405 186.769 51.2413 187.177L45.5363 198.888C45.3165 199.34 44.974 199.721 44.5477 199.987C44.1215 200.253 43.6288 200.394 43.126 200.394L43.1255 200.394Z"
-                    fill="#E5E5E5"></path>
-            </svg>
-
-            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" class="registration-form">
                 @csrf
-                <div class="formbold-form-title">
-                    <h2 class="">Register Now</h2>
-                </div>
 
-                <div class="formbold-input-flex">
-                    <div>
-                        <label for="name" class="formbold-form-label">
-                            Name
-                        </label>
-                        <input type="text" name="name" id="name" minlength="10" maxlength="30"
-                            class="formbold-form-input is-invalid" />
+                @if (request()->filled('ref'))
+                    <div class="registration-referral" role="status">
+                        <span class="registration-referral-icon" aria-hidden="true">✓</span>
+                        <span>You were invited with sponsor ID <strong>{{ request('ref') }}</strong>.</span>
+                    </div>
+                @endif
+
+                <div class="registration-grid">
+                    <div class="registration-field">
+                        <label for="name">Full name <span>*</span></label>
+                        <input type="text" name="name" id="name" minlength="2" maxlength="30"
+                            class="form-control @error('name') is-invalid @enderror"
+                            value="{{ old('name') }}" autocomplete="name" required>
                         @error('name')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                            <span class="registration-error">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div>
-                        <label for="mobile" class="formbold-form-label"> Mobile </label>
-                        <input type="text" name="mobile" id="mobile" minlength="10" maxlength="10"
-                            class="formbold-form-input is-invalid" />
-                        @error('mobile')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
 
-                <div class="formbold-input-flex">
-                    <div>
-                        <label for="email" class="formbold-form-label"> Email </label>
-                        <input type="email" name="email" id="email" class="formbold-form-input is-invalid" />
-                        @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                    <div class="registration-field">
+                        <label for="mobile">Mobile number <span>*</span></label>
+                        <input type="tel" name="mobile" id="mobile" minlength="10" maxlength="15"
+                            class="form-control @error('mobile') is-invalid @enderror"
+                            value="{{ old('mobile') }}" autocomplete="tel" inputmode="numeric" required>
+                        @error('mobile')
+                            <span class="registration-error">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div>
-                        <label for="gender" class="formbold-form-label"> Gender </label>
-                        {{-- <input type="text" name="gender" id="gender" class="formbold-form-input" /> --}}
-                        <select name="gender" id="gender" class="formbold-form-input is-invalid">
-                            <option value="">Select</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="others">Others</option>
+
+                    <div class="registration-field">
+                        <label for="sponsor_ref">Sponsor ID <span class="registration-optional">Optional</span></label>
+                        <input type="text" name="sponsor_ref" id="sponsor_ref" maxlength="20"
+                            class="form-control @error('sponsor_ref') is-invalid @enderror"
+                            value="{{ old('sponsor_ref', request('ref')) }}" inputmode="numeric" autocomplete="off">
+                        @error('sponsor_ref')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="email">Email address <span>*</span></label>
+                        <input type="email" name="email" id="email" maxlength="100"
+                            class="form-control @error('email') is-invalid @enderror"
+                            value="{{ old('email') }}" autocomplete="email" required>
+                        @error('email')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="password">Password <span>*</span></label>
+                        <input type="password" name="password" id="password" minlength="8"
+                            class="form-control @error('password') is-invalid @enderror"
+                            autocomplete="new-password" required>
+                        @error('password')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="password_confirmation">Confirm password <span>*</span></label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" minlength="8"
+                            class="form-control" autocomplete="new-password" required>
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="gender">Gender <span>*</span></label>
+                        <select name="gender" id="gender"
+                            class="form-select @error('gender') is-invalid @enderror" required>
+                            <option value="">Choose an option</option>
+                            <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ old('gender') === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
                         @error('gender')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field registration-field-full">
+                        <label for="address">Street address <span>*</span></label>
+                        <input type="text" name="address" id="address" maxlength="255"
+                            class="form-control @error('address') is-invalid @enderror"
+                            value="{{ old('address') }}" autocomplete="street-address" required>
+                        @error('address')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="state">State <span>*</span></label>
+                        <input type="text" name="state" id="state" maxlength="50"
+                            class="form-control @error('state') is-invalid @enderror"
+                            value="{{ old('state') }}" autocomplete="address-level1" required>
+                        @error('state')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="city">City <span>*</span></label>
+                        <input type="text" name="city" id="city" maxlength="50"
+                            class="form-control @error('city') is-invalid @enderror"
+                            value="{{ old('city') }}" autocomplete="address-level2" required>
+                        @error('city')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="post">Post / ZIP code <span>*</span></label>
+                        <input type="text" name="post" id="post" maxlength="20"
+                            class="form-control @error('post') is-invalid @enderror"
+                            value="{{ old('post') }}" autocomplete="postal-code" required>
+                        @error('post')
+                            <span class="registration-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="registration-field">
+                        <label for="image">Profile image <span class="registration-optional">Optional</span></label>
+                        <input type="file" name="image" id="image" accept="image/jpeg,image/png,image/gif,image/webp"
+                            class="form-control @error('image') is-invalid @enderror">
+                        @error('image')
+                            <span class="registration-error">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
 
-                <div class="formbold-mb-3">
-                    <label for="address" class="formbold-form-label">
-                        Street Address
+                <div class="registration-terms">
+                    <input type="checkbox" name="terms" id="supportCheckbox"
+                        class="@error('terms') is-invalid @enderror" required>
+                    <label for="supportCheckbox">
+                        I agree to the <a href="{{ route('frontend.termCondition') }}">Terms &amp; Conditions</a>
                     </label>
-                    <input type="text" name="address" id="address" class="formbold-form-input is-invalid" />
-                    @error('address')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
+                    @error('terms')
+                        <span class="registration-error">{{ $message }}</span>
                     @enderror
                 </div>
-                <div class="formbold-input-flex">
-                    <div>
-                        <label for="state" class="formbold-form-label"> State </label>
-                        <input type="text" name="state" id="state" class="formbold-form-input is-invalid" />
-                        @error('state')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="city" class="formbold-form-label"> City </label>
-                        <input type="text" name="city" id="city" class="formbold-form-input is-invalid" />
-                        @error('city')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
 
-                <div class="formbold-input-flex">
-                    <div>
-                        <label for="post" class="formbold-form-label"> Post/Zip code </label>
-                        <input type="text" name="post" id="post" class="formbold-form-input is-invalid" />
-                        @error('post')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="image" class="formbold-form-label"> Profile Image </label>
-                        <input type="file" name="image" id="image" class="formbold-form-input is-invalid" />
-                        @error('image')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-
-                <input type="checkbox" name="terms" id="supportCheckbox" class="formbold-input-checkbox is-invalid" />
-                I agree to the <a href="{{ route('frontend.termCondition') }}"
-                    class="text-blue-600 hover:underline">Terms
-                    & Conditions</a>
-                @error('terms')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-
-
-                <button type="submit" class="formbold-btn">Register Now</button>
+                <button type="submit" class="registration-submit">Create account</button>
+                <p class="registration-signin">Already have an account? <a href="{{ route('login') }}">Sign in</a></p>
             </form>
-        </div>
+        </section>
     </div>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .formbold-main-wrapper {
+        .registration-page {
+            --registration-ink: #172033;
+            --registration-muted: #526174;
+            --registration-primary: #0759a6;
+            min-height: calc(100vh - 2rem);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 48px;
+            padding: 2rem 1rem;
+            background: linear-gradient(145deg, #eef5fb 0%, #f8fafc 50%, #e8f1fa 100%);
+            color: var(--registration-ink);
         }
 
-        .formbold-form-wrapper {
-            margin: 0 auto;
-            max-width: 570px;
-            width: 100%;
-            background: white;
-            padding: 40px;
+        .registration-card {
+            width: min(100%, 760px);
+            overflow: hidden;
+            border: 1px solid #d7e1ec;
+            border-radius: 1.25rem;
+            background: #fff;
+            box-shadow: 0 1.25rem 3.5rem rgba(23, 32, 51, .12);
         }
 
-        .formbold-img {
-            margin-bottom: 45px;
-            max-width: 100%;
-            height: auto;
+        .registration-header {
+            padding: clamp(1.5rem, 5vw, 2.5rem);
+            background: #172033;
+            color: #fff;
         }
 
-        .formbold-form-title {
-            margin-bottom: 30px;
-        }
-
-        .formbold-form-title h2 {
-            font-weight: 600;
-            font-size: 28px;
-            line-height: 34px;
-            color: #07074d;
-        }
-
-        .formbold-form-title p {
-            font-size: 16px;
-            line-height: 24px;
-            color: #536387;
-            margin-top: 12px;
-        }
-
-        .formbold-input-flex {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .formbold-input-flex>div {
-            width: 50%;
-        }
-
-        .formbold-form-input {
-            width: 100%;
-            padding: 13px 22px;
-            border-radius: 5px;
-            border: 1px solid #dde3ec;
-            background: #ffffff;
-            font-weight: 500;
-            font-size: 16px;
-            color: #536387;
-            outline: none;
-            resize: none;
-            text-align: center;
-        }
-
-        .formbold-form-input:focus {
-            border-color: #6a64f1;
-            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .formbold-form-label {
-            color: #536387;
-            font-size: 14px;
-            line-height: 24px;
+        .registration-eyebrow {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: .45rem;
+            color: #c9ddf3;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
         }
 
+        .registration-header h1 {
+            margin: 0;
+            color: #fff !important;
+            font-size: clamp(1.65rem, 5vw, 2.15rem);
+            font-weight: 750;
+            letter-spacing: -.03em;
+        }
 
-        .formbold-btn {
-            font-size: 16px;
-            border-radius: 5px;
-            padding: 14px 25px;
-            border: none;
+        .registration-header p {
+            margin: .5rem 0 0;
+            color: #e1eaf4;
+            font-size: .98rem;
+        }
+
+        .registration-form {
+            padding: clamp(1.25rem, 4vw, 2.25rem);
+        }
+
+        .registration-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.15rem 1.25rem;
+        }
+
+        .registration-field {
+            min-width: 0;
+        }
+
+        .registration-field-full {
+            grid-column: 1 / -1;
+        }
+
+        .registration-field label {
+            display: block;
+            margin-bottom: .4rem;
+            color: #263449;
+            font-size: .9rem;
+            font-weight: 650;
+        }
+
+        .registration-field label span:not(.registration-optional) {
+            color: #b42318;
+        }
+
+        .registration-optional {
+            margin-left: .3rem;
+            color: #526174;
+            font-size: .78rem;
             font-weight: 500;
-            background-color: #6a64f1;
-            color: white;
-            cursor: pointer;
-            margin-top: 25px;
+        }
+
+        .registration-field .form-control,
+        .registration-field .form-select {
+            min-height: 3rem;
+            border-color: #bac7d5;
+            border-radius: .65rem;
+            color: #172033;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .registration-field .form-control:focus,
+        .registration-field .form-select:focus {
+            border-color: #0759a6;
+            box-shadow: 0 0 0 .2rem rgba(7, 89, 166, .16);
+        }
+
+        .registration-field input[type="file"] {
+            padding: .65rem .75rem;
+        }
+
+        .registration-error {
+            display: block;
+            margin-top: .35rem;
+            color: #b42318;
+            font-size: .84rem;
+            font-weight: 550;
+        }
+
+        .registration-referral {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            margin-bottom: 1.4rem;
+            padding: .9rem 1rem;
+            border: 1px solid #a9d7bd;
+            border-radius: .75rem;
+            background: #edf8f1;
+            color: #174c2e;
+            font-size: .94rem;
+        }
+
+        .registration-referral-icon {
+            display: grid;
+            width: 1.5rem;
+            height: 1.5rem;
+            flex: 0 0 1.5rem;
+            place-items: center;
+            border-radius: 50%;
+            background: #176b3a;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .registration-terms {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: start;
+            column-gap: .65rem;
+            margin-top: 1.5rem;
+            color: #344256;
+            font-size: .92rem;
+        }
+
+        .registration-terms input {
+            width: 1.05rem;
+            height: 1.05rem;
+            margin-top: .2rem;
+            accent-color: var(--registration-primary);
+        }
+
+        .registration-terms a,
+        .registration-signin a {
+            color: #064f91;
+            font-weight: 650;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .registration-terms .registration-error {
+            grid-column: 2;
+        }
+
+        .registration-submit {
             width: 100%;
+            min-height: 3.15rem;
+            margin-top: 1.5rem;
+            border: 0;
+            border-radius: .7rem;
+            background: #0759a6;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: background-color .15s ease, transform .15s ease;
         }
 
-        .formbold-btn:hover {
-            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+        .registration-submit:hover {
+            transform: translateY(-1px);
+            background: #064780;
         }
 
-        .formbold-mb-3 {
-            margin-bottom: 15px;
+        .registration-signin {
+            margin: 1rem 0 0;
+            color: #526174;
+            text-align: center;
+            font-size: .92rem;
         }
 
-        .formbold-relative {
-            position: relative;
-        }
-
-        .formbold-opacity-0 {
-            opacity: 0;
-        }
-
-        .formbold-stroke-current {
-            stroke: currentColor;
-        }
-
-        #supportCheckbox:checked~div span {
-            opacity: 1;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            .formbold-main-wrapper {
-                padding: 20px;
+        @media (max-width: 575.98px) {
+            .registration-page {
+                min-height: auto;
+                padding: .75rem;
             }
 
-            .formbold-form-wrapper {
-                padding: 20px;
+            .registration-card {
+                border-radius: .9rem;
             }
 
-            .formbold-input-flex {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .formbold-input-flex>div {
-                width: 100%;
-                margin-bottom: 15px;
-            }
-
-            .formbold-btn {
-                padding: 12px;
-            }
-
-            .formbold-img {
-                width: 100%;
-                height: auto;
-            }
-
-            .formbold-form-title h2 {
-                font-size: 22px;
+            .registration-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
         }
     </style>
-
 @endsection

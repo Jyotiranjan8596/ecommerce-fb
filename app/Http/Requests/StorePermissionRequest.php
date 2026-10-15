@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class StorePermissionRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StorePermissionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('permission_create');
     }
 
     /**
@@ -22,7 +24,13 @@ class StorePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required'
+            'name' => [
+                'required',
+                'string',
+                'max:125',
+                Rule::unique('permissions', 'name')
+                    ->where(fn ($query) => $query->where('guard_name', config('auth.defaults.guard', 'web'))),
+            ],
         ];
     }
 }

@@ -2,574 +2,217 @@
 
 @section('content')
     <style>
-        .section-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #6c757d;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .stats-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 0.5px solid #dee2e6;
-            padding: 1rem 1.25rem;
-            height: 100%;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding: 0.5rem 0;
-            border-bottom: 0.5px solid #dee2e6;
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .stat-item:first-child {
-            padding-top: 0;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .stat-value {
-            font-size: 15px;
-            font-weight: 500;
-            color: #212529;
-        }
-
-        .date-card {
-            background: #fff;
-            border: 0.5px solid #dee2e6;
-            border-radius: 10px;
-            padding: 1rem 1.25rem;
-        }
-
-        #dsr-tbl thead th {
-            position: sticky;
-            top: 0;
-            background-color: #000;
-            color: #fff;
-            z-index: 10;
-        }
-
-        .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .pagination-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 1rem;
-            padding: 0.5rem 0;
-        }
-
-        .pagination-info {
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-right: 8px;
-        }
-
-        .pagination-buttons {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        .pagination-btn {
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border: 1.5px solid #dee2e6;
-            border-radius: 8px;
-            background: #fff;
-            color: #495057;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pagination-btn:hover:not(.disabled):not(.active) {
-            background: #f0f4ff;
-            border-color: #4f46e5;
-            color: #4f46e5;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
-        }
-
-        .pagination-btn.active {
-            background: #4f46e5;
-            border-color: #4f46e5;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
-            cursor: default;
-        }
-
-        .pagination-btn.nav-btn {
-            background: #f8f9fa;
-            color: #495057;
-        }
-
-        .pagination-btn.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .pagination-ellipsis {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            color: #6c757d;
-            font-size: 1rem;
-            letter-spacing: 1px;
-        }
-
-        /* Mobile responsive */
-        @media (max-width: 576px) {
-            .pagination-wrapper {
-                justify-content: center;
-            }
-
-            .pagination-info {
-                width: 100%;
-                text-align: center;
-                margin-right: 0;
-            }
-
-            .pagination-buttons {
-                justify-content: center;
-            }
-
-            .pagination-btn {
-                min-width: 32px;
-                height: 32px;
-                font-size: 0.8rem;
-            }
+        .admin-dsr-page { max-width: 1500px; margin: 0 auto; padding: 1.25rem clamp(.75rem, 2vw, 1.5rem) 2.5rem; color: #172b4d; }
+        .admin-dsr-hero { position: relative; overflow: hidden; margin-bottom: 1.25rem; padding: clamp(1.4rem, 3vw, 2.2rem); border-radius: 24px; color: #fff; background: linear-gradient(120deg, #123b72, #1769aa 62%, #2387bf); box-shadow: 0 16px 34px rgba(18, 59, 114, .18); }
+        .admin-dsr-hero::after { position: absolute; right: -3rem; bottom: -8rem; width: 19rem; height: 19rem; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; box-shadow: 0 0 0 2rem rgba(255,255,255,.035), 0 0 0 4rem rgba(255,255,255,.025); }
+        .admin-dsr-hero > * { position: relative; z-index: 1; }
+        .admin-dsr-eyebrow { color: #c8e6ff; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        .admin-dsr-hero h1 { margin: .35rem 0 .45rem; color: #fff; font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 800; }
+        .admin-dsr-hero p { max-width: 650px; margin: 0; color: rgba(255,255,255,.82); }
+        .admin-dsr-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+        .admin-dsr-stat, .admin-dsr-panel { min-width: 0; border: 1px solid #e6edf5; border-radius: 18px; background: #fff; box-shadow: 0 8px 24px rgba(24,54,91,.06); }
+        .admin-dsr-stat { padding: 1.1rem 1.25rem; }
+        .admin-dsr-stat span { display: block; color: #718198; font-size: .78rem; font-weight: 700; }
+        .admin-dsr-stat strong { display: block; margin-top: .35rem; color: #153e75; font-size: clamp(1.35rem, 2.5vw, 1.85rem); font-weight: 800; overflow-wrap: anywhere; }
+        .admin-dsr-panel { margin-bottom: 1.25rem; padding: clamp(1rem, 2vw, 1.4rem); }
+        .admin-dsr-panel-heading { margin-bottom: 1rem; }
+        .admin-dsr-panel-heading h2 { margin: 0; color: #19385e; font-size: 1.05rem; font-weight: 800; }
+        .admin-dsr-panel-heading p { margin: .25rem 0 0; color: #718198; font-size: .86rem; }
+        .admin-dsr-controls { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+        .admin-dsr-search { flex: 1 1 220px; }
+        .admin-dsr-date-field { flex: 1 1 145px; }
+        .admin-dsr-controls label, .admin-dsr-upload label { display: block; margin-bottom: .35rem; color: #52657e; font-size: .76rem; font-weight: 750; }
+        .admin-dsr-controls .form-control, .admin-dsr-upload .form-control { min-height: 42px; border-color: #dce5ef; border-radius: 10px; }
+        .admin-dsr-controls .btn, .admin-dsr-actions .btn { min-height: 42px; border-radius: 10px; font-weight: 700; }
+        .admin-dsr-icon-button { display: inline-grid !important; width: 46px; min-width: 46px; height: 46px; padding: 0 !important; place-items: center; border: 0 !important; border-radius: 14px !important; color: #fff !important; box-shadow: 0 5px 12px rgba(29,57,91,.2); transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+        .admin-dsr-icon-button:hover { color: #fff !important; transform: translateY(-2px); filter: saturate(1.12); box-shadow: 0 8px 16px rgba(29,57,91,.25); }
+        .admin-dsr-icon-button:focus-visible { outline: 3px solid #94c5ff; outline-offset: 3px; }
+        .admin-dsr-icon-button svg { display: block; width: 23px; height: 23px; }
+        .admin-dsr-icon-button--filter { background: linear-gradient(145deg,#3478f6,#1553c7) !important; }
+        .admin-dsr-icon-button--reset { background: linear-gradient(145deg,#8292a8,#596b82) !important; }
+        .admin-dsr-icon-button--upload { background: linear-gradient(145deg,#16b89a,#07846e) !important; }
+        .admin-dsr-icon-button--export { background: linear-gradient(145deg,#9b61ed,#6b36c5) !important; }
+        .admin-dsr-actions { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #edf1f6; }
+        .admin-dsr-upload { display: flex; align-items: end; gap: .6rem; flex: 1 1 420px; }
+        .admin-dsr-upload > div { flex: 1; min-width: 180px; }
+        .admin-dsr-export { flex: 0 0 auto; }
+        .admin-dsr-table-wrap { overflow: auto; border: 1px solid #e6edf5; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(24,54,91,.06); }
+        .admin-dsr-table { min-width: 760px; margin: 0; }
+        .admin-dsr-table thead th { padding: .9rem 1rem; border: 0; background: #f3f7fb; color: #60738d; font-size: .69rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+        .admin-dsr-table tbody td { padding: .9rem 1rem; border-color: #edf1f6; color: #344761; vertical-align: middle; }
+        .admin-dsr-table tbody tr:hover { background: #f8fbff; }
+        .admin-dsr-amount { color: #153e75 !important; font-weight: 800; }
+        .admin-dsr-pos { color: #183f73; font-weight: 750; }
+        .admin-dsr-detail { border-radius: 9px; font-weight: 700; white-space: nowrap; }
+        .admin-dsr-empty { padding: 2.5rem 1rem !important; color: #728198 !important; text-align: center; }
+        .admin-dsr-pagination { display: flex; justify-content: center; margin-top: 1rem; }
+        @media (max-width: 600px) {
+            .admin-dsr-page { padding: .75rem .5rem 1.5rem; }
+            .admin-dsr-stats { grid-template-columns: 1fr; gap: .65rem; }
+            .admin-dsr-stat { padding: .9rem 1rem; }
+            .admin-dsr-controls { align-items: stretch; flex-direction: column; }
+            .admin-dsr-search, .admin-dsr-date-field { flex-basis: auto; width: 100%; }
+            .admin-dsr-controls .admin-dsr-icon-button { align-self: flex-start; }
+            .admin-dsr-actions, .admin-dsr-upload { align-items: stretch; flex-direction: column; }
+            .admin-dsr-upload > div { min-width: 0; }
+            .admin-dsr-export { width: 100%; }
+            .admin-dsr-icon-button { width: 46px !important; min-width: 46px !important; }
+            .admin-dsr-table-wrap { overflow: visible; border: 0; background: transparent; box-shadow: none; }
+            .admin-dsr-table { display: block; min-width: 0; }
+            .admin-dsr-table thead { display: none; }
+            .admin-dsr-table tbody { display: grid; gap: .75rem; }
+            .admin-dsr-table tbody tr { display: block; overflow: hidden; border: 1px solid #e6edf5; border-radius: 14px; background: #fff; box-shadow: 0 6px 18px rgba(24,54,91,.06); }
+            .admin-dsr-table tbody td { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem .85rem; border-color: #edf1f6; text-align: right; white-space: normal; }
+            .admin-dsr-table tbody td::before { flex: 0 0 auto; color: #718198; content: attr(data-label); font-size: .7rem; font-weight: 800; text-align: left; text-transform: uppercase; }
+            .admin-dsr-table tbody td:last-child { border-bottom: 0; }
+            .admin-dsr-table .admin-dsr-empty { display: block; text-align: center; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">SALES REPORT</b></h3>
+    <div class="admin-dsr-page">
+        <header class="admin-dsr-hero">
+            <span class="admin-dsr-eyebrow">Admin reports</span>
+            <h1>Daily Sales Report</h1>
+            <p>Review POS billing totals and transaction activity. Filter by date or search by POS name and phone number.</p>
+        </header>
 
-
-
-        <div class="row mb-3 align-items-start">
-            <!-- Stats -->
-            <div class="col-md-6 mb-2">
-                <div class="stats-card">
-                    <p class="section-label">Summary of today/selected date</p>
-                    <div class="stat-item">
-                        <span class="stat-label">Total billing</span>
-                        <span id="total-billing" class="stat-value"></span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Total transactions</span>
-                        <span id="total-transaction" class="stat-value"></span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Total active POS</span>
-                        <span id="active-pos" class="stat-value"></span>
-                    </div>
-                </div>
+        @if (session('success'))
+            <div class="alert alert-success" role="status">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger" role="alert">{{ session('error') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger" role="alert">
+                <ul class="mb-0">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
             </div>
+        @endif
 
-            <!-- Date Filter -->
-            <div class="col-md-6 mb-2">
-                <div class="date-card">
-                    <p class="section-label">Date filter</p>
-                    <form id="dateForm">
-                        <label for="start_date"><b>From</b></label>
-                        <input type="date" class="form-control mb-2" name="start_date" id="start_date">
-                        <label for="end_date"><b>To</b></label>
-                        <input type="date" class="form-control mb-2" name="end_date" id="end_date">
-                        <button class="btn btn-info w-100" type="submit">Filter</button>
-                    </form>
-                </div>
+        <section class="admin-dsr-stats" aria-label="Sales report summary">
+            <article class="admin-dsr-stat"><span>Total billing</span><strong>&#8377;{{ number_format((float) $totalBillingAmount, 2) }}</strong></article>
+            <article class="admin-dsr-stat"><span>Total transactions</span><strong>{{ number_format((int) $totalTransactions) }}</strong></article>
+            <article class="admin-dsr-stat"><span>Active POS locations</span><strong>{{ number_format((int) $totalPos) }}</strong></article>
+        </section>
+
+        <section class="admin-dsr-panel" aria-labelledby="admin-dsr-controls-title">
+            <div class="admin-dsr-panel-heading">
+                <h2 id="admin-dsr-controls-title">Filter and manage report</h2>
+                <p>Leave both dates empty to view the default report.</p>
             </div>
-        </div>
-        <div class="row mb-3">
-            <!-- Upload -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Upload</p>
-                <form action="{{ route('admin.dsr.import') }}" method="POST" enctype="multipart/form-data">
+            <form method="GET" action="{{ route('admin.dsr') }}" class="admin-dsr-controls">
+                <div class="admin-dsr-search">
+                    <label for="dsr-search">Search POS</label>
+                    <input type="search" class="form-control" id="dsr-search" name="search"
+                        value="{{ request('search') }}" placeholder="POS name or phone number">
+                </div>
+                <div class="admin-dsr-date-field">
+                    <label for="start_date">From date</label>
+                    <input type="date" class="form-control" name="start_date" id="start_date"
+                        value="{{ request('start_date') }}" max="{{ today()->toDateString() }}">
+                </div>
+                <div class="admin-dsr-date-field">
+                    <label for="end_date">To date</label>
+                    <input type="date" class="form-control" name="end_date" id="end_date"
+                        value="{{ request('end_date') }}" max="{{ today()->toDateString() }}">
+                </div>
+                <button class="btn admin-dsr-icon-button admin-dsr-icon-button--filter" type="submit"
+                    title="Search POS" aria-label="Search POS">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.3" stroke="currentColor" stroke-width="2"/>
+                        <path d="m15.5 15.5 4.2 4.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <a class="btn admin-dsr-icon-button admin-dsr-icon-button--reset"
+                    href="{{ route('admin.dsr') }}" title="Reset filters" aria-label="Reset filters">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4.5 11a7.5 7.5 0 1 1 .8 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+                        <path d="M4.5 5.5V11H10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </form>
+
+            <div class="admin-dsr-actions">
+                <form class="admin-dsr-upload" action="{{ route('admin.dsr.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="input-group">
-                        <input type="file" class="form-control" name="file" accept=".csv">
-                        <button class="btn btn-info" type="submit">Upload DSR</button>
+                    <div>
+                        <label for="dsr-csv">Import DSR data (CSV)</label>
+                        <input type="file" class="form-control" id="dsr-csv" name="file" accept=".csv,text/csv" required>
                     </div>
+                    <button class="btn admin-dsr-icon-button admin-dsr-icon-button--upload" type="submit"
+                        title="Upload CSV" aria-label="Upload CSV">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 15V4m0 0L8 8m4-4 4 4M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </form>
+                <form class="admin-dsr-export" method="GET" action="{{ route('admin.dsr.export') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+                    <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+                    <button class="btn admin-dsr-icon-button admin-dsr-icon-button--export" type="submit"
+                        title="Export report" aria-label="Export report">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7 3.5h7l4.5 4.6v11.4a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 19.5v-14A2 2 0 0 1 7.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M14 3.8v4.7h4.2M12 10v6m-2.5-2.5L12 16l2.5-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                 </form>
             </div>
+        </section>
 
-            <!-- Search -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Search</p>
-                <form id="searchForm">
-                    <div class="input-group">
-                        <input id="search" type="text" class="form-control" name="search" placeholder="Search by...">
-                        <button class="btn btn-info" type="submit">Search</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Export -->
-            <div class="col-md-4 mb-2">
-                <p class="section-label">Export</p>
-                <form method="GET" action="{{ route('admin.dsr.export') }}">
-                    <input type="hidden" name="start_date" value="{{ request()->start_date }}">
-                    <input type="hidden" name="end_date" value="{{ request()->end_date }}">
-                    <button class="btn btn-danger w-100" type="submit">Export</button>
-                </form>
-            </div>
+        <div class="admin-dsr-panel-heading d-flex flex-wrap align-items-end justify-content-between gap-2">
+            <div><h2>Transactions by POS and date</h2><p>{{ $wallets->count() }} rows on this page</p></div>
         </div>
-        <hr class="my-4">
-
-        <!-- Data Table -->
-        <div class="table-responsive">
-            <table class="table table-striped" id="dsr-tbl">
-                <thead>
-                    <tr>
-                        <th>Sl.No</th>
-                        <th>POS ID</th>
-                        {{-- <th>USER ID</th> --}}
-                        <th>NAME</th>
-                        <th>MOBILE</th>
-                        <th>BILLING AMOUNT</th>
-                        <th>Transactions</th>
-                        <th>TRANSACTION DATE</th>
-                        <th>Action</th>
-                        {{-- <th>INSERT DATE</th> --}}
-                    </tr>
-                </thead>
-                <tbody id="dsr-table">
-
+        <div class="admin-dsr-table-wrap">
+            <table class="table table-hover align-middle admin-dsr-table" id="dsr-tbl">
+                <thead><tr><th scope="col">No.</th><th scope="col">Transaction date</th><th scope="col">POS ID</th><th scope="col">Billing amount</th><th scope="col">Transactions</th><th scope="col">TC</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    @forelse ($wallets as $key => $data)
+                        <tr>
+                            <td data-label="No.">{{ $wallets->firstItem() + $key }}</td>
+                            <td data-label="Transaction date"><time datetime="{{ \Carbon\Carbon::parse($data->transaction_date)->toDateString() }}">{{ \Carbon\Carbon::parse($data->transaction_date)->format('d M Y') }}</time></td>
+                            <td data-label="POS ID" class="admin-dsr-pos">{{ $data->getPos->user_id ?? $data->pos_id }}</td>
+                            <td data-label="Billing amount" class="admin-dsr-amount">&#8377;{{ number_format((float) ($data->total_billing_amount ?? 0), 2) }}</td>
+                            <td data-label="Transactions">{{ number_format((int) $data->total_transactions) }}</td>
+                            <td data-label="TC">&#8377;{{ number_format((float) ($data->total_transaction_charges ?? 0), 2) }}</td>
+                            <td data-label="Details">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="{{ route('admin.transaction.details', ['id' => encrypt($data->pos_id), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'transaction_date' => $data->transaction_date]) }}"
+                                        class="btn btn-sm btn-primary admin-dsr-detail">
+                                        <i class="fa fa-eye me-1" aria-hidden="true"></i> View details
+                                    </a>
+                                    <a href="{{ route('admin.transaction.details.export', ['id' => encrypt($data->pos_id), 'transaction_date' => \Carbon\Carbon::parse($data->transaction_date)->toDateString()]) }}"
+                                        class="btn btn-sm btn-outline-success admin-dsr-detail" title="Export this POS date"
+                                        aria-label="Export transactions for this POS and date">
+                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="7" class="admin-dsr-empty">No sales records match these filters. Try a different date range or search.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-        <div id="pagination-container" class="pagination-wrapper"></div>
+        <div class="admin-dsr-pagination">{{ $wallets->links() }}</div>
     </div>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="edit-form">
-                    <input type="hidden" name="wallet_id" id="wallet_id"> <!-- Hidden input to store ID -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Edit DSR</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                        <div class="mb-3">
-                            <label for="billing_amount" class="form-label">Billing Amount</label>
-                            <input type="number" class="form-control" id="billing_amount" name="billing_amount"
-                                min="0" step="1">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="transaction_date" class="form-label">Transaction Date</label>
-                            <input type="date" class="form-control" id="transaction_date"
-                                max="{{ \Carbon\Carbon::today()->toDateString() }}" name="transaction_date">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Load jQuery (full version only, not slim) FIRST -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Then Popper.js and Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-    </script>
-
-    <!-- Your custom script wrapped in DOM ready -->
     <script>
-        $(document).ready(function() {
-            getDsr(1)
-            $('#exampleModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var walletId = button.data('id'); // Extract wallet_id
-                $('#wallet_id').val(walletId); // Set to hidden input
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            const startDate = document.getElementById('start_date');
+            const endDate = document.getElementById('end_date');
+            if (!startDate || !endDate) return;
 
-            $('#searchForm').on('submit', function(e) {
-                e.preventDefault();
-                getDsr(1);
-            });
-            $('#dateForm').on('submit', function(e) {
-                e.preventDefault();
-                getDsr(1);
-            });
-
-            function getDsr(page = 1) {
-                let search = $('#search').val();
-                let startDate = $('#start_date').val();
-                let endDate = $('#end_date').val();
-
-                $.ajax({
-                    url: "{{ route('admin.get.dsr.data') }}",
-                    type: "post",
-                    data: {
-                        search: search,
-                        start_date: startDate,
-                        end_date: endDate,
-                        page: page
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        // Update your table here
-                        console.log(response);
-                        let tbody = $('#dsr-table');
-                        tbody.empty();
-
-                        if (response.success) {
-                            let wallet = response.data.wallet.data;
-                            const pagination = response.data.wallet;
-                            let paginationHtml = '';
-                            $('#total-billing').text(response.data.totalBillingAmount);
-                            $('#total-transaction').text(response.data.totalTransactions);
-                            $('#active-pos').text(response.data.totalPos);
-                            if (!wallet || wallet.length === 0) {
-                                tbody.html(`
-                                            <tr>
-                                                <td colspan="8"
-                                                    class="text-center text-danger"
-                                                    style="font-size:22px;">
-                                                    No Data Available
-                                                </td>
-                                            </tr>
-                                        `);
-                                return;
-                            }
-                            $.each(wallet, function(key, wdata) {
-
-                                let posId = wdata.get_pos ? wdata.get_pos.user_id : '';
-                                let posName = wdata.get_pos ? wdata.get_pos.name : '';
-                                let mobile = wdata.get_pos ? wdata.get_pos.mobilenumber : '';
-
-                                let transactionDate = new Date(wdata.transaction_date)
-                                    .toLocaleDateString('en-GB');
-
-                                tbody.append(`
-                                            <tr>
-                                                <td>${pagination.from + key}</td>
-                                                <td>${posId}</td>
-                                                <td>${posName}</td>
-                                                <td>${mobile}</td>
-                                                <td>₹${wdata.total_billing_amount ?? 0}/-</td>
-                                                <td>${wdata.total_transactions}</td>
-                                                <td>${transactionDate}</td>
-                                                <td>
-                                                    <a href="${wdata.details_url}" target="_blank" 
-                                                        class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-eye"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        `);
-                            });
-                            $('#pagination-container').html(buildPagination(pagination));
-                        }
-
-                    }
-                });
-            }
-
-            $(document).on('click', '.pagination-btn', function() {
-                const page = $(this).data('page');
-                console.log(page);
-
-                getDsr(page); // Reuse the same form
-            });
-
-            function buildPagination(pagination) {
-                const {
-                    current_page,
-                    last_page
-                } = pagination;
-                let paginationHtml = '';
-
-                const maxVisible = 5; // Max page buttons to show
-                let startPage = Math.max(1, current_page - Math.floor(maxVisible / 2));
-                let endPage = Math.min(last_page, startPage + maxVisible - 1);
-
-                // Adjust start if end hits the limit
-                if (endPage - startPage < maxVisible - 1) {
-                    startPage = Math.max(1, endPage - maxVisible + 1);
+            const syncDateRange = changedField => {
+                startDate.max = endDate.value || startDate.getAttribute('max');
+                endDate.min = startDate.value || '';
+                if (changedField === startDate && endDate.value && endDate.value < startDate.value) {
+                    endDate.value = startDate.value;
                 }
+            };
 
-                // First + Ellipsis
-                if (startPage > 1) {
-                    paginationHtml += pageBtn(1, current_page);
-                    if (startPage > 2) {
-                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
-                    }
-                }
-
-                // Page Numbers
-                for (let i = startPage; i <= endPage; i++) {
-                    paginationHtml += pageBtn(i, current_page);
-                }
-
-                // Ellipsis + Last
-                if (endPage < last_page) {
-                    if (endPage < last_page - 1) {
-                        paginationHtml += `<span class="pagination-ellipsis">…</span>`;
-                    }
-                    paginationHtml += pageBtn(last_page, current_page);
-                }
-
-                // Wrap with Prev/Next
-                const prevBtn = current_page > 1 ?
-                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page - 1}" title="Previous">
-                    <i class="fas fa-chevron-left"></i>
-                    </button>` :
-                    `<button class="pagination-btn nav-btn disabled" disabled title="Previous">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>`;
-
-                const nextBtn = current_page < last_page ?
-                    `<button class="pagination-btn nav-btn pagination-btn" data-page="${current_page + 1}" title="Next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>` :
-                    `<button class="pagination-btn nav-btn disabled" disabled title="Next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>`;
-
-                return `
-                    <div class="pagination-info">
-                        Page <strong>${current_page}</strong> of <strong>${last_page}</strong>
-                    </div>
-                    <div class="pagination-buttons">
-                        ${prevBtn}
-                        ${paginationHtml}
-                        ${nextBtn}
-                    </div>
-                `;
-            }
-
-            function pageBtn(i, current) {
-                const isActive = i === current;
-                return `<button 
-                class="pagination-btn ${isActive ? 'active' : ''}" 
-                data-page="${i}"
-                ${isActive ? 'aria-current="page"' : ''}
-                >${i}</button>`;
-            }
-
-
-            $('#edit-form').on('submit', function(e) {
-                e.preventDefault();
-                console.log("form submit");
-
-                // Create FormData object from form
-                var formData = new FormData(this);
-
-                // Get wallet ID from data-id attribute
-                var walletId = $(this).data('id'); // make sure #edit-form has data-id set
-                formData.append('_token', '{{ csrf_token() }}');
-                $.ajax({
-                    type: "POST",
-                    url: '{{ route('admin.used.wallet.upload') }}',
-                    data: formData,
-                    dataType: "json",
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.code == 200) {
-                            Swal.fire({
-                                title: response.message,
-                                icon: "success"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Something went wrong!",
-                                text: response.message || "Please try again later.",
-                                icon: "error"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        }
-                    }
-                });
-            });
-
-            $(document).on('click', '#delete-dsr', function() {
-                const walletId = $(this).data('id');
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This action cannot be undone.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route('admin.used.wallet.delete') }}', // Replace with your actual route
-                            type: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                wallet_id: walletId
-                            },
-                            success: function(response) {
-                                if (response.code == 200) {
-                                    Swal.fire("Deleted!", response.message, "success")
-                                        .then(() => {
-                                            location.reload();
-                                        });
-                                } else {
-                                    Swal.fire("Error!", response.message ||
-                                        "Something went wrong.", "error");
-                                }
-                            },
-                            error: function(xhr) {
-                                Swal.fire("Error!", "Server error occurred.", "error");
-                            }
-                        });
-                    }
-                });
-            });
+            startDate.addEventListener('change', () => syncDateRange(startDate));
+            endDate.addEventListener('change', () => syncDateRange(endDate));
+            syncDateRange();
         });
     </script>
 @endsection

@@ -1,6 +1,6 @@
 {{-- Modals  --}}
 <!-- QR Code Scanner Modal -->
-<div class="modal fade qr-modal" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+<div class="modal fade qr-modal {{ auth()->user()->is_prime_member ? 'qr-modal--prime' : '' }}" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content qr-scan-content">
             <div class="modal-header qr-scan-header">
@@ -13,6 +13,7 @@
                         <rect x="14" y="14" width="7" height="7"></rect>
                         <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
+                    @if (auth()->user()->is_prime_member)<i class="fas fa-crown qr-prime-crown" aria-hidden="true"></i>@endif
                     Scan QR Code
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
@@ -58,7 +59,7 @@
 </div>
 
 <!-- QR Code Details Modal -->
-<div class="modal fade qr-modal" id="qrDetailsModal" tabindex="-1" aria-labelledby="qrDetailsModalLabel"
+<div class="modal fade qr-modal {{ auth()->user()->is_prime_member ? 'qr-modal--prime' : '' }}" id="qrDetailsModal" tabindex="-1" aria-labelledby="qrDetailsModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content qr-details-content">
@@ -81,7 +82,7 @@
 </div>
 
 <!-- Billing Modal -->
-<div class="modal fade qr-modal" id="billingModal" tabindex="-1" aria-labelledby="billingModalLabel"
+<div class="modal fade qr-modal {{ auth()->user()->is_prime_member ? 'qr-modal--prime' : '' }}" id="billingModal" tabindex="-1" aria-labelledby="billingModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content billing-content">
@@ -233,7 +234,7 @@
                     <!-- Submit Button -->
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" id="submitPaymentButton" class="btn qr-btn-primary w-100">
-                            Submit
+                            Submit Transaction
                         </button>
                     </div>
 
@@ -740,6 +741,34 @@
 
     .qr-btn-primary:disabled {
         opacity: 0.6;
+    }
+
+    .qr-modal--prime {
+        --qr-accent: #e7c55e;
+        --qr-accent-dark: #94620c;
+        --qr-ink: #172b3a;
+        --qr-muted: #64748b;
+        --qr-bg-soft: #fff8e6;
+        --qr-border: #ead79e;
+    }
+
+    .qr-modal--prime .modal-content {
+        outline: 2px solid rgba(231, 197, 94, .8);
+        outline-offset: 2px;
+        box-shadow: 0 22px 55px rgba(112, 69, 0, .3), 0 0 0 5px rgba(231, 197, 94, .16);
+    }
+
+    .qr-modal--prime .billing-header .modal-title {
+        color: #704500;
+    }
+
+    .qr-modal--prime .qr-success-icon {
+        background: #fff5d7;
+        box-shadow: 0 0 0 5px rgba(231, 197, 94, .16);
+    }
+
+    .qr-modal--prime .qr-frame .corner {
+        filter: drop-shadow(0 0 5px rgba(231, 197, 94, .8));
     }
 
     .full-page-loader {

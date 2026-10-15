@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,20 +29,58 @@ class UserController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $search       = $request->input('search');
-        $user         = User::query()
+        $membership   = $request->input('membership', 'all');
+        if (! in_array($membership, ['all', 'prime'], true)) {
+            $membership = 'all';
+        }
+
+        $referralCounts = User::query()
+            ->select('sponsor_id')
+            ->selectRaw('COUNT(*) AS referrals_count')
             ->where('role', 3)
+            ->whereNotNull('sponsor_id')
+            ->groupBy('sponsor_id');
+
+        $user = User::query()
+            ->leftJoinSub($referralCounts, 'customer_referral_counts', function ($join) {
+                $join->on('users.id', '=', 'customer_referral_counts.sponsor_id');
+            })
+            ->select('users.*')
+            ->selectRaw('COALESCE(customer_referral_counts.referrals_count, 0) AS referrals_count')
+            ->with('sponsorUser:id,user_id')
+            ->where('users.role', 3)
+            ->when($membership === 'prime', function ($query) {
+                $query->whereRaw('COALESCE(customer_referral_counts.referrals_count, 0) >= ?', [User::PRIME_REFERRAL_THRESHOLD]);
+            })
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
-                    $q->where('user_id', 'LIKE', "%{$search}%")
-                        ->orWhere('name', 'LIKE', "%{$search}%")
-                        ->orWhere('mobilenumber', 'LIKE', "%{$search}%")
-                        ->orWhere('created_at', 'LIKE', "%{$search}%");
+                    $q->where('users.user_id', 'LIKE', "%{$search}%")
+                        ->orWhere('users.name', 'LIKE', "%{$search}%")
+                        ->orWhere('users.mobilenumber', 'LIKE', "%{$search}%")
+                        ->orWhere('users.created_at', 'LIKE', "%{$search}%");
                 });
             })
-            ->latest()
+            ->latest('users.created_at')
             ->simplePaginate(15);
 
-        return view('admin.users.index', compact('user', 'search', 'userId', 'user_profile'));
+        return view('admin.users.index', compact('user', 'search', 'membership', 'userId', 'user_profile'));
+    }
+
+    public function referrals(User $user)
+    {
+        $user->loadCount(['referrals as referrals_count' => function ($query) {
+            $query->where('role', 3);
+        }]);
+        $referrals = User::query()
+            ->where('role', 3)
+            ->where('sponsor_id', $user->id)
+            ->withCount(['referrals as referrals_count' => function ($query) {
+                $query->where('role', 3);
+            }])
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.users.referrals', compact('user', 'referrals'));
     }
 
     /**
@@ -53,8 +92,8 @@ class UserController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $roles = Role::all();
+        abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $roles = Role::query()->where('guard_name', 'web')->orderBy('name')->get();
         return view('admin.users.create', compact('roles', 'userId', 'user_profile'));
     }
     public function searchSponsor(Request $request)
@@ -92,34 +131,43 @@ class UserController extends Controller
     }
     public function export()
     {
-        $fileName = 'Format.xlsx';
+        $fileName = 'UserList_' . now()->format('d,m,y') . '.xlsx';
         return Excel::download(new UserExport, $fileName);
     }
 
     public function store(Request $request)
     {
-        //
-        $validatedData = $request->validate([
-            'name'     => 'required|regex:/^([a-zA-Z]+)(\s[a-zA-Z]+)*$/|max:255',
-            'email'    => 'required',
-            'password' => 'required|string|min:8',
-            'role'     => 'required',
+        abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'mobilenumber' => ['nullable', 'string', 'max:20', 'unique:users,mobilenumber'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'integer', 'exists:roles,id,guard_name,web'],
         ]);
 
-        $user = new User();
+        $role = Role::where('guard_name', 'web')->findOrFail($validated['role']);
+        $user = DB::transaction(function () use ($validated, $role) {
+            do {
+                $userId = (string) mt_rand(1000000, 9999999);
+            } while (User::where('user_id', $userId)->exists());
 
-        $user->name     = $request->name;
-        $user->email    = $request->email;
-        $user->password = $request->password;
-        $user->role     = $request->role;
-        $user->assignRole([$request->role]);
+            $user = User::create([
+                'user_id' => $userId,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'mobilenumber' => $validated['mobilenumber'] ?? null,
+                'password' => $validated['password'],
+                'role' => (string) $role->id,
+            ]);
+            $user->assignRole($role);
 
-        if ($user->save()) {
-            flash()->addSuccess('Customer created successfully.');
-            return redirect()->route('admin.users.index');
-        }
-        flash()->addError('User create fail!');
-        return redirect()->route('admin.users.index');
+            return $user;
+        });
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User ' . $user->name . ' was created successfully.');
     }
 
     /**
@@ -290,18 +338,4 @@ class UserController extends Controller
         //
     }
 
-    public function banUnban($id, $status)
-    {
-        if (auth()->user()->hasRole('Admin')) {
-            $user         = User::findOrFail($id);
-            $user->status = $status;
-            if ($user->save()) {
-                flash()->addSuccess('User status updated successfully.');
-                return redirect()->back();
-            }
-            flash()->addError('User status update fail!');
-            return redirect()->back();
-        }
-        return redirect(Response::HTTP_FORBIDDEN, '403 Forbidden');
-    }
 }

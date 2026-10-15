@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use Illuminate\Support\Facades\Gate;
@@ -19,11 +18,16 @@ class PermissionController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        // abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::all();
+        $search = trim((string) request('search', ''));
+        $permissions = Permission::withCount('roles')
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', '%' . $search . '%'))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.permissions.index', compact('permissions', 'userId', 'user_profile'));
+        return view('admin.permissions.index', compact('permissions', 'userId', 'user_profile', 'search'));
     }
 
     /**
@@ -33,7 +37,7 @@ class PermissionController extends Controller
     {
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
-        // abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('admin.permissions.create', compact('userId', 'user_profile'));
     }
@@ -43,15 +47,12 @@ class PermissionController extends Controller
      */
     public function store(StorePermissionRequest $request)
     {
-        $permission = new Permission();
-        $permission->name = $request->name;
+        abort_if(Gate::denies('permission_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($permission->save()) {
-            flash()->addSuccess('Permission successfully created.');
-            return redirect()->route('admin.permissions.index');
-        }
-        flash()->addError('Whoops! Permission create failed!');
-        return redirect()->back();
+        Permission::create($request->validated());
+
+        flash()->addSuccess('Permission successfully created.');
+        return redirect()->route('admin.permissions.index');
     }
 
     /**
@@ -59,7 +60,9 @@ class PermissionController extends Controller
      */
     public function show(Permission $permission)
     {
-        abort_if(Gate::denies('permission_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $permission->load(['roles'])->loadCount('roles');
 
         return view('admin.permissions.show', compact('permission'));
     }
@@ -81,7 +84,9 @@ class PermissionController extends Controller
      */
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        $permission->update($request->all());
+        abort_if(Gate::denies('permission_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $permission->update($request->validated());
         flash()->addSuccess('Permission successfully updated.');
         return redirect()->route('admin.permissions.index');
     }

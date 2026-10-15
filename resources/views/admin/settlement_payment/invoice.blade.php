@@ -202,7 +202,7 @@
         <div class="header">
             <div class="logo">
                 {{-- <img src="freebazar-logo.png" alt="FreeBazar Logo" class="logo-image"> --}}
-                <img src="{{ public_path('assets/images/logofreebazar3.png') }}" alt="Freebazar Logo" class="logo-image">
+                <img src="{{ public_path('assets/images/freebazar-header-logo.png') }}" alt="FreeBazar — Your Spending Today. Your Savings Tomorrow. Your Legacy for Generations." class="logo-image">
             </div>
             <div class="company-details">
                 Plot-424 , Nayapalli, Bhubaneswar<br>

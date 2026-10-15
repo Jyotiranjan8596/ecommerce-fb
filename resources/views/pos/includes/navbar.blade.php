@@ -53,8 +53,12 @@ $user_profile = auth()->user();
         <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
 
             {{-- Scan button  --}}
-            <div class="d-flex align-items-center">
-                <b>Hello, {{ auth()->user()->name }}</b>
+            <div class="pos-welcome">
+                <span class="pos-welcome__mark" aria-hidden="true">F</span>
+                <span class="pos-welcome__copy">
+                    <small>Welcome back</small>
+                    <strong>Hello, {{ auth()->user()->name }}</strong>
+                </span>
                 <!-- Search form -->
                 {{-- <form class="navbar-search form-inline" id="navbar-search-main">
                     <div class="input-group input-group-merge search-bar">
@@ -116,37 +120,57 @@ $user_profile = auth()->user();
             <!-- Navbar links -->
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item dropdown">
-                    <a class="nav-link text-dark notification-bell unread dropdown-toggle"
+                    <a class="nav-link text-dark notification-bell position-relative dropdown-toggle"
                         data-unread-notifications="true" href="#" role="button" data-bs-toggle="dropdown"
-                        data-bs-display="static" aria-expanded="false">
+                        data-bs-display="static" aria-expanded="false"
+                        data-notifications-url="{{ route('notifications.index') }}"
+                        data-notification-read-url-template="{{ route('notifications.read', ['id' => '__notification_id__']) }}"
+                        data-notifications-read-all-url="{{ route('notifications.read-all') }}">
                         <svg class="icon icon-sm text-gray-900" width="45px" height="45px" fill="currentColor"
                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
                             </path>
                         </svg>
+                        <span
+                            class="notif-badge badge rounded-pill bg-danger d-none position-absolute top-0 start-50"
+                            style="font-size:.55rem;">0</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-center mt-2 py-0">
-                        <div class="list-group list-group-flush">
-                            <a href="#"
-                                class="text-center text-primary fw-bold border-bottom border-light py-3">Notifications</a>
-
-                        </div>
+                        @include('partials.notification-bell')
                     </div>
                 </li>
                 <li class="nav-item dropdown ms-lg-3">
-                    <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button"
+                    <a class="nav-link dropdown-toggle pt-1 px-0 pos-account-trigger" href="#" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img width="45px" height="45px" class="avatar rounded-circle"
-                                alt="{{ auth()->user()->name }}"
-                                src="{{ asset('images/' . $user_profile->image) ?? asset('assets/img/team/profile-picture-3.jpg') }}" />
+                            @if ($user_profile->image)
+                                <img width="45" height="45" class="avatar rounded-circle"
+                                    alt="{{ $user_profile->name }}"
+                                    src="{{ asset('images/' . $user_profile->image) }}" />
+                            @else
+                                <span class="avatar rounded-circle d-inline-flex align-items-center justify-content-center bg-primary text-white"
+                                    style="width:45px;height:45px;" aria-label="{{ $user_profile->name }}">
+                                    {{ strtoupper(substr($user_profile->name, 0, 1)) }}
+                                </span>
+                            @endif
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">{{ auth()->user()->name }}</span>
                             </div>
                         </div>
                     </a>
-                    <div class="dropdown-menu dashboard-dropdown dropdown-menu-end mt-2 py-1">
+                    <div class="dropdown-menu dashboard-dropdown pos-account-dropdown dropdown-menu-end mt-2 py-1">
+                        <div class="pos-account-dropdown__profile">
+                            @if ($user_profile->image)
+                                <img src="{{ asset('images/' . $user_profile->image) }}" alt="">
+                            @else
+                                <span aria-hidden="true">{{ strtoupper(substr($user_profile->name, 0, 1)) }}</span>
+                            @endif
+                            <div>
+                                <strong>{{ $user_profile->name }}</strong>
+                                <small>POS Account</small>
+                            </div>
+                        </div>
 
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('pos.change.password') }}">
                             <svg class="dropdown-icon text-gray-400 me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -185,7 +209,7 @@ $user_profile = auth()->user();
                             Support
                         </a> --}}
                         <div role="separator" class="dropdown-divider my-1"></div>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
+                        <a class="dropdown-item d-flex align-items-center pos-account-dropdown__logout" href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <svg class="dropdown-icon text-danger me-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

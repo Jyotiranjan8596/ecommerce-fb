@@ -2,7 +2,52 @@
 
 @section('content')
     <div class="container" style="margin-top: 20px;">
-        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">User Transactions</b></h3>
+        <div class="mb-3">
+            <a class="btn btn-outline-primary"
+                href="{{ route('admin.dsr', array_filter([
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'search' => request('search'),
+                ], fn ($value) => $value !== null && $value !== '')) }}">
+                <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Back to DSR
+            </a>
+        </div>
+        <h3 class="text-center"><b style="color: rgb(8, 7, 20)">POS Transaction Details</b></h3>
+
+        <section class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">POS name</small>
+                        <strong>{{ $pos->name }}</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">POS ID</small>
+                        <strong>{{ $pos->user_id ?: $pos->id }}</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <small class="text-muted d-block">Mobile number</small>
+                        <strong>{{ $pos->mobilenumber ?: 'N/A' }}</strong>
+                    </div>
+                    @if ($pos->email)
+                        <div class="col-12 col-md-4">
+                            <small class="text-muted d-block">Email</small>
+                            <strong>{{ $pos->email }}</strong>
+                        </div>
+                    @endif
+                    @if ($pos->entity_address || $pos->address)
+                        <div class="col-12 col-md-8">
+                            <small class="text-muted d-block">Address</small>
+                            <strong>{{ $pos->entity_address ?: $pos->address }}</strong>
+                        </div>
+                    @endif
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">Transaction charge rate</small>
+                        <strong>{{ number_format((float) ($pos->transaction_charge ?? 0), 2) }}%</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <div class="row">
 
@@ -18,12 +63,10 @@
 
             <!-- Export Form -->
             <div class="col-md-8 mb-3 text-end">
-                <form method="GET" action="{{ route('admin.dsr.user.transaction.export') }}">
-                    <input type="hidden" name="start_date" value="{{ $start_date }}">
-                    <input type="hidden" name="end_date" value="{{ $end_date }}">
-                    <input type="hidden" name="pos_id" value="{{ $id }}">
-                    <button class="btn btn-danger" type="submit">EXPORT</button>
-                </form>
+                <a class="btn btn-danger"
+                    href="{{ route('admin.transaction.details.export', ['id' => encrypt($id), 'transaction_date' => $transaction_date]) }}">
+                    <i class="fas fa-download me-1" aria-hidden="true"></i> EXPORT
+                </a>
             </div>
         </div>
         <div class="table-responsive">

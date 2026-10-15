@@ -1,241 +1,230 @@
-@extends('frontend.dashboard.layouts.master')
+﻿@extends('frontend.dashboard.layouts.master')
 
 @section('content')
-    <div class="card border-0 shadow-sm">
-        <div class="card-header">
-            <h4><b>Add User</b></h4>
+    <div class="container-fluid px-2 px-md-3 py-3">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header border-0 bg-primary text-white px-4 py-3 user-add-header">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <div class="text-uppercase small fw-semibold mb-1 user-add-eyebrow">Customer management</div>
+                        <h4 class="mb-0 fw-bold user-add-title">Add User</h4>
+                    </div>
+                    <span class="badge rounded-pill bg-white text-primary px-3 py-2 fs-6">Sponsor ID: {{ $user_id }}</span>
+                </div>
+            </div>
+
+            <form action="{{ route('user.add.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                @csrf
+
+                <div class="card-body p-3 p-lg-4">
+                    <div class="alert alert-light border rounded-4 mb-4 shadow-sm">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                            <div>
+                                <div class="fw-semibold text-dark">Referral Link</div>
+                                <small class="text-muted">Invite a new customer to register themselves.</small>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill copy-referral-link">
+                                <i class="bi bi-clipboard-plus me-1"></i>Copy link
+                            </button>
+                        </div>
+                        <div class="input-group mt-3">
+                            <input id="referralLinkInput" type="text" class="form-control border-0 bg-white shadow-none" value="{{ $referral_link }}" readonly>
+                            <span class="input-group-text bg-white border-0">
+                                <i class="bi bi-link-45deg text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" id="name" name="name" minlength="5" maxlength="30"
+                                    class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Name" required>
+                                <label for="name">Name*</label>
+                                @error('name')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <input type="hidden" name="password">
+
+                            <div class="form-floating mb-3">
+                                <input type="email" id="email" name="email"
+                                    class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Email" required>
+                                <label for="email">Email*</label>
+                                @error('email')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="tel" id="mobilenumber" name="mobilenumber" minlength="10" maxlength="10"
+                                    class="form-control @error('mobilenumber') is-invalid @enderror" value="{{ old('mobilenumber') }}" placeholder="Phone" required>
+                                <label for="mobilenumber">Phone*</label>
+                                @error('mobilenumber')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <select id="gender" name="gender"
+                                    class="form-select @error('gender') is-invalid @enderror" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                </select>
+                                <label for="gender">Gender*</label>
+                                @error('gender')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" id="sponsor_id" name="sponsor_id"
+                                    class="form-control @error('sponsor_id') is-invalid @enderror" value="{{ $user_id }}" placeholder="Sponsor Id" readonly>
+                                <label for="sponsor_id">Sponsor Id*</label>
+                                <input type="hidden" name="hidden_user_id" value="{{ auth()->user()->id }}">
+                                @error('sponsor_id')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" id="address" name="address"
+                                    class="form-control @error('address') is-invalid @enderror" value="{{ old('address') }}" placeholder="Address" required>
+                                <label for="address">Address*</label>
+                                @error('address')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" id="city" name="city"
+                                    class="form-control @error('city') is-invalid @enderror" value="{{ old('city') }}" placeholder="City" required>
+                                <label for="city">City*</label>
+                                @error('city')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" id="state" name="state"
+                                    class="form-control @error('state') is-invalid @enderror" value="{{ old('state') }}" placeholder="State" required>
+                                <label for="state">State*</label>
+                                @error('state')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="text" id="zip" name="zip"
+                                    class="form-control @error('zip') is-invalid @enderror" value="{{ old('zip') }}" placeholder="Zip" required>
+                                <label for="zip">Zip*</label>
+                                @error('zip')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="image" class="form-label fw-semibold text-dark">Profile Image</label>
+                                <input type="file" id="image" name="image"
+                                    class="form-control @error('image') is-invalid @enderror" accept="image/*">
+                                @error('image')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 px-3 px-lg-4 py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <p class="mb-0 text-muted small">
+                            By registering, you agree to our
+                            <a href="{{ route('user.term.condition') }}" class="text-danger fw-semibold text-decoration-none">Terms & Conditions</a>
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-primary px-4 rounded-pill" type="submit">
+                                <i class="bi bi-person-plus me-1"></i>Register
+                            </button>
+                            <a class="btn btn-outline-secondary px-4 rounded-pill" href="{{ route('user.index') }}">
+                                Back to list
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        <form action="{{ route('user.add.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label for="name">Name*</label>
-                            <input type="text" id="name" name="name" minlength="5" maxlength="30"
-                                class="form-control @error('name') is-invalid @enderror">
-                            @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <input type="hidden" name="password">
-                        <div class="mb-2">
-                            <label for="email">Email*</label>
-                            <input type="email" id="email" name="email"
-                                class="form-control @error('email') is-invalid @enderror">
-                            @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="mobilenumber">Phone*</label>
-                            <input type="number" id="mobilenumber" name="mobilenumber" minlength="10" maxlength="10"
-                                class="form-control @error('mobilenumber') is-invalid @enderror" required>
-                            @error('mobilenumber')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="gender">Gender*</label>
-                            <select id="gender" name="gender"
-                                class="form-control @error('gender') is-invalid @enderror">
-                                <option value="">Select Gender</option>
-                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                            </select>
-                            @error('gender')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="sponsor_id">Sponsor Id*</label>
-                            <input type="hidden" name="hidden_user_id" value="{{ auth()->user()->id }}">
-                            <input type="text" id="sponsor_id" name="sponsor_id"
-                                class="form-control @error('sponsor_id') is-invalid @enderror" value="{{ $user_id }}"
-                                style="background-color: rgb(218, 211, 211)" readonly>
-                            @error('sponsor_id')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="address">Address*</label>
-                            <input type="text" id="address" name="address"
-                                class="form-control @error('address') is-invalid @enderror">
-                            @error('address')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-
-                    </div>
-                    <div class="col-md-6">
-
-                        <div class="mb-2">
-                            <label for="city">City*</label>
-                            <input type="city" id="city" name="city"
-                                class="form-control @error('city') is-invalid @enderror">
-                            @error('city')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="state">State*</label>
-                            <input type="text" id="state" name="state"
-                                class="form-control @error('state') is-invalid @enderror" value="{{ old('state') }}">
-                            @error('state')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="zip">Zip*</label>
-                            <input type="text" id="zip" name="zip"
-                                class="form-control @error('zip') is-invalid @enderror" value="{{ old('zip') }}">
-                            @error('zip')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-
-                        {{-- <div class="mb-2">
-                            <label for="parent_level">Parent FOR LEVEL*</label>
-                            <input type="text" id="parent_level" name="parent_level"
-                                class="form-control @error('parent_level') is-invalid @enderror" >
-                            @error('parent_level')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div> --}}
-                        <div class="mb-2">
-                            <label for="image">Image*</label>
-                            <input type="file" id="image" name="image"
-                                class="form-control @error('image') is-invalid @enderror">
-                            @error('image')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{-- <div style="margin-left: 15px;">
-                <h3><b>NB: Provide valid email for further communications.</b></h3>
-            </div> --}}
-            {{-- <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                       
-                        <div class="mb-2">
-                            <label for="zip">Zip*</label>
-                            <input type="text" id="zip" name="zip"
-                                class="form-control @error('zip') is-invalid @enderror" >
-                            @error('zip')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="pan_no">PAN NO*</label>
-                            <input type="text" id="pan_no" name="pan_no"
-                                class="form-control @error('pan_no') is-invalid @enderror" >
-                            @error('pan_no')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label for="bank">BANK*</label>
-                            <input type="text" id="bank" name="bank"
-                                class="form-control @error('bank') is-invalid @enderror">
-                            @error('bank')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="account_no">ACCOUNT NO*</label>
-                            <input type="text" id="account_no" name="account_no"
-                                class="form-control @error('account_no') is-invalid @enderror" >
-                            @error('account_no')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="ifsc">IFSC*</label>
-                            <input type="text" id="ifsc" name="ifsc"
-                                class="form-control @error('ifsc') is-invalid @enderror" >
-                            @error('ifsc')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="nominee_name">NOMINEE NAME*</label>
-                            <input type="text" id="nominee_name" name="nominee_name"
-                                class="form-control @error('nominee_name') is-invalid @enderror" >
-                            @error('nominee_name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-2">
-                            <label for="relation_user">RELATION WITH USER*</label>
-                            <select id="relation_user" name="relation_user"
-                                class="form-control @error('relation_user') is-invalid @enderror">
-                                <option value="relation_user">Select</option>
-                                @foreach ($relation_user as $user)
-                            <option value="{{ $user }}" {{ old('relation_user') == $user ? 'selected' : '' }}>
-                                {{ $user }}
-                            </option>
-                            @endforeach
-                            </select>
-                            @error('relation_user')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-left: 15px;">
-                <p>By Clicking below register button you are agreing to our <span><a
-                            href="{{ route('user.term.condition') }}" style="color: red">TERMS AND CONDITION</a></span>
-                </p>
-            </div> --}}
-            <div class="card-footer">
-                <button class="btn btn-primary me-2" type="submit">Register</button>
-                {{-- <button class="btn btn-warning me-2" type="submit">Validate</button> --}}
-                <a class="btn btn-secondary" href="{{ route('user.index') }}">
-                    Back to list
-                </a>
-            </div>
-        </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const copyButton = document.querySelector('.copy-referral-link');
+            const referralInput = document.getElementById('referralLinkInput');
+
+            if (copyButton && referralInput) {
+                copyButton.addEventListener('click', async function () {
+                    try {
+                        await navigator.clipboard.writeText(referralInput.value);
+                        const originalText = copyButton.innerHTML;
+                        copyButton.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Copied';
+                        copyButton.classList.add('btn-success');
+                        copyButton.classList.remove('btn-outline-primary');
+
+                        setTimeout(function () {
+                            copyButton.innerHTML = originalText;
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-primary');
+                        }, 1500);
+                    } catch (error) {
+                        referralInput.focus();
+                        referralInput.select();
+                        document.execCommand('copy');
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        .user-add-header {
+            background: linear-gradient(115deg, #0f766e 0%, #087f8c 55%, #145da0 100%) !important;
+        }
+
+        .user-add-header .user-add-title {
+            color: #fff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+        }
+
+        .user-add-header .user-add-eyebrow {
+            color: #d5fff5 !important;
+            letter-spacing: .08em;
+        }
+
+        .user-add-header .badge {
+            color: #075e59 !important;
+        }
+    </style>
 @endsection

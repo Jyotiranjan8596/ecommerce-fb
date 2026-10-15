@@ -23017,6 +23017,21 @@ textarea.form-control-lg {
     .content {
         margin-left: 260px;
     }
+
+    body.has-fixed-sidebar > .freebazar-site-footer,
+    body.has-fixed-sidebar > #footer-bottom {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 991.98px) {
+    body.has-fixed-sidebar > .freebazar-site-footer,
+    body.has-fixed-sidebar > #footer-bottom {
+        margin-left: 0;
+        width: 100%;
+    }
 }
 
 .sidebar-toggle {
