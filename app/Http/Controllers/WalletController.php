@@ -48,7 +48,8 @@ class WalletController extends Controller
         $pos = PosModel::where('user_id', $userId)->first();
 
         // Transactions for display
-        $transactionQuery = Wallet::where('user_id', $user->id);
+        $transactionQuery = Wallet::with('statusChanges')
+            ->where('user_id', $user->id);
 
         if ($request->filled('transaction_date')) {
             $transactionQuery->whereDate('transaction_date', $request->transaction_date);
@@ -186,7 +187,7 @@ class WalletController extends Controller
             return redirect()->back()->with('error', 'POS not found.');
         }
 
-        $query = Wallet::where('pos_id', $pos->id);
+        $query = Wallet::with('statusChanges')->where('pos_id', $pos->id);
 
         // Optional: Filter by start_date and end_date
         if (

@@ -679,21 +679,65 @@ main.content {
     color: #edf7f4;
     scrollbar-color: rgba(160, 205, 192, 0.38) transparent;
     scrollbar-width: thin;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-inner {
     min-height: 100%;
-    padding: 1rem 0.9rem 1.25rem !important;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    padding: calc(1rem + env(safe-area-inset-top)) 0.9rem calc(1.25rem + env(safe-area-inset-bottom)) !important;
+    overflow: visible;
+}
+
+.sidebar .user-card {
+    display: none !important;
+}
+
+.sidebar-mobile-controls {
+    min-height: 2.75rem;
+    margin-bottom: 0.35rem;
+}
+
+.sidebar-mobile-close {
+    display: inline-grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.sidebar-mobile-close:hover,
+.sidebar-mobile-close:focus-visible {
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.sidebar-mobile-close:focus-visible {
+    outline: 3px solid #9fe4cf;
+    outline-offset: 2px;
 }
 
 .sidebar .nav {
     gap: 0.2rem;
+    white-space: normal;
 }
 
 .sidebar .nav-item {
     min-width: 0;
+}
+
+.sidebar .nav-link,
+.sidebar .sidebar-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .sidebar > .sidebar-inner > .nav.flex-column > .nav-item:first-child {
@@ -3490,7 +3534,9 @@ body .content .row > [class*="col"] > .card {
 .leaflet-popup-content-wrapper { border-radius: 12px; }
 
 @media (max-width: 575.98px) {
-    .order-page-header { align-items: flex-start; }
+    .order-page-header { align-items: stretch; flex-direction: column; }
+    .order-page-header__copy { width: 100%; }
+    .order-page-header__tools { justify-content: space-between; width: 100%; }
     .order-page-header__icon { width: 3rem; height: 3rem; flex-basis: 3rem; border-radius: 14px; font-size: 1.2rem; }
     .order-list-header { align-items: flex-start; padding: 1rem; }
     .order-entry-card { padding: .85rem; }

@@ -15,7 +15,7 @@ The Laravel Admin Dashboard is a web-based application that serves as a starting
 
 ## POS DSR transaction verification
 
-POS users can manually verify pending DSR transactions until 12:00 noon on the day after each transaction. Any remaining pending transactions are automatically verified at that deadline in the application timezone (`Asia/Kolkata` by default). The scheduled command also catches up transactions whose deadline passed while the scheduler was unavailable.
+POS users can manually verify pending DSR transactions at any time. The “Verify all” action verifies every pending transaction for that POS matching the currently selected report filters, including transactions on later pages. The scheduled command automatically verifies pending transactions dated before the current day after 12:00 noon in the application timezone (`Asia/Kolkata` by default). It retries every minute after noon and catches up transactions whose deadline passed while the scheduler was unavailable.
 
 The server must invoke Laravel's scheduler every minute for this to run:
 
@@ -24,6 +24,10 @@ php artisan schedule:run
 ```
 
 Configure that command in the server's cron or Task Scheduler, using the project directory as its working directory.
+
+## Transaction change history
+
+Wallet transactions, payment summaries, and customer orders record who created, changed, edited, or deleted a record in `transaction_status_changes`. Status tables show the responsible Admin, POS, customer, or automatic system and the time of the change; expandable history shows earlier events and edited field names. Historical records created before this audit table was deployed are labeled as having unavailable actor history rather than being attributed speculatively. Apply the migration with `php artisan migrate`.
 
 ## Contributing
 

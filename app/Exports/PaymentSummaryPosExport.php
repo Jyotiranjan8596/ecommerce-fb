@@ -38,6 +38,7 @@ class PaymentSummaryPosExport implements FromArray, WithHeadings, WithStyles
             'Remaining Reward',
             'TRANSACTION DATE',
             'STATUS',
+            'STATUS CHANGE BY',
         ];
     }
 

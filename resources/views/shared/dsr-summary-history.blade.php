@@ -78,7 +78,7 @@
                                 @if ($isAdmin)
                                     <th scope="col">POS</th>
                                 @endif
-                                <th scope="col" class="text-end">Transactions</th>
+                                <th scope="col" class="text-end">Verified / total</th>
                                 <th scope="col" class="text-end">Billing amount</th>
                                 <th scope="col" class="text-end">Cash / UPI</th>
                                 <th scope="col" class="text-end">Wallet</th>
@@ -105,19 +105,58 @@
                                             @endif
                                         </td>
                                     @endif
-                                    <td class="text-end">{{ number_format((int) $summary->total_transaction) }}</td>
+                                    <td class="text-end">
+                                        {{ number_format((int) $summary->total_transaction) }} /
+                                        {{ number_format((int) $summary->all_transaction_count) }}
+                                        @if ((int) $summary->pending_transaction_count > 0)
+                                            <small class="d-block text-warning">
+                                                {{ number_format((int) $summary->pending_transaction_count) }} awaiting verification
+                                            </small>
+                                        @endif
+                                    </td>
                                     <td class="text-end">₹{{ number_format((float) $summary->total_billing_amount, 2) }}</td>
                                     <td class="text-end">₹{{ number_format((float) $summary->by_cash, 2) }}</td>
                                     <td class="text-end">₹{{ number_format((float) $summary->by_wallet, 2) }}</td>
                                     <td class="text-end">₹{{ number_format((float) $summary->by_reward, 2) }}</td>
                                     <td class="text-end">₹{{ number_format((float) $summary->pos_credit, 2) }}</td>
                                     <td class="text-end">₹{{ number_format((float) $summary->pos_debit, 2) }}</td>
-                                    <td>
-                                        @if ($summary->has_generated_payment)
-                                            <span class="badge bg-success">Confirmed</span>
+                                    <td class="text-nowrap">
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            @if ((int) $summary->pending_transaction_count === 0)
+                                                <span class="badge bg-success">Transactions verified</span>
+                                            @else
+                                                <span class="badge bg-warning text-dark">Verification pending</span>
+                                            @endif
+                                            @if ($summary->latest_transaction_status_actor)
+                                                <small class="text-muted">
+                                                    Latest transaction status change by {{ $summary->latest_transaction_status_actor }}
+                                                    · {{ \Illuminate\Support\Carbon::parse($summary->latest_transaction_status_at)->format('d-m-Y h:i A') }}
+                                                </small>
+                                            @else
+                                                <small class="text-muted">Transaction actor history unavailable for this older record.</small>
+                                            @endif
+                                            @if ($summary->has_generated_payment)
+                                                <span class="badge bg-success">Payment summary generated</span>
+                                                @if ((float) $summary->admin_credit <= 0)
+                                                    <span class="badge bg-light text-dark border">No POS payment due</span>
+                                                @elseif ((int) $summary->is_settled === 1)
+                                                    <span class="badge bg-success">POS payment settled</span>
+                                                @elseif ((float) $summary->pos_payment_amount >= (float) $summary->admin_credit)
+                                                    <span class="badge {{ (float) $summary->auto_submitted_amount > 0 ? 'bg-success' : 'bg-info text-dark' }}">
+                                                        {{ (float) $summary->auto_submitted_amount > 0 ? 'POS payment auto-submitted' : 'POS payment recorded' }}
+                                                    </span>
+                                                @elseif ((float) $summary->auto_submitted_amount > 0)
+                                                    <span class="badge bg-warning text-dark">
+                                                        Auto-submitted ₹{{ number_format((float) $summary->auto_submitted_amount, 2) }} of ₹{{ number_format((float) $summary->admin_credit, 2) }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary">POS payment pending</span>
+                                                @endif
                                         @else
-                                            <span class="badge bg-secondary">Pending</span>
-                                        @endif
+                                                <span class="badge bg-secondary">Payment summary pending</span>
+                                                <span class="badge bg-light text-dark border">POS payment status unavailable</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

@@ -9,6 +9,7 @@ use App\Models\Wallet;
 use App\Models\PosModel;
 use App\Exports\MsrTransactionExport;
 use App\Exports\DsrTransactionExport;
+use App\Exports\MsrExport;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,7 @@ class TodaysSalesTest extends TestCase
             $table->string('user_id')->nullable();
             $table->string('name');
             $table->string('mobilenumber')->nullable();
+            $table->unsignedBigInteger('sponsor_id')->nullable();
         });
 
         Schema::create('pos_systems', function (Blueprint $table) {
@@ -51,6 +53,8 @@ class TodaysSalesTest extends TestCase
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('pos_id')->nullable();
             $table->dateTime('transaction_date')->nullable();
+            $table->string('mobilenumber')->nullable();
+            $table->string('tran_type')->nullable();
             $table->unsignedTinyInteger('status')->nullable();
             $table->string('invoice')->nullable();
             $table->decimal('billing_amount', 12, 2)->default(0);
@@ -64,6 +68,19 @@ class TodaysSalesTest extends TestCase
             $table->foreignId('wallet_id')->constrained('wallets')->cascadeOnDelete();
             $table->decimal('remaining_amount', 12, 2)->nullable();
             $table->decimal('remaining_points', 12, 2)->nullable();
+        });
+
+        Schema::create('transaction_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('subject');
+            $table->string('event_type', 24);
+            $table->text('old_status')->nullable();
+            $table->text('new_status')->nullable();
+            $table->json('changed_fields')->nullable();
+            $table->string('actor_type', 24);
+            $table->unsignedBigInteger('actor_id')->nullable();
+            $table->string('actor_name')->nullable();
+            $table->timestamps();
         });
 
         DB::table('users')->insert([
@@ -269,6 +286,63 @@ class TodaysSalesTest extends TestCase
             $this->assertSame('ALPHA-PENDING', $rows[0][1]);
             $this->assertSame('ALPHA-VERIFIED', $rows[1][1]);
             $this->assertSame('PREVIOUS-DAY', $rows[2][1]);
+
+            return true;
+        });
+    }
+
+    public function test_payback_run_export_uses_month_only_and_matches_the_csv_format(): void
+    {
+        Excel::fake();
+        DB::table('wallets')->whereIn('id', [1, 2])->update([
+            'mobilenumber' => '9000000000',
+            'tran_type' => 'credit',
+        ]);
+        DB::table('wallets')->where('id', 1)->update([
+            'reward_amount' => 5,
+            'amount_wallet' => 10,
+        ]);
+        DB::table('wallets')->where('id', 2)->update([
+            'reward_amount' => 2,
+            'amount_wallet' => 10,
+        ]);
+
+        (new DsrController())->exportMsr(new Request([
+            'month' => '2026-10',
+            'search' => 1,
+            'filter' => '9000000000',
+        ]));
+
+        Excel::assertDownloaded('Payback_Run_Data_October2026.csv', function (MsrExport $export) {
+            $this->assertSame([
+                'MONTH',
+                'MOBILE NUMBER',
+                'USER ID',
+                'SPONSOR ID',
+                'TOTAL BILLING AMOUNT',
+                'Reward Point',
+                'Wallet Amount',
+                'Transaction Date',
+                'Payment Mode',
+                'SPONSOR EXPENDITURE',
+            ], $export->headings());
+
+            $rows = $export->collection();
+            $this->assertCount(2, $rows);
+            $customerRow = $rows->first(fn (array $row) => $row[1] === '9000000000');
+            $this->assertSame([
+                '26-Oct',
+                '9000000000',
+                'CUSTOMER-001',
+                'N/A',
+                150,
+                7,
+                20,
+                '10-11-26',
+                'credit',
+                0,
+            ], $customerRow);
+            $this->assertSame(425, array_sum(array_column($rows->all(), 4)));
 
             return true;
         });

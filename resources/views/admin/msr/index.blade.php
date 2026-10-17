@@ -17,45 +17,24 @@
         <section class="card msr-panel">
             <div class="msr-tools">
                 <form method="GET" action="{{ route('admin.msr') }}" class="msr-filters">
-                    <div class="msr-filter-field msr-filter-field--pos">
-                        <label for="msr-pos">POS location</label>
-                        <select class="form-select" name="search" id="msr-pos">
-                            <option value="">All POS locations</option>
-                            @foreach ($pos as $data)
-                                <option value="{{ $data['id'] ?? '' }}"
-                                    {{ request('search') == ($data['id'] ?? '') ? 'selected' : '' }}>
-                                    {{ $data['name'] }} ({{ $data['user_id'] ?? 'N/A' }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     <div class="msr-filter-field msr-filter-field--month">
                         <label for="msr-month">Month</label>
                         <input type="month" name="month" id="msr-month" class="form-control"
                             value="{{ $selectedMonth }}">
                     </div>
 
-                    <div class="msr-filter-field msr-filter-field--mobile">
-                        <label for="msr-mobile">Mobile number</label>
-                        <input type="search" name="filter" id="msr-mobile" class="form-control"
-                            placeholder="Search mobile number" value="{{ request('filter') }}">
-                    </div>
-
                     <div class="msr-filter-actions">
                         <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-filter me-1" aria-hidden="true"></i> Apply filters
+                            <i class="fas fa-filter me-1" aria-hidden="true"></i> Apply month
                         </button>
-                        @if (request()->hasAny(['search', 'month', 'filter']))
+                        @if (request()->filled('month'))
                             <a href="{{ route('admin.msr') }}" class="btn btn-outline-secondary">Reset</a>
                         @endif
                     </div>
                 </form>
 
                 <form method="GET" action="{{ route('admin.msr.export') }}" class="msr-export">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="hidden" name="month" value="{{ $selectedMonth }}">
-                    <input type="hidden" name="filter" value="{{ request('filter') }}">
                     <button class="btn btn-outline-primary" type="submit">
                         <i class="fas fa-download me-1" aria-hidden="true"></i> Export report
                     </button>
@@ -103,7 +82,7 @@
                                             <i class="fas fa-chart-line"></i>
                                         </span>
                                         <strong>No sales records found</strong>
-                                        <span>Try a different month, POS location, or mobile number.</span>
+                                        <span>Try a different month.</span>
                                     </div>
                                 </td>
                             </tr>
@@ -217,16 +196,8 @@
             text-transform: uppercase;
         }
 
-        .msr-filter-field--pos {
-            flex: 1 1 235px;
-        }
-
         .msr-filter-field--month {
             flex: 0 1 165px;
-        }
-
-        .msr-filter-field--mobile {
-            flex: 1 1 210px;
         }
 
         .msr-filter-actions {
@@ -307,9 +278,7 @@
                 padding: 1.25rem;
             }
 
-            .msr-filter-field--pos,
-            .msr-filter-field--month,
-            .msr-filter-field--mobile {
+            .msr-filter-field--month {
                 flex: 1 1 100%;
             }
 

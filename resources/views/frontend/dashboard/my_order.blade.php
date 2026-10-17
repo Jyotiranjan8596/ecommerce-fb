@@ -157,6 +157,7 @@
                         <div>
                             <strong class="order-entry-number">Order #{{ $order->id }}</strong>
                             <span class="badge order-status order-status--{{ strtolower($order->status) }} ms-2">{{ $order->status_label }}</span>
+                            @include('shared.transaction-status-audit', ['statusChanges' => $order->statusChanges])
                             <div class="small order-entry-pos"><i class="fas fa-store me-1" aria-hidden="true"></i>{{ $order->pos?->name ?? 'Not assigned' }}</div>
                             <div class="small text-muted">Placed {{ $order->created_at->format('M j, Y g:i A') }}</div>
                         </div>

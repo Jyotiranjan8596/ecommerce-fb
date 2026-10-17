@@ -64,5 +64,6 @@
 </div>
 <script src="{{ asset('assets/js/jquery-1.11.0.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins.js') }}"></script>
 <script src="{{ asset('assets/js/script.js') }}"></script>

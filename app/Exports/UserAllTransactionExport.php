@@ -31,7 +31,8 @@ class UserAllTransactionExport implements FromCollection, WithHeadings
                 $item->remaining_amount ?? 0,
                 $item->remaining_reward,
                 $item->trans_date,
-                $item->status_label
+                $item->status_label,
+                $item->status_actor ?? 'History unavailable'
             ];
         });
     }
@@ -50,7 +51,8 @@ class UserAllTransactionExport implements FromCollection, WithHeadings
             'Wallet Remain',
             'Reward Remain',
             'Transaction Date',
-            'Status'
+            'Status',
+            'Last status change by'
         ];
     }
 }

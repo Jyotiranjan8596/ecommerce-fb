@@ -109,13 +109,28 @@ class PaymentSummaryController extends Controller
 
     public function sattlement_index()
     {
-        $settlements = PaymentSummary::fetch_summary_pos();
+        $settlements = PaymentSummary::with('statusChanges')
+            ->where('pos_id', \App\Helpers\Helper::get_pos_id(auth()->user()->user_id))
+            ->orderByDesc('id')
+            ->get()
+            ->map(function ($item) {
+                $item->intiate_date = \Carbon\Carbon::parse($item->date)->format('d-m-Y');
+
+                return $item;
+            });
         return view('pos.sattlement_index', compact('settlements'));
     }
 
     public function admin_settlemt_index()
     {
-        $settlements = PaymentSummary::fetch_summary_admin();
+        $settlements = PaymentSummary::with(['pos_system', 'statusChanges'])
+            ->orderByDesc('id')
+            ->get()
+            ->map(function ($item) {
+                $item->intiate_date = \Carbon\Carbon::parse($item->date)->format('d-m-Y');
+
+                return $item;
+            });
         $all_pos = PosModel::getAll();
         return view('admin.settlement_payment.settlement', compact('settlements', 'all_pos'));
     }
@@ -127,13 +142,25 @@ class PaymentSummaryController extends Controller
             'pos_id' => ['nullable', 'integer', 'exists:pos_systems,id'],
         ]);
 
-        $summaries = PaymentSummary::with('pos_system')
+        $summaries = PaymentSummary::with(['pos_system', 'statusChanges'])
             ->withExists([
                 'payment as has_generated_payment' => fn ($query) => $query->where('remark', 'Auto Generated'),
+                'payment as has_auto_submitted_payment' => fn ($query) => $query->where('remark', 'Auto Submitted'),
             ])
+            ->withSum([
+                'payment as auto_submitted_amount' => fn ($query) => $query->where('remark', 'Auto Submitted'),
+            ], 'amount')
+            ->withSum([
+                'payment as pos_payment_amount' => fn ($query) => $query
+                    ->where('to', '666666')
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhere('remark', '!=', 'Auto Generated');
+                    }),
+            ], 'amount')
+            ->orderByDesc('date')
             ->when(!empty($filters['date']), fn ($query) => $query->whereDate('date', $filters['date']))
             ->when(!empty($filters['pos_id']), fn ($query) => $query->where('pos_id', $filters['pos_id']))
-            ->orderByDesc('date')
             ->orderByDesc('id')
             ->paginate(25)
             ->withQueryString();
@@ -342,7 +369,7 @@ class PaymentSummaryController extends Controller
         }
 
         $posIds = $dailyPosData->pluck('pos_id');
-        $summaries = PaymentSummary::with('pos_system')
+        $summaries = PaymentSummary::with(['pos_system', 'statusChanges'])
             ->whereDate('date', $date)
             ->whereIn('pos_id', $posIds)
             ->get()
@@ -362,6 +389,8 @@ class PaymentSummaryController extends Controller
                 'pos_credit' => $summary?->pos_credit ?? $item['creditAmount'],
                 'pos_debit' => $summary?->pos_debit ?? $item['debitAmount'],
                 'status' => $summary?->status ?? 'failed',
+                'status_actor' => $summary?->statusChanges->first()?->actor_label
+                    ?? ($summary ? 'History unavailable' : 'Automatic system (generation attempt failed)'),
             ];
         });
 

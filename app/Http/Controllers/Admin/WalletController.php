@@ -49,6 +49,14 @@ class WalletController extends Controller
 
     public function wallet_load(Request $request)
     {
+        $request->validate([
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'year' => ['nullable', 'integer', 'between:2000,2100'],
+            'type' => ['nullable', 'string', 'in:all,credit,debit'],
+            'trans_type' => ['nullable', 'string', 'in:all,credit,debit'],
+            'pay_by' => ['nullable', 'string', 'in:wallet,reward'],
+        ]);
+
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $walletBalance = UserWallet::getAdminWallet($request);
@@ -60,6 +68,14 @@ class WalletController extends Controller
     }
     public function exportWallet(Request $request)
     {
+        $request->validate([
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'year' => ['nullable', 'integer', 'between:2000,2100'],
+            'type' => ['nullable', 'string', 'in:all,credit,debit'],
+            'trans_type' => ['nullable', 'string', 'in:all,credit,debit'],
+            'pay_by' => ['nullable', 'string', 'in:wallet,reward'],
+        ]);
+
         // dd($request->all());
         $data = UserWallet::getAdminWalletExport($request);
         // dd($data->toArray());

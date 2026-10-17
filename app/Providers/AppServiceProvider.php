@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\CustomerOrder;
+use App\Models\PaymentSummary;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Observers\SponsorObserver;
+use App\Observers\TransactionStatusObserver;
 use App\Observers\UserObserver;
 use App\Observers\WalletObserver;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Wallet::observe(WalletObserver::class);
+        Wallet::observe(TransactionStatusObserver::class);
+        CustomerOrder::observe(TransactionStatusObserver::class);
+        PaymentSummary::observe(TransactionStatusObserver::class);
         User::observe(UserObserver::class);
         Sponsor::observe(SponsorObserver::class);       
         // DB::listen(function ($query) {

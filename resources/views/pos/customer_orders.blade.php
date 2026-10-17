@@ -48,6 +48,7 @@
                                     <h2 class="h5 mb-0 fw-bold text-dark">Order #{{ $order->id }}</h2>
                                     <span
                                         class="co-status-badge co-status-{{ strtolower(trim($order->status)) }}">{{ $order->status_label }}</span>
+                                    @include('shared.transaction-status-audit', ['statusChanges' => $order->statusChanges])
                                 </div>
                                 <div class="co-order-meta">
                                     <span><i class="fa fa-user me-1" aria-hidden="true"></i>

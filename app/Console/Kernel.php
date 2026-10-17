@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:verify-pos-dsr-transactions')
-            ->dailyAt('12:00')
+            ->everyMinute()
+            ->when(fn () => now()->hour >= 12)
             ->timezone(config('app.timezone'))
             ->withoutOverlapping();
     }

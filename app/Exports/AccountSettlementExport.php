@@ -37,6 +37,7 @@ class AccountSettlementExport implements FromCollection, WithHeadings, WithStyle
                 $item->pos_credit ?? 0,
                 $item->pos_debit ?? 0,
                 $item->status ?? 'N/A',
+                $item->statusChanges?->first()?->actor_label ?? 'History unavailable',
             ];
         }
         return collect($data);
@@ -54,6 +55,7 @@ class AccountSettlementExport implements FromCollection, WithHeadings, WithStyle
             'Credit',
             'Debit',
             'Status',
+            'Last status change by',
         ];
     }
 

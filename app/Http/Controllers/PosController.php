@@ -239,7 +239,19 @@ class PosController extends Controller
                 ->distinct()
                 ->pluck('transaction_date');
 
-            $updatedRows = Wallet::where('pos_id', $pos->id)->update(['status' => 1]);
+            $updatedRows = 0;
+            Wallet::query()
+                ->where('pos_id', $pos->id)
+                ->whereNotNull('transaction_date')
+                ->pendingDsrVerification()
+                ->orderBy('id')
+                ->chunkById(200, function ($wallets) use (&$updatedRows): void {
+                    foreach ($wallets as $wallet) {
+                        $wallet->status = 1;
+                        $wallet->save();
+                        $updatedRows++;
+                    }
+                });
             $summaryGenerationFailures = $this->generateCompletedPaymentSummaries(
                 (int) $pos->id,
                 $datesToGenerate->all()
@@ -269,8 +281,9 @@ class PosController extends Controller
     public function verifyDsr(Request $request)
     {
         $validated = $request->validate([
-            'wallet_ids' => ['sometimes', 'array'],
-            'wallet_ids.*' => ['integer', 'min:1'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date'],
+            'search' => ['nullable', 'string', 'max:50'],
         ]);
 
         $posId = PosModel::where('user_id', auth()->user()->user_id)->value('id');
@@ -282,15 +295,30 @@ class PosController extends Controller
         }
 
         try {
-            $datesToGenerate = Wallet::query()
-                ->whereIn('id', $validated['wallet_ids'] ?? [])
+            $transactionsQuery = Wallet::query()
                 ->where('pos_id', $posId)
+                ->when(
+                    ! empty($validated['start_date']) && ! empty($validated['end_date']),
+                    fn ($query) => $query->whereBetween('transaction_date', [
+                        Carbon::parse($validated['start_date'])->startOfDay(),
+                        Carbon::parse($validated['end_date'])->endOfDay(),
+                    ]),
+                    fn ($query) => $query->whereDate('transaction_date', now()->toDateString())
+                )
+                ->when(
+                    ! empty($validated['search']),
+                    fn ($query) => $query->where('mobilenumber', 'LIKE', '%' . $validated['search'] . '%')
+                )
                 ->whereNotNull('transaction_date')
+                ->pendingDsrVerification();
+
+            $walletIds = (clone $transactionsQuery)->pluck('id')->all();
+            $datesToGenerate = (clone $transactionsQuery)
                 ->selectRaw('DATE(transaction_date) as transaction_date')
                 ->distinct()
                 ->pluck('transaction_date');
 
-            $count = Wallet::verifyDsr($validated['wallet_ids'] ?? [], (int) $posId);
+            $count = Wallet::verifyDsr($walletIds, (int) $posId);
             $summaryGenerationFailures = $this->generateCompletedPaymentSummaries(
                 (int) $posId,
                 $datesToGenerate->all()

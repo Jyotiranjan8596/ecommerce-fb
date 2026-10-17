@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTransactionStatusChanges;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomerOrder extends Model
 {
     use HasFactory;
+    use HasTransactionStatusChanges;
 
     public const STATUS_PENDING = 'pending';
 

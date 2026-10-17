@@ -84,6 +84,19 @@ class PaymentSummaryGenerationTest extends TestCase
             $table->text('remark')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('transaction_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('subject');
+            $table->string('event_type', 24);
+            $table->text('old_status')->nullable();
+            $table->text('new_status')->nullable();
+            $table->json('changed_fields')->nullable();
+            $table->string('actor_type', 24);
+            $table->unsignedBigInteger('actor_id')->nullable();
+            $table->string('actor_name')->nullable();
+            $table->timestamps();
+        });
     }
 
     protected function tearDown(): void
@@ -294,6 +307,49 @@ class PaymentSummaryGenerationTest extends TestCase
         $this->assertSame(1, Payment::where('remark', 'Auto Submitted')->count());
     }
 
+    public function test_scheduled_verification_catches_up_summary_and_submission_for_all_overdue_dates(): void
+    {
+        $posId = DB::table('pos_systems')->insertGetId([
+            'user_id' => 'POS-A',
+            'name' => 'Alpha POS',
+            'transaction_charge' => 2,
+        ]);
+        DB::table('wallets')->insert([
+            [
+                'pos_id' => $posId,
+                'transaction_date' => '2026-10-13 09:00:00',
+                'status' => 1,
+                'billing_amount' => 100,
+                'amount' => 100,
+                'amount_wallet' => 0,
+                'reward_amount' => 0,
+                'pay_by' => 'cash',
+            ],
+            [
+                'pos_id' => $posId,
+                'transaction_date' => '2026-10-14 09:00:00',
+                'status' => 1,
+                'billing_amount' => 50,
+                'amount' => 50,
+                'amount_wallet' => 0,
+                'reward_amount' => 0,
+                'pay_by' => 'cash',
+            ],
+        ]);
+        \Carbon\Carbon::setTestNow('2026-10-15 12:00:00');
+
+        $this->artisan('app:verify-pos-dsr-transactions')->assertSuccessful();
+
+        $this->assertSame(
+            ['2026-10-13', '2026-10-14'],
+            PaymentSummary::query()->orderBy('date')->pluck('date')->map(
+                fn ($date) => \Carbon\Carbon::parse($date)->toDateString()
+            )->all()
+        );
+        $this->assertSame(2, Payment::where('remark', 'Auto Generated')->count());
+        $this->assertSame(2, Payment::where('remark', 'Auto Submitted')->count());
+    }
+
     public function test_admin_payment_summary_page_lists_saved_summaries_and_filters_by_date_and_pos(): void
     {
         $firstPosId = DB::table('pos_systems')->insertGetId([
@@ -364,6 +420,7 @@ class PaymentSummaryGenerationTest extends TestCase
         $confirmedSummaryId = DB::table('payment_summaries')->insertGetId([
             'pos_id' => $posId,
             'date' => '2026-10-10',
+            'admin_credit' => 3,
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
@@ -389,12 +446,31 @@ class PaymentSummaryGenerationTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        DB::table('payments')->insert([
+            'payment_summury_id' => $confirmedSummaryId,
+            'transaction_date' => '2026-10-10',
+            'voucher_number' => 'STATUS-SUBMITTED',
+            'reference_number' => 'STATUS-REF',
+            'amount' => 3,
+            'to' => '666666',
+            'from' => 'POS-STATUS',
+            'created_by' => 'POS-STATUS',
+            'updated_by' => 'POS-STATUS',
+            'remark' => 'Auto Submitted',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $view = (new PaymentSummaryController())->summaryIndex(new Request());
         $summaries = $view->getData()['summaries']->getCollection()->keyBy('id');
 
         $this->assertTrue((bool) $summaries->get($confirmedSummaryId)->has_generated_payment);
+        $this->assertTrue((bool) $summaries->get($confirmedSummaryId)->has_auto_submitted_payment);
+        $this->assertEquals(3, (float) $summaries->get($confirmedSummaryId)->auto_submitted_amount);
+        $this->assertEquals(3, (float) $summaries->get($confirmedSummaryId)->pos_payment_amount);
         $this->assertFalse((bool) $summaries->get($pendingSummaryId)->has_generated_payment);
+        $this->assertFalse((bool) $summaries->get($pendingSummaryId)->has_auto_submitted_payment);
+        $this->assertEquals(0, (float) $summaries->get($pendingSummaryId)->auto_submitted_amount);
         $this->assertSame('pending', $summaries->get($confirmedSummaryId)->status);
         $this->assertSame('approved', $summaries->get($pendingSummaryId)->status);
     }

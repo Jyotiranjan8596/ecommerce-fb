@@ -33,6 +33,8 @@ class DsrTransactionExport implements FromCollection, WithHeadings
                 $transaction->transaction_date
                     ? Carbon::parse($transaction->transaction_date)->format('d/m/Y')
                     : '—',
+                $transaction->status == 1 ? 'Verified' : 'Unverified',
+                $transaction->statusChanges->first()?->actor_label ?? 'History unavailable',
             ];
         });
     }
@@ -52,6 +54,8 @@ class DsrTransactionExport implements FromCollection, WithHeadings
             'Remaining Wallet',
             'Remaining Reward',
             'Transaction Date',
+            'Status',
+            'Last status change by',
         ];
     }
 }

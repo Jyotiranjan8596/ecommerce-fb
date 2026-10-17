@@ -32,6 +32,7 @@
                                 <span class="badge text-bg-{{ $order->status === \App\Models\CustomerOrder::STATUS_DELIVERED ? 'success' : ($order->status === \App\Models\CustomerOrder::STATUS_PENDING ? 'warning' : 'primary') }}">
                                     {{ $order->status_label }}
                                 </span>
+                                @include('shared.transaction-status-audit', ['statusChanges' => $order->statusChanges])
                             </div>
 
                             @if ($order->items)

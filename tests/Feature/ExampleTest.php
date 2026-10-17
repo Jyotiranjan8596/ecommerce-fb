@@ -14,6 +14,13 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('id="collapseOne" class="accordion-collapse collapse"', false)
+            ->assertSee('data-bs-target="#collapseOne" aria-expanded="false"', false)
+            ->assertSee('data-bs-target="#collapseTwo" aria-expanded="false"', false)
+            ->assertSee('data-bs-target="#collapseThree" aria-expanded="false"', false)
+            ->assertSee('data-bs-target="#collapseFour"', false)
+            ->assertDontSee('freebazar-about-menu', false)
+            ->assertDontSee('openAboutSection', false);
     }
 }

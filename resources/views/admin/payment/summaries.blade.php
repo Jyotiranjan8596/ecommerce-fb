@@ -68,9 +68,9 @@
                             <th scope="col" class="text-end">Admin credit</th>
                             <th scope="col" class="text-end">Admin debit</th>
                             <th scope="col">Reference</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">Automation status</th>
                             <th scope="col">Saved at</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">Settlement</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,19 +88,34 @@
                                 <td class="text-end">₹{{ number_format((float) $summary->admin_credit, 2) }}</td>
                                 <td class="text-end">₹{{ number_format((float) $summary->admin_debit, 2) }}</td>
                                 <td>{{ $summary->reference_number ?: '—' }}</td>
-                                <td>
-                                    <span class="badge {{ $summary->has_generated_payment ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $summary->has_generated_payment ? 'Confirmed' : 'Pending' }}
-                                    </span>
+                                <td class="text-nowrap">
+                                    <div class="d-flex flex-column align-items-start gap-1">
+                                        <span class="badge {{ $summary->has_generated_payment ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $summary->has_generated_payment ? 'Summary generated' : 'Summary not generated' }}
+                                        </span>
+                                        @if ((float) $summary->admin_credit <= 0)
+                                            <span class="badge bg-light text-dark border">No POS payment due</span>
+                                        @elseif ((float) $summary->pos_payment_amount >= (float) $summary->admin_credit)
+                                            <span class="badge {{ $summary->has_auto_submitted_payment ? 'bg-success' : 'bg-info text-dark' }}">
+                                                {{ $summary->has_auto_submitted_payment ? 'POS payment auto-submitted' : 'POS payment recorded' }}
+                                            </span>
+                                        @elseif ((float) $summary->auto_submitted_amount > 0)
+                                            <span class="badge bg-warning text-dark">
+                                                Auto-submitted ₹{{ number_format((float) $summary->auto_submitted_amount, 2) }} of ₹{{ number_format((float) $summary->admin_credit, 2) }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary">POS payment pending</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>{{ $summary->created_at?->format('d-m-Y H:i') ?? '—' }}</td>
                                 <td>
                                     @if ($summary->status === 'pending' && $summary->pos_system)
                                         <form method="POST" action="{{ route('admin.payment-summaries.settle', $summary->id) }}"
-                                            onsubmit="return confirm('Settle this summary and post the payable amount to the POS account ledger?');">
+                                            onsubmit="return confirm('Confirm settlement and post any payable amount to the POS account ledger?');">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-warning fw-semibold">
-                                                Pending
+                                                Review &amp; settle
                                             </button>
                                         </form>
                                     @elseif ($summary->status === 'pending')
@@ -113,6 +128,7 @@
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
+                                    @include('shared.transaction-status-audit', ['statusChanges' => $summary->statusChanges])
                                 </td>
                             </tr>
                         @empty
