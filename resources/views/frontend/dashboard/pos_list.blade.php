@@ -273,11 +273,18 @@
         }
 
         .pos-directory .pos-directory-table-wrap {
+            max-height: min(65vh, 560px);
+            max-height: min(65dvh, 560px);
             border: 1px solid #dfeaf2;
             border-radius: 1rem;
             background: #fff;
             box-shadow: 0 0.75rem 1.5rem rgba(17, 24, 39, 0.04);
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-color: #94a3b8 #f1f5f9;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
         }
 
         .pos-directory .pos-directory-table {
@@ -287,6 +294,9 @@
         }
 
         .pos-directory .pos-directory-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
             padding: 1rem 1rem;
             border-bottom: 1px solid #dfe9f1;
             background: linear-gradient(180deg, #f6fbfb 0%, #eef8f8 100%);
@@ -408,7 +418,8 @@
             }
 
             .pos-directory .pos-directory-table-wrap {
-                overflow: visible;
+                overflow-x: hidden;
+                overflow-y: auto;
                 border: 0;
                 box-shadow: none;
                 background: transparent;

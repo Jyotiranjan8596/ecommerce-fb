@@ -86,7 +86,7 @@
                             <label class="form-label mb-1" for="year">Year</label>
                             <select name="year" id="year" class="form-select">
                                 <option value="">Year</option>
-                                @foreach (range(now()->year, 2020) as $y)
+                                @foreach (range(now()->year, 2000) as $y)
                                     <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
                                         {{ $y }}
                                     </option>
@@ -172,17 +172,22 @@
             $('#month').on('change', function() {
                 $('#hidden_month').val(this.value);
             });
+            $('#hidden_month').val($('#month').val());
 
             $('#year').on('change', function() {
                 $('#hidden_year').val(this.value);
             });
+            $('#hidden_year').val($('#year').val());
+
             $('#trans_type').on('change', function() {
                 $('#hidden_trans_type').val(this.value);
             });
+            $('#hidden_trans_type').val($('#trans_type').val());
 
             $('#pay_by').on('change', function() {
                 $('#hidden_pay_by').val(this.value);
             });
+            $('#hidden_pay_by').val($('#pay_by').val());
 
             function walletLoad(page = 1, formElement, append = false) {
 

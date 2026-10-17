@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PosModel;
+use App\Models\TransactionStatusChange;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
@@ -31,11 +33,14 @@ class DsrSummaryController extends Controller
             });
         }
 
+        $summaries = $query->paginate(25)->withQueryString()->through(
+            fn (object $summary) => $this->calculateSettlementAmounts($summary)
+        );
+        $this->attachLatestTransactionStatusActors($summaries->getCollection());
+
         return view('shared.dsr-summary-history', [
             'layout' => 'layouts.master',
-            'summaries' => $query->paginate(25)->withQueryString()->through(
-                fn (object $summary) => $this->calculateSettlementAmounts($summary)
-            ),
+            'summaries' => $summaries,
             'posList' => PosModel::orderBy('name')->get(['id', 'name', 'user_id', 'mobilenumber']),
             'selectedPosSearch' => $filters['pos_search'] ?? '',
             'selectedDate' => $filters['date'] ?? '',
@@ -56,11 +61,14 @@ class DsrSummaryController extends Controller
             $query->whereDate('wallets.transaction_date', $filters['date']);
         }
 
+        $summaries = $query->paginate(25)->withQueryString()->through(
+            fn (object $summary) => $this->calculateSettlementAmounts($summary)
+        );
+        $this->attachLatestTransactionStatusActors($summaries->getCollection());
+
         return view('shared.dsr-summary-history', [
             'layout' => 'pos.layouts.master',
-            'summaries' => $query->paginate(25)->withQueryString()->through(
-                fn (object $summary) => $this->calculateSettlementAmounts($summary)
-            ),
+            'summaries' => $summaries,
             'posList' => collect([$pos]),
             'selectedPosId' => $pos->id,
             'selectedDate' => $filters['date'] ?? '',
@@ -70,20 +78,27 @@ class DsrSummaryController extends Controller
 
     private function dailySalesSummaryQuery(): Builder
     {
-        $generatedSummaries = DB::table('payment_summaries')
+        $paymentToColumn = DB::getQueryGrammar()->wrap('payments.to');
+        $summaryActivity = DB::table('payment_summaries')
             ->join('payments', 'payments.payment_summury_id', '=', 'payment_summaries.id')
-            ->where('payments.remark', 'Auto Generated')
-            ->select('payment_summaries.pos_id', 'payment_summaries.date')
+            ->select([
+                'payment_summaries.pos_id',
+                'payment_summaries.date',
+            ])
+            ->selectRaw("MAX(CASE WHEN payments.remark = 'Auto Generated' THEN 1 ELSE 0 END) as has_generated_payment")
+            ->selectRaw("SUM(CASE WHEN payments.remark = 'Auto Submitted' THEN payments.amount ELSE 0 END) as auto_submitted_amount")
+            ->selectRaw("SUM(CASE WHEN (payments.remark IS NULL OR payments.remark != 'Auto Generated') AND {$paymentToColumn} = '666666' THEN payments.amount ELSE 0 END) as pos_payment_amount")
+            ->selectRaw("MAX(CASE WHEN payment_summaries.status = 'approved' THEN 1 ELSE 0 END) as is_settled")
+            ->selectRaw('MAX(payment_summaries.admin_credit) as admin_credit')
             ->groupBy('payment_summaries.pos_id', 'payment_summaries.date');
 
         return DB::table('wallets')
             ->join('pos_systems', 'pos_systems.id', '=', 'wallets.pos_id')
-            ->leftJoinSub($generatedSummaries, 'generated_summaries', function ($join) {
-                $join->on('generated_summaries.pos_id', '=', 'wallets.pos_id')
-                    ->whereRaw('generated_summaries.date = DATE(wallets.transaction_date)');
+            ->leftJoinSub($summaryActivity, 'summary_activity', function ($join) {
+                $join->on('summary_activity.pos_id', '=', 'wallets.pos_id')
+                    ->whereRaw('summary_activity.date = DATE(wallets.transaction_date)');
             })
             ->whereNotNull('wallets.transaction_date')
-            ->where('wallets.status', 1)
             ->selectRaw('DATE(wallets.transaction_date) as date')
             ->addSelect([
                 'pos_systems.id as pos_id',
@@ -91,21 +106,25 @@ class DsrSummaryController extends Controller
                 'pos_systems.user_id as pos_user_id',
                 'pos_systems.mobilenumber as pos_mobile',
                 'pos_systems.transaction_charge',
+                'summary_activity.has_generated_payment',
+                'summary_activity.auto_submitted_amount',
+                'summary_activity.pos_payment_amount',
+                'summary_activity.is_settled',
+                'summary_activity.admin_credit',
             ])
-            ->selectRaw('COUNT(wallets.id) as total_transaction')
-            ->selectRaw('COALESCE(SUM(wallets.billing_amount), 0) as total_billing_amount')
-            ->selectRaw('COALESCE(SUM(wallets.amount), 0) as by_cash')
+            ->selectRaw('COUNT(wallets.id) as all_transaction_count')
+            ->selectRaw('SUM(CASE WHEN wallets.status = 1 THEN 1 ELSE 0 END) as total_transaction')
+            ->selectRaw('SUM(CASE WHEN wallets.status = 1 THEN 0 ELSE 1 END) as pending_transaction_count')
+            ->selectRaw('COALESCE(SUM(CASE WHEN wallets.status = 1 THEN wallets.billing_amount ELSE 0 END), 0) as total_billing_amount')
+            ->selectRaw('COALESCE(SUM(CASE WHEN wallets.status = 1 THEN wallets.amount ELSE 0 END), 0) as by_cash')
             ->selectRaw(
-                "COALESCE(SUM(CASE WHEN wallets.pay_by = 'wallet' THEN wallets.amount_wallet ELSE 0 END), 0) as by_wallet"
+                "COALESCE(SUM(CASE WHEN wallets.status = 1 AND wallets.pay_by = 'wallet' THEN wallets.amount_wallet ELSE 0 END), 0) as by_wallet"
             )
             ->selectRaw(
-                "COALESCE(SUM(CASE WHEN wallets.pay_by = 'reward' THEN wallets.reward_amount ELSE 0 END), 0) as by_reward"
-            )
-            ->selectRaw(
-                'MAX(CASE WHEN generated_summaries.pos_id IS NULL THEN 0 ELSE 1 END) as has_generated_payment'
+                "COALESCE(SUM(CASE WHEN wallets.status = 1 AND wallets.pay_by = 'reward' THEN wallets.reward_amount ELSE 0 END), 0) as by_reward"
             )
             ->groupByRaw(
-                'DATE(wallets.transaction_date), wallets.pos_id, pos_systems.id, pos_systems.name, pos_systems.user_id, pos_systems.mobilenumber, pos_systems.transaction_charge'
+                'DATE(wallets.transaction_date), wallets.pos_id, pos_systems.id, pos_systems.name, pos_systems.user_id, pos_systems.mobilenumber, pos_systems.transaction_charge, summary_activity.has_generated_payment, summary_activity.auto_submitted_amount, summary_activity.pos_payment_amount, summary_activity.is_settled, summary_activity.admin_credit'
             )
             ->orderByDesc('date')
             ->orderByDesc('pos_systems.name')
@@ -123,5 +142,60 @@ class DsrSummaryController extends Controller
         $summary->has_generated_payment = (bool) $summary->has_generated_payment;
 
         return $summary;
+    }
+
+    private function attachLatestTransactionStatusActors($summaries): void
+    {
+        if ($summaries->isEmpty()) {
+            return;
+        }
+
+        $latestIds = DB::table('transaction_status_changes as history')
+            ->join('wallets', function ($join) {
+                $join->on('wallets.id', '=', 'history.subject_id')
+                    ->where('history.subject_type', Wallet::class);
+            })
+            ->whereIn('history.event_type', ['created', 'status_changed'])
+            ->where(function (Builder $query) use ($summaries) {
+                foreach ($summaries as $summary) {
+                    $query->orWhere(function (Builder $pair) use ($summary) {
+                        $pair->where('wallets.pos_id', $summary->pos_id)
+                            ->whereDate('wallets.transaction_date', $summary->date);
+                    });
+                }
+            })
+            ->selectRaw('MAX(history.id) as id')
+            ->groupBy('wallets.pos_id')
+            ->groupByRaw('DATE(wallets.transaction_date)');
+
+        $changes = DB::table('transaction_status_changes as changes')
+            ->joinSub($latestIds, 'latest', fn ($join) => $join->on('latest.id', '=', 'changes.id'))
+            ->join('wallets', function ($join) {
+                $join->on('wallets.id', '=', 'changes.subject_id')
+                    ->where('changes.subject_type', Wallet::class);
+            })
+            ->select([
+                'wallets.pos_id',
+                'changes.actor_type',
+                'changes.actor_name',
+                'changes.created_at',
+            ])
+            ->selectRaw('DATE(wallets.transaction_date) as transaction_date')
+            ->get()
+            ->keyBy(fn ($change) => $change->pos_id . '|' . $change->transaction_date);
+
+        foreach ($summaries as $summary) {
+            $change = $changes->get($summary->pos_id . '|' . $summary->date);
+            $summary->latest_transaction_status_actor = $change
+                ? match ($change->actor_type) {
+                    'admin' => 'Admin',
+                    'pos' => 'POS',
+                    'customer' => 'Customer',
+                    'system' => 'Automatic system',
+                    default => 'User',
+                } . ($change->actor_name ? ' (' . $change->actor_name . ')' : '')
+                : null;
+            $summary->latest_transaction_status_at = $change?->created_at;
+        }
     }
 }

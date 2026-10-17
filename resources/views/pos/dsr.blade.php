@@ -132,6 +132,7 @@
                                                 <i class="fa fa-check-circle me-1" aria-hidden="true"></i> Verified
                                             </a>
                                         @endif
+                                        @include('shared.transaction-status-audit', ['statusChanges' => $data->statusChanges])
                                     </td>
                                 </tr>
                             @empty
@@ -655,7 +656,9 @@
                             type: "POST",
                             data: {
                                 _token: "{{ csrf_token() }}",
-                                wallet_ids: @json($wallets->pluck('id'))
+                                start_date: @json(request('start_date') ?? now()->toDateString()),
+                                end_date: @json(request('end_date') ?? now()->toDateString()),
+                                search: @json(request('search') ?? '')
                             },
                             success: function(response) {
                                 if (response.success) {

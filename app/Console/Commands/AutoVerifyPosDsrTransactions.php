@@ -27,27 +27,42 @@ class AutoVerifyPosDsrTransactions extends Command
         }
 
         $verifiedCount = 0;
+        $verificationFailures = [];
         $cutoff = $now->copy()->startOfDay();
-        $nextDayDate = $now->copy()->subDay()->toDateString();
 
         Wallet::query()
             ->whereNotNull('transaction_date')
             ->where('transaction_date', '<', $cutoff)
             ->pendingDsrVerification()
             ->orderBy('id')
-            ->chunkById(200, function ($wallets) use (&$verifiedCount): void {
+            ->chunkById(200, function ($wallets) use (&$verifiedCount, &$verificationFailures): void {
                 foreach ($wallets as $wallet) {
-                    $wallet->status = 1;
-                    $wallet->save();
-                    $verifiedCount++;
+                    try {
+                        $wallet->status = 1;
+                        $wallet->save();
+                        $verifiedCount++;
+                    } catch (\Throwable $e) {
+                        report($e);
+                        Log::error('Scheduled POS transaction verification failed.', [
+                            'wallet_id' => $wallet->id,
+                            'message' => $e->getMessage(),
+                        ]);
+                        $verificationFailures[] = (string) $wallet->id;
+                    }
                 }
             });
 
         $dailyGroups = Wallet::query()
             ->whereNotNull('transaction_date')
-            ->whereDate('transaction_date', $nextDayDate)
             ->where('transaction_date', '<', $cutoff)
             ->where('status', 1)
+            ->whereNotExists(function ($query) {
+                $query->selectRaw('1')
+                    ->from('payment_summaries')
+                    ->whereColumn('payment_summaries.pos_id', 'wallets.pos_id')
+                    ->whereRaw('DATE(payment_summaries.date) = DATE(wallets.transaction_date)')
+                    ->where('payment_summaries.status', '!=', 'pending');
+            })
             ->selectRaw('pos_id, DATE(transaction_date) as transaction_date')
             ->groupBy('pos_id')
             ->groupByRaw('DATE(transaction_date)')
@@ -112,6 +127,9 @@ class AutoVerifyPosDsrTransactions extends Command
 
         $this->info("Automatically verified {$verifiedCount} pending POS transactions.");
         $this->info("Automatically submitted {$submissionCount} POS payments.");
+        if ($verificationFailures !== []) {
+            $this->error('POS transactions could not be verified: ' . implode(', ', $verificationFailures));
+        }
         if ($generationFailures !== []) {
             $this->error('Payment summaries could not be generated for: ' . implode(', ', $generationFailures));
         }
@@ -119,6 +137,8 @@ class AutoVerifyPosDsrTransactions extends Command
             $this->error('POS payments could not be submitted for: ' . implode(', ', $submissionFailures));
         }
 
-        return self::SUCCESS;
+        return $verificationFailures === [] && $generationFailures === [] && $submissionFailures === []
+            ? self::SUCCESS
+            : self::FAILURE;
     }
 }

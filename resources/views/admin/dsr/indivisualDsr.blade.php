@@ -86,6 +86,7 @@
                         <th>Remaining Wallet</th>
                         <th>Remaining Reward</th>
                         <th>TRANSACTION DATE</th>
+                        <th>Status / change history</th>
                         <th>Action</th>
                         {{-- <th>INSERT DATE</th> --}}
                     </tr>
@@ -93,7 +94,7 @@
                 <tbody>
                     @if ($wallets->isEmpty())
                         <tr>
-                            <td colspan="8" class="text-center text-danger" style="font-size:22px;">No Data Available
+                            <td colspan="14" class="text-center text-danger" style="font-size:22px;">No Data Available
                             </td>
                         </tr>
                     @else
@@ -113,6 +114,14 @@
                                 <td>₹{{ $data->userWallets[0]->used_amount ?? 0 }}/-</td>
                                 <td>₹{{ $data->userWallets[0]->remaining_points ?? 0 }}/-</td>
                                 <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
+                                <td>
+                                    @if ($data->status == null || $data->status == 0)
+                                        Unverified
+                                    @else
+                                        Verified
+                                    @endif
+                                    @include('shared.transaction-status-audit', ['statusChanges' => $data->statusChanges])
+                                </td>
                                 {{-- <td>{{ date('d-m-Y h:i A', strtotime($data->insert_date)) }}</td> --}}
                                 <td>
                                     {{-- <a href="" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal">Edit</a> --}}

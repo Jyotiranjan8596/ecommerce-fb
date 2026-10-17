@@ -34,7 +34,7 @@ class UserDashboardController extends Controller
             ->latest()
             ->limit(5)
             ->get();
-        $transactionQuery = Wallet::where('user_id', $userId)->with('userWallets');
+        $transactionQuery = Wallet::where('user_id', $userId)->with(['userWallets', 'statusChanges']);
 
         $month = Carbon::now()->month;
         $year  = Carbon::now()->year;

@@ -379,7 +379,7 @@
                                 <td class="text-end">${amount(item.by_reward)}</td>
                                 <td class="text-end">${amount(item.pos_credit)}</td>
                                 <td class="text-end">${amount(item.pos_debit)}</td>
-                                <td>${escapeHtml(item.status)}</td>
+                                <td>${escapeHtml(item.status)}<small class="d-block text-muted">Changed by ${escapeHtml(item.status_actor || 'History unavailable')}</small></td>
                             </tr>`;
                         }).join('');
                         $('#pos-payment-summary-tbody').html(html);
@@ -412,7 +412,7 @@
                                 <td class="text-end">₹${Number(item.by_reward || 0).toFixed(2)}</td>
                                 <td class="text-end">₹${Number(item.pos_credit || 0).toFixed(2)}</td>
                                 <td class="text-end">₹${Number(item.pos_debit || 0).toFixed(2)}</td>
-                                <td>${escapeHtml(item.status)}</td>
+                                <td>${escapeHtml(item.status)}<small class="d-block text-muted">Changed by ${escapeHtml(item.status_actor || 'History unavailable')}</small></td>
                             </tr>`).join(''));
                         } else {
                             $('#pos-payment-summary-tbody').html('<tr><td colspan="9" class="text-center text-danger">Summary generation failed.</td></tr>');

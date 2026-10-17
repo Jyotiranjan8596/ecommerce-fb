@@ -265,6 +265,7 @@
 
     <script>
         $(document).ready(function() {
+            const escapeHtml = value => $('<div>').text(value ?? '').html();
             const scrollList = window.FreebazarScrollList.mount(
                 document.getElementById('pagination-container'),
                 function(page) {
@@ -301,8 +302,13 @@
 
                         if (response.data.data.length > 0) {
                             response.data.data.forEach(function(item) {
+                        const auditHistory = (item.status_audit ?? []).map(change =>
+                            `<div>${escapeHtml(change.description)} by ${escapeHtml(change.actor)} · ${escapeHtml(change.at)}</div>`
+                        ).join('');
+                        const auditSummary = auditHistory ||
+                            '<div class="text-muted small">Actor history unavailable for this older record.</div>';
 
-                                rows += `
+                        rows += `
                                         <tr>
                                             <td>${index++}</td>
                                             <td>${item.user_name ?? ''}</td>
@@ -327,7 +333,10 @@
                                                     Delete
                                                 </button>
                                             </td>
-                                            <td><span class="badge ${item.status_label === 'Verified' ? 'bg-success' : 'bg-warning text-dark'}">${item.status_label}</span></td>
+                                            <td>
+                                                <span class="badge ${item.status_label === 'Verified' ? 'bg-success' : 'bg-warning text-dark'}">${escapeHtml(item.status_label)}</span>
+                                                <div class="small text-muted mt-1">${auditSummary}</div>
+                                            </td>
                                         </tr>
                                     `;
                             });

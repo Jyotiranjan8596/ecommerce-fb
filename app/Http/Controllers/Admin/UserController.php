@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Imports\MasterUsersImport;
 use App\Models\Sponsor;
 use App\Models\User;
+use App\Models\UserWallet;
+use App\Models\Wallet;
 use App\Services\AiSensyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -81,6 +83,25 @@ class UserController extends Controller
             ->paginate(15);
 
         return view('admin.users.referrals', compact('user', 'referrals'));
+    }
+
+    public function transactions(User $user)
+    {
+        abort_unless((int) $user->role === 3, Response::HTTP_NOT_FOUND);
+
+        $salesTransactions = Wallet::query()
+            ->with('getPos:id,name')
+            ->where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->paginate(25, ['*'], 'sales_page');
+
+        $walletTransactions = UserWallet::query()
+            ->with('getPos:id,name')
+            ->where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->paginate(25, ['*'], 'wallet_page');
+
+        return view('admin.users.transactions', compact('user', 'salesTransactions', 'walletTransactions'));
     }
 
     /**

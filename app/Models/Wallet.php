@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Concerns\HasTransactionStatusChanges;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class Wallet extends Model
 {
     use HasFactory;
+    use HasTransactionStatusChanges;
 
     public $timestamps = false;
 
@@ -64,7 +65,6 @@ class Wallet extends Model
 
     public static function verifyDsr(array $walletIds, int $posId): int
     {
-        $now = now();
         $wallets = self::query()
             ->whereIn('id', $walletIds)
             ->where('pos_id', $posId)
@@ -74,15 +74,6 @@ class Wallet extends Model
         $count = 0;
 
         foreach ($wallets as $wallet) {
-            $verificationDeadline = Carbon::parse($wallet->transaction_date)
-                ->startOfDay()
-                ->addDay()
-                ->setTime(12, 0);
-
-            if ($now->greaterThanOrEqualTo($verificationDeadline)) {
-                continue;
-            }
-
             $wallet->status = 1;
             $wallet->save();
             $count++;
@@ -98,7 +89,7 @@ class Wallet extends Model
     public static function getAllTransactions($req)
     {
         try {
-            $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
+            $transQuery = self::with(['userWallets', 'user', 'getPos:id,name', 'statusChanges'])->orderBy('id', 'desc');
 
             if ($req->filled('transaction_date')) {
                 $transQuery->whereDate('transaction_date', $req->transaction_date);
@@ -131,6 +122,12 @@ class Wallet extends Model
                 $item->pos_name = $item->getPos ? $item->getPos->name : "NA";
                 $item->trans_date = $item->transaction_date ? date('d-m-Y', strtotime($item->transaction_date)) : 'Na';
                 $item->status_label = (int) $item->status === 1 ? 'Verified' : 'Pending';
+                $item->status_audit = $item->statusChanges->map(fn (TransactionStatusChange $change) => [
+                    'description' => $change->description,
+                    'actor' => $change->actor_label,
+                    'at' => $change->created_at?->format('d-m-Y h:i A'),
+                ])->values();
+
                 return $item;
             });
         } catch (\Exception $e) {
@@ -141,7 +138,7 @@ class Wallet extends Model
     public static function export_user_transaction($req)
     {
         try {
-            $transQuery = self::with(['userWallets', 'user', 'getPos:id,name'])->orderBy('id', 'desc');
+            $transQuery = self::with(['userWallets', 'user', 'getPos:id,name', 'statusChanges'])->orderBy('id', 'desc');
 
             if ($req->filled('transaction_date')) {
                 $transQuery->whereDate('transaction_date', $req->transaction_date);
@@ -174,6 +171,7 @@ class Wallet extends Model
                 $item->pos_name = $item->getPos ? $item->getPos->name : "NA";
                 $item->trans_date = $item->transaction_date ? date('d-m-Y', strtotime($item->transaction_date)) : 'Na';
                 $item->status_label = (int) $item->status === 1 ? 'Verified' : 'Pending';
+                $item->status_actor = $item->statusChanges->first()?->actor_label ?? 'History unavailable';
                 return $item;
             });
         } catch (\Exception $e) {
@@ -183,18 +181,26 @@ class Wallet extends Model
 
     public static function export_user_transaction_of_pos($date, $id)
     {
-        $query =  Wallet::where('pos_id', $id)->with('user', 'userWallets')->whereDate('transaction_date', $date);
-        $wallets = $query->with('user', 'getPos')->orderBy('id', 'desc')->get()->map(function ($item) {
+        $query = Wallet::where('pos_id', $id)
+            ->with('user', 'getPos', 'userWallets', 'statusChanges')
+            ->whereDate('transaction_date', $date);
+        $wallets = $query->orderBy('id', 'desc')->get()->map(function ($item) {
             return [
-                'pos_id' => $item?->getPos?->user_id ?? 'NA',
                 'invoice' => $item?->invoice,
+                'pos_id' => $item?->getPos?->user_id ?? 'NA',
+                'mobile' => $item?->mobilenumber ?? 'NA',
+                'name' => $item?->user?->name ?? 'NA',
                 'billing_amount' => $item?->billing_amount ?? 'NA',
                 'wallet_deduct' => $item?->amount_wallet ?? 'NA',
                 'reward_deduct' => $item?->userWallets[0]?->used_points ?? 'NA',
                 'net_pay' => $item?->amount ?? 'NA',
                 'remaining_amount' => round($item?->userWallets[0]?->remaining_amount),
                 'remaining_reward' => round($item?->userWallets[0]?->remaining_points),
-                'status' => 'Varified'
+                'transaction_date' => $item?->transaction_date
+                    ? date('d-m-Y', strtotime($item->transaction_date))
+                    : 'NA',
+                'status' => (int) $item->status === 1 ? 'Verified' : 'Unverified',
+                'status_actor' => $item->statusChanges->first()?->actor_label ?? 'History unavailable',
             ];
         });
         return $wallets;

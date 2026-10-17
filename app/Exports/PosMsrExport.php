@@ -28,6 +28,7 @@ class PosMsrExport implements FromCollection, WithHeadings
                 $item->credit ?? 0,
                 $item->debit ?? 0,
                 $item->status,
+                'Automatic system (calculated)',
             ];
         });
     }
@@ -39,7 +40,8 @@ class PosMsrExport implements FromCollection, WithHeadings
             'Total Transactions',
             'Credit',
             'Debit',
-            'Status'
+            'Status',
+            'Status calculated by',
         ];
     }
 }

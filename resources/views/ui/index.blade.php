@@ -425,13 +425,13 @@ Our profit-sharing model based on two golden rules: "Spend More to Save More & H
         <div class="accordion" id="accordionExample">
             <div class="accordion-item" style="border: 1px solid #757575;" id="aboutus">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne"
                         style="color: black; font-weight: bold;">
                         About Us
                     </button>
                 </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body" style="color: black; background: rgb(226, 226, 226); text-align: justify; line-height: 1.8;">
                         <p><strong>FreeBazar — A Mutual Savings Revolution</strong><br>
                             <strong>A Free Commerce Initiative by Satshree Marketing Pvt. Ltd.</strong><br>
@@ -611,8 +611,8 @@ Our profit-sharing model based on two golden rules: "Spend More to Save More & H
                         </p>
 
                         <p><strong>Why Is It Your Legacy?</strong><br>
-                            Your savings community can grow as your friends introduce others to FreeBazar. Like a banyan
-                            tree, your network can expand across generations, creating opportunities for continued community
+                            Your savings community can grow as your friends introduce others to FreeBazar.
+                            Your referral family can expand across generations, creating opportunities for continued community
                             shopping rewards.
                         </p>
 

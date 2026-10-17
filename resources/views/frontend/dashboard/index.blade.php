@@ -549,11 +549,12 @@
                                                 <td>₹{{ number_format((float) ($data->userWallets->first()?->used_points ?? 0), 2) }}</td>
                                                 <td>₹{{ number_format((float) ($data->amount ?? 0), 2) }}</td>
                                                 <td>
-                                                    @if ($data->status == 0)
+                                                    @if ($data->status == null || $data->status == 0)
                                                         <span class="transaction-status transaction-status--pending">Unverified</span>
                                                     @else
                                                         <span class="transaction-status transaction-status--verified">Verified</span>
                                                     @endif
+                                                    @include('shared.transaction-status-audit', ['statusChanges' => $data->statusChanges])
                                                 </td>
                                             </tr>
                                         @empty

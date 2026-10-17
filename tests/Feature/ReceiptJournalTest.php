@@ -81,6 +81,19 @@ class ReceiptJournalTest extends TestCase
             $table->string('updated_by')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('transaction_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('subject');
+            $table->string('event_type', 24);
+            $table->text('old_status')->nullable();
+            $table->text('new_status')->nullable();
+            $table->json('changed_fields')->nullable();
+            $table->string('actor_type', 24);
+            $table->unsignedBigInteger('actor_id')->nullable();
+            $table->string('actor_name')->nullable();
+            $table->timestamps();
+        });
     }
 
     public function test_receipt_is_saved_as_funds_received_from_selected_pos(): void

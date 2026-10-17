@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\Helper;
 use App\Helpers\NumberToWordsHelper;
+use App\Models\Concerns\HasTransactionStatusChanges;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class PaymentSummary extends Model
 {
     use HasFactory;
+    use HasTransactionStatusChanges;
     protected $fillable = [
         'pos_id',
         'date',
@@ -163,7 +165,7 @@ class PaymentSummary extends Model
     {
         $user_id = auth()->user()->user_id;
         $pos_id = Helper::get_pos_id($user_id);
-        $resp = self::where('pos_id', $pos_id)->orderBy('id', 'desc')->get()->map(function ($item) {
+        $resp = self::with('statusChanges')->where('pos_id', $pos_id)->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->intiate_date = Carbon::parse($item->date)->format('d-m-Y');
             return $item;
         });
@@ -172,7 +174,7 @@ class PaymentSummary extends Model
 
     public static function fetch_summary_admin()
     {
-        $resp = self::with('pos_system')->orderBy('id', 'desc')->get()->map(function ($item) {
+        $resp = self::with(['pos_system', 'statusChanges'])->orderBy('id', 'desc')->get()->map(function ($item) {
             $item->intiate_date = Carbon::parse($item->date)->format('d-m-Y');
             return $item;
         });

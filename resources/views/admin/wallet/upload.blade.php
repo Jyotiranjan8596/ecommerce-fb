@@ -55,6 +55,9 @@
                     <p class="small text-muted mt-2 mb-0">
                         Keep the headings in the first row and use this order.
                     </p>
+                    <p class="small text-muted mt-2 mb-0">
+                        Enter transaction dates as <code>DD-MM-YY</code>, for example <code>01-06-26</code>.
+                    </p>
                 </div>
             </div>
         </section>

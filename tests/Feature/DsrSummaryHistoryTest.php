@@ -54,6 +54,7 @@ class DsrSummaryHistoryTest extends TestCase
             $table->decimal('by_reward', 12, 2)->default(0);
             $table->decimal('pos_credit', 12, 2)->default(0);
             $table->decimal('pos_debit', 12, 2)->default(0);
+            $table->decimal('admin_credit', 12, 2)->default(0);
             $table->string('status')->default('pending');
         });
 
@@ -61,6 +62,21 @@ class DsrSummaryHistoryTest extends TestCase
             $table->id();
             $table->unsignedBigInteger('payment_summury_id')->nullable();
             $table->string('remark')->nullable();
+            $table->decimal('amount', 12, 2)->default(0);
+            $table->string('to')->nullable();
+        });
+
+        Schema::create('transaction_status_changes', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('subject');
+            $table->string('event_type', 24);
+            $table->text('old_status')->nullable();
+            $table->text('new_status')->nullable();
+            $table->json('changed_fields')->nullable();
+            $table->string('actor_type', 24);
+            $table->unsignedBigInteger('actor_id')->nullable();
+            $table->string('actor_name')->nullable();
+            $table->timestamps();
         });
 
         DB::table('pos_systems')->insert([
@@ -73,9 +89,10 @@ class DsrSummaryHistoryTest extends TestCase
             ['id' => 2, 'pos_id' => 2, 'date' => '2026-10-10', 'total_transaction' => 1, 'total_billing_amount' => 200],
             ['id' => 3, 'pos_id' => 1, 'date' => '2026-10-11', 'total_transaction' => 3, 'total_billing_amount' => 300],
         ]);
+        DB::table('payment_summaries')->where('id', 1)->update(['admin_credit' => 2]);
         DB::table('payments')->insert([
-            'payment_summury_id' => 1,
-            'remark' => 'Auto Generated',
+            ['payment_summury_id' => 1, 'remark' => 'Auto Generated', 'amount' => 0, 'to' => null],
+            ['payment_summury_id' => 1, 'remark' => 'Auto Submitted', 'amount' => 2, 'to' => '666666'],
         ]);
         DB::table('wallets')->insert([
             ['pos_id' => 1, 'transaction_date' => '2026-10-10 09:00:00', 'status' => 1, 'billing_amount' => 100, 'amount' => 90, 'amount_wallet' => 10, 'reward_amount' => 0, 'pay_by' => 'wallet'],
@@ -161,16 +178,16 @@ class DsrSummaryHistoryTest extends TestCase
         $view = (new DsrSummaryController())->adminIndex(new Request());
 
         $this->assertSame(
-            ['2026-10-11', '2026-10-10', '2026-10-10'],
+            ['2026-10-12', '2026-10-11', '2026-10-10', '2026-10-10'],
             $view->getData()['summaries']->getCollection()->pluck('date')->all()
         );
         $this->assertSame(
-            [1, 2, 1],
+            [2, 1, 2, 1],
             $view->getData()['summaries']->getCollection()->pluck('pos_id')->all()
         );
     }
 
-    public function test_pos_history_excludes_unverified_sales_and_includes_verified_dates_without_saved_summaries(): void
+    public function test_pos_history_shows_pending_verification_and_verified_sales_without_saved_summaries(): void
     {
         $user = new User();
         $user->user_id = 'POS-B';
@@ -179,16 +196,19 @@ class DsrSummaryHistoryTest extends TestCase
         $view = (new DsrSummaryController())->posIndex(new Request());
 
         $this->assertSame(
-            ['2026-10-10'],
+            ['2026-10-12', '2026-10-10'],
             $view->getData()['summaries']->getCollection()->pluck('date')->all()
         );
         $this->assertSame(
-            [200],
+            [0, 200],
             $view->getData()['summaries']->getCollection()
                 ->pluck('total_billing_amount')
                 ->map(fn ($amount) => (int) $amount)
                 ->all()
         );
+        $pendingSummary = $view->getData()['summaries']->first();
+        $this->assertSame(0, (int) $pendingSummary->total_transaction);
+        $this->assertSame(1, (int) $pendingSummary->pending_transaction_count);
     }
 
     public function test_admin_summary_totals_only_include_verified_transactions(): void
@@ -201,7 +221,23 @@ class DsrSummaryHistoryTest extends TestCase
         $summary = $view->getData()['summaries']->first();
 
         $this->assertSame(1, (int) $summary->total_transaction);
+        $this->assertSame(2, (int) $summary->all_transaction_count);
+        $this->assertSame(1, (int) $summary->pending_transaction_count);
         $this->assertEquals(100, $summary->total_billing_amount);
         $this->assertEquals(90, $summary->by_cash);
+    }
+
+    public function test_history_exposes_generated_summary_and_auto_submitted_payment_status(): void
+    {
+        $view = (new DsrSummaryController())->adminIndex(new Request([
+            'date' => '2026-10-10',
+            'pos_search' => 'POS-A',
+        ]));
+        $summary = $view->getData()['summaries']->first();
+
+        $this->assertTrue((bool) $summary->has_generated_payment);
+        $this->assertEquals(2, (float) $summary->auto_submitted_amount);
+        $this->assertEquals(2, (float) $summary->pos_payment_amount);
+        $this->assertEquals(2, (float) $summary->admin_credit);
     }
 }

@@ -54,6 +54,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
     Route::put('update-password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
     //user
+    Route::get('users/{user}/transactions', [UserController::class, 'transactions'])->name('users.transactions');
     Route::get('users/{user}/referrals', [UserController::class, 'referrals'])->name('users.referrals');
     Route::post('users/{user}/status', [AccountManagementController::class, 'updateCustomerStatus'])->name('users.status');
     Route::post('users/{user}/password', [AccountManagementController::class, 'updateCustomerPassword'])->name('users.password');

@@ -61,7 +61,10 @@
                                 <td>₹{{ $data->total_transactions }}</td>
                                 <td>₹{{ $data->credit }}</td>
                                 <td>₹{{ $data->debit }}</td>
-                                <td>{{ $data->status }}</td>
+                                <td>
+                                    {{ $data->status }}
+                                    <small class="d-block text-muted">Calculated automatically by the system</small>
+                                </td>
                                 {{-- <td>₹{{ $data->sponsor_expenditure }}/-</td> --}}
                             </tr>
                         @endforeach

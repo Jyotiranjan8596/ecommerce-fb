@@ -146,7 +146,7 @@ class CustomerOrderController extends Controller
     {
         $pos = $this->authenticatedPos();
         $orders = CustomerOrder::query()
-            ->with('customer')
+            ->with(['customer', 'statusChanges'])
             ->where('pos_id', $pos->id)
             ->whereRaw('LOWER(status) <> ?', [CustomerOrder::STATUS_DELIVERED])
             ->latest()
@@ -158,7 +158,7 @@ class CustomerOrderController extends Controller
     public function adminIndex()
     {
         $orders = CustomerOrder::query()
-            ->with(['customer', 'pos'])
+            ->with(['customer', 'pos', 'statusChanges'])
             ->latest()
             ->paginate(25);
         $totalOrders = CustomerOrder::count();
@@ -222,6 +222,7 @@ class CustomerOrderController extends Controller
     private function orderPage(?CustomerOrder $editingOrder = null)
     {
         $orders = CustomerOrder::query()
+            ->with('statusChanges')
             ->where('user_id', auth()->id())
             ->whereRaw('LOWER(status) <> ?', [CustomerOrder::STATUS_DELIVERED])
             ->latest()

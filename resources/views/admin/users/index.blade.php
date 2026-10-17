@@ -139,6 +139,14 @@
                                 <td class="text-end">
                                     <div class="d-flex flex-wrap justify-content-end align-items-start gap-2">
                                         <a
+                                            href="{{ route('admin.users.transactions', $data->id) }}"
+                                            class="btn btn-outline-success btn-sm"
+                                            aria-label="View transactions for {{ $data->name ?: 'user' }}"
+                                            title="View customer transactions"
+                                        >
+                                            <i class="fas fa-receipt" aria-hidden="true"></i>
+                                        </a>
+                                        <a
                                             href="{{ route('admin.users.edit', $data->id) }}"
                                             class="btn btn-outline-primary btn-sm user-list-edit"
                                             aria-label="Edit {{ $data->name ?: 'user' }}"
