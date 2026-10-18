@@ -16,6 +16,7 @@ class Wallet extends Model
     use HasFactory;
     use HasTransactionStatusChanges;
 
+    //demo push
     public $timestamps = false;
 
     protected $fillable = [
@@ -41,7 +42,7 @@ class Wallet extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
-    }
+    } 
     public function getPos()
     {
         return $this->belongsTo(PosModel::class, 'pos_id', 'id');

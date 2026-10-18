@@ -87,21 +87,25 @@ class UserDashboardController extends Controller
 
     public function get_total_wallet_amount($userId, $users_id = null)
     {
-        $userWallet = UserWallet::where('user_id', $userId)->orWhere('user_id', $users_id)->get();
-        // Calculate the total used amount
-        $totalUsedAmount       = $userWallet->sum('used_amount');
-        $totalUsedRewardAmount = $userWallet->sum('used_points');
+        $walletTotals = UserWallet::query()
+            ->where(function ($query) use ($userId, $users_id) {
+                $query->where('user_id', $userId);
 
-        // Calculate the total wallet amount
-        $totalWalletAmount = $userWallet->sum('wallet_amount');
-        $totalRewardAmount = $userWallet->sum('reward_points');
-        // dd($totalRewardAmount);
+                if ($users_id !== null) {
+                    $query->orWhere('user_id', $users_id);
+                }
+            })
+            ->selectRaw('
+                COALESCE(SUM(wallet_amount), 0) as total_wallet_amount,
+                COALESCE(SUM(used_amount), 0) as total_used_amount,
+                COALESCE(SUM(reward_points), 0) as total_reward_points,
+                COALESCE(SUM(used_points), 0) as total_used_points
+            ')
+            ->first();
 
-        // Calculate the wallet balance
-        $walletBalance = $totalWalletAmount - $totalUsedAmount;
-        $rewardBalance = $totalRewardAmount - $totalUsedRewardAmount;
-        // Ensure the wallet balance is non-negative
-        // return max($walletBalance, 0);
+        $walletBalance = (float) $walletTotals->total_wallet_amount - (float) $walletTotals->total_used_amount;
+        $rewardBalance = (float) $walletTotals->total_reward_points - (float) $walletTotals->total_used_points;
+
         return [
             'wallet_balance' => max($walletBalance, 0),
             'rewardBalance'  => max($rewardBalance, 0),
