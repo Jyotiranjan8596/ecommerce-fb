@@ -804,6 +804,9 @@
         color: #fff;
         font-weight: 500;
     }
+    .modal-backdrop{
+            z-index: 0; !important;
+    }
 
     /* ---------- Responsive ---------- */
     @media (max-width: 480px) {
