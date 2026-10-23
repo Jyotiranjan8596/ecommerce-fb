@@ -114,7 +114,7 @@
 
             <li class="nav-item">
                 <a href="{{ route('user.pos.list.index') }}"
-                    class="nav-link {{ request()->is('pos/list/index') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('user.pos.list.index') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -130,7 +130,7 @@
 
             <li class="nav-item">
                 <a href="{{ route('user.order') }}"
-                    class="nav-link {{ request()->is('user/my-order') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('user.order*') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -144,7 +144,7 @@
 
             <li class="nav-item">
                 <a href="{{ route('user.offers.index') }}"
-                    class="nav-link {{ request()->is('user/offers*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('user.offers.*') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -159,8 +159,10 @@
             </li>
 
             <li class="nav-item">
-                <span class="nav-link collapsed d-flex justify-content-between align-items-center"
-                    data-bs-toggle="collapse" data-bs-target="#submenu-app">
+                <span class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs('user.add', 'user.sponsor.list') ? '' : 'collapsed' }}"
+                    data-bs-toggle="collapse" data-bs-target="#submenu-user-management"
+                    aria-controls="submenu-user-management"
+                    aria-expanded="{{ request()->routeIs('user.add', 'user.sponsor.list') ? 'true' : 'false' }}">
                     <span>
                         <span class="sidebar-icon">
                             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
@@ -181,20 +183,18 @@
                         </svg>
                     </span>
                 </span>
-                <div class="multi-level collapse" role="list" id="submenu-app" aria-expanded="false">
+                <div class="multi-level collapse {{ request()->routeIs('user.add', 'user.sponsor.list') ? 'show' : '' }}"
+                    role="list" id="submenu-user-management"
+                    aria-expanded="{{ request()->routeIs('user.add', 'user.sponsor.list') ? 'true' : 'false' }}">
                     <ul class="flex-column nav">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('add') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->routeIs('user.add') ? 'active' : '' }}"
                                 href="{{ route('user.add') }}">
                                 <span class="sidebar-text">Add User</span>
                             </a>
                         </li>
-                    </ul>
-                </div>
-                <div class="multi-level collapse" role="list" id="submenu-app" aria-expanded="false">
-                    <ul class="flex-column nav">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('user/sponsor/list') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->routeIs('user.sponsor.list') ? 'active' : '' }}"
                                 href="{{ route('user.sponsor.list') }}">
                                 <span class="sidebar-text">My Referrals</span>
                             </a>
@@ -205,7 +205,7 @@
 
             <li class="nav-item">
                 <a href="{{ route('user.wallet') }}"
-                    class="nav-link {{ request()->is('my/wallet') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('user.wallet') ? 'active' : '' }}">
                     <span class="sidebar-icon">
                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">

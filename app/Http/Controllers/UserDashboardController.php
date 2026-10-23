@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use App\Models\Wallet;
 use App\Services\AiSensyService;
+use App\Services\UserWalletBalanceService;
 use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,7 +24,6 @@ class UserDashboardController extends Controller
         $user_profile = auth()->user();
         $userId       = $user_profile->id;
         $referralCount = $user_profile->prime_referral_count;
-        $sponsors_count = $referralCount;
         $primeSince = $user_profile->is_prime_member && $user_profile->primeMemberSince()
             ? Carbon::parse($user_profile->primeMemberSince())
             : null;
@@ -82,34 +82,15 @@ class UserDashboardController extends Controller
             ->selectRaw('ROUND(SUM(wallet_amount + reward_points), 0) as total')
             ->value('total');
 
-        return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'referralCount', 'sponsors_count', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList', 'transactionCount', 'orderCount', 'primeSince', 'recentReferrals'));
+        return view('frontend.dashboard.index', compact('rewardBalance', 'total_payback', 'referralCount', 'user_profile', 'monthlyPurchase', 'walletBalance', 'walletList', 'transactionCount', 'orderCount', 'primeSince', 'recentReferrals'));
     }
 
     public function get_total_wallet_amount($userId, $users_id = null)
     {
-        $walletTotals = UserWallet::query()
-            ->where(function ($query) use ($userId, $users_id) {
-                $query->where('user_id', $userId);
-
-                if ($users_id !== null) {
-                    $query->orWhere('user_id', $users_id);
-                }
-            })
-            ->selectRaw('
-                COALESCE(SUM(wallet_amount), 0) as total_wallet_amount,
-                COALESCE(SUM(used_amount), 0) as total_used_amount,
-                COALESCE(SUM(reward_points), 0) as total_reward_points,
-                COALESCE(SUM(used_points), 0) as total_used_points
-            ')
-            ->first();
-
-        $walletBalance = (float) $walletTotals->total_wallet_amount - (float) $walletTotals->total_used_amount;
-        $rewardBalance = (float) $walletTotals->total_reward_points - (float) $walletTotals->total_used_points;
-
-        return [
-            'wallet_balance' => max($walletBalance, 0),
-            'rewardBalance'  => max($rewardBalance, 0),
-        ];
+        return app(UserWalletBalanceService::class)->getBalancesForUser(
+            (int) $userId,
+            $users_id === null ? null : (int) $users_id
+        );
     }
 
     public function payment(Request $request)
@@ -117,8 +98,6 @@ class UserDashboardController extends Controller
         try {
             // dd($request->all());
             $user           = User::find($request->user_id);
-            $sponsors       = Sponsor::where('sponsor_id', $user->id)->get();
-            $sponsors_count = count($sponsors);
             $month = Carbon::now()->format('M-y');
             // Verify password
             // if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -386,19 +365,35 @@ class UserDashboardController extends Controller
         //     return redirect()->back();
         // }
     }
-    public function wallet()
+    public function wallet(Request $request)
     {
+        $dateRules = [
+            'from_date' => ['nullable', 'date'],
+            'to_date' => ['nullable', 'date'],
+        ];
+        if ($request->filled('from_date')) {
+            $dateRules['to_date'][] = 'after_or_equal:from_date';
+        }
+        $request->validate($dateRules);
+
         $user_profile   = auth()->user();
         $userId         = $user_profile->id;
-        $sponsors       = Sponsor::where('sponsor_id', $userId)->get();
-        $sponsors_count = count($sponsors);
         // dd($userId);
         $balances             = self::get_total_wallet_amount($userId);
         $currentWalletBalance = round($balances['wallet_balance']);
         $rewardBalance        = round($balances['rewardBalance']);
         $userWallet = UserWallet::with('getPos')
-            ->where('user_id', $userId)
-            ->orWhere('user_id', $user_profile->user_id)
+            ->where(function ($query) use ($userId, $user_profile) {
+                $query->where('user_id', $userId)
+                    ->orWhere('user_id', $user_profile->user_id);
+            })
+            ->whereRaw('LOWER(TRIM(trans_type)) = ?', ['credit'])
+            ->when($request->filled('from_date'), function ($query) use ($request) {
+                $query->whereDate('transaction_date', '>=', $request->input('from_date'));
+            })
+            ->when($request->filled('to_date'), function ($query) use ($request) {
+                $query->whereDate('transaction_date', '<=', $request->input('to_date'));
+            })
             ->orderBy('id', 'desc')
             ->get();
 
@@ -422,10 +417,6 @@ class UserDashboardController extends Controller
                 $rewardRow->amount = $item->reward_points;
                 $walletRow->remaning_balance = $rewardBalance;
                 $newCollection->push($rewardRow);
-            } else {
-                $item->transaction_details = $item->getPos ? $item->getPos->name : 'N/A';
-                $item->display_type = 'debit';
-                $newCollection->push($item);
             }
         }
 
@@ -433,7 +424,7 @@ class UserDashboardController extends Controller
 
         $totalUsedAmount = UserWallet::where('user_id', $userId)->orWhere('user_id', $user_profile->user_id)->sum('used_amount');
         $walletBalance = $currentWalletBalance;
-        return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile', 'sponsors_count'));
+        return view('frontend.dashboard.wallet', compact('rewardBalance', 'userWallet', 'walletBalance', 'user_profile'));
     }
     public function termCondition()
     {

@@ -213,7 +213,7 @@
                                 rows += `
                                         <tr>
                                             <td>${index++}</td>
-                                            <td>${item.month ?? ''}</td>
+                                            <td>${item.display_month ?? item.month ?? ''}</td>
                                             <td>${item.user_data?.user_id ?? ''}</td>
                                             <td>${item.user_data?.name ?? ''}</td>
                                             <td>${item.mobilenumber ?? ''}</td>

@@ -138,34 +138,75 @@
             <section class="wallet-manage-panel" aria-labelledby="wallet-transactions-title">
                 <div class="wallet-manage-panel__head">
                     <span class="wallet-manage-panel__icon"><i class="fas fa-history" aria-hidden="true"></i></span>
-                    <div><h2 id="wallet-transactions-title">Transaction history</h2><p>{{ $user ? 'Recent wallet activity for ' . $user->name . '.' : 'Search for a customer to see their wallet activity.' }}</p></div>
+                    <div>
+                        <h2 id="wallet-transactions-title">{{ ucfirst($historyType) }} history</h2>
+                        <p>{{ $user ? 'History for ' . $user->name . '.' : 'Search for a customer to see their wallet activity.' }}</p>
+                    </div>
                 </div>
                 <form class="wallet-transactions-filter" method="GET" action="{{ route('admin.wallet.manage') }}">
                     <input type="hidden" name="user_id" value="{{ $user?->user_id }}">
-                    <label class="visually-hidden" for="transaction_date">Filter transactions by date</label>
-                    <input type="date" class="form-control" name="transaction_date" id="transaction_date" value="{{ request('transaction_date') }}">
+                    <label class="visually-hidden" for="history_type">History type</label>
+                    <select class="form-select" name="history_type" id="history_type" aria-label="History type">
+                        <option value="transaction" @selected($historyType === 'transaction')>Transaction History</option>
+                        <option value="payback" @selected($historyType === 'payback')>Payback History</option>
+                        <option value="referral" @selected($historyType === 'referral')>Referral History</option>
+                    </select>
+                    <label class="visually-hidden" for="transaction_month">Choose month and year</label>
+                    <input type="month" class="form-control" name="transaction_month" id="transaction_month"
+                        value="{{ request('transaction_month') }}" aria-label="Choose month and year">
                     <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search me-1" aria-hidden="true"></i> Search</button>
                 </form>
                 <div class="wallet-transactions-scroll table-responsive">
                     <table class="table wallet-transactions-table align-middle">
-                        <thead><tr><th>#</th><th>Date</th><th>Invoice</th><th>Type</th><th>Details</th><th>Amount</th><th>Wallet used</th><th>POS ID</th></tr></thead>
+                        <thead>
+                            @if ($historyType === 'payback')
+                                <tr><th>#</th><th>Month</th><th>Invoice</th><th>Type</th><th>Wallet Amount</th><th>Reward Points</th><th>Transaction Date</th></tr>
+                            @elseif ($historyType === 'referral')
+                                <tr><th>#</th><th>Date</th><th>Type</th><th>Details</th><th>Referral Reward</th></tr>
+                            @else
+                                <tr><th>#</th><th>Date</th><th>Invoice</th><th>Type</th><th>Details</th><th>Amount</th><th>Wallet used</th><th>POS ID</th></tr>
+                            @endif
+                        </thead>
                         <tbody>
                             @forelse ($walletList as $key => $wallet)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $wallet->transaction_date ? \Illuminate\Support\Carbon::parse($wallet->transaction_date)->format('d M Y') : '-'  }}</td>
-                                    <td>{{ $wallet->invoice ?: '-'  }}</td>
-                                    <td><span class="wallet-transaction-type wallet-transaction-type--{{ strtolower($wallet->tran_type ?: 'other') }}">{{ $wallet->tran_type ?: 'Payment' }}</span></td>
-                                    <td>{{ $wallet->description ?: '-'  }}</td>
-                                    <td>&#8377;{{ number_format((float) ($wallet->amount ?? 0), 2) }}</td>
-                                    <td>&#8377;{{ number_format((float) ($wallet->amount_wallet ?? 0), 2) }}</td>
-                                    <td>{{ $wallet->getPos?->user_id ?: 'Admin / N/A' }}</td>
-                                </tr>
+                                @if ($historyType === 'payback')
+                                    <tr>
+                                        <td>{{ $walletList->firstItem() + $key }}</td>
+                                        <td>{{ $wallet->display_month }}</td>
+                                        <td>{{ $wallet->invoice ?: '-' }}</td>
+                                        <td><span class="wallet-transaction-type wallet-transaction-type--{{ strtolower($wallet->trans_type ?: 'other') }}">{{ $wallet->trans_type ?: 'Payback' }}</span></td>
+                                        <td>&#8377;{{ number_format((float) ($wallet->wallet_amount ?? 0), 2) }}</td>
+                                        <td>{{ number_format((float) ($wallet->reward_points ?? 0), 2) }}</td>
+                                        <td>{{ $wallet->transaction_date ? \Illuminate\Support\Carbon::parse($wallet->transaction_date)->format('d M Y') : '-' }}</td>
+                                    </tr>
+                                @elseif ($historyType === 'referral')
+                                    <tr>
+                                        <td>{{ $walletList->firstItem() + $key }}</td>
+                                        <td>{{ $wallet->transaction_date ? \Illuminate\Support\Carbon::parse($wallet->transaction_date)->format('d M Y') : '-' }}</td>
+                                        <td><span class="wallet-transaction-type wallet-transaction-type--credit">Credit</span></td>
+                                        <td>Referral reward</td>
+                                        <td>{{ number_format((float) ($wallet->reward_points ?? 0), 2) }} points</td>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $wallet->transaction_date ? \Illuminate\Support\Carbon::parse($wallet->transaction_date)->format('d M Y') : '-'  }}</td>
+                                        <td>{{ $wallet->invoice ?: '-'  }}</td>
+                                        <td><span class="wallet-transaction-type wallet-transaction-type--{{ strtolower($wallet->tran_type ?: 'other') }}">{{ $wallet->tran_type ?: 'Payment' }}</span></td>
+                                        <td>{{ $wallet->description ?: '-'  }}</td>
+                                        <td>&#8377;{{ number_format((float) ($wallet->amount ?? 0), 2) }}</td>
+                                        <td>&#8377;{{ number_format((float) ($wallet->amount_wallet ?? 0), 2) }}</td>
+                                        <td>{{ $wallet->getPos?->user_id ?: 'Admin / N/A' }}</td>
+                                    </tr>
+                                @endif
                             @empty
-                                <tr><td colspan="8" class="wallet-transactions-empty">{{ ! $user ? 'Search by user ID or mobile number to load wallet transactions.' : ($transactionsNotFound ? 'No transactions found for this date.' : 'No wallet transactions yet.') }}</td></tr>
+                                <tr><td colspan="{{ $historyType === 'payback' ? 7 : ($historyType === 'referral' ? 5 : 8) }}" class="wallet-transactions-empty">{{ ! $user ? 'Search by user ID or mobile number to load wallet history.' : ($transactionsNotFound ? 'No records found for this month and year.' : 'No history records found.') }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
+                    @if ($walletList instanceof \Illuminate\Contracts\Pagination\Paginator && $walletList->hasPages())
+                        <div class="px-3 py-2">{{ $walletList->links() }}</div>
+                    @endif
                 </div>
             </section>
         </div>
@@ -173,6 +214,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const historyType = document.getElementById('history_type');
+            if (historyType) {
+                historyType.addEventListener('change', function () {
+                    document.getElementById('transaction_month').value = '';
+                    this.form.submit();
+                });
+            }
+
             const adjustmentSubmit = document.getElementById('adjustment-submit');
             document.querySelectorAll('input[name="type"]').forEach(function (radio) {
                 radio.addEventListener('change', function () {

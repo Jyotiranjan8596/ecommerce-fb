@@ -89,6 +89,7 @@
     </main>
     {{-- Main Content end  --}}
 
+    @include('frontend.dashboard.includes.scanmodal')
     @include('ui.layout.footer')
 
     <!-- Scripts -->

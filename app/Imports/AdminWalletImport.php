@@ -32,6 +32,14 @@ class AdminWalletImport implements ToModel, WithHeadingRow
         }
 
         $transactionDate = $this->parseTransactionDate($row['transaction_date']);
+        $uploadedMonth = $row['month'] ?? null;
+        if (is_numeric($uploadedMonth)) {
+            $month = Date::excelToDateTimeObject($uploadedMonth)->format('M-y');
+        } elseif (is_string($uploadedMonth) && trim($uploadedMonth) !== '') {
+            $month = trim($uploadedMonth);
+        } else {
+            $month = Carbon::parse($transactionDate)->format('M-y');
+        }
 
         // Find the user by user_id in the Users table
         $user = User::where('user_id', $row['user_id'])->first();
@@ -42,7 +50,7 @@ class AdminWalletImport implements ToModel, WithHeadingRow
 
         return new UserWallet([
             'user_id' => $user->id, // Use the id from the Users table
-            'month' => Carbon::parse($transactionDate)->format('M-y'),
+            'month' => $month,
             'wallet_amount' => $row['wallet_amount'],
             'reward_points' => $row[$rewardPointsKey],
             'trans_type' => $row['payment_mode'],

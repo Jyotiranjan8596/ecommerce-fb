@@ -6,7 +6,7 @@
     <div id="freebazar-home">
     {{-- banner start  --}}
     <div class="p-2">
-        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
+        <div id="carouselExampleAutoplaying" class="carousel slide landing-banner-carousel" data-bs-ride="carousel" data-bs-interval="4500">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="0" class="active"
                     aria-current="true" aria-label="Slide 1"></button>
@@ -19,20 +19,20 @@
             </div>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="{{ asset('assets/images/freebazarbanner.jpg') }}" style="border-radius: 10px;"
-                        class="d-block w-100" alt="...">
+                    <img src="{{ asset('assets/images/landing-banner-shopping-family.jpg') }}" style="border-radius: 10px;"
+                        class="d-block w-100" alt="FreeBazar family shopping at a local bazaar">
                 </div>
                 <div class="carousel-item">
-                    <img src="{{ asset('assets/images/b1.png') }}" style="border-radius: 10px;" class="d-block w-100"
-                        alt="...">
+                    <img src="{{ asset('assets/images/landing-banner-mitra.jpg') }}" style="border-radius: 10px;" class="d-block w-100"
+                        alt="Join FreeBazar Mitra as a business share partner">
                 </div>
                 <div class="carousel-item">
-                    <img src="{{ asset('assets/images/b2.png') }}" style="border-radius: 10px;" class="d-block w-100"
-                        alt="...">
+                    <img src="{{ asset('assets/images/landing-banner-prime.jpg') }}" style="border-radius: 10px;" class="d-block w-100"
+                        alt="FreeBazar Prime membership and referral rewards">
                 </div>
                 <div class="carousel-item">
-                    <img src="{{ asset('assets/images/b3.png') }}" style="border-radius: 10px;" class="d-block w-100"
-                        alt="...">
+                    <img src="{{ asset('assets/images/landing-banner-payback.jpg') }}" style="border-radius: 10px;" class="d-block w-100"
+                        alt="Shop local and earn a 10 percent payback">
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
@@ -1601,6 +1601,23 @@ Our profit-sharing model based on two golden rules: "Spend More to Save More & H
             .freebazar-back-to-top {
                 bottom: max(.75rem, env(safe-area-inset-bottom));
             }
+        }
+
+        #freebazar-home #carouselExampleAutoplaying .carousel-inner {
+            aspect-ratio: 1920 / 602;
+        }
+
+        #freebazar-home #carouselExampleAutoplaying .carousel-item {
+            height: 100%;
+        }
+
+        #freebazar-home #carouselExampleAutoplaying .carousel-item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            max-height: none;
+            object-fit: cover;
         }
     </style>
     </div>

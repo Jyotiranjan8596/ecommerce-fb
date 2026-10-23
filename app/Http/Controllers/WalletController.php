@@ -22,7 +22,16 @@ class WalletController extends Controller
 {
     public function walletManage(Request $request)
     {
+        $request->validate([
+            'transaction_month' => ['nullable', 'date_format:Y-m'],
+        ]);
+
         $searchTerm = trim((string) $request->query('user_id', $request->query('search', '')));
+        $historyType = $request->query('history_type', 'transaction');
+        if (! in_array($historyType, ['transaction', 'payback', 'referral'], true)) {
+            $historyType = 'transaction';
+        }
+
         $user = null;
 
         if ($searchTerm !== '') {
@@ -39,23 +48,28 @@ class WalletController extends Controller
         if (! $user) {
             return view('pos.wallet_manage', compact(
                 'user', 'walletList', 'walletBalance', 'balanceNotFound',
-                'transactionsNotFound', 'searchTerm'
+                'transactionsNotFound', 'searchTerm', 'historyType'
             ));
         }
 
-        $userId = Auth::user()->user_id;
-        // dd($userId);
-        $pos = PosModel::where('user_id', $userId)->first();
+        if ($historyType === 'transaction') {
+            $transactionQuery = Wallet::with('statusChanges')
+                ->where('user_id', $user->id);
 
-        // Transactions for display
-        $transactionQuery = Wallet::with('statusChanges')
-            ->where('user_id', $user->id);
+            if ($request->filled('transaction_month')) {
+                $transactionMonth = Carbon::createFromFormat('!Y-m', $request->input('transaction_month'));
+                $transactionQuery->whereMonth('transaction_date', $transactionMonth->month)
+                    ->whereYear('transaction_date', $transactionMonth->year);
+            }
 
-        if ($request->filled('transaction_date')) {
-            $transactionQuery->whereDate('transaction_date', $request->transaction_date);
+            $walletList = $transactionQuery->orderByDesc('id')->get();
+        } else {
+            $historyRequest = $request->duplicate();
+            $historyRequest->merge(['history_user_id' => $user->id]);
+            $walletList = $historyType === 'payback'
+                ? UserWallet::getAdminPaybackHistory($historyRequest)
+                : UserWallet::getAdminReferralHistory($historyRequest);
         }
-
-        $walletList = $transactionQuery->orderByDesc('id')->get();
 
         // Check if specific-date balance was requested
         $walletBalance   = null;
@@ -74,7 +88,7 @@ class WalletController extends Controller
             $walletBalance = self::get_total_wallet_amount($user->id);
         }
 
-        $transactionsNotFound = $request->filled('transaction_date') && $walletList->isEmpty();
+        $transactionsNotFound = $request->filled('transaction_month') && count($walletList) === 0;
 
         return view('pos.wallet_manage', compact(
             'user',
@@ -82,7 +96,8 @@ class WalletController extends Controller
             'walletBalance',
             'balanceNotFound',
             'transactionsNotFound',
-            'searchTerm'
+            'searchTerm',
+            'historyType'
         ));
     }
 

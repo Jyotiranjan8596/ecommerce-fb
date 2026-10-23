@@ -70,7 +70,7 @@
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                     <div>
                         <h2 class="h5 mb-1 fw-bold text-dark">Payback History</h2>
-                        <p class="small text-muted mb-0">Review credits and usage from your wallet and rewards. Scroll to view your payback details.</p>
+                        <p class="small text-muted mb-0">Review wallet and reward credits. Scroll to view your payback details.</p>
                         <p class="small text-muted mb-0 mt-1">{{ $walletTransactions->count() }} transactions</p>
                     </div>
 
@@ -98,6 +98,25 @@
             </div>
 
             <div class="card-body px-3 px-md-4 pt-2 pb-3">
+                <form method="GET" action="{{ route('user.wallet') }}" class="row g-2 align-items-end mb-3 payback-date-filter">
+                    @if (request('mode_filter'))
+                        <input type="hidden" name="mode_filter" value="{{ request('mode_filter') }}">
+                    @endif
+                    <div class="col-12 col-sm-5 col-lg-4">
+                        <label for="from_date" class="form-label mb-1">From date</label>
+                        <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request('from_date') }}">
+                    </div>
+                    <div class="col-12 col-sm-5 col-lg-4">
+                        <label for="to_date" class="form-label mb-1">To date</label>
+                        <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request('to_date') }}">
+                    </div>
+                    <div class="col-12 col-sm-auto">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search me-1" aria-hidden="true"></i> Search</button>
+                        @if (request('from_date') || request('to_date'))
+                            <a href="{{ route('user.wallet', request('mode_filter') ? ['mode_filter' => request('mode_filter')] : []) }}" class="btn btn-outline-secondary">Clear dates</a>
+                        @endif
+                    </div>
+                </form>
                 <div class="table-responsive payback-table-wrap" tabindex="0" aria-label="Scrollable payback history">
                     <table class="table align-middle mb-0 payback-table">
                         <thead>
@@ -558,6 +577,4 @@
             }
         }
     </style>
-
-    @include('frontend.dashboard.includes.scanmodal')
 @endsection

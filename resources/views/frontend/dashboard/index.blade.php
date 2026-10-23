@@ -984,7 +984,4 @@
                         </div>
                     </div>
                 </div> --}}
-
-                {{-- modal --}}
-                @include('frontend.dashboard.includes.scanmodal')
             @endsection

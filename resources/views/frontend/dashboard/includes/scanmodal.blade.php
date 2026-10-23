@@ -155,8 +155,6 @@
                                 oninput="checkWalletBalance()" />
                         </div>
                     </div>
-                    <input id="sponsors_count" type="hidden" name="wallet_balance" value="{{ $sponsors_count }}" />
-
                     <!-- Paying Amount -->
                     <div class="form-group mb-3">
                         <label for="paying_amount" class="modal-label">Paying Amount</label>
@@ -804,8 +802,12 @@
         color: #fff;
         font-weight: 500;
     }
-    .modal-backdrop{
-            z-index: 0; !important;
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+
+    .modal {
+        z-index: 1055;
     }
 
     /* ---------- Responsive ---------- */

@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Services\WhatsappMessageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -267,10 +268,7 @@ class Payment extends Model
         $to = $request->to_date;
         $total_debit     = 0;
         $total_credit    = 0;
-        $base_query = self::where('status', 'approved')->where(function ($base_query) use ($userId) {
-            $base_query->where('to', $userId)
-                ->orWhere('from', $userId);
-        })->with(['creditedTo', 'creditedFrom'])
+        $base_query = self::ledgerQueryForAccount($userId)
             ->orderBy('transaction_date', 'asc')
             ->orderBy('id', 'asc');
         if ($from) {
@@ -355,10 +353,7 @@ class Payment extends Model
         $pos_name = PosModel::where('user_id', $userId)->value('name');
         $from = $request->from_date ?? $request->transaction_date;
         $to = $request->to_date ?? $request->transaction_date;
-        $base_query = self::where('status', 'approved')->where(function ($base_query) use ($userId) {
-            $base_query->where('to', $userId)
-                ->orWhere('from', $userId);
-        })->with(['creditedTo', 'creditedFrom'])
+        $base_query = self::ledgerQueryForAccount($userId)
             ->orderBy('transaction_date', 'asc')
             ->orderBy('id', 'asc');
         if ($from) {
@@ -469,6 +464,25 @@ class Payment extends Model
         }
 
         return 0;
+    }
+
+    private static function ledgerQueryForAccount(string $userId): Builder
+    {
+        return self::query()
+            ->where(function (Builder $query) use ($userId) {
+                $query->where('to', $userId)
+                    ->orWhere('from', $userId);
+            })
+            ->where(function (Builder $query) use ($userId) {
+                $query->where('from', '!=', $userId)
+                    ->orWhere('to', '!=', '666666')
+                    ->orWhereNull('payment_summury_id')
+                    ->orWhere('remark', 'Auto Generated')
+                    ->orWhereDoesntHave('payment_summary', function (Builder $summaryQuery) {
+                        $summaryQuery->where('status', '!=', 'approved');
+                    });
+            })
+            ->with(['creditedTo', 'creditedFrom']);
     }
 
     public static function getReceipt($request)
