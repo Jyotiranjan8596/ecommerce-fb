@@ -269,6 +269,9 @@
         box-shadow: 0 20px 50px rgba(15, 27, 26, 0.25);
     }
 
+    .modal-backdrop{
+            z-index: 0; !important;
+    }
     .qr-modal .modal-dialog {
         max-width: 420px;
         margin: 1rem auto;
@@ -802,13 +805,6 @@
         color: #fff;
         font-weight: 500;
     }
-    .modal-backdrop {
-        z-index: 1040 !important;
-    }
-
-    .modal {
-        z-index: 1055;
-    }
 
     /* ---------- Responsive ---------- */
     @media (max-width: 480px) {
@@ -856,6 +852,7 @@
     }
 </style>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         let html5QrCode;
@@ -863,48 +860,17 @@
         let availableCameras = [];
         let cameraIndex = 0;
         let torchOn = false;
-        let scannerLoadPromise = null;
-        let scannerStartPromise = null;
-        let scannerRunning = false;
-        let scannerRequested = false;
-        let scanVerificationPending = false;
 
         const statusText = document.getElementById("qrStatusText");
         const torchBtn = document.getElementById("qrTorchBtn");
         const switchCamBtn = document.getElementById("qrSwitchCamBtn");
 
-        function loadQrScanner() {
-            if (window.Html5Qrcode) return Promise.resolve();
-            if (scannerLoadPromise) return scannerLoadPromise;
-
-            scannerLoadPromise = new Promise((resolve, reject) => {
-                const script = document.createElement("script");
-                script.src = "https://unpkg.com/html5-qrcode";
-                script.async = true;
-                script.onload = () => {
-                    if (window.Html5Qrcode) {
-                        resolve();
-                    } else {
-                        scannerLoadPromise = null;
-                        reject(new Error("QR scanner library did not initialize."));
-                    }
-                };
-                script.onerror = () => {
-                    scannerLoadPromise = null;
-                    reject(new Error("QR scanner library could not be loaded."));
-                };
-                document.head.appendChild(script);
-            });
-
-            return scannerLoadPromise;
-        }
-
+        // Open the QR Code Scanner Modal when the scan button is clicked
         document.getElementById("my-qr-reader").addEventListener("click", function() {
             let qrModal = new bootstrap.Modal(document.getElementById("qrScannerModal"), {
                 backdrop: "static",
                 keyboard: false,
             });
-            scannerRequested = true;
             qrModal.show();
             startMainScanner();
         });
@@ -913,11 +879,12 @@
             if (statusText) statusText.textContent = msg;
         }
 
-        async function onScanSuccess(decodedText) {
-            if (scanVerificationPending) return;
-            scanVerificationPending = true;
+        function onScanSuccess(decodedText) {
+            // Pause immediately so we don't fire multiple times on the same frame
             html5QrCode.pause(true);
-            setStatus("Checking QR code...");
+
+            let qrModal = bootstrap.Modal.getInstance(document.getElementById("qrScannerModal"));
+            if (qrModal) qrModal.hide();
 
             let parts = decodedText.split("|");
             let name = parts[0];
@@ -929,15 +896,15 @@
                     name: name,
                     _token: "{{ csrf_token() }}",
                 },
-                success: async function(data) {
+                success: function(data) {
                     if (data.success == true) {
-                        document.getElementById("qr-details-text").textContent = data.name;
+                        document.getElementById("qr-details-text").innerHTML = data.name;
                         document.getElementById("qrDataId").value = data.id;
-                        document.getElementById("billing-pos-name").textContent = data.name;
+                        document.getElementById("billing-pos-name").innerHTML = data.name;
 
-                        await stopScanner();
-                        await hideScannerModal();
+                        stopScanner();
 
+                        // Directly open Billing Modal
                         let billingModal = new bootstrap.Modal(document.getElementById(
                             "billingModal"), {
                             backdrop: "static",
@@ -945,8 +912,7 @@
                         });
                         billingModal.show();
                     } else {
-                        await stopScanner();
-                        await hideScannerModal();
+                        stopScanner();
                         Swal.fire({
                             icon: "error",
                             title: "Invalid!",
@@ -955,7 +921,6 @@
                     }
                 },
                 error: function() {
-                    scanVerificationPending = false;
                     resumeScanner();
                 },
             });
@@ -966,88 +931,74 @@
         }
 
         function resumeScanner() {
-            if (!scannerRequested || !scannerRunning || !html5QrCode) return;
-
             try {
-                html5QrCode.resume();
-            } catch (error) {
-                console.error("Unable to resume the QR scanner.", error);
-                setStatus("Unable to resume the camera. Close and reopen the scanner.");
-            }
+                if (html5QrCode) html5QrCode.resume();
+            } catch (e) {}
         }
 
+        // Start the scanner, requesting the BACK camera by default (no camera-picker UI shown)
         function startMainScanner() {
-            if (scannerStartPromise || scannerRunning) return scannerStartPromise;
+            html5QrCode = new Html5Qrcode("qr-reader");
+            setStatus("Requesting camera access…");
 
-            scannerStartPromise = (async function() {
-                try {
-                    setStatus("Loading QR scanner...");
-                    await loadQrScanner();
-                    if (!scannerRequested) return;
+            const config = {
+                fps: 12,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                },
+                aspectRatio: 1.0,
+            };
 
-                    html5QrCode = new Html5Qrcode("qr-reader");
-                    setStatus("Requesting camera access...");
-
-                    const config = {
-                        fps: 12,
-                        qrbox: {
-                            width: 250,
-                            height: 250
-                        },
-                        aspectRatio: 1.0,
-                    };
-
-                    try {
-                        await html5QrCode.start({
-                            facingMode: {
-                                exact: "environment"
-                            }
-                        }, config, onScanSuccess, onScanFailure);
-                    } catch (error) {
-                        availableCameras = await Html5Qrcode.getCameras();
-                        if (!availableCameras.length) throw error;
-
-                        cameraIndex = 0;
-                        currentCameraId = availableCameras[cameraIndex].id;
-                        await html5QrCode.start(currentCameraId, config, onScanSuccess, onScanFailure);
+            html5QrCode
+                .start({
+                    facingMode: {
+                        exact: "environment"
                     }
-
-                    scannerRunning = true;
-                    if (!scannerRequested) {
-                        await stopScanner();
-                        return;
-                    }
-
+                }, config, onScanSuccess, onScanFailure)
+                .then(() => {
                     setStatus("Point your camera at a Freebazar QR code");
                     prepareControls();
-                } catch (error) {
-                    console.error("Unable to start the QR scanner.", error);
-                    setStatus("Unable to access the camera. Check browser permissions and try again.");
-                    if (scannerRequested) {
-                        Swal.fire({
-                            icon: "warning",
-                            title: "Camera access needed",
-                            text: "Please allow camera access in your browser to scan the QR code.",
+                })
+                .catch(() => {
+                    // Fall back to a generic environment request, then to any available camera
+                    html5QrCode
+                        .start({
+                            facingMode: "environment"
+                        }, config, onScanSuccess, onScanFailure)
+                        .then(() => {
+                            setStatus("Point your camera at a Freebazar QR code");
+                            prepareControls();
+                        })
+                        .catch(() => {
+                            Html5Qrcode.getCameras()
+                                .then((cameras) => {
+                                    availableCameras = cameras || [];
+                                    if (availableCameras.length) {
+                                        currentCameraId = availableCameras[0].id;
+                                        html5QrCode
+                                            .start(currentCameraId, config, onScanSuccess,
+                                                onScanFailure)
+                                            .then(() => {
+                                                setStatus(
+                                                    "Point your camera at a Freebazar QR code"
+                                                );
+                                                prepareControls();
+                                            });
+                                    } else {
+                                        setStatus("No camera found on this device.");
+                                    }
+                                })
+                                .catch(() => {
+                                    setStatus("Camera permission was denied.");
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "Camera access needed",
+                                        text: "Please allow camera access in your browser to scan the QR code.",
+                                    });
+                                });
                         });
-                    }
-                } finally {
-                    scannerStartPromise = null;
-                }
-            })();
-
-            return scannerStartPromise;
-        }
-
-        function hideScannerModal() {
-            const scannerModal = document.getElementById("qrScannerModal");
-            if (!scannerModal.classList.contains("show")) return Promise.resolve();
-
-            return new Promise((resolve) => {
-                scannerModal.addEventListener("hidden.bs.modal", resolve, {
-                    once: true
                 });
-                bootstrap.Modal.getInstance(scannerModal)?.hide();
-            });
         }
 
         function prepareControls() {
@@ -1123,18 +1074,15 @@
         });
 
         function stopScanner() {
-            scannerRequested = false;
-            if (!html5QrCode || !scannerRunning) return Promise.resolve();
-
-            scannerRunning = false;
-            return html5QrCode.stop()
-                .then(() => html5QrCode.clear())
-                .catch((error) => {
-                    console.error("Unable to stop the QR scanner.", error);
-                    setStatus("Unable to stop the camera. Close the scanner and try again.");
-                });
+            if (html5QrCode) {
+                html5QrCode
+                    .stop()
+                    .then(() => html5QrCode.clear())
+                    .catch(() => {});
+            }
         }
 
+        // Stop the scanner if the QR scanner modal is manually closed
         document.getElementById("qrScannerModal").addEventListener("hidden.bs.modal", function() {
             stopScanner();
         });
