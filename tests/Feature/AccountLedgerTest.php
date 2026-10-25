@@ -65,6 +65,10 @@ class AccountLedgerTest extends TestCase
 
         Schema::create('payment_summaries', function (Blueprint $table) {
             $table->id();
+            $table->decimal('pos_credit', 15, 2)->default(0);
+            $table->decimal('pos_debit', 15, 2)->default(0);
+            $table->decimal('admin_credit', 15, 2)->default(0);
+            $table->decimal('admin_debit', 15, 2)->default(0);
             $table->string('status')->default('pending');
         });
 
@@ -241,6 +245,174 @@ class AccountLedgerTest extends TestCase
         $this->assertCount(2, $settledExport['rows']);
         $this->assertSame('75.00', $settledExport['total_credit']);
         $this->assertSame('0.00', $settledExport['total_balance']);
+    }
+
+    public function test_admin_view_credits_generated_summaries_and_debits_approved_pos_payments(): void
+    {
+        $this->createPayment([
+            'transaction_date' => now()->subDay()->toDateString(),
+            'voucher_number' => 'OPENING-TRANSFER',
+            'amount' => 100,
+            'from' => $this->adminUserId,
+            'to' => $this->posUserId,
+        ]);
+        DB::table('payment_summaries')->insert([
+            'id' => 30,
+            'pos_debit' => 60,
+            'admin_credit' => 60,
+            'status' => 'pending',
+        ]);
+        $this->createPayment([
+            'voucher_number' => 'REGULAR-TRANSFER',
+            'amount' => 20,
+            'from' => $this->adminUserId,
+            'to' => $this->posUserId,
+        ]);
+        $this->createPayment([
+            'payment_summury_id' => 30,
+            'voucher_number' => 'SUMMARY-AUTO-30',
+            'amount' => 60,
+            'from' => $this->posUserId,
+            'to' => '666666',
+            'remark' => 'Auto Generated',
+        ]);
+        $this->createPayment([
+            'payment_summury_id' => 30,
+            'voucher_number' => 'POS-PAYMENT-30',
+            'amount' => 60,
+            'from' => $this->posUserId,
+            'to' => '666666',
+            'remark' => 'Auto Submitted',
+        ]);
+
+        $request = new Request([
+            'from_date' => now()->toDateString(),
+            'to_date' => now()->toDateString(),
+        ]);
+        $pendingLedger = Payment::getLedgerData($request, $this->posUserId, true);
+        $pendingEntries = $pendingLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $this->assertCount(2, $pendingEntries);
+        $this->assertSame('100.00', $pendingLedger['opening_balance']);
+        $this->assertSame('Cr', $pendingLedger['opening_balance_type']);
+        $this->assertEquals(20, $pendingEntries[0]->credit);
+        $this->assertEquals(60, $pendingEntries[1]->credit);
+        $this->assertSame('80.00', $pendingLedger['total_credit']);
+        $this->assertSame('0.00', $pendingLedger['total_debit']);
+
+        DB::table('payment_summaries')->where('id', 30)->update(['status' => 'approved']);
+
+        $settledLedger = Payment::getLedgerData($request, $this->posUserId, true);
+        $settledEntries = $settledLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $this->assertCount(3, $settledEntries);
+        $this->assertSame('100.00', $settledLedger['opening_balance']);
+        $this->assertSame('Cr', $settledLedger['opening_balance_type']);
+        $this->assertEquals(20, $settledEntries[0]->credit);
+        $this->assertEquals(60, $settledEntries[1]->credit);
+        $this->assertEquals(60, $settledEntries[2]->debit);
+        $this->assertSame('120.00', $settledEntries[2]->balance);
+        $this->assertSame('Cr', $settledEntries[2]->balance_type);
+        $this->assertSame('60.00', $settledLedger['total_debit']);
+        $this->assertSame('80.00', $settledLedger['total_credit']);
+        $this->assertSame('120.00', $settledLedger['total_balance']);
+        $this->assertSame('Cr', $settledLedger['total_balance_type']);
+
+        $posLedger = Payment::getLedgerData($request, $this->posUserId);
+        $this->assertSame($posLedger['opening_balance'], $settledLedger['opening_balance']);
+        $this->assertSame('Dr', $posLedger['opening_balance_type']);
+        $this->assertSame($posLedger['total_balance'], $settledLedger['total_balance']);
+        $this->assertSame('Dr', $posLedger['total_balance_type']);
+        $this->assertSame($posLedger['total_debit'], $settledLedger['total_credit']);
+        $this->assertSame($posLedger['total_credit'], $settledLedger['total_debit']);
+
+        $export = Payment::getLedgerDataExport($request, $this->posUserId, 'Sample POS', true);
+        $this->assertSame('60.00', $export['total_debit']);
+        $this->assertSame('80.00', $export['total_credit']);
+        $this->assertSame('120.00', $export['total_balance']);
+    }
+
+    public function test_receivable_summary_is_a_pos_credit_and_admin_debit(): void
+    {
+        DB::table('payment_summaries')->insert([
+            'id' => 40,
+            'pos_credit' => 45,
+            'admin_debit' => 45,
+            'status' => 'pending',
+        ]);
+        $this->createPayment([
+            'payment_summury_id' => 40,
+            'voucher_number' => 'RECEIVABLE-SUMMARY',
+            'amount' => 45,
+            'from' => '666666',
+            'to' => $this->posUserId,
+            'remark' => 'Auto Generated',
+        ]);
+
+        $posLedger = Payment::getLedgerData(new Request(), $this->posUserId);
+        $posEntries = $posLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $this->assertCount(1, $posEntries);
+        $this->assertEquals(45, $posEntries[0]->credit);
+        $this->assertSame('45.00', $posEntries[0]->balance);
+        $this->assertSame('Cr', $posEntries[0]->balance_type);
+        $this->assertSame('45.00', $posLedger['total_credit']);
+
+        $adminLedger = Payment::getLedgerData(new Request(), $this->posUserId, true);
+        $adminEntries = $adminLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $this->assertCount(1, $adminEntries);
+        $this->assertEquals(45, $adminEntries[0]->debit);
+        $this->assertSame('45.00', $adminEntries[0]->balance);
+        $this->assertSame('Dr', $adminEntries[0]->balance_type);
+        $this->assertSame('45.00', $adminLedger['total_debit']);
+    }
+
+    public function test_admin_payment_posts_as_pos_debit_and_admin_credit_only_after_settlement(): void
+    {
+        DB::table('payment_summaries')->insert([
+            'id' => 50,
+            'pos_credit' => 40,
+            'admin_debit' => 40,
+            'status' => 'pending',
+        ]);
+        $this->createPayment([
+            'payment_summury_id' => 50,
+            'voucher_number' => 'ADMIN-RECEIVABLE-SUMMARY',
+            'amount' => 40,
+            'from' => '666666',
+            'to' => $this->posUserId,
+            'remark' => 'Auto Generated',
+        ]);
+        $this->createPayment([
+            'payment_summury_id' => 50,
+            'voucher_number' => 'ADMIN-RECEIVABLE-PAYMENT',
+            'amount' => 40,
+            'from' => '666666',
+            'to' => $this->posUserId,
+            'remark' => 'Admin payment',
+        ]);
+
+        $posPendingLedger = Payment::getLedgerData(new Request(), $this->posUserId);
+        $adminPendingLedger = Payment::getLedgerData(new Request(), $this->posUserId, true);
+        $posPendingEntries = $posPendingLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $adminPendingEntries = $adminPendingLedger->filter(fn ($item, $key) => is_int($key))->values();
+        $this->assertCount(1, $posPendingEntries);
+        $this->assertCount(1, $adminPendingEntries);
+        $this->assertSame('ADMIN-RECEIVABLE-SUMMARY', $posPendingEntries[0]->voucher_number);
+        $this->assertSame('0.00', $posPendingLedger['total_debit']);
+        $this->assertSame('40.00', $posPendingLedger['total_credit']);
+        $this->assertSame('40.00', $adminPendingLedger['total_debit']);
+        $this->assertSame('0.00', $adminPendingLedger['total_credit']);
+
+        DB::table('payment_summaries')->where('id', 50)->update(['status' => 'approved']);
+
+        $posSettledLedger = Payment::getLedgerData(new Request(), $this->posUserId);
+        $adminSettledLedger = Payment::getLedgerData(new Request(), $this->posUserId, true);
+        $posSettledPayment = $posSettledLedger->firstWhere('voucher_number', 'ADMIN-RECEIVABLE-PAYMENT');
+        $adminSettledPayment = $adminSettledLedger->firstWhere('voucher_number', 'ADMIN-RECEIVABLE-PAYMENT');
+        $this->assertNotNull($posSettledPayment);
+        $this->assertNotNull($adminSettledPayment);
+        $this->assertEquals(40, $posSettledPayment->debit);
+        $this->assertEquals(40, $adminSettledPayment->credit);
+        $this->assertSame('0.00', $posSettledLedger['total_balance']);
+        $this->assertSame('0.00', $adminSettledLedger['total_balance']);
     }
 
     private function createPayment(array $overrides): void

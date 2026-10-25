@@ -158,6 +158,15 @@ class PaymentSummaryController extends Controller
                             ->orWhere('remark', '!=', 'Auto Generated');
                     }),
             ], 'amount')
+            ->withSum([
+                'payment as admin_payment_amount' => fn ($query) => $query
+                    ->where('from', '666666')
+                    ->where('to', '!=', '666666')
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhereNotIn('remark', ['Auto Generated', 'DSR Summary Settled']);
+                    }),
+            ], 'amount')
             ->orderByDesc('date')
             ->when(!empty($filters['date']), fn ($query) => $query->whereDate('date', $filters['date']))
             ->when(!empty($filters['pos_id']), fn ($query) => $query->where('pos_id', $filters['pos_id']))
@@ -179,18 +188,10 @@ class PaymentSummaryController extends Controller
         $result = PaymentSummary::settleGeneratedSummary($id, (string) auth()->user()->user_id);
 
         if ($result === 'settled') {
-            return redirect()->back()->with('success', 'Payment summary settled and posted to the POS account ledger.');
+            return redirect()->back()->with('success', 'Payment summary settled after verifying the required POS/admin payment.');
         }
 
-        $message = match ($result) {
-            'already_settled' => 'This payment summary has already been settled.',
-            'missing_pos' => 'The POS account for this payment summary could not be found.',
-            'missing_generated_entry' => 'The generated payment entry is missing, so this summary cannot be settled.',
-            'payment_incomplete' => 'The POS has not paid the full amount due for this summary.',
-            default => 'Unable to settle this payment summary.',
-        };
-
-        return redirect()->back()->with('error', $message);
+        return redirect()->back()->with('error', $this->settlementStatusMessage($id, $result));
     }
 
     public function verify_settlement(Request $request)
@@ -200,19 +201,72 @@ class PaymentSummaryController extends Controller
             'reference_number' => ['nullable', 'string', 'max:255'],
         ]);
         $res = PaymentSummary::update_settlement($request);
-        if ($res) {
+        if ($res === 'settled') {
             return response()->json([
                 'success' => true,
                 'code'    => 200,
-                'message' => 'Payment Verified',
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'code'    => 500,
-                'message' => 'Verification Failed',
+                'message' => 'Settlement verified and marked as settled.',
             ]);
         }
+
+        return response()->json([
+            'success' => false,
+            'code'    => 422,
+            'message' => $this->settlementStatusMessage($request->integer('id'), $res),
+        ], 422);
+    }
+
+    private function settlementStatusMessage(int $summaryId, string $result): string
+    {
+        $summary = PaymentSummary::with('pos_system')->find($summaryId);
+        if (!$summary) {
+            return 'The payment summary could not be found.';
+        }
+
+        $posUserId = $summary->pos_system?->user_id;
+        if ($result === 'admin_payment_missing' || $result === 'admin_payment_incomplete') {
+            $paid = $posUserId
+                ? (float) Payment::query()
+                    ->where('payment_summury_id', $summary->id)
+                    ->where('from', '666666')
+                    ->where('to', $posUserId)
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhereNotIn('remark', ['Auto Generated', 'DSR Summary Settled']);
+                    })
+                    ->sum('amount')
+                : 0;
+            $remaining = max(0, (float) $summary->admin_debit - $paid);
+            $posName = $summary->pos_system?->name ?? 'the POS';
+
+            return $result === 'admin_payment_missing'
+                ? sprintf('Admin payment of ₹%s to %s is required before this summary can be settled.', number_format($remaining, 2), $posName)
+                : sprintf('Admin payment to %s is incomplete. ₹%s remains to be paid before settlement.', $posName, number_format($remaining, 2));
+        }
+
+        if ($result === 'payment_incomplete') {
+            $received = $posUserId
+                ? (float) Payment::query()
+                    ->where('payment_summury_id', $summary->id)
+                    ->where('from', $posUserId)
+                    ->where('to', '666666')
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhere('remark', '!=', 'Auto Generated');
+                    })
+                    ->sum('amount')
+                : 0;
+            $remaining = max(0, (float) $summary->admin_credit - $received);
+
+            return sprintf('POS payment is incomplete. ₹%s remains due before settlement.', number_format($remaining, 2));
+        }
+
+        return match ($result) {
+            'already_settled' => 'This payment summary has already been settled.',
+            'missing_pos' => 'The POS account for this payment summary could not be found.',
+            'missing_generated_entry' => 'The generated payment entry is missing, so this summary cannot be settled.',
+            default => 'Unable to settle this payment summary.',
+        };
     }
 
     public function reject_settlement($id)
@@ -291,11 +345,7 @@ class PaymentSummaryController extends Controller
             'summary_date' => ['required', 'date'],
             'paying_amount' => ['required', 'numeric', 'gt:0'],
             'pay_by' => ['required', 'in:0,1'],
-            'reference_number' => [
-                $request->boolean('is_pos') ? 'nullable' : 'required',
-                'string',
-                'max:255',
-            ],
+            'reference_number' => ['nullable', 'string', 'max:255'],
             'remark' => ['nullable', 'string', 'max:2000'],
             'is_pos' => ['sometimes', 'boolean'],
         ]);
@@ -432,7 +482,11 @@ class PaymentSummaryController extends Controller
         $pos = $request->routeIs('admin.get.ledger')
             ? PosModel::findOrFail($request->integer('pos_id'))
             : null;
-        $ledger = Payment::getLedgerData($request, $pos?->user_id);
+        $ledger = Payment::getLedgerData(
+            $request,
+            $pos?->user_id,
+            $request->routeIs('admin.get.ledger')
+        );
         // $pagination = $ledger->links()->render();
         return response()->json(['data' => $ledger]);
     }
@@ -461,7 +515,12 @@ class PaymentSummaryController extends Controller
         $pos = $request->routeIs('admin.ledger.export')
             ? PosModel::findOrFail($request->integer('pos_id'))
             : null;
-        $data = Payment::getLedgerDataExport($request, $pos?->user_id, $pos?->name);
+        $data = Payment::getLedgerDataExport(
+            $request,
+            $pos?->user_id,
+            $pos?->name,
+            $request->routeIs('admin.ledger.export')
+        );
         $accountName = $pos?->name ?? auth()->user()->name;
         $filename = 'AccountLedger_' . \Illuminate\Support\Str::slug($accountName) . '_' . now()->format('Ymd') . '.xlsx';
 

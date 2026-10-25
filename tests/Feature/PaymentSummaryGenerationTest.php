@@ -475,7 +475,7 @@ class PaymentSummaryGenerationTest extends TestCase
         $this->assertSame('approved', $summaries->get($pendingSummaryId)->status);
     }
 
-    public function test_settling_payable_summary_posts_payment_to_pos_ledger(): void
+    public function test_settling_payable_summary_requires_recorded_admin_payment(): void
     {
         $posId = DB::table('pos_systems')->insertGetId([
             'user_id' => 'POS-SETTLE',
@@ -513,18 +513,71 @@ class PaymentSummaryGenerationTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        $this->assertSame('admin_payment_missing', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
+        $this->assertSame('admin_payment_missing', PaymentSummary::update_settlement(new Request([
+            'id' => $summaryId,
+            'reference_number' => 'ADMIN-PAYOUT-REF',
+        ])));
+        $this->assertSame('pending', DB::table('payment_summaries')->where('id', $summaryId)->value('status'));
+        $this->assertSame(0, DB::table('payments')->where('remark', 'DSR Summary Settled')->count());
+
+        DB::table('payments')->insert([
+            'payment_summury_id' => $summaryId,
+            'transaction_date' => '2026-10-10',
+            'voucher_number' => 'LEGACY-SYNTHETIC',
+            'reference_number' => 'SUMMARY-SETTLE-REF',
+            'amount' => 15,
+            'to' => 'POS-SETTLE',
+            'from' => '666666',
+            'created_by' => '666666',
+            'updated_by' => '666666',
+            'remark' => 'DSR Summary Settled',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('payment_summaries')->where('id', $summaryId)->update(['status' => 'approved']);
+        $this->assertSame('admin_payment_missing', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
+        $this->assertSame('admin_payment_missing', PaymentSummary::update_settlement(new Request([
+            'id' => $summaryId,
+            'reference_number' => 'ADMIN-PAYOUT-REF',
+        ])));
+        DB::table('payment_summaries')->where('id', $summaryId)->update(['status' => 'pending']);
+
+        DB::table('payments')->insert([
+            'payment_summury_id' => $summaryId,
+            'transaction_date' => '2026-10-10',
+            'voucher_number' => 'ADMIN-PAYOUT',
+            'reference_number' => 'ADMIN-PAYOUT-REF',
+            'amount' => 10,
+            'to' => 'POS-SETTLE',
+            'from' => '666666',
+            'created_by' => '666666',
+            'updated_by' => '666666',
+            'remark' => 'Admin payout',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->assertSame('admin_payment_incomplete', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
+        $this->assertSame('admin_payment_incomplete', PaymentSummary::update_settlement(new Request([
+            'id' => $summaryId,
+            'reference_number' => 'ADMIN-PAYOUT-REF',
+        ])));
+        $this->assertSame('pending', DB::table('payment_summaries')->where('id', $summaryId)->value('status'));
+
+        DB::table('payments')->where('voucher_number', 'ADMIN-PAYOUT')->update(['amount' => 15]);
         $this->assertSame('settled', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
         $this->assertSame('approved', DB::table('payment_summaries')->where('id', $summaryId)->value('status'));
 
         $ledgerPayment = DB::table('payments')
             ->where('payment_summury_id', $summaryId)
-            ->where('remark', 'DSR Summary Settled')
+            ->where('voucher_number', 'ADMIN-PAYOUT')
             ->first();
         $this->assertNotNull($ledgerPayment);
         $this->assertSame('POS-SETTLE', $ledgerPayment->to);
         $this->assertSame('666666', $ledgerPayment->from);
         $this->assertEquals(15, (float) $ledgerPayment->amount);
-        $this->assertSame('SUMMARY-SETTLE-REF', $ledgerPayment->reference_number);
+        $this->assertSame('ADMIN-PAYOUT-REF', DB::table('payment_summaries')->where('id', $summaryId)->value('reference_number'));
         $this->assertSame('already_settled', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
         $this->assertSame(1, DB::table('payments')->where('remark', 'DSR Summary Settled')->count());
     }

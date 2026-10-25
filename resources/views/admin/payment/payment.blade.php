@@ -194,7 +194,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
                                 <input name="reference_number" id="reference_number" type="text" class="form-control"
-                                    required min="0" placeholder="Reference Number">
+                                    required readonly placeholder="Reference Number">
                             </div>
                         </div>
 
@@ -433,6 +433,7 @@
                 const lookupButton = $(this).find('button[type="submit"]');
                 lookupButton.prop('disabled', true);
                 showFormLoader();
+                $('#reference_number').val('');
                 $('#transaction-tbody').html(`<tr><td colspan="11" class="text-center py-4">
                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     Loading transactions…
@@ -464,7 +465,6 @@
                         $('#settlement_status').attr('hidden', true);
                         $('#debit-amount-span-one').attr('hidden', true);
                         $('#submit-payment').prop('disabled', true);
-                        $('#reference_number').removeAttr('readonly');
                         $('#remark').removeAttr('readonly');
                         $('#payment_status').removeClass();
                         if (res.success) {
@@ -496,9 +496,17 @@
                                 return;
                             }
                             let payment_data = res.payment_data;
+                            const generatedPayment = (payment_data.payment || []).find(payment =>
+                                payment.remark === 'Auto Generated'
+                            );
+                            const summaryReference = payment_data.summary_reference_number
+                                || generatedPayment?.reference_number
+                                || payment_data.reference_number
+                                || '';
                             $('#pos_name').text(payment_data.pos_system.name);
                             $('#amount').val(payment_data.total_billing_amount);
                             $('#pos_id').val(payment_data.pos_id);
+                            $('#reference_number').val(summaryReference).prop('readonly', true);
                             if (payment_data.status == 'approved') {
                                 $('#settlement_status').removeAttr('hidden');
                                 $('#settlement_status').text('Settled');
@@ -524,7 +532,6 @@
                                 $('#cradit-amount-span-one').removeAttr('hidden');
                                 $('#remark').attr('readonly', false);
                                 $('#cradit-amount-span-two').text(remaining.toFixed(2));
-                                $('#reference_number').val('');
 
                                 if (remainingCents === 0) {
                                     $('#payment-span').removeAttr('hidden');
@@ -553,11 +560,9 @@
                                 check_credit_amount = 0;
                                 $('#due_balance').val('0.00');
                                 $('#submit-payment').prop('disabled', remainingCents === 0);
-                                $('#reference_number').val('');
                                 $('#debit-amount-span-two').text(remaining.toFixed(2));
                                 $('#debit-amount-span-one').removeAttr('hidden');
                                 $('#cradit-amount-span-one').attr('hidden', true);
-                                $('#reference_number').removeAttr('readonly');
                                 $('#remark').removeAttr('readonly');
                                 if (paidCents > 0) {
                                     $('#payment-span').removeAttr('hidden');

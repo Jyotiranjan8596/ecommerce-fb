@@ -68,7 +68,7 @@
                             <th scope="col" class="text-end">Admin credit</th>
                             <th scope="col" class="text-end">Admin debit</th>
                             <th scope="col">Reference</th>
-                            <th scope="col">Automation status</th>
+                            <th scope="col">Payment status</th>
                             <th scope="col">Saved at</th>
                             <th scope="col">Settlement</th>
                         </tr>
@@ -93,18 +93,32 @@
                                         <span class="badge {{ $summary->has_generated_payment ? 'bg-success' : 'bg-secondary' }}">
                                             {{ $summary->has_generated_payment ? 'Summary generated' : 'Summary not generated' }}
                                         </span>
-                                        @if ((float) $summary->admin_credit <= 0)
-                                            <span class="badge bg-light text-dark border">No POS payment due</span>
-                                        @elseif ((float) $summary->pos_payment_amount >= (float) $summary->admin_credit)
-                                            <span class="badge {{ $summary->has_auto_submitted_payment ? 'bg-success' : 'bg-info text-dark' }}">
-                                                {{ $summary->has_auto_submitted_payment ? 'POS payment auto-submitted' : 'POS payment recorded' }}
-                                            </span>
-                                        @elseif ((float) $summary->auto_submitted_amount > 0)
-                                            <span class="badge bg-warning text-dark">
-                                                Auto-submitted ₹{{ number_format((float) $summary->auto_submitted_amount, 2) }} of ₹{{ number_format((float) $summary->admin_credit, 2) }}
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary">POS payment pending</span>
+                                        @if ((float) $summary->admin_credit > 0)
+                                            @if ((float) $summary->pos_payment_amount >= (float) $summary->admin_credit)
+                                                <span class="badge {{ $summary->has_auto_submitted_payment ? 'bg-success' : 'bg-info text-dark' }}">
+                                                    {{ $summary->has_auto_submitted_payment ? 'POS payment auto-submitted' : 'POS payment recorded' }}
+                                                </span>
+                                            @elseif ((float) $summary->auto_submitted_amount > 0)
+                                                <span class="badge bg-warning text-dark">
+                                                    POS paid ₹{{ number_format((float) $summary->pos_payment_amount, 2) }} of ₹{{ number_format((float) $summary->admin_credit, 2) }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">POS payment pending</span>
+                                            @endif
+                                        @endif
+                                        @if ((float) $summary->admin_debit > 0)
+                                            @if ((float) $summary->admin_payment_amount >= (float) $summary->admin_debit)
+                                                <span class="badge bg-success">Admin payment recorded</span>
+                                            @elseif ((float) $summary->admin_payment_amount > 0)
+                                                <span class="badge bg-warning text-dark">
+                                                    Admin paid ₹{{ number_format((float) $summary->admin_payment_amount, 2) }} of ₹{{ number_format((float) $summary->admin_debit, 2) }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">Admin payment pending</span>
+                                            @endif
+                                        @endif
+                                        @if ((float) $summary->admin_credit <= 0 && (float) $summary->admin_debit <= 0)
+                                            <span class="badge bg-light text-dark border">No settlement payment due</span>
                                         @endif
                                     </div>
                                 </td>
@@ -112,17 +126,33 @@
                                 <td>
                                     @if ($summary->status === 'pending' && $summary->pos_system)
                                         <form method="POST" action="{{ route('admin.payment-summaries.settle', $summary->id) }}"
-                                            onsubmit="return confirm('Confirm settlement and post any payable amount to the POS account ledger?');">
+                                            onsubmit="return confirm('Confirm that all payment due for this summary has actually been recorded before settling?');">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-warning fw-semibold">
                                                 Review &amp; settle
                                             </button>
                                         </form>
+                                        @if ((float) $summary->admin_debit > 0 && (float) $summary->admin_payment_amount < (float) $summary->admin_debit)
+                                            <small class="d-block text-danger mt-1">
+                                                Admin payment pending: ₹{{ number_format(max(0, (float) $summary->admin_debit - (float) $summary->admin_payment_amount), 2) }} due
+                                            </small>
+                                        @endif
                                     @elseif ($summary->status === 'pending')
                                         <button type="button" class="btn btn-sm btn-outline-secondary" disabled
                                             title="This summary has no linked POS account.">
                                             POS missing
                                         </button>
+                                    @elseif ($summary->status === 'approved' && (float) $summary->admin_debit > (float) $summary->admin_payment_amount)
+                                        <span class="badge bg-danger mb-1">Admin payment not fully recorded</span>
+                                        <form method="POST" action="{{ route('admin.payment-summaries.settle', $summary->id) }}">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold">
+                                                Check payment
+                                            </button>
+                                        </form>
+                                        <small class="d-block text-danger mt-1">
+                                            ₹{{ number_format(max(0, (float) $summary->admin_debit - (float) $summary->admin_payment_amount), 2) }} payment record missing
+                                        </small>
                                     @elseif ($summary->status === 'approved')
                                         <button type="button" class="btn btn-sm btn-success" disabled>Settled</button>
                                     @else

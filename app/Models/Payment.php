@@ -89,14 +89,10 @@ class Payment extends Model
                 return false;
             }
 
-            $generatedEntry = $isPos
-                ? $payment_smry->ensureGeneratedPaymentEntry()
-                : null;
-            $referenceNumber = $isPos
-                ? $generatedEntry?->reference_number
-                : $request->reference_number;
+            $generatedEntry = $payment_smry->ensureGeneratedPaymentEntry();
+            $referenceNumber = $generatedEntry?->reference_number;
 
-            if ($isPos && !$referenceNumber) {
+            if (!$referenceNumber) {
                 DB::rollBack();
                 return false;
             }
@@ -134,23 +130,15 @@ class Payment extends Model
                     'updated_at'       => now(),
                 ]
             ];
-            if (!$isPos && $remainingAfterPayment === 0) {
-                $update_res = $payment_smry->update([
-                    'status' => 'approved',
-                    'reference_number' => $referenceNumber
-                ]);
-
-                if ($update_res == 0) {
-                    DB::rollBack();
-                    return false;
-                }
-            }
-
             $inserted = Payment::insert($data);
 
             if (!$inserted) {
                 DB::rollBack();
                 return false;
+            }
+            if (!$isPos && !$payment_smry->reference_number) {
+                $payment_smry->reference_number = $referenceNumber;
+                $payment_smry->save();
             }
             $parameters = [
                 'pos_name' => $pos->name,
@@ -257,7 +245,7 @@ class Payment extends Model
     }
 
 
-    public static function getLedgerData($request, ?string $accountUserId = null)
+    public static function getLedgerData($request, ?string $accountUserId = null, bool $adminView = false)
     {
         $user_profile = auth()->user();
         $userId       = $accountUserId ?? $user_profile->user_id;
@@ -276,7 +264,7 @@ class Payment extends Model
                 ->whereDate('transaction_date', '<', $from)
                 ->get();
             foreach ($openingTransactions as $transaction) {
-                $opening_balance += self::ledgerBalanceDelta($transaction, $userId);
+                $opening_balance += self::ledgerBalanceDelta($transaction, $userId, $adminView);
             }
         }
         $query = (clone $base_query)
@@ -292,6 +280,7 @@ class Payment extends Model
         $running_balance = $opening_balance;
         $transactions = $query->get()->map(function ($item) use (
             $userId,
+            $adminView,
             &$running_balance,
             &$total_debit,
             &$total_credit
@@ -309,7 +298,7 @@ class Payment extends Model
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
-            $balanceDelta = self::ledgerBalanceDelta($item, $userId);
+            $balanceDelta = self::ledgerBalanceDelta($item, $userId, $adminView);
             if ($balanceDelta > 0) {
                 $item->debit = abs($balanceDelta);
                 $total_debit += $item->amount;
@@ -340,7 +329,8 @@ class Payment extends Model
     public static function getLedgerDataExport(
         $request,
         ?string $accountUserId = null,
-        ?string $accountName = null
+        ?string $accountName = null,
+        bool $adminView = false
     )
     {
         $user_profile = auth()->user();
@@ -361,7 +351,7 @@ class Payment extends Model
                 ->whereDate('transaction_date', '<', $from)
                 ->get();
             foreach ($openingTransactions as $transaction) {
-                $opening_balance += self::ledgerBalanceDelta($transaction, $userId);
+                $opening_balance += self::ledgerBalanceDelta($transaction, $userId, $adminView);
             }
         }
         $query = (clone $base_query)
@@ -377,6 +367,7 @@ class Payment extends Model
         $running_balance = $opening_balance;
         $transactions = $query->get()->map(function ($item) use (
             $userId,
+            $adminView,
             &$running_balance,
             &$total_debit,
             &$total_credit
@@ -394,7 +385,7 @@ class Payment extends Model
             $item->date = $item->transaction_date
                 ? Carbon::parse($item->transaction_date)->format('d-m-Y')
                 : null;
-            $balanceDelta = self::ledgerBalanceDelta($item, $userId);
+            $balanceDelta = self::ledgerBalanceDelta($item, $userId, $adminView);
             if ($balanceDelta > 0) {
                 $item->debit = abs($balanceDelta);
                 $total_debit += $item->amount;
@@ -429,12 +420,27 @@ class Payment extends Model
         ];
     }
 
-    private static function ledgerBalanceDelta(self $transaction, string $userId): float
+    private static function ledgerBalanceDelta(self $transaction, string $userId, bool $adminView = false): float
+    {
+        $balanceDelta = self::accountBalanceDelta($transaction, $userId);
+
+        return $adminView
+            ? -$balanceDelta
+            : $balanceDelta;
+    }
+
+    private static function accountBalanceDelta(self $transaction, string $userId): float
     {
         $amount = (float) $transaction->amount;
 
         if ($transaction->remark === 'Auto Generated') {
-            return $userId === '666666' ? -$amount : $amount;
+            if ($transaction->from === $userId) {
+                return $amount;
+            }
+
+            if ($transaction->to === $userId) {
+                return -$amount;
+            }
         }
 
         if ($transaction->remark === 'DSR Summary Settled' && $transaction->payment_summury_id !== null) {
@@ -445,14 +451,6 @@ class Payment extends Model
             if ($transaction->from === $userId) {
                 return $amount;
             }
-        }
-
-        if (
-            $transaction->payment_summury_id !== null
-            && $transaction->from === '666666'
-            && $transaction->to === $userId
-        ) {
-            return $userId === '666666' ? $amount : -$amount;
         }
 
         if ($transaction->to === $userId) {
@@ -473,10 +471,8 @@ class Payment extends Model
                 $query->where('to', $userId)
                     ->orWhere('from', $userId);
             })
-            ->where(function (Builder $query) use ($userId) {
-                $query->where('from', '!=', $userId)
-                    ->orWhere('to', '!=', '666666')
-                    ->orWhereNull('payment_summury_id')
+            ->where(function (Builder $query) {
+                $query->whereNull('payment_summury_id')
                     ->orWhere('remark', 'Auto Generated')
                     ->orWhereDoesntHave('payment_summary', function (Builder $summaryQuery) {
                         $summaryQuery->where('status', '!=', 'approved');

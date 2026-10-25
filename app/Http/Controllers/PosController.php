@@ -409,19 +409,21 @@ class PosController extends Controller
         $ledger_data = Payment::getLedgerData($request);
         // dd($ledger_data);
         if ($payment_data) {
+            $generatedEntry = $payment_data->ensureGeneratedPaymentEntry();
+            if (!$generatedEntry) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to prepare the payment reference for this summary.',
+                ], 500);
+            }
+
+            $payment_data->setAttribute('summary_reference_number', $generatedEntry->reference_number);
+            $payment_data->load('payment');
+
             if ($request->routeIs('pos.get.payment.details')) {
                 $pos = PosModel::where('user_id', auth()->user()->user_id)->firstOrFail();
                 abort_unless((string) $request->pos_id === (string) $pos->user_id, 403);
 
-                $generatedEntry = $payment_data->ensureGeneratedPaymentEntry();
-                if (!$generatedEntry) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Unable to prepare the payment reference for this summary.',
-                    ], 500);
-                }
-
-                $payment_data->load('payment');
                 $submittedAmount = $payment_data->payment
                     ->where('from', $pos->user_id)
                     ->where('to', '666666')

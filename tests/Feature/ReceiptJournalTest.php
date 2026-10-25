@@ -98,6 +98,7 @@ class ReceiptJournalTest extends TestCase
 
     public function test_receipt_is_saved_as_funds_received_from_selected_pos(): void
     {
+        Http::fake(['graph.facebook.com/*' => Http::response([], 200)]);
         $adminId = DB::table('users')->insertGetId([
             'user_id' => 'admin-100',
             'name' => 'Admin',
@@ -211,16 +212,52 @@ class ReceiptJournalTest extends TestCase
             'summary_date' => now()->toDateString(),
             'paying_amount' => $amount,
             'pay_by' => '1',
-            'reference_number' => 'REF-' . $amount,
+            'reference_number' => 'USER-EDITED-REF-' . $amount,
             'is_pos' => '0',
         ]));
 
         $this->assertTrue($makePayment(40));
         $this->assertSame('pending', PaymentSummary::findOrFail($summaryId)->status);
         $this->assertEquals(60, Payment::latest('id')->value('due'));
+        $firstPayment = Payment::where('payment_summury_id', $summaryId)
+            ->where(function ($query) {
+                $query->whereNull('remark')
+                    ->orWhere('remark', '!=', 'Auto Generated');
+            })
+            ->latest('id')
+            ->firstOrFail();
+        $this->assertNull(Payment::getLedgerData(new Request(), $posUser->user_id)
+            ->filter(fn ($item, $key) => is_int($key))
+            ->firstWhere('id', $firstPayment->id));
+        $summaryReference = Payment::where('payment_summury_id', $summaryId)
+            ->where('remark', 'Auto Generated')
+            ->value('reference_number');
+        $this->assertNotEmpty($summaryReference);
+        $this->assertSame($summaryReference, Payment::latest('id')->value('reference_number'));
 
         $this->assertTrue($makePayment(60));
+        $this->assertSame('pending', PaymentSummary::findOrFail($summaryId)->status);
+        $finalPayment = Payment::where('payment_summury_id', $summaryId)
+            ->where(function ($query) {
+                $query->whereNull('remark')
+                    ->orWhere('remark', '!=', 'Auto Generated');
+            })
+            ->latest('id')
+            ->firstOrFail();
+        $this->assertNull(Payment::getLedgerData(new Request(), $posUser->user_id)
+            ->filter(fn ($item, $key) => is_int($key))
+            ->firstWhere('id', $finalPayment->id));
+        $this->assertSame($summaryReference, Payment::latest('id')->value('reference_number'));
+        $this->assertSame('settled', PaymentSummary::settleGeneratedSummary($summaryId, '666666'));
         $this->assertSame('approved', PaymentSummary::findOrFail($summaryId)->status);
+        $posLedger = Payment::getLedgerData(new Request(), $posUser->user_id);
+        $adminLedger = Payment::getLedgerData(new Request(), $posUser->user_id, true);
+        $posEntries = $posLedger->filter(fn ($item, $key) => is_int($key));
+        $adminEntries = $adminLedger->filter(fn ($item, $key) => is_int($key));
+        $this->assertEquals(40, $posEntries->firstWhere('id', $firstPayment->id)->debit);
+        $this->assertEquals(60, $posEntries->firstWhere('id', $finalPayment->id)->debit);
+        $this->assertEquals(40, $adminEntries->firstWhere('id', $firstPayment->id)->credit);
+        $this->assertEquals(60, $adminEntries->firstWhere('id', $finalPayment->id)->credit);
         $this->assertFalse($makePayment(1));
         $this->assertSame(2, Payment::where('payment_summury_id', $summaryId)
             ->where('from', '666666')
@@ -288,7 +325,7 @@ class ReceiptJournalTest extends TestCase
         $this->assertTrue($makePayment(35));
         $this->assertSame('pending', PaymentSummary::findOrFail($summaryId)->status);
         $this->assertEquals(65, Payment::latest('id')->value('due'));
-        $this->assertFalse(PaymentSummary::update_settlement(new Request([
+        $this->assertSame('payment_incomplete', PaymentSummary::update_settlement(new Request([
             'id' => $summaryId,
             'reference_number' => 'verified-too-early',
         ])));
@@ -309,7 +346,7 @@ class ReceiptJournalTest extends TestCase
         Payment::where('payment_summury_id', $summaryId)
             ->where('remark', 'Auto Generated')
             ->delete();
-        $this->assertTrue(PaymentSummary::update_settlement(new Request([
+        $this->assertSame('settled', PaymentSummary::update_settlement(new Request([
             'id' => $summaryId,
             'reference_number' => 'verified',
         ])));

@@ -183,15 +183,35 @@ class PaymentSummary extends Model
 
     public static function settleGeneratedSummary(int $id, string $settledBy): string
     {
-        return DB::transaction(function () use ($id, $settledBy) {
+        return DB::transaction(function () use ($id) {
             $summary = self::whereKey($id)->lockForUpdate()->firstOrFail();
-            if ($summary->status !== 'pending') {
-                return 'already_settled';
-            }
-
             $posUserId = $summary->pos_system()->value('user_id');
             if (!$posUserId) {
                 return 'missing_pos';
+            }
+
+            $payoutCents = (int) round((float) $summary->admin_debit * 100);
+            if ($payoutCents > 0) {
+                $paidCents = (int) round((float) Payment::query()
+                    ->where('payment_summury_id', $summary->id)
+                    ->where('from', '666666')
+                    ->where('to', $posUserId)
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhereNotIn('remark', ['Auto Generated', 'DSR Summary Settled']);
+                    })
+                    ->sum('amount') * 100);
+
+                if ($paidCents === 0) {
+                    return 'admin_payment_missing';
+                }
+                if ($paidCents < $payoutCents) {
+                    return 'admin_payment_incomplete';
+                }
+            }
+
+            if ($summary->status !== 'pending') {
+                return 'already_settled';
             }
 
             $generatedEntry = Payment::query()
@@ -229,43 +249,19 @@ class PaymentSummary extends Model
                 }
             }
 
-            $payoutCents = (int) round((float) $summary->admin_debit * 100);
-            if ($payoutCents > 0) {
-                $paidCents = (int) round((float) Payment::query()
-                    ->where('payment_summury_id', $summary->id)
-                    ->where('from', '666666')
-                    ->where('to', $posUserId)
-                    ->where(function ($query) {
-                        $query->whereNull('remark')
-                            ->orWhere('remark', '!=', 'Auto Generated');
-                    })
-                    ->sum('amount') * 100);
-                $remainingCents = max(0, $payoutCents - $paidCents);
-
-                if ($remainingCents > 0) {
-                    Payment::insert([
-                        'payment_summury_id' => $summary->id,
-                        'transaction_date' => now()->toDateString(),
-                        'voucher_number' => Helper::generateVoucherNumber(),
-                        'reference_number' => $generatedEntry->reference_number,
-                        'account_details' => null,
-                        'pay_by' => null,
-                        'due' => '0.00',
-                        'amount' => number_format($remainingCents / 100, 2, '.', ''),
-                        'to' => $posUserId,
-                        'from' => '666666',
-                        'created_by' => $settledBy,
-                        'updated_by' => $settledBy,
-                        'remark' => 'DSR Summary Settled',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-
             $summary->status = 'approved';
             if (!$summary->reference_number) {
-                $summary->reference_number = $generatedEntry->reference_number;
+                $summary->reference_number = $payoutCents > 0
+                    ? Payment::query()
+                        ->where('payment_summury_id', $summary->id)
+                        ->where('from', '666666')
+                        ->where('to', $posUserId)
+                        ->where(function ($query) {
+                            $query->whereNull('remark')
+                                ->orWhereNotIn('remark', ['Auto Generated', 'DSR Summary Settled']);
+                        })
+                        ->value('reference_number')
+                    : $generatedEntry->reference_number;
             }
             $summary->save();
 
@@ -273,40 +269,61 @@ class PaymentSummary extends Model
         });
     }
 
-    public static function update_settlement($request)
+    public static function update_settlement($request): string
     {
-        $settlement                   = self::findOrFail($request->id);
-        if ($settlement->status !== 'pending') {
-            return false;
-        }
-        if ((float) $settlement->admin_credit > 0) {
+        return DB::transaction(function () use ($request) {
+            $settlement = self::whereKey($request->id)->lockForUpdate()->firstOrFail();
             $posUserId = $settlement->pos_system()->value('user_id');
             if (!$posUserId) {
-                return false;
+                return 'missing_pos';
             }
 
-            $receivedCents = (int) round((float) Payment::query()
-                ->where('payment_summury_id', $settlement->id)
-                ->where('from', $posUserId)
-                ->where('to', '666666')
-                ->where(function ($query) {
-                    $query->whereNull('remark')
-                        ->orWhere('remark', '!=', 'Auto Generated');
-                })
-                ->sum('amount') * 100);
-            $expectedCents = (int) round((float) $settlement->admin_credit * 100);
-            if ($receivedCents < $expectedCents) {
-                return false;
+            if ((float) $settlement->admin_credit > 0) {
+                $receivedCents = (int) round((float) Payment::query()
+                    ->where('payment_summury_id', $settlement->id)
+                    ->where('from', $posUserId)
+                    ->where('to', '666666')
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhere('remark', '!=', 'Auto Generated');
+                    })
+                    ->sum('amount') * 100);
+                $expectedCents = (int) round((float) $settlement->admin_credit * 100);
+                if ($receivedCents < $expectedCents) {
+                    return 'payment_incomplete';
+                }
             }
-        }
-        $settlement->reference_number = $request->reference_number;
-        $settlement->status           = 'approved';
-        $res                          = $settlement->save();
-        if ($res) {
-            return true;
-        } else {
-            return false;
-        }
+
+            $payoutCents = (int) round((float) $settlement->admin_debit * 100);
+            if ($payoutCents > 0) {
+                $paidCents = (int) round((float) Payment::query()
+                    ->where('payment_summury_id', $settlement->id)
+                    ->where('from', '666666')
+                    ->where('to', $posUserId)
+                    ->where(function ($query) {
+                        $query->whereNull('remark')
+                            ->orWhereNotIn('remark', ['Auto Generated', 'DSR Summary Settled']);
+                    })
+                    ->sum('amount') * 100);
+
+                if ($paidCents === 0) {
+                    return 'admin_payment_missing';
+                }
+                if ($paidCents < $payoutCents) {
+                    return 'admin_payment_incomplete';
+                }
+            }
+
+            if ($settlement->status !== 'pending') {
+                return 'already_settled';
+            }
+
+            $settlement->reference_number = $request->reference_number;
+            $settlement->status           = 'approved';
+            $settlement->save();
+
+            return 'settled';
+        });
     }
 
     public static function getinvoice($id)
