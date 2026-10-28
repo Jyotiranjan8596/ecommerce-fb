@@ -576,7 +576,6 @@
                                                         <td>{{ date('d/m/Y', strtotime($data->transaction_date)) }}</td>
                                                         <td>₹{{ number_format((float) ($data->billing_amount ?? 0), 2) }}
                                                         </td>
-                                                        {{dd($data->amount_wallet);}}
                                                         <td>₹{{ number_format((float) ($data->amount_wallet ?? 0), 2) }}
                                                         </td>
                                                         <td>₹{{ number_format((float) ($data->userWallets->first()?->used_points ?? 0), 2) }}
