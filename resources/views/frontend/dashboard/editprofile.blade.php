@@ -6,11 +6,13 @@
             <div class="card-header border-0 px-4 py-3 profile-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <div class="text-uppercase small fw-semibold mb-1 profile-eyebrow">{{ $user_profile->is_prime_member ? 'Prime member account' : 'Account settings' }}</div>
-                        <h4 class="mb-0 fw-bold profile-title">{{ $user_profile->is_prime_member ? 'Prime Profile' : 'My Profile' }}</h4>
+                        <div class="text-uppercase small fw-semibold mb-1 profile-eyebrow">Account settings</div>
+                        <h4 class="mb-0 fw-bold profile-title">My Profile</h4>
                         <p class="mb-0 mt-1 profile-subtitle">Your personal and account information.</p>
                     </div>
-                    <span class="badge rounded-pill bg-white px-3 py-2 fs-6 profile-badge">{{ $user_profile->is_prime_member ? 'Prime Profile' : 'Profile details' }}</span>
+                    @unless ($user_profile->is_prime_member)
+                        <span class="badge rounded-pill bg-white px-3 py-2 fs-6 profile-badge">Profile details</span>
+                    @endunless
                 </div>
             </div>
 
@@ -33,12 +35,12 @@
                             </div>
                         </div>
                         <div class="min-w-0">
-                            <h5 class="mb-1 profile-person-name">{{ $user_profile->name ?: 'Name not provided' }}</h5>
                             @if ($user_profile->is_prime_member)
                                 <span class="prime-badge mb-2">
-                                    <i class="fas fa-crown" aria-hidden="true"></i> Prime member
+                                    <i class="fas fa-crown" aria-hidden="true"></i> PRIME MEMBER
                                 </span>
                             @endif
+                            <h5 class="mb-1 profile-person-name">{{ $user_profile->name ?: 'Name not provided' }}</h5>
                             <div class="profile-person-contact">{{ $user_profile->email ?: 'Email not provided' }}</div>
                             <div class="profile-person-contact">{{ $user_profile->mobilenumber ?: 'Phone not provided' }}</div>
                             <form action="{{ route('user.profile.image.update') }}" method="POST"

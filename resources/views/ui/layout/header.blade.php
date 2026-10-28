@@ -243,12 +243,14 @@
                             class="img-fluid" style="width: 160px; max-width: 100%; height: auto;" />
                     </a>
                 </div>
-                <button class="navbar-toggler justify-content-md-end " type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <use xlink:href="#menu"></use>
-                    </svg>
-                </button>
+                @auth
+                    <button class="navbar-toggler justify-content-md-end " type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <use xlink:href="#menu"></use>
+                        </svg>
+                    </button>
+                @endauth
             </div>
 
             {{-- Search Bar  --}}

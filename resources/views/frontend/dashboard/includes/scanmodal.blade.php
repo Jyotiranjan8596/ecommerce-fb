@@ -866,13 +866,15 @@
         const switchCamBtn = document.getElementById("qrSwitchCamBtn");
 
         // Open the QR Code Scanner Modal when the scan button is clicked
-        document.getElementById("my-qr-reader").addEventListener("click", function() {
-            let qrModal = new bootstrap.Modal(document.getElementById("qrScannerModal"), {
-                backdrop: "static",
-                keyboard: false,
+        document.querySelectorAll(".qr-scanner-trigger").forEach(function(scannerButton) {
+            scannerButton.addEventListener("click", function() {
+                let qrModal = new bootstrap.Modal(document.getElementById("qrScannerModal"), {
+                    backdrop: "static",
+                    keyboard: false,
+                });
+                qrModal.show();
+                startMainScanner();
             });
-            qrModal.show();
-            startMainScanner();
         });
 
         function setStatus(msg) {

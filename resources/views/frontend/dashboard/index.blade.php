@@ -4,15 +4,20 @@
 @section('content')
     <div class="enterprise-dashboard-shell {{ $user_profile->is_prime_member ? 'prime-member-dashboard' : '' }}">
         <section class="dashboard-hero">
-            <span class="dashboard-hero__label">Welcome</span>
-            <h1 class="dashboard-hero__title">Welcome back, <span class="dashboard-welcome-name {{ $user_profile->is_prime_member ? 'dashboard-welcome-name--prime' : '' }}">{{ $user_profile->name }}</span></h1>
-            <p class="dashboard-hero__text">Your account, wallet, orders, transactions, and customer family are all here.</p>
-            @if ($user_profile->is_prime_member)
-                <a class="prime-status-panel" href="{{ route('user.prime.profile') }}">
-                    <span class="prime-status-panel__badge"><i class="fas fa-crown" aria-hidden="true"></i> Prime member</span>
-                    <span>You’ve achieved {{ \App\Models\User::PRIME_REFERRAL_THRESHOLD }} direct referrals. View your Prime profile <span aria-hidden="true">&rarr;</span></span>
-                </a>
-            @else
+            <div class="dashboard-hero__topline">
+                <span class="dashboard-hero__label">Welcome</span>
+                @include('frontend.dashboard.includes.scanner-button', ['buttonClass' => 'dashboard-hero__scanner'])
+            </div>
+            <h1 class="dashboard-hero__title">Welcome back,
+                <span class="dashboard-welcome-identity">
+                    @if ($user_profile->is_prime_member)
+                        <span class="prime-badge dashboard-welcome-prime-badge">PRIME MEMBER</span>
+                    @endif
+                    <span class="dashboard-welcome-name {{ $user_profile->is_prime_member ? 'dashboard-welcome-name--prime' : '' }}">{{ $user_profile->name }}</span>
+                </span>
+            </h1>
+            <p class="dashboard-hero__text">Account, wallet, orders, transactions &amp; family—all here.</p>
+            @unless ($user_profile->is_prime_member)
                 <div class="prime-progress-panel">
                     <div>
                         <span class="prime-progress-panel__eyebrow">Prime membership</span>
@@ -28,7 +33,7 @@
                     </div>
                     <a href="{{ route('user.add') }}">Invite your friends <span aria-hidden="true">&rarr;</span></a>
                 </div>
-            @endif
+            @endunless
             <div class="dashboard-hero__stats">
                 <a class="dashboard-hero__stat dashboard-hero__stat-link dashboard-hero__stat-order"
                     href="{{ route('user.order') }}">

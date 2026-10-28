@@ -1555,31 +1555,53 @@ Our profit-sharing model based on two golden rules: "Spend More to Save More & H
         }
 
         @media (max-width: 575.98px) {
+            body:has(#freebazar-home) > header .row.py-3.border-bottom {
+                flex-wrap: nowrap;
+                gap: .35rem;
+                min-height: 64px;
+                padding: .45rem .55rem !important;
+            }
+
             body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 {
                 width: auto;
+                min-width: 0;
+                flex: 0 1 auto;
                 justify-content: flex-start;
-                gap: .4rem !important;
+                gap: 0 !important;
+            }
+
+            body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 > div {
+                min-width: 0;
+                margin: 0 !important;
             }
 
             body:has(#freebazar-home) > header .row.py-3.border-bottom > .col-sm-4 img {
-                max-width: 155px;
-                max-height: 48px;
+                max-width: clamp(105px, 37vw, 145px);
+                max-height: 42px;
             }
 
             body:has(#freebazar-home) > header .navbar-toggler {
-                display: inline-flex;
-                padding: .35rem;
+                display: none;
             }
 
             body:has(#freebazar-home) > header .freebazar-landing-nav {
+                width: auto;
                 min-width: 0;
+                flex: 0 0 auto;
                 margin-left: auto;
+                padding: .1rem;
+            }
+
+            body:has(#freebazar-home) > header .freebazar-landing-nav .navbar-nav.flex-row {
+                flex-wrap: nowrap;
+                gap: .05rem !important;
             }
 
             body:has(#freebazar-home) > header .navbar-nav.flex-row .nav-link {
-                min-height: 34px;
-                padding: .3rem .55rem;
-                font-size: .72rem;
+                min-height: 32px;
+                padding: .25rem .4rem;
+                font-size: clamp(.62rem, 2.6vw, .72rem);
+                white-space: nowrap;
             }
 
             #freebazar-home > .p-3 > .row.row-cols-lg-3 > .col {
