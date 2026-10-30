@@ -7,25 +7,59 @@
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                     <div class="d-flex align-items-center gap-3">
                         <span class="sponsor-list-icon" aria-hidden="true">
-                            @if (auth()->user()?->image)
-                                <img src="{{ asset('images/' . auth()->user()->image) }}"
-                                    alt="" class="sponsor-list-header-avatar"
-                                    onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
-                                <i class="fa fa-users" hidden></i>
-                            @else
-                                <i class="fa fa-users"></i>
-                            @endif
+                            <svg class="sponsor-list-referral-logo" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.5 12.5L15.5 8.5M8.5 11.5L15.5 15.5" stroke="currentColor"
+                                    stroke-width="1.8" stroke-linecap="round"></path>
+                                <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.8"></circle>
+                                <circle cx="18" cy="6" r="3" stroke="currentColor" stroke-width="1.8"></circle>
+                                <circle cx="18" cy="18" r="3" stroke="currentColor" stroke-width="1.8"></circle>
+                            </svg>
                         </span>
                         <div>
                             <h1 class="h4 mb-1 fw-bold sponsor-list-title">My Referral List</h1>
                             <p class="mb-0 sponsor-list-subtitle">Customers registered under your sponsorship.</p>
                         </div>
                     </div>
-                    <span class="badge rounded-pill px-3 py-2 sponsor-list-count">
-                        {{ $sponcer->count() }} {{ \Illuminate\Support\Str::plural('member', $sponcer->count()) }}
-                    </span>
+                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 sponsor-list-actions">
+                        <button type="button" class="btn btn-outline-light fw-bold rounded-pill px-3 flex-shrink-0 sponsor-list-share"
+                            aria-label="Share referral link" title="Share referral link"
+                            data-share-url="{{ $referral_link }}">
+                            <svg class="sponsor-list-action-icon" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"></circle>
+                                <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"></circle>
+                                <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"></circle>
+                                <path d="M8.7 10.6l6.6-4.2M8.7 13.4l6.6 4.2" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+                            <span class="sponsor-list-action-label">Share Referral Link</span>
+                        </button>
+                        <a href="{{ route('user.add') }}" aria-label="Add User" title="Add User"
+                            class="btn btn-primary fw-bold rounded-pill px-4 shadow flex-shrink-0 border border-white sponsor-list-add-user">
+                            <svg class="sponsor-list-action-icon" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <circle cx="9" cy="8" r="4" stroke="currentColor" stroke-width="2"></circle>
+                                <path d="M2.5 21v-2a6.5 6.5 0 0113 0v2h-13zM19 8v8M15 12h8" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <span class="sponsor-list-action-label">Add User</span>
+                        </a>
+                        <span class="badge rounded-pill px-3 py-2 sponsor-list-count"
+                            aria-label="{{ $sponcer->count() }} {{ \Illuminate\Support\Str::plural('member', $sponcer->count()) }}">
+                            <svg class="sponsor-list-count-icon" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="2"></circle>
+                                <path d="M3 20v-1a6 6 0 0112 0v1H3zM16 5.5a3 3 0 010 5.8M18 14a4 4 0 013 4v1h-3"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <span>{{ $sponcer->count() }}</span>
+                            <span class="sponsor-list-count-label">{{ \Illuminate\Support\Str::plural('member', $sponcer->count()) }}</span>
+                        </span>
+                    </div>
                 </div>
             </div>
+            <div class="sponsor-list-share-status px-4" role="status" aria-live="polite" hidden></div>
 
             <div class="card-body p-3 p-md-4">
                 @if ($sponcer->isEmpty())
@@ -101,6 +135,25 @@
             color: #172033;
         }
 
+        .sponsor-list-page .sponsor-list-add-user {
+            color: #fff !important;
+        }
+
+        .sponsor-list-page .sponsor-list-share {
+            color: #fff !important;
+            border: 1px solid #fff !important;
+        }
+
+        .sponsor-list-page .sponsor-list-add-user:hover,
+        .sponsor-list-page .sponsor-list-add-user:focus {
+            color: #000 !important;
+        }
+
+        .sponsor-list-page .sponsor-list-share-status:not([hidden]) {
+            padding-bottom: .75rem;
+            color: #fff;
+        }
+
         .sponsor-list-page .sponsor-list-header {
             color: #fff;
             background: linear-gradient(115deg, #0f766e 0%, #087f8c 55%, #145da0 100%);
@@ -119,11 +172,9 @@
             font-size: 1.25rem;
         }
 
-        .sponsor-list-page .sponsor-list-header-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: inherit;
-            object-fit: cover;
+        .sponsor-list-page .sponsor-list-referral-logo {
+            width: 1.65rem;
+            height: 1.65rem;
         }
 
         .sponsor-list-page .sponsor-list-eyebrow {
@@ -146,6 +197,17 @@
             background: rgba(255, 255, 255, .15);
             color: #fff;
             font-size: .88rem;
+        }
+
+        .sponsor-list-page .sponsor-list-count-icon {
+            display: none;
+        }
+
+        .sponsor-list-page .sponsor-list-action-icon {
+            width: 1.15rem;
+            height: 1.15rem;
+            flex: 0 0 auto;
+            vertical-align: middle;
         }
 
         .sponsor-list-page .sponsor-list-table-wrap {
@@ -257,6 +319,57 @@
                 padding: 1.15rem !important;
             }
 
+            .sponsor-list-page .sponsor-list-actions {
+                flex-direction: row !important;
+                justify-content: flex-start;
+                gap: .65rem !important;
+            }
+
+            .sponsor-list-page .sponsor-list-share,
+            .sponsor-list-page .sponsor-list-add-user {
+                display: inline-flex;
+                width: 2.85rem;
+                height: 2.85rem;
+                align-items: center;
+                justify-content: center;
+                padding: 0 !important;
+                border-radius: 50% !important;
+            }
+
+            .sponsor-list-page .sponsor-list-share {
+                color: #fff !important;
+                border: 1px solid #fff !important;
+                background: rgba(255, 255, 255, .16) !important;
+            }
+
+            .sponsor-list-page .sponsor-list-share .sponsor-list-action-icon,
+            .sponsor-list-page .sponsor-list-add-user .sponsor-list-action-icon {
+                width: 1.3rem;
+                height: 1.3rem;
+            }
+
+            .sponsor-list-page .sponsor-list-action-label,
+            .sponsor-list-page .sponsor-list-count-label {
+                display: none;
+            }
+
+            .sponsor-list-page .sponsor-list-count {
+                display: inline-flex;
+                min-width: 2.85rem;
+                height: 2.85rem;
+                align-items: center;
+                justify-content: center;
+                gap: .2rem;
+                padding: 0 .45rem !important;
+                font-size: .82rem;
+            }
+
+            .sponsor-list-page .sponsor-list-count-icon {
+                display: inline-block;
+                width: .9rem;
+                height: .9rem;
+            }
+
             .sponsor-list-page .sponsor-list-table-wrap {
                 overflow: visible;
                 border: 0;
@@ -347,4 +460,69 @@
             }
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const shareButton = document.querySelector('.sponsor-list-share');
+            const shareStatus = document.querySelector('.sponsor-list-share-status');
+
+            if (!shareButton || !shareStatus) {
+                return;
+            }
+
+            const referralUrl = shareButton.dataset.shareUrl;
+
+            async function copyReferralLink() {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(referralUrl);
+                    return;
+                }
+
+                const input = document.createElement('textarea');
+                input.value = referralUrl;
+                input.setAttribute('readonly', '');
+                input.style.position = 'fixed';
+                input.style.opacity = '0';
+                document.body.appendChild(input);
+                input.select();
+                const copied = document.execCommand('copy');
+                input.remove();
+
+                if (!copied) {
+                    throw new Error('Copy command failed');
+                }
+            }
+
+            shareButton.addEventListener('click', async function () {
+                shareStatus.hidden = true;
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'Join Freebazar',
+                            text: 'Join Freebazar using my referral link:',
+                            url: referralUrl
+                        });
+                        shareStatus.textContent = 'Referral link shared.';
+                    } else {
+                        await copyReferralLink();
+                        shareStatus.textContent = 'Referral link copied to clipboard.';
+                    }
+                    shareStatus.hidden = false;
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+
+                    try {
+                        await copyReferralLink();
+                        shareStatus.textContent = 'Sharing is unavailable. Referral link copied to clipboard.';
+                    } catch (copyError) {
+                        shareStatus.textContent = 'Unable to share or copy the referral link. Please try again.';
+                    }
+                    shareStatus.hidden = false;
+                }
+            });
+        });
+    </script>
 @endsection

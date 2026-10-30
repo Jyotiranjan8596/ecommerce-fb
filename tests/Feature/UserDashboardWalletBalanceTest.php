@@ -109,6 +109,24 @@ class UserDashboardWalletBalanceTest extends TestCase
         DB::table('user_wallets')->insert([
             [
                 'user_id' => '1',
+                'trans_type' => 'credit',
+                'transaction_date' => '2026-05-18',
+                'wallet_amount' => '0',
+                'used_amount' => '0',
+                'reward_points' => '0',
+                'used_points' => '0',
+            ],
+            [
+                'user_id' => '1',
+                'trans_type' => 'credit',
+                'transaction_date' => '2026-05-19',
+                'wallet_amount' => '40',
+                'used_amount' => '0',
+                'reward_points' => '0',
+                'used_points' => '0',
+            ],
+            [
+                'user_id' => '1',
                 'trans_type' => 'debit',
                 'transaction_date' => '2026-05-20',
                 'wallet_amount' => '0',
@@ -147,8 +165,15 @@ class UserDashboardWalletBalanceTest extends TestCase
         ]));
         $history = $response->getData()['userWallet'];
 
-        $this->assertSame([$includedId, $includedId], $history->pluck('id')->all());
-        $this->assertSame(['credit', 'credit'], array_map(
+        $this->assertCount(3, $history);
+        $this->assertSame([25.0, 40.0, 100.0], $history->pluck('amount')
+            ->map(fn ($amount) => (float) $amount)
+            ->sort()
+            ->values()
+            ->all());
+        $this->assertSame(2, $history->where('display_type', 'Wallet')->count());
+        $this->assertSame(1, $history->where('display_type', 'Reward')->count());
+        $this->assertSame(['credit', 'credit', 'credit'], array_map(
             fn ($type) => strtolower($type),
             $history->pluck('trans_type')->all()
         ));

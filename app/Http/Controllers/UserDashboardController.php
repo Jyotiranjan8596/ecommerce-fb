@@ -408,15 +408,19 @@ class UserDashboardController extends Controller
                 $walletRow->display_type = 'Wallet';
                 $walletRow->amount = $item->wallet_amount;
                 $walletRow->remaning_balance = $currentWalletBalance;
-                $newCollection->push($walletRow);
+                if ((float) $item->wallet_amount !== 0.0) {
+                    $newCollection->push($walletRow);
+                }
 
                 // ---- Reward credit row ----
                 $rewardRow = clone $item;
                 $rewardRow->transaction_details = 'Admin';
                 $rewardRow->display_type = 'Reward';
                 $rewardRow->amount = $item->reward_points;
-                $walletRow->remaning_balance = $rewardBalance;
-                $newCollection->push($rewardRow);
+                $rewardRow->remaning_balance = $rewardBalance;
+                if ((float) $item->reward_points !== 0.0) {
+                    $newCollection->push($rewardRow);
+                }
             }
         }
 
@@ -432,7 +436,9 @@ class UserDashboardController extends Controller
     }
     public function sponsorList()
     {
-        $userId  = auth()->user()->id;
+        $user = auth()->user();
+        $userId = $user->id;
+        $referral_link = url('/register?ref=' . urlencode((string) $user->user_id));
         $sponcer = User::where('sponsor_id', $userId)
             ->where('role', 3)
             ->withCount(['referrals as referrals_count' => function ($query) {
@@ -445,7 +451,7 @@ class UserDashboardController extends Controller
             return $item;
         });
         // dd($sponcer);
-        return view('frontend.dashboard.sponser_list', compact('sponcer'));
+        return view('frontend.dashboard.sponser_list', compact('sponcer', 'referral_link'));
     }
 
     public function primeDashboard()

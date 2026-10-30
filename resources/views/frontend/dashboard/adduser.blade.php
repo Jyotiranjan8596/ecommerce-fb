@@ -5,10 +5,9 @@
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
             <div class="card-header border-0 bg-primary text-white px-4 py-3 user-add-header">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
-                        <div class="text-uppercase small fw-semibold mb-1 user-add-eyebrow">Customer management</div>
-                        <h4 class="mb-0 fw-bold user-add-title">Add User</h4>
-                    </div>
+                <div>
+                    <h4 class="mb-0 fw-bold user-add-title">Add User</h4>
+                </div>
                     <span class="badge rounded-pill bg-white text-primary px-3 py-2 fs-6">Sponsor ID: {{ $user_id }}</span>
                 </div>
             </div>

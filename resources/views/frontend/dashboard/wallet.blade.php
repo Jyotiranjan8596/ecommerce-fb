@@ -23,7 +23,7 @@
                     <div>
                         <div class="text-uppercase small fw-semibold mb-1 payback-eyebrow">Account overview</div>
                         <h1 class="h4 mb-1 fw-bold payback-title">My Payback</h1>
-                        <p class="mb-0 payback-subtitle">View your wallet and reward balances and transaction history.</p>
+                        <p class="mb-0 payback-subtitle">View your wallet and reward balances and payback history.</p>
                     </div>
                     <span class="badge rounded-pill px-3 py-2 payback-overview-badge">
                         <i class="fa fa-history me-1" aria-hidden="true"></i> Payback history
